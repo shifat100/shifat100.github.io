@@ -1,0 +1,42 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loadingbar"
+    style="display: flex;width: 100%; height: 100%; position: fixed; top: 0px;left: 0px;align-items: center; justify-content: center;background-color: #ffffff;">
+    Loading...
+  </div>
+  <center><br><br><br><br><button id="notice"
+      style="text-align: center;background: #fff;border: 1px solid #ddd;padding: 10px;cursor: pointer;">Click Me To
+      Start</button></center>
+  <script>
+    var servers = ['rf.gd/', 'hstn.me/', 'byethost7.com/'];
+    var num = Math.floor(Math.random() * servers.length);
+    var server = 'http://shifat100.'+servers[num];
+    document.querySelector('#notice').addEventListener('click', function () {
+      if (navigator.onLine) {
+        document.querySelector('#notice').innerHTML = 'Connecting ...';
+        setTimeout(function () {
+          document.querySelector('#notice').innerHTML = 'Click Me To Start';
+          window.location.href = server + '/web/login/auto.html';
+        }, 2000);
+      } else {
+        alert('No Internet Connection');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('#loadingbar').style.display = 'none';
+    });
+  </script>
+</body>
+
+</html>
