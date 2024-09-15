@@ -277,4 +277,4 @@ if (navigator.onLine) {
 document.addEventListener('DOMContentLoaded', () => {
 
 categories();
-
+});
