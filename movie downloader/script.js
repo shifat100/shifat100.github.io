@@ -278,5 +278,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 categories();
 
-
-document.body.addEventListener('keyup', () => { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'moviedownloader', slot: 'moviedownloader', onerror: err => console.error('Custom catch:', err), onready: ad => { ad.call('display'); } }); });
