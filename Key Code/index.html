@@ -7,8 +7,6 @@
 			max-height: 320px;
 		}
 	</style>
-	<script src="https://static.kaiads.com/ads-sdk/ads-sdk.v5.min.js"></script>
-	<script src="kaiads.v5.min.js"></script>
 	<link rel="stylesheet" href="4.0/css/bootstrap.min.css" />
 </head>
 
@@ -32,18 +30,8 @@
 	</table>
 	</div>
 	<p class="alert alert-danger"> Double Click On 0 For Close Or Exit This App.</p>
-	<script>document.addEventListener('keyup', () => {
-			getKaiAd({
-				publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-				app: 'keyCode',
-				slot: 'keycode',
-				onerror: err => console.error('Custom catch:', err),
-				onready: ad => {
-
-					ad.call('display');
-				}
-			});
-		});
+	<script>
+		//js
 	</script>
 </body>
 
