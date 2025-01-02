@@ -1,0 +1,44 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<style> body {
+background: white; }
+</style>
+</head>
+
+<body>
+    <div id="loadingbar"
+        style="display: flex;width: 100%; height: 100%; position: fixed; top: 0px;left: 0px;align-items: center; justify-content: center;background-color: #ffffff;">
+        Loading...
+    </div>
+  <center><br><br><br><br><button id="notice" style="text-align: center;background: #fff;border: 1px solid #ddd;padding: 10px;cursor: pointer;">Click Me To Start</button><br><p>Few Users Are Restored. If Error Login Please Create One.</p></center>
+  <script src="kaiads.v5.min.js"></script>
+  <script src="https://static.kaiads.com/ads-sdk/ads-sdk.v5.min.js"></script>
+  <script>
+    document.querySelector('#notice').addEventListener('click', function () { if(navigator.onLine) {
+      document.querySelector('#notice').innerHTML = 'Connecting ...';
+      setTimeout(function () { 
+        document.querySelector('#notice').innerHTML = 'Click Me To Start'; 
+        window.location.href = 'http://shifat100.hstn.me/web/login/auto.html'; 
+        }, 2000); } else {
+          alert('No Internet Connection');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('#loadingbar').style.display = 'none';
+      getKaiAd({
+        publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+        app: 'my_social',
+        slot: 'my_social',
+        onerror: err => console.error('Custom catch:', err),
+        onready: ad => {
+          ad.call('display');
+        }
+      })
+    });
+  </script>
+</body>
+
+</html>
