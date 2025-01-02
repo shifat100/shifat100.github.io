@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<style>
+		body {
+			max-height: 320px;
+		}
+	</style>
+	<script src="https://static.kaiads.com/ads-sdk/ads-sdk.v5.min.js"></script>
+	<script src="kaiads.v5.min.js"></script>
+	<link rel="stylesheet" href="4.0/css/bootstrap.min.css" />
+</head>
+
+<body>
+	<x id="keydetails">
+		<p id="key" class="alert alert-success"> Press Any Key To Show</p>
+	</x>
+	<script>
+		var exit = 0;
+		function handleKeyDown(evt) {
+			document.getElementById('keydetails').innerHTML = '<div class="alert alert-success"><center><b>Details</b></center></div><table class="table"><tbody><tr> <td><b>Key Name:</b></td><td>' + evt.key + '</td></tr><tr class="danger"><td><b>Key Code: </b></td><td>' + evt.keyCode + '</td></tr><tr><td><b>Code: </b></td><td>' + evt.code + '</td></tr></tbody></table>';
+			if (evt.key == 0) {
+				exit += 1;
+				if (exit == 2) { window.close(); }
+			}
+		}
+		document.body.addEventListener('keydown', handleKeyDown);
+	</script>
+	</tr>
+	</tbody>
+	</table>
+	</div>
+	<p class="alert alert-danger"> Double Click On 0 For Close Or Exit This App.</p>
+	<script>document.addEventListener('keyup', () => {
+			getKaiAd({
+				publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+				app: 'keyCode',
+				slot: 'keycode',
+				onerror: err => console.error('Custom catch:', err),
+				onready: ad => {
+
+					ad.call('display');
+				}
+			});
+		});
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+{
+  "version": "1.0.1",
+  "name": "KeyCode",
+  "description": "A Developer Tool. Get Device Keys Name, Code Names And  Codes. It Helps To Develop App For KaiOS Device.",
+  "launch_path": "/index.html",
+ "type": "web",
+  "icons": {
+    "56": "/icons/ic_keyCode_56.png",
+    "112": "/icons/ic_keyCode_112.png",
+    "128": "/icons/ic_keyCode_128.png" },
+"fullscreen": "true",
+  "developer": {
+    "name": "shifat100",
+    "url": "http://shifat100.xtgem.com/"
+  }, 
+  "default_locale": "en-US",
+  "locales": {
+    "en-US": {
+      "name": "KeyCode",
+      "subtitle": "A Key Code Tester App",
+      "description": "Get Your Keys Name, Code Names And  Codes That Used In Your Device. It Helps To Develop App For KaiOS Device."
+    }
+  },
+"cursor": false
+}
