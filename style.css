@@ -1,0 +1,503 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    outline: 0px;
+    word-wrap: break-word;
+    word-break: keep-all;
+}
+
+*::selection {
+    background: black;
+    color: white;
+}
+
+div:hover {
+    border-color: black;
+}
+
+body {
+    background: #eee;
+    margin: 0px;
+    padding: 0px;
+    text-transform: capitalize;
+}
+
+
+/*form {
+    margin: 30px;
+    padding: 30px;
+background-color: white;
+}*/
+
+input[type=text],
+input[type=file],
+input[type=url] {
+    padding: 10px;
+    border-radius: 3px;
+    width: 100%;
+    display: inline-block;
+    border: 1px solid #ddd;
+    margin: 5px 0px;
+}
+
+input[type=submit],
+.btn {
+    background: #ddd;
+    width: 100%;
+    display: block;
+    padding: 15px 5px;
+    border: 1px solid #ddd;
+    color: #000000;
+    border-radius: 3px;
+    margin: 15px auto;
+    cursor: pointer;
+}
+
+input[type=submit]:hover,
+.btn:hover {
+    background: #d3d6d6;
+}
+
+input[type=checkbox] {
+    width: 20px;
+    height: 20px;
+}
+
+.inputgroup {
+    display: block;
+    width: 100%;
+    margin: 5px 0px;
+}
+
+.inputgroup>.label {
+    width: 20%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.inputgroup>.input {
+    width: 75%;
+    display: inline-block;
+    border: 1px solid transparent;
+}
+
+.box {
+    width: 95%;
+    margin: 10px auto;
+    border: 0px solid #ddd;
+    border-radius: 5px;
+    padding: 15px 0px;
+    display: none;
+    background-color: white;
+    box-shadow: 2px 1px 5px #ccc;
+}
+
+.boxtitle {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    padding: 0px 0px 15px 0px;
+}
+
+
+.boxcontent {
+    padding: 0px 25px;
+}
+
+.box>.closebar {
+    position: relative;
+    text-align: right;
+    display: block;
+    width: 100%;
+    padding: 10px;
+}
+
+.closebtn {
+    font-size: 24px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.closebtn:hover {
+    color: red;
+}
+
+.box>.backbar {
+    position: relative;
+    text-align: right;
+    display: block;
+    width: 100%;
+    padding: 10px;
+}
+
+.backbtn {
+    font-size: 24px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.backbtn:hover {
+    color: red;
+}
+
+
+
+ul.nav {
+    background-color: white;
+    border-bottom: 1px solid #f1f1f1;
+    display: block;
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    position: sticky;
+    left: 0px;
+    top: 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 10;
+}
+
+ul.nav li {
+    display: inline-block;
+    padding: 5px 10px;
+}
+
+
+
+.navsidebarbtn {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 18px;
+    width: 35px;
+    height: 35px;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 6px;
+}
+
+.navsidebarbtn:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+#logobtn {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 18px;
+    width: 35px;
+    height: 35px;
+    padding: 3px;
+    border-radius: 50%;
+    background: red;
+    text-align: center;
+    color: white;
+}
+
+#logobtn:hover {
+    background: brown;
+    color: #fff;
+    cursor: pointer;
+}
+
+.footer {
+    background: #888;
+    color: white;
+    padding: 5px;
+    display: block;
+    width: 100%;
+    line-height: 25px;
+    margin-top: 25px;
+}
+
+
+fieldset {
+    border-color: #aaa;
+}
+
+legend {
+    background-color: #eeeeee;
+    padding: 8px 12px;
+    font-size: 20px;
+    text-align: center;
+    border-radius: 30px;
+}
+
+
+.list {
+    background: #ffffff;
+    text-align: left;
+    width: 90%;
+    display: inline-block;
+    margin: 10px 0px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 5px 1px #ddd;
+    border-radius: 5px;
+    text-transform: capitalize;
+    cursor: pointer;
+}
+
+
+.list .subtitle {
+    font-size: 18px;
+    color: black;
+    padding-bottom: 7px;
+    border-width: 100%;
+    padding: 7px;
+    text-decoration: none;
+}
+
+
+.list .subtitle i {
+    visibility: hidden;
+}
+
+.list .subtitle:hover i {
+    visibility: visible;
+}
+
+.list post {
+    font-size: 16px;
+    text-transform: capitalize;
+    padding-left: 25px;
+}
+
+.list post a {
+    background-color: #d7d70a;
+}
+
+
+.srchlist {
+    background: #ffffff;
+    text-align: left;
+    width: 100%;
+    display: inline-block;
+    padding: 10px 15px;
+    text-transform: capitalize;
+    cursor: pointer;
+}
+
+
+.srchlist:hover {
+    background-color: #f1f1f1;
+}
+
+.srchlist a {
+    color: black;
+    text-decoration: none;
+    padding: 3px;
+}
+
+.strtbtn {
+    background: teal;
+    border: 3px solid teal;
+    padding: 15px 10px 15px 25px;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px 0px 0px 5px;
+    box-shadow: 0px 0px 10px 1px #aaa;
+    cursor: pointer;
+    transition: .9s;
+}
+
+
+.strtbtn::after {
+    content: '';
+    border-width: 26px;
+    border-style: solid;
+    border-color: transparent transparent transparent teal;
+    position: absolute;
+    margin-left: 13px;
+    top: 0px;
+}
+
+.strtbtn:hover {
+    background: white;
+    color: black;
+}
+
+
+
+h1 {
+    font-size: 25px;
+}
+
+.rightbar {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    background: #ffffff;
+    min-width: 240px;
+    width: 30%;
+    height: 100%;
+    z-index: 11;
+    display: none;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px #000000;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+.leftbar{
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    background: #ffffff;
+    min-width: 200px;
+    width: 30%;
+    height: auto;
+    max-height: 70%;
+    display: none;
+    padding: 10px;
+    box-shadow: 0px 0px 10px 0px #555555;
+    border-radius:5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.leftbarlink {
+    padding: 10px;
+    color: #000000;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.leftbarlink:nth-child(0) {
+    width: 80%;
+}
+.leftbarlink:hover {
+    background: #f0f0f0;
+}
+
+
+
+.alert {
+    display: block;
+    min-width: 240px;
+    width: 50%;
+    padding: 20px;
+    background: #ffffff;
+    position: fixed;
+    left: 25%;
+    top: 15%;
+    margin: 10% auto;
+    z-index: 5;
+    border-radius: 5px;
+    box-shadow: 0px 0px 15px 5px #000000;
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition-property: all;
+}
+
+.alert hr {
+    border-top: 1px solid #ddd;
+    border-right: 0px solid transparent;
+    border-bottom: 0px solid transparent;
+    border-left: 0px solid transparent;
+}
+
+.alertbtn {
+    width: 100%;
+    padding: 10px;
+    background: #ff6f00;
+    color: white;
+    font-weight: bold;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.alertbtn:hover {
+    background: #b34f02;
+}
+
+
+.centerall {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 0;
+    top: 0px;
+
+}
+
+.whitebox{
+    background: #ffffff;
+    min-width: 200px;
+    width: 50%;
+    height: auto;
+    max-height: 70%;
+    display: block;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px #555555;
+    border-radius:5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 5px auto;
+
+}
+
+@media screen And (max-width: 500px) {
+    .inputgroup>.label {
+        width: 100%;
+        display: block;
+    }
+
+    .inputgroup>.input {
+        width: 100%;
+        display: block;
+        border: 1px solid transparent
+    }
+
+    .box {
+        width: 98%;
+    }
+
+
+    .alert {
+        display: block;
+        min-width: 100px;
+        width: 90%;
+        padding: 10px;
+        background: #ffffff;
+        position: fixed;
+        left: 5%;
+        top: 20%;
+        margin: 10% auto;
+        z-index: 5;
+        border-radius: 5px;
+        box-shadow: 0px 0px 15px 5px #000000;
+        overflow-y: auto;
+        max-height: 70%;
+    }
+    
+    .alert hr {
+        border-top: 1px solid #ddd;
+        border-right: 0px solid transparent;
+        border-bottom: 0px solid transparent;
+        border-left: 0px solid transparent;
+    }
+    
+    .alertbtn {
+        width: 100%;
+        padding: 5px;
+        background: #ff6f00;
+        color: white;
+        font-weight: bold;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+    
+
+    .leftbar{
+        width: 90%;
+    }
+    .whitebox {
+        padding: 10px;
+    }
+}
