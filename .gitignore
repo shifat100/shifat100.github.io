@@ -22,3 +22,5 @@ rad.json
 TestResults.xml
 #script file
 script.js
+#cloudfone folder
+.cloudfone/
