@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "name": "Arbic Dictionary",
+  "description": "English-Arbic Dictionary Is Full Featured Dictionary App For Kaios By shifat100. Search And Find Word, Easy Control, Next Word Suggesstion, Get English From Arbic Word And Arbic Form English Word, E2A And A2E 2 In 1  Dictionary.",
+  "launch_path": "/index.html",
+  "icons": {
+    "56": "/icons/ic-56.png",
+    "112": "/icons/ic-112.png",
+     "128": "/icons/ic-128.png" },
+"fullscreen": false,
+  "developer": {
+    "name": "shifat100",
+    "url": "http://shifat100.xtgem.com"
+  },
+  
+  "locales": {
+    "en-US": {
+      "name": "Arbic Dictionary",
+      "subtitle": "e2a And a2e Dictionary",
+      "description": "English-Arbic Dictionary Is Full Featured Dictionary App For Kaios By shifat100. Search And Find Word, Easy Control, Next Word Suggesstion, Get English From Arbic Word And Arbic Form English Word, E2A And A2E Dictionary."
+    }
+  },
+  "default_locale": "en-US",
+"cursor": false,
+"type": "web"
+}

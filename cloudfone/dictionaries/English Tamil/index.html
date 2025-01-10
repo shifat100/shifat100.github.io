@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+
+<body>
+    <div class="flex" style="display: flex;" id="loader">
+        <div class="loadingbar"><span style="position: absolute;font-size: 10px; color: white;">wait...</span>
+            <div class="loader"></div>
+        </div>
+    </div>
+    <div class="header">
+        <div id="header">Select Dictionary</div>
+    </div>
+    <div class="content" style="top: 27px; background-color: #f9f9f9;">
+        <a class="box focusable" href="secondtofirst.html" tabindex="0">English To Tamil</a>
+        <a class="box focusable" href="firsttosecond.html" tabindex="1">Tamil To English</a>
+<br><br>
+        <center> &copy; Shifat100 - 2024 </center>
+    </div>
+    <div class="footer">
+        <div class="footerelement">About</div>
+        <div class="footerelement">OK</div>
+        <div class="footerelement">Exit</div>
+    </div>
+    <script src="https://static.kaiads.com/ads-sdk/ads-sdk.v5.min.js"></script>
+    <script src="kaiads.v5.min.js"></script>
+    <script> 
+    document.body.addEventListener('keyup', () => { getKaiAd({
+        publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+        app: 'English-Hindi-Dictionary',
+        slot: 'English-Hindi-Dictionary',
+        onerror: err => console.error('Custom catch:', err),
+        onready: ad => {
+          ad.call('display');
+        }
+      })
+      });
+    </script>
+    <script>
+        window.onload = function () {
+            document.getElementById('loader').style.display = 'none';
+            document.querySelectorAll('.focusable')[0].focus();
+            document.body.addEventListener('keydown', keydownmain);
+            function keydownmain(e) {
+    switch (e.key) {
+        case 'ArrowDown': focus(1);
+            break;
+        case 'ArrowUp': focus(-1);
+            break;
+        case 'Down': focus(1);
+            break;
+        case 'Up': focus(-1);
+            break;
+        case 'Enter': document.activeElement.click();
+            break;
+        case 'SoftRight': window.close();
+            break;
+        case 'F2': window.close();
+            break;
+        case 'SoftLeft': alert('A Dictionary App By Shifat100');
+            break;
+        case 'F1': alert('A Dictionary App By Shifat100');
+            break;
+    }
+
+
+
+
+    function focus(move) {
+        var currentIndex = document.activeElement.tabIndex;
+        var next = currentIndex + move;
+        if (next > document.querySelectorAll('.focusable').length - 1) { next = 0; } else if (next < 0) { next = document.querySelectorAll('.focusable').length - 1; }
+        var items = document.querySelectorAll('.focusable');
+        var targetElement = items[next];
+        targetElement.focus();
+    }
+}
+
+        }
+
+    </script>
+</body>
+
+</html>
