@@ -18,7 +18,7 @@ body {
     padding: 1rem 1rem;
     margin-bottom: 1rem;
     border: 1px solid transparent;
-    border-radius: .25rem;
+    border-radius: 0rem;
 }
 .alert-danger {
     color: #842029;
@@ -38,7 +38,7 @@ body {
     padding: 5px 5px;
     margin-bottom: 0px;
     border: 1px solid transparent;
-    border-radius: .25rem;
+    border-radius: 0rem;
 }
 .alert-danger {
     color: #842029;
@@ -54,13 +54,8 @@ body {
 		<p id="key" class="alert alert-success"> Press Any Key To Show</p>
 	</x>
 	<script>
-		var exit = 0;
 		function handleKeyDown(evt) {
 			document.getElementById('keydetails').innerHTML = '<div class="alert alert-success"><center><b>Details</b></center></div><table class="table"><tbody><tr> <td><b>Key Name:</b></td><td>' + evt.key + '</td></tr><tr class="danger"><td><b>Key Code: </b></td><td>' + evt.keyCode + '</td></tr><tr><td><b>Code: </b></td><td>' + evt.code + '</td></tr></tbody></table>';
-			if (evt.key == 0) {
-				exit += 1;
-				if (exit == 2) { window.close(); }
-			}
 		}
 		document.body.addEventListener('keydown', handleKeyDown);
 	</script>
@@ -68,7 +63,6 @@ body {
 	</tbody>
 	</table>
 	</div>
-	<p class="alert alert-danger"> Double Click On 0 For Close Or Exit This App.</p>
 	<script>
 		//js
 	</script>
