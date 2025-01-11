@@ -75,9 +75,9 @@ document.getElementById('content').innerHTML='<div style="padding: 5px">'+si+'</
 document.body.addEventListener('keyup', keydownforimportantdates);
 document.body.removeEventListener('keyup', keydownformain);
 document.getElementsByClassName('header')[0].innerHTML = 'Important Dates';
-document.getElementsByClassName('footerelement')[0].innerHTML = ' ';
+document.getElementsByClassName('footerelement')[0].innerHTML = 'Back';
 document.getElementsByClassName('footerelement')[1].innerHTML = ' ';
-document.getElementsByClassName('footerelement')[2].innerHTML = 'Back';
+document.getElementsByClassName('footerelement')[2].innerHTML = ' ';
 }
 
 
@@ -102,8 +102,7 @@ document.getElementsByClassName('footerelement')[2].innerHTML = 'Exit';
 
 function keydownformain(e) {
   switch(e.key) {
-    case 'SoftRight': exit(); break;
-    case 'SoftLeft': importantDates(); break;
+    case 'Esc': importantDates(); break;
     case 'F2': exit(); break;
     case 'F1': importantDates(); break;
   }
@@ -111,8 +110,7 @@ function keydownformain(e) {
 
 function keydownforimportantdates(e) {
   switch(e.key) {
-    case 'SoftRight': moonPhase(); break;
-    case 'SoftLeft': importantDates(); break;
+    case 'Esc': moonPhase(); break;
     case 'F2': moonPhase(); break;
     case 'F1': importantDates(); break;
   }
