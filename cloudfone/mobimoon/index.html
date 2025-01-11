@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="gregtohijri.js"></script>
+    <script src="hijritogreg.js"></script>
+    <script src="moonphease.js"></script>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<div class="header">Loading...</div>
+<div id="content" class="content">
+Loading...
+</div>
+<div class="footer">
+  <span class="footerelement">Loading...</span>
+  <span class="footerelement">Loading...</span>
+  <span class="footerelement">Loading...</span>
+</div>
+<script>
+moonPhase();
+
+</script>
+<script src="https://static.kaiads.com/ads-sdk/ads-sdk.v5.min.js"></script>
+<script src="kaiads.v5.min.js"></script>
+<script>
+  document.body.addEventListener("keyup", () => { getKaiAd({
+    publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+    app: 'Mobimoon',
+    slot: 'mobimoon',
+    onerror: err => console.error('Custom catch:', err),
+    onready: ad => {
+      // Ad is ready to be displayed
+      // calling 'display' will display the ad
+      ad.call('display');
+    }
+  })
+  });
+  </script>
+
+</body>
+</html>
