@@ -102,17 +102,13 @@ document.getElementsByClassName('footerelement')[2].innerHTML = 'Exit';
 
 function keydownformain(e) {
   switch(e.key) {
-    case 'Esc': importantDates(); break;
-    case 'F2': exit(); break;
-    case 'F1': importantDates(); break;
+    case 'Escape': importantDates(); break;
   }
 }
 
 function keydownforimportantdates(e) {
   switch(e.key) {
-    case 'Esc': moonPhase(); break;
-    case 'F2': moonPhase(); break;
-    case 'F1': importantDates(); break;
+    case 'Escape': moonPhase(); break;
   }
 }
 
