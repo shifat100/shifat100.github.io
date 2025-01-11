@@ -75,7 +75,7 @@ document.getElementById('content').innerHTML='<div style="padding: 5px">'+si+'</
 document.body.addEventListener('keyup', keydownforimportantdates);
 document.body.removeEventListener('keyup', keydownformain);
 document.getElementsByClassName('header')[0].innerHTML = 'Important Dates';
-document.getElementsByClassName('footerelement')[0].innerHTML = 'Back';
+document.getElementsByClassName('footerelement')[0].innerHTML = 'Main';
 document.getElementsByClassName('footerelement')[1].innerHTML = ' ';
 document.getElementsByClassName('footerelement')[2].innerHTML = ' ';
 }
