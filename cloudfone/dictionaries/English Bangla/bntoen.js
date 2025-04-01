@@ -15,7 +15,7 @@ xhttp.onload = function () {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
 
         loader.style.display = 'none';
-        userinput.addEventListener('keyup', function () {
+        userinput.addEventListener('input', function () {
             if (userinput.value != '') {
                 filter(xhttp.responseText, userinput.value);
             }
