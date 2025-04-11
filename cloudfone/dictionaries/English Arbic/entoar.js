@@ -6,6 +6,11 @@ var f2 = document.querySelectorAll('.footerelement')[1];
 var f3 = document.querySelectorAll('.footerelement')[2];
 var loader = document.getElementById('loader');
 
+function alert(msg="alertbox") { 
+document.body.innerHTML+=('<div style="position:fixed; left:0px;bottom:0px;background:#e9e9e9;display:block;width:100%"><div style="padding: 10px;font-weight: bold">'+msg+'</div><div style="text-align:center;display:block;padding:5px; background:black; color: #e9e9e9">OK</div></div>');
+ document.body.addEventListener('keydown', function(){window.location.reload();});
+ }
+
 var xhttp = new XMLHttpRequest();
 xhttp.onload = function () {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
