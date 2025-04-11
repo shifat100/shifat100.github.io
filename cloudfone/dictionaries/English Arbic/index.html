@@ -16,28 +16,19 @@
         <a class="box focusable" href="firsttosecond.html" tabindex="0">English To Arbic</a>
         <a class="box focusable" href="secondtofirst.html" tabindex="1">Arbic To English</a>
 <br><br>
-        <center> &copy; Shifat100 - 2024 </center>
+        <center> &copy; Shifat100 - 2025 </center>
     </div>
     <div class="footer">
         <div class="footerelement">About</div>
         <div class="footerelement">OK</div>
         <div class="footerelement">Exit</div>
     </div>
-<script src="https://static.kaiads.com/ads-sdk/ads-sdk.v5.min.js"></script>
-<script src="kaiads.v5.min.js"></script>
+
 <script> 
-/*document.body.addEventListener("keyup", () => { getKaiAd({
-    publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-    app: 'English-Arabic-Dictionary',
-    slot: 'English-Arabic-Dictionary',
-    onerror: err => console.error('Custom catch:', err),
-    onready: ad => {
-      // Ad is ready to be displayed
-      // calling 'display' will display the ad
-      ad.call('display');
-    }
-  })
-  });*/
+function alert(msg="alertbox") { 
+document.body.innerHTML+=('<div style="position:fixed; left:0px;bottom:0px;background:#e9e9e9;display:block;width:100%"><div style="padding: 10px;font-weight: bold">'+msg+'</div><div style="text-align:center;display:block;padding:5px; background:black; color: #e9e9e9">OK</div></div>');
+ document.body.addEventListener('keydown', function(){window.location.reload();});
+ }
 </script>
     <script>
         window.onload = function () {
@@ -60,7 +51,7 @@
             break;
         case 'F2': window.close();
             break;
-        case 'SoftLeft': alert('A Dictionary App By Shifat100');
+        case 'Escape': alert('A Dictionary App By Shifat100');
             break;
         case 'F1': alert('A Dictionary App By Shifat100');
             break;
