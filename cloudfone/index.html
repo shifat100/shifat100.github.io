@@ -11,12 +11,46 @@
 </head>
 
 <body>
-    <script>
-      if(confirm('Dictionary List?')) {} else { window.close();
+  
+</body>
+  <script>
+      if(confirm('Dictionary List?')) {
+
+          document.body.innerHTML = `<title>List with Links</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #f0f0f0;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        li:nth-child(odd) {
+            background-color: #d1e7dd; /* Light green */
+        }
+    </style><h1>Styled List with Links</h1>
+    <ul>
+        <li><a href="https://example.com/page1" target="_blank">Page 1</a></li>
+        <li><a href="https://example.com/page2" target="_blank">Page 2</a></li>
+        <li><a href="https://example.com/page3" target="_blank">Page 3</a></li>
+        <li><a href="https://example.com/page4" target="_blank">Page 4</a></li>
+    </ul>`;
+      } else { window.close();
         document.write('Server Hosted At Port 8000');
     alert('hello cloudfone user');
     window.location.href='https://www.cloudfone.com/auth/sign-in'; }
     </script>
-</body>
-
 </html>
