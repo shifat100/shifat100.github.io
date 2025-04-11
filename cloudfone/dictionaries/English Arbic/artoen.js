@@ -2,7 +2,7 @@ String.prototype.includes = function (str) {
     return this.indexOf(str) !== -1;
 }
 
-function alert1(msg="alertbox") { 
+function alert(msg="alertbox") { 
 document.body.innerHTML+=('<div style="position:fixed; left:0px;bottom:0px;background:#e9e9e9;display:block;width:100%"><div style="padding: 10px;font-weight: bold">'+msg+'</div><div style="text-align:center;display:block;padding:5px; background:black; color: #e9e9e9">OK</div></div>');
  document.body.addEventListener('keydown', function(){window.location.reload();});
  }
@@ -30,7 +30,7 @@ xhttp.onload = function () {
         document.body.removeEventListener('keydown', keydownwordlist);
         document.body.addEventListener('keydown', keydownmain);
     } else {
-        //alert1('something error');
+        //alert('something error');
     }
 }
 xhttp.open('GET', 'data.json', true);
@@ -118,7 +118,7 @@ function keydownwordlist(e) {
             document.body.removeEventListener('keydown', keydownwordlist);
             document.body.addEventListener('keydown', keydownmain);
             break;
-        case 'SoftLeft': document.querySelectorAll('.focusable')[0].focus();
+        case 'Escape': document.querySelectorAll('.focusable')[0].focus();
             break;
         case 'F1': document.querySelectorAll('.focusable')[0].focus();
             break;
@@ -155,9 +155,9 @@ function keydownmain(e) {
             break;
         case 'F2': window.location.href = '/index.html';
             break;
-        case 'SoftLeft': alert1('A Dictionary App By Shifat100');
+        case 'Escape': alert('A Dictionary App By Shifat100');
             break;
-        case 'F1': alert1('A Dictionary App By Shifat100');
+        case 'F1': alert('A Dictionary App By Shifat100');
             break;
     }
 
