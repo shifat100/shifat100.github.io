@@ -2,7 +2,10 @@ String.prototype.includes = function (str) {
     return this.indexOf(str) !== -1;
 }
 
-
+function alert(msg="alertbox") { 
+document.body.innerHTML+=('<div style="position:fixed; left:0px;bottom:0px;background:#e9e9e9;display:block;width:100%"><div style="padding: 10px;font-weight: bold">'+msg+'</div><div style="text-align:center;display:block;padding:5px; background:black; color: #e9e9e9">OK</div></div>');
+ document.body.addEventListener('keydown', function(){window.location.reload();});
+ }
 
 var app = document.getElementById('app');
 var userinput = document.getElementById('userinput');
