@@ -1,86 +1,89 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style>
 		* {
 			box-sizing: border-box;
 		}
-body {
-	margin: 0px; padding: 0px
-}
-table {
-	width: 100%; 
-	display:block; 
-}
-	table tr td {
-		padding: 5px; 
-		border-bottom:  1px solid #ddd
-	}
+		body {
+			margin: 0px; padding: 0px
+		}
+		table {
+			width: 100%; 
+			display: block; 
+		}
+		table tr td {
+			padding: 5px; 
+			border-bottom: 1px solid #ddd;
+		}
 		.alert-success {
-    color: #0f5132;
-    background-color: #d1e7dd;
-    border-color: #badbcc;
-}
-.alert {
-    position: relative;
-    padding: 1rem 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: .25rem;
-}
-.alert-danger {
-    color: #842029;
-    background-color: #f8d7da;
-    border-color: #f5c2c7;
-}
+			color: #0f5132;
+			background-color: #d1e7dd;
+			border-color: #badbcc;
+		}
+		.alert {
+			position: relative;
+			padding: 1rem 1rem;
+			margin-bottom: 1rem;
+			border: 1px solid transparent;
+			border-radius: .25rem;
+		}
+		.alert-danger {
+			color: #842029;
+			background-color: #f8d7da;
+			border-color: #f5c2c7;
+		}
 
 		@media only screen and (max-width: 161px) {
-		body { font-size: 10px}
-		.alert-success {
-    color: #0f5132;
-    background-color: #d1e7dd;
-    border-color: #badbcc;
-}
-.alert {
-    position: relative;
-    padding: 5px 5px;
-    margin-bottom: 0px;
-    border: 1px solid transparent;
-    border-radius: .25rem;
-}
-.alert-danger {
-    color: #842029;
-    background-color: #f8d7da;
-    border-color: #f5c2c7;
-}
+			body { font-size: 10px }
+			.alert {
+				padding: 5px 5px;
+				margin-bottom: 0px;
+			}
 		}
 	</style>
 </head>
-
 <body>
 	<x id="keydetails">
-		<p id="key" class="alert alert-success"> Press Any Key To Show</p>
+		<p id="key" class="alert alert-success"> Press Any Key or Touch To Show</p>
 	</x>
+
 	<script>
 		var exit = 0;
+
 		function handleKeyDown(evt) {
-			document.getElementById('keydetails').innerHTML = '<div class="alert alert-success"><center><b>Details</b></center></div><table class="table"><tbody><tr> <td><b>Key Name:</b></td><td>' + evt.key + '</td></tr><tr class="danger"><td><b>Key Code: </b></td><td>' + evt.keyCode + '</td></tr><tr><td><b>Code: </b></td><td>' + evt.code + '</td></tr></tbody></table>';
-			if (evt.key == 0) {
+			document.getElementById('keydetails').innerHTML = 
+				'<div class="alert alert-success"><center><b>Key Details</b></center></div>' +
+				'<table class="table"><tbody>' +
+				'<tr><td><b>Key Name:</b></td><td>' + evt.key + '</td></tr>' +
+				'<tr class="danger"><td><b>Key Code:</b></td><td>' + evt.keyCode + '</td></tr>' +
+				'<tr><td><b>Code:</b></td><td>' + evt.code + '</td></tr>' +
+				'</tbody></table>';
+			
+			if (evt.key == "0") {
 				exit += 1;
 				if (exit == 2) { window.close(); }
 			}
 		}
+
+		function handleTouch(evt) {
+			const touch = evt.touches[0];
+			const x = touch.clientX;
+			const y = touch.clientY;
+
+			document.getElementById('keydetails').innerHTML = 
+				'<div class="alert alert-success"><center><b>Touch Position</b></center></div>' +
+				'<table class="table"><tbody>' +
+				'<tr><td><b>X:</b></td><td>' + x + '</td></tr>' +
+				'<tr><td><b>Y:</b></td><td>' + y + '</td></tr>' +
+				'</tbody></table>';
+		}
+
 		document.body.addEventListener('keydown', handleKeyDown);
-	</script>
-	
-	
-	
-	
-	<p class="alert alert-danger"> Double Click On 0 For Close Or Exit This App.</p>
-	<script>
-		//js
+		document.body.addEventListener('touchstart', handleTouch);
 	</script>
 
-
-
-</body></html>
+	<p class="alert alert-danger">Double Click On 0 For Close Or Exit This App.</p>
+</body>
+</html>
