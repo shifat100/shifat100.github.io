@@ -122,7 +122,7 @@ function keydownwordlist(e) {
             document.body.removeEventListener('keydown', keydownwordlist);
             document.body.addEventListener('keydown', keydownmain);
             break;
-        case 'SoftLeft': document.querySelectorAll('.focusable')[0].focus();
+        case 'Escape': document.querySelectorAll('.focusable')[0].focus();
             break;
         case 'F1': document.querySelectorAll('.focusable')[0].focus();
             break;
@@ -159,7 +159,7 @@ function keydownmain(e) {
             break;
         case 'F2': window.location.href='/index.html';
             break;
-        case 'SoftLeft': alert('A Dictionary App By Shifat100');
+        case 'Escape': alert('A Dictionary App By Shifat100');
             break;
         case 'F1': alert('A Dictionary App By Shifat100');
             break;
