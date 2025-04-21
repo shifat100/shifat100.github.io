@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="stylesheet.css" />
+<link rel="stylesheet" href="jquery-ui.css" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div class="header">Search</div>
+
+    <div class="content">
+        <div><div class="search"><input id="search" type="text" name="q" maxlength="150" placeholder="KeyWord ..." autofocus class="focusable" tabindex="0"><div class="searchsuggestion"></div>
+        </div></div></div>
+    <div class="menubar" style="display: none;" id="menubar">
+        <div class="menuelement" onclick="window.location.reload();" tabindex="0">Search</div>
+        <div class="menuelement" tabindex="1" onclick="window.close();">Quit</div>
+
+    </div>
+    <div class="footer">
+        <div class="footerelement">Menu</div>
+        <div class="footerelement">OK</div>
+        <div class="footerelement">Exit</div>
+    </div>
+    <script type="text/javascript" src="kaiads.v5.min.js"></script>
+    <script src="server.js"></script>
+    <script src="script.js"></script>
+    <script src="s-vidplayer.js"></script>
+    
+</body>
+</html>
