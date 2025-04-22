@@ -198,7 +198,7 @@
           html += '<img src="' + app.icon + '" alt="' + app.name + ' Icon" />';
           html += '<h3>' + app.name + '</h3>';
           html += '<p>' + app.description + '</p>';
-          html += '<a href="' + app.link + '">View App</a>';
+          html += '<a href="' + app.link + '">View '+app.type+'</a>';
 
           appEl.innerHTML = html;
           container.appendChild(appEl);
