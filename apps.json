@@ -1,36 +1,36 @@
 {
   "apps": [
     {
-      "name": "Notes Pro",
-      "description": "A lightweight note-taking app for KaiOS devices.",
+      "name": "mobimoon",
+      "description": "Moon Prases and upcoming islamic dates",
       "icon": "https://via.placeholder.com/64?text=Notes",
       "link": "https://example.com/notes-pro",
       "platform": "kaios",
       "type": "app"
     },
     {
-      "name": "Car Racer",
-      "description": "Fast-paced racing game optimized for KaiOS phones.",
+      "name": "Virtual Tasbeeh",
+      "description": "a tasbeeh app",
       "icon": "https://via.placeholder.com/64?text=Racer",
       "link": "https://example.com/car-racer",
       "platform": "kaios",
       "type": "game"
     },
     {
-      "name": "Task Master",
-      "description": "Manage your daily tasks easily on CloudFone devices.",
-      "icon": "https://via.placeholder.com/64?text=Task",
-      "link": "https://example.com/task-master",
+      "name": "Mobimoon",
+      "description": "Moon Prases and upcoming islamic dates",
+      "icon": "link",
+      "link": "https://shifat100.github.io/cloudfone/mobimoon",
       "platform": "cloudfone",
       "type": "app"
     },
     {
-      "name": "Alien Attack",
+      "name": "Key Code",
       "description": "Action-packed alien shooting game for Android.",
-      "icon": "https://via.placeholder.com/64?text=Alien",
-      "link": "https://example.com/alien-attack",
+      "icon": "link",
+      "link": "https://shifat100.github.io/key+code",
       "platform": "cloudfone",
-      "type": "game"
+      "type": "app"
     }
   ]
 }
