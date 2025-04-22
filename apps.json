@@ -1,33 +1,36 @@
 {
   "apps": [
-   
     {
-      "name": "Mobimoon",
-      "description": "Physics-based bike game inspired by Gravity Defied.",
-      "link": "#",
-      "icon": "https://via.placeholder.com/64",
-      "platform": "kaios"
+      "name": "Notes Pro",
+      "description": "A lightweight note-taking app for KaiOS devices.",
+      "icon": "https://via.placeholder.com/64?text=Notes",
+      "link": "https://example.com/notes-pro",
+      "platform": "kaios",
+      "type": "app"
     },
     {
-      "name": "Preposition Quiz",
-      "description": "Grammar quiz game with fill-in-the-blank questions.",
-      "link": "#",
-      "icon": "https://via.placeholder.com/64",
-      "platform": "kaios"
+      "name": "Car Racer",
+      "description": "Fast-paced racing game optimized for KaiOS phones.",
+      "icon": "https://via.placeholder.com/64?text=Racer",
+      "link": "https://example.com/car-racer",
+      "platform": "kaios",
+      "type": "game"
     },
     {
-      "name": "Flash Launcher",
-      "description": "Lightweight launcher for CloudFone.",
-      "link": "#",
-      "icon": "https://via.placeholder.com/64",
-      "platform": "cloudfone"
+      "name": "Task Master",
+      "description": "Manage your daily tasks easily on CloudFone devices.",
+      "icon": "https://via.placeholder.com/64?text=Task",
+      "link": "https://example.com/task-master",
+      "platform": "cloudfone",
+      "type": "app"
     },
     {
-      "name": "Smart Cleaner",
-      "description": "Clean RAM and storage with one tap.",
-      "link": "#",
-      "icon": "https://via.placeholder.com/64",
-      "platform": "cloudfone"
+      "name": "Alien Attack",
+      "description": "Action-packed alien shooting game for Android.",
+      "icon": "https://via.placeholder.com/64?text=Alien",
+      "link": "https://example.com/alien-attack",
+      "platform": "cloudfone",
+      "type": "game"
     }
   ]
 }
