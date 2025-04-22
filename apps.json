@@ -1,0 +1,33 @@
+{
+  "apps": [
+   
+    {
+      "name": "Mobimoon",
+      "description": "Physics-based bike game inspired by Gravity Defied.",
+      "link": "#",
+      "icon": "https://via.placeholder.com/64",
+      "platform": "kaios"
+    },
+    {
+      "name": "Preposition Quiz",
+      "description": "Grammar quiz game with fill-in-the-blank questions.",
+      "link": "#",
+      "icon": "https://via.placeholder.com/64",
+      "platform": "kaios"
+    },
+    {
+      "name": "Flash Launcher",
+      "description": "Lightweight launcher for CloudFone.",
+      "link": "#",
+      "icon": "https://via.placeholder.com/64",
+      "platform": "cloudfone"
+    },
+    {
+      "name": "Smart Cleaner",
+      "description": "Clean RAM and storage with one tap.",
+      "link": "#",
+      "icon": "https://via.placeholder.com/64",
+      "platform": "cloudfone"
+    }
+  ]
+}
