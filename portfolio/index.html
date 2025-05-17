@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[Your Name] - Nocturnal Front-End Navigator</title>
+    <title>[Your Name] - Nocturnal Navigator | Front-End Developer</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="star-container"></div>
+
     <header>
         <nav>
             <div class="logo">[YN]</div>
             <ul>
+                <li><a href="#hero">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#toolkit">Toolkit</a></li>
                 <li><a href="#projects">Projects</a></li>
@@ -23,145 +26,161 @@
     </header>
 
     <main>
-        <!-- Hero Section: The Midnight Canvas -->
-        <section id="hero" class="hero-section">
+        <!-- I. Hero Section: The Midnight Canvas -->
+        <section id="hero" class="hero-section full-height">
             <div class="hero-content">
                 <h1>[Your Name]</h1>
                 <h2>Front-End Developer & Aspiring CMS Navigator</h2>
                 <p class="tagline">Illuminating the Web, One Pixel at a Time - Excelling in the Quiet Hours.</p>
-                <div class="hero-contact">
-                    <a href="mailto:your.email@example.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
-                    <a href="https://linkedin.com/in/yourprofile" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://github.com/yourusername" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-            <div class="scroll-down-indicator">
-                <a href="#about" aria-label="Scroll to About section"><i class="fas fa-chevron-down"></i></a>
+                <a href="#contact" class="cta-button">Let's Connect</a>
             </div>
         </section>
 
-        <!-- About Me: The Night Owl's Ethos -->
+        <!-- II. About Me: The Night Owl's Ethos -->
         <section id="about" class="content-section">
-            <h2>The Night Owl's Ethos</h2>
-            <div class="about-content">
-                <!-- Optional: <img src="img/your-photo.jpg" alt="[Your Name]" class="profile-pic"> -->
-                <p>Hello! I'm [Your Name], a dedicated Front-End Developer with a passion for creating intuitive, visually appealing, and responsive web experiences. My strength lies in transforming designs (from PSD, Figma, or XD) into clean, efficient HTML5, CSS3, and Bootstrap/Tailwind code.</p>
-                <p>While I thrive on core front-end challenges, I'm particularly excited by the opportunity to <strong>expand my skillset into Content Management Systems.</strong> I'm a proactive learner, eager to master the CMS landscape and contribute to dynamic, content-rich websites.</p>
-                <p>The <strong>night shift environment is where I find my peak productivity.</strong> The focused calm allows me to dive deep into projects, ensuring meticulous attention to detail and timely delivery. I'm adept at clear communication and thrive on translating client feedback into tangible results, making me a reliable partner for your team's nocturnal operations.</p>
-            </div>
-        </section>
-
-        <!-- My Front-End Toolkit & Aspirations -->
-        <section id="toolkit" class="content-section">
-            <h2>⚙️ My Front-End Toolkit & Aspirations</h2>
-            <div class="toolkit-grid">
-                <div class="toolkit-category">
-                    <h3>Core Proficiencies</h3>
-                    <ul>
-                        <li><i class="fas fa-code"></i> HTML5: Semantic & Accessible</li>
-                        <li><i class="fab fa-css3-alt"></i> CSS3: Flexbox, Grid, Animations</li>
-                        <li><i class="fab fa-bootstrap"></i> Bootstrap / <span class="tailwind-icon">T</span> Tailwind CSS</li>
-                        <li><i class="fas fa-mobile-alt"></i> Responsive Web Design</li>
-                    </ul>
-                </div>
-                <div class="toolkit-category">
-                    <h3>Developing Strengths</h3>
-                    <ul>
-                        <li><i class="fab fa-js-square"></i> JavaScript: DOM, Events (Actively Improving)</li>
-                    </ul>
-                </div>
-                <div class="toolkit-category">
-                    <h3>Design-to-Code</h3>
-                    <ul>
-                        <li><i class="fas fa-file-image"></i> PSD to HTML</li>
-                        <li><i class="fab fa-figma"></i> Figma to HTML</li>
-                        <li><i class="fas fa-bezier-curve"></i> XD to HTML</li>
-                    </ul>
-                </div>
-                <div class="toolkit-category">
-                    <h3>CMS Journey (Willing to Learn)</h3>
-                    <ul>
-                        <li><i class="fas fa-seedling"></i> Eager to Master CMS Platforms</li>
-                        <li><i class="fas fa-book-open"></i> Actively Exploring CMS Concepts</li>
-                        <li><i class="fas fa-rocket"></i> Quick Learner, Ready to Dive In</li>
-                    </ul>
-                </div>
-                <div class="toolkit-category full-width">
-                    <h3>Essential Attributes</h3>
-                    <ul>
-                        <li><i class="fas fa-eye"></i> Visual Appeal & User-Friendliness</li>
-                        <li><i class="fas fa-sync-alt"></i> Staying Current with Trends</li>
-                        <li><i class="fas fa-comments"></i> Strong English Communication</li>
-                        <li><i class="fas fa-bullseye"></i> Client-Focused & Feedback Driven</li>
-                    </ul>
+            <div class="container">
+                <h2>The Night Owl's Ethos</h2>
+                <div class="about-content">
+                    <div class="about-image">
+                        <!-- Optional: Add a professional photo of yourself -->
+                        <!-- <img src="assets/images/your_photo.jpg" alt="[Your Name]"> -->
+                        <div class="placeholder-image">YN</div>
+                    </div>
+                    <div class="about-text">
+                        <p>Hello! I'm [Your Name], a dedicated Front-End Developer with a passion for creating intuitive, visually appealing, and responsive web experiences. My strength lies in transforming designs (from PSD, Figma, or XD) into clean, efficient HTML5, CSS3, and Bootstrap/Tailwind code.</p>
+                        <p>While I thrive on core front-end challenges, I'm particularly excited by the opportunity to <strong>expand my skillset into Content Management Systems.</strong> I'm a proactive learner, eager to master the CMS landscape and contribute to dynamic, content-rich websites.</p>
+                        <p>The <strong>night shift environment is where I find my peak productivity.</strong> The focused calm allows me to dive deep into projects, ensuring meticulous attention to detail and timely delivery. I'm adept at clear communication and thrive on translating client feedback into tangible results, making me a reliable partner for your team's nocturnal operations.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Project Showcase: Illuminating My Work -->
+        <!-- III. My Front-End Toolkit & Aspirations -->
+        <section id="toolkit" class="content-section alt-bg">
+            <div class="container">
+                <h2>⚙️ My Front-End Toolkit & Aspirations</h2>
+                <div class="toolkit-grid">
+                    <div class="toolkit-category">
+                        <h3>Core Proficiencies</h3>
+                        <ul>
+                            <li><i class="fas fa-code"></i> HTML5: Semantic & Accessible</li>
+                            <li><i class="fab fa-css3-alt"></i> CSS3: Flexbox, Grid, Animations</li>
+                            <li><i class="fab fa-bootstrap"></i> Bootstrap / <i class="fas fa-wind"></i> Tailwind CSS</li>
+                            <li><i class="fas fa-mobile-alt"></i> Responsive Web Design</li>
+                        </ul>
+                    </div>
+                    <div class="toolkit-category">
+                        <h3>Developing Strengths</h3>
+                        <ul>
+                            <li><i class="fab fa-js-square"></i> JavaScript: DOM Manipulation, Events</li>
+                        </ul>
+                    </div>
+                    <div class="toolkit-category">
+                        <h3>Design-to-Code</h3>
+                        <ul>
+                            <li><i class="fas fa-file-image"></i> PSD to HTML</li>
+                            <li><i class="fab fa-figma"></i> Figma to HTML</li>
+                            <li><i class="fas fa-bezier-curve"></i> XD to HTML</li>
+                        </ul>
+                    </div>
+                    <div class="toolkit-category">
+                        <h3>CMS Journey (Willing to Learn)</h3>
+                        <ul>
+                            <li><i class="fas fa-seedling"></i> Eager to Master CMS Platforms</li>
+                            <li><i class="fas fa-book-open"></i> Actively Exploring CMS Concepts</li>
+                        </ul>
+                    </div>
+                    <div class="toolkit-category full-width-category">
+                        <h3>Essential Attributes</h3>
+                        <ul>
+                            <li><i class="fas fa-eye"></i> Visual Appeal & User-Friendliness</li>
+                            <li><i class="fas fa-sync-alt"></i> Staying Current with Trends</li>
+                            <li><i class="fas fa-comments"></i> Strong English Communication</li>
+                            <li><i class="fas fa-thumbs-up"></i> Effective Feedback Implementation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- IV. Project Showcase: Illuminating My Work -->
         <section id="projects" class="content-section">
-            <h2>Project Showcase: Illuminating My Work</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/400x250/2c3e50/ecf0f1?text=Project+Aura" alt="Project Aura">
-                    <h3>Aura Landing Page (Responsive)</h3>
-                    <p>Visually stunning, fully responsive landing page showcasing fluid layouts and engaging micro-interactions.</p>
-                    <p class="tech-stack"><strong>Tech:</strong> HTML5, CSS3 (Flex/Grid), Bootstrap 5</p>
-                    <div class="project-links">
-                        <a href="#" target="_blank" class="btn">Live Demo</a>
-                        <a href="#" target="_blank" class="btn btn-secondary">GitHub</a>
-                    </div>
+            <div class="container">
+                <h2>Illuminating My Work</h2>
+                <div class="projects-grid">
+                    <article class="project-card">
+                        <img src="assets/images/project1.jpg" alt="Project Aura Landing Page">
+                        <div class="project-info">
+                            <h3>Aura Landing Page (Responsive)</h3>
+                            <p>Visually stunning, fully responsive landing page for a fictional wellness app. Focus on fluid layouts and micro-interactions.</p>
+                            <p class="tech-stack"><strong>Tech:</strong> HTML5, CSS3 (Flexbox/Grid), Bootstrap 5</p>
+                            <div class="project-links">
+                                <a href="#" target="_blank" class="btn-link">Live Demo <i class="fas fa-external-link-alt"></i></a>
+                                <a href="#" target="_blank" class="btn-link">GitHub <i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="project-card">
+                        <img src="assets/images/project2.jpg" alt="Project PixelForge">
+                        <div class="project-info">
+                            <h3>PixelForge (Figma to HTML)</h3>
+                            <p>Precise conversion of a complex Figma design for a creative agency into pixel-perfect, static HTML/CSS.</p>
+                            <p class="tech-stack"><strong>Tech:</strong> HTML5, CSS3 (Sass), Tailwind CSS</p>
+                            <div class="project-links">
+                                <a href="#" target="_blank" class="btn-link">Live Demo <i class="fas fa-external-link-alt"></i></a>
+                                <a href="#" target="_blank" class="btn-link">GitHub <i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="project-card">
+                        <img src="assets/images/project3.jpg" alt="Project JS Interactive Gallery">
+                        <div class="project-info">
+                            <h3>JS Interactive Gallery</h3>
+                            <p>Elegant image gallery with filtering and lightbox functionality, built to demonstrate practical JavaScript application.</p>
+                            <p class="tech-stack"><strong>Tech:</strong> HTML5, CSS3, Vanilla JavaScript</p>
+                            <div class="project-links">
+                                <a href="#" target="_blank" class="btn-link">Live Demo <i class="fas fa-external-link-alt"></i></a>
+                                <a href="#" target="_blank" class="btn-link">GitHub <i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Add more projects as needed -->
                 </div>
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/400x250/34495e/bdc3c7?text=Project+PixelForge" alt="Project PixelForge">
-                    <h3>PixelForge (Figma to HTML)</h3>
-                    <p>Precise conversion of a complex Figma design into a pixel-perfect, static HTML/CSS website.</p>
-                    <p class="tech-stack"><strong>Tech:</strong> HTML5, CSS3 (Sass), Tailwind CSS</p>
-                    <div class="project-links">
-                        <a href="#" target="_blank" class="btn">Live Demo</a>
-                        <a href="#" target="_blank" class="btn btn-secondary">GitHub</a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/400x250/1abc9c/ecf0f1?text=JS+Gallery" alt="JS Interactive Gallery">
-                    <h3>JS Interactive Gallery</h3>
-                    <p>Elegant image gallery with filtering and lightbox functionality, demonstrating JavaScript application.</p>
-                    <p class="tech-stack"><strong>Tech:</strong> HTML5, CSS3, Vanilla JavaScript</p>
-                    <div class="project-links">
-                        <a href="#" target="_blank" class="btn">Live Demo</a>
-                        <a href="#" target="_blank" class="btn btn-secondary">GitHub</a>
-                    </div>
-                </div>
-                <!-- Add more project cards as needed -->
             </div>
         </section>
 
-        <!-- Why the Night Shift Works For Me & You -->
-        <section id="night-shift" class="content-section">
-            <h2>Why the Night Shift Works For Me & You</h2>
-            <ul class="night-shift-reasons">
-                <li><i class="fas fa-brain"></i> <strong>Peak Focus:</strong> Fewer distractions lead to deeper concentration.</li>
-                <li><i class="fas fa-lightbulb"></i> <strong>Problem-Solving Prowess:</strong> Quiet hours for methodical approaches.</li>
-                <li><i class="fas fa-globe-americas"></i> <strong>Alignment:</strong> Ideal for global teams or 24/7 operations.</li>
-                <li><i class="fas fa-shield-alt"></i> <strong>Dedication & Reliability:</strong> Committed to efficient task completion.</li>
-            </ul>
+        <!-- V. Why the Night Shift Works For Me & You -->
+        <section id="night-shift" class="content-section alt-bg">
+            <div class="container">
+                <h2>Why the Night Shift Works For Me & You</h2>
+                <ul class="night-shift-reasons">
+                    <li><i class="fas fa-moon"></i> <strong>Peak Focus:</strong> Fewer distractions lead to deeper concentration.</li>
+                    <li><i class="fas fa-brain"></i> <strong>Problem-Solving Prowess:</strong> Quiet hours for methodical approaches.</li>
+                    <li><i class="fas fa-globe"></i> <strong>Alignment:</strong> Ideal for global teams or 24/7 operations.</li>
+                    <li><i class="fas fa-user-clock"></i> <strong>Dedication:</strong> Committed and reliable during crucial hours.</li>
+                </ul>
+            </div>
         </section>
 
-        <!-- Let's Connect & Illuminate Your Next Project -->
-        <section id="contact" class="content-section contact-section">
-            <h2>Let's Connect & Illuminate</h2>
-            <p>I'm excited to bring my front-end skills and CMS learning enthusiasm to your team. Let's discuss how I can contribute to your success.</p>
-            <div class="contact-methods">
-                <a href="mailto:your.email@example.com" class="contact-link"><i class="fas fa-envelope"></i> your.email@example.com</a>
-                <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-link"><i class="fab fa-linkedin"></i> LinkedIn Profile</a>
-                <a href="https://github.com/yourusername" target="_blank" class="contact-link"><i class="fab fa-github"></i> GitHub Profile</a>
+        <!-- VI. Let's Connect & Illuminate Your Next Project -->
+        <section id="contact" class="content-section">
+            <div class="container">
+                <h2>Let's Connect & Illuminate</h2>
+                <p>I'm excited to bring my front-end skills and enthusiasm for learning CMS to your team. Let's discuss how I can contribute to your success.</p>
+                <div class="contact-methods">
+                    <a href="mailto:your.email@example.com" class="contact-link"><i class="fas fa-envelope"></i> your.email@example.com</a>
+                    <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-link"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                    <a href="https://github.com/yourusername" target="_blank" class="contact-link"><i class="fab fa-github"></i> GitHub</a>
+                </div>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>© <span id="currentYear"></span> [Your Name]. The Nocturnal Navigator.</p>
+        <p>© <span id="currentYear"></span> [Your Name] - Nocturnal Navigator. All rights reserved.</p>
     </footer>
+
+    <button id="scrollToTopBtn" title="Go to top"><i class="fas fa-arrow-up"></i></button>
 
     <script src="script.js"></script>
 </body>
