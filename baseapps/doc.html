@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Doc Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      background: #f4f4f4;
+    }
+    #sidebar {
+      width: 240px;
+      background: #1a73e8;
+      color: white;
+      padding: 15px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    #sidebar h2, #doc-select {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    #sidebar li {
+      margin: 8px 0;
+      cursor: pointer;
+      padding: 6px;
+    }
+    #sidebar li:hover,
+    #sidebar li.active {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    #doc-container {
+      flex: 1;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 { color: #333; }
+    .step {
+      background: #fff;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 4px solid #2196F3;
+      position: relative;
+    }
+    .step h2 {
+      margin-top: 0;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      overflow-x: auto;
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .nav-buttons button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .nav-buttons button:disabled {
+      background: #ccc;
+      cursor: default;
+    }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      #sidebar { width: 100%; height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="sidebar">
+    <h2>Docs</h2>
+    <select id="doc-select"></select>
+    <ul id="step-list"></ul>
+  </div>
+
+  <div id="doc-container">
+    <h1 id="doc-title"></h1>
+    <div id="step-content"></div>
+    <div class="nav-buttons">
+      <button id="prev-btn">← Previous</button>
+      <button id="next-btn">Next →</button>
+    </div>
+  </div>
+
+  <script>
+    const docs = [
+      { name: "Wallpaper Setup", file: "x.json" },
+      { name: "Alarm Setup", file: "alarm.json" }
+    ];
+
+    const stepsPerPage = 10;
+    var currentDoc = null;
+    var currentPage = 0;
+
+    const docSelect = document.getElementById('doc-select');
+    const stepList = document.getElementById('step-list');
+    const stepContent = document.getElementById('step-content');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const docTitle = document.getElementById('doc-title');
+
+    docs.forEach(doc => {
+      const opt = document.createElement("option");
+      opt.value = doc.file;
+      opt.textContent = doc.name;
+      docSelect.appendChild(opt);
+    });
+
+    docSelect.onchange = () => {
+      loadDoc(docSelect.value);
+    };
+
+    prevBtn.onclick = () => {
+      if (currentPage > 0) {
+        currentPage--;
+        renderSteps();
+      }
+    };
+
+    nextBtn.onclick = () => {
+      if ((currentPage + 1) * stepsPerPage < currentDoc.steps.length) {
+        currentPage++;
+        renderSteps();
+      }
+    };
+
+    function loadDoc(file) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', file, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          currentDoc = JSON.parse(xhr.responseText);
+          currentPage = 0;
+          docTitle.textContent = currentDoc.title;
+          renderSidebar();
+          renderSteps();
+        }
+      };
+      xhr.send();
+    }
+
+    function renderSidebar() {
+      stepList.innerHTML = '';
+      const pages = Math.ceil(currentDoc.steps.length / stepsPerPage);
+      for (var i = 0; i < pages; i++) {
+        const li = document.createElement("li");
+        li.textContent = `Page ${i + 1}`;
+        li.classList.toggle("active", i === currentPage);
+        li.onclick = () => {
+          currentPage = i;
+          renderSteps();
+        };
+        stepList.appendChild(li);
+      }
+    }
+
+    function renderSteps() {
+      stepContent.innerHTML = '';
+      const start = currentPage * stepsPerPage;
+      const end = Math.min(start + stepsPerPage, currentDoc.steps.length);
+      for (var i = start; i < end; i++) {
+        const step = currentDoc.steps[i];
+        const div = document.createElement("div");
+        div.className = "step";
+
+        if (step.title) {
+          const h2 = document.createElement("h2");
+          h2.textContent = step.title;
+          div.appendChild(h2);
+        }
+
+        if (step.description) {
+          const p = document.createElement("p");
+          p.textContent = step.description;
+          div.appendChild(p);
+        }
+
+        if (step.code) {
+          const pre = document.createElement("pre");
+          const code = document.createElement("code");
+          code.textContent = step.code;
+          pre.appendChild(code);
+
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = "Copy";
+
+          // Clipboard fallback
+          btn.onclick = () => {
+            const textarea = document.createElement("textarea");
+            textarea.value = step.code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand("copy");
+              btn.textContent = "Copied!";
+              setTimeout(() => btn.textContent = "Copy", 1500);
+            } catch (err) {
+              alert("Copy failed");
+            }
+            document.body.removeChild(textarea);
+          };
+
+          pre.appendChild(btn);
+          div.appendChild(pre);
+        }
+
+        stepContent.appendChild(div);
+      }
+      renderSidebar();
+      updateNavButtons();
+    }
+
+    function updateNavButtons() {
+      prevBtn.disabled = currentPage === 0;
+      nextBtn.disabled = (currentPage + 1) * stepsPerPage >= currentDoc.steps.length;
+    }
+
+    // Initial Load
+    docSelect.value = docs[0].file;
+    loadDoc(docs[0].file);
+  </script>
+</body>
+</html>
