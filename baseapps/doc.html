@@ -154,13 +154,12 @@
     /*
 Here's how it works:
 When the page loads, it first populates the <select> dropdown with all available documents.
-Then, it checks for a docfile parameter in the URL (e.g., yourpage.html?docfile=alarm.json).
+Then, it checks for a docfile parameter in the URL (e.g., yourpage.html?docfile=ebook-crafter-kaios).
 If a valid docfile parameter is found (meaning it matches one of the file names in your docs array), that document will be loaded and the dropdown will be set to it.
 If the docfile parameter is missing, invalid, or blank, it will default to loading the first document in the docs array.*/
     
     const docs = [
-      { name: "Wallpaper Setup", file: "x.json" },
-      { name: "Alarm Setup", file: "alarm.json" }
+      { name: "Ebook Crafter Kaios", file: "ebook-crafter-kaios.json" }
     ];
 
     const stepsPerPage = 10;
@@ -414,7 +413,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
     // --- Initial Load Logic ---
     function initializeApp() {
       const urlParams = new URLSearchParams(window.location.search);
-      const docFileFromUrl = urlParams.get('docfile');
+      const docFileFromUrl = urlParams.get('docfile')+'.json';
       var fileToLoad = null;
 
       if (docFileFromUrl) {
