@@ -21,7 +21,7 @@
       height: 100vh;
       overflow-y: auto;
     }
-    #sidebar h2, #doc-select {
+    #sidebar h2, #doc-select-container { /* Changed #doc-select to #doc-select-container for styling */
       margin-top: 0;
       margin-bottom: 10px;
     }
@@ -92,6 +92,38 @@
       background: #ccc;
       cursor: default;
     }
+
+    /* Custom Select Box Styles */
+    #doc-select-container {
+      position: relative;
+      margin-bottom: 15px; /* Added some margin */
+    }
+    #doc-select {
+      appearance: none; /* Remove default arrow */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 8px 30px 8px 10px; /* Space for custom arrow */
+      font-size: 14px;
+      border-radius: 4px;
+      width: 100%;
+      cursor: pointer;
+      color: #333; /* Text color for select */
+    }
+    /* Custom arrow using pseudo-element */
+    #doc-select-container::after {
+      content: '▼';
+      font-size: 12px;
+      color: #555;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; /* So it doesn't interfere with select click */
+    }
+
+
     @media (max-width: 768px) {
       body { flex-direction: column; }
       #sidebar { width: 100%; height: auto; }
@@ -102,7 +134,10 @@
 
   <div id="sidebar">
     <h2>Docs</h2>
-    <select id="doc-select"></select>
+    <!-- Container for custom select styling -->
+    <div id="doc-select-container">
+      <select id="doc-select"></select>
+    </div>
     <ul id="step-list"></ul>
   </div>
 
@@ -119,6 +154,9 @@
     const docs = [
       { name: "Wallpaper Setup", file: "x.json" },
       { name: "Alarm Setup", file: "alarm.json" }
+      // Add dummy data for testing if x.json and alarm.json don't exist
+      // { name: "Dummy Doc 1", file: "dummy1.json" },
+      // { name: "Dummy Doc 2", file: "dummy2.json" }
     ];
 
     const stepsPerPage = 10;
@@ -132,6 +170,7 @@
     const nextBtn = document.getElementById('next-btn');
     const docTitle = document.getElementById('doc-title');
 
+    // --- Populating select options ---
     docs.forEach(doc => {
       const opt = document.createElement("option");
       opt.value = doc.file;
@@ -141,6 +180,9 @@
 
     docSelect.onchange = () => {
       loadDoc(docSelect.value);
+      // Optional: Update URL when user changes selection
+      // const newUrl = `${window.location.pathname}?docfile=${docSelect.value}`;
+      // window.history.pushState({path:newUrl}, '', newUrl);
     };
 
     prevBtn.onclick = () => {
@@ -158,100 +200,274 @@
     };
 
     function loadDoc(file) {
+      // Create dummy JSON content if actual files don't exist for testing
+      if (file === "x.json" && !fileExists(file)) {
+          console.warn("x.json not found, using dummy data for Wallpaper Setup.");
+          const dummyData = {
+              title: "Wallpaper Setup Guide",
+              steps: [
+                  { title: "Step 1: Choose Image", description: "Find a cool wallpaper." },
+                  { title: "Step 2: Set Wallpaper", description: "Right click and set as desktop background.", code: "echo 'Done'" }
+              ]
+          };
+          processDocData(dummyData);
+          return;
+      }
+      if (file === "alarm.json" && !fileExists(file)) {
+          console.warn("alarm.json not found, using dummy data for Alarm Setup.");
+          const dummyData = {
+              title: "Alarm Clock Configuration",
+              steps: [
+                  { title: "Step A: Open App", description: "Launch the alarm application." },
+                  { title: "Step B: Set Time", description: "Choose your desired wake-up time.", code: "alarm.setTime('07:00');" },
+                  { title: "Step C: Save", description: "Save the alarm settings." }
+              ]
+          };
+          processDocData(dummyData);
+          return;
+      }
+
       const xhr = new XMLHttpRequest();
       xhr.open('GET', file, true);
       xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          currentDoc = JSON.parse(xhr.responseText);
-          currentPage = 0;
-          docTitle.textContent = currentDoc.title;
-          renderSidebar();
-          renderSteps();
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+                const jsonData = JSON.parse(xhr.responseText);
+                processDocData(jsonData);
+            } catch (e) {
+                console.error("Error parsing JSON from file:", file, e);
+                alert("Error loading document: Invalid JSON format.");
+                // Fallback to a default or clear state
+                if (docs.length > 0 && file !== docs[0].file) { // Avoid infinite loop if first doc is also bad
+                    docSelect.value = docs[0].file;
+                    loadDoc(docs[0].file);
+                } else {
+                    docTitle.textContent = "Error Loading Document";
+                    stepContent.innerHTML = "<p>Could not load the selected document. It might be missing or corrupted.</p>";
+                    stepList.innerHTML = "";
+                    updateNavButtons();
+                }
+            }
+          } else {
+            console.error("Error loading file:", file, "Status:", xhr.status);
+            alert(`Error loading document: ${file} (Status: ${xhr.status}). Check if the file exists and is accessible.`);
+            // Fallback to a default or clear state
+            if (docs.length > 0 && file !== docs[0].file) { // Avoid infinite loop if first doc is also bad
+                docSelect.value = docs[0].file;
+                loadDoc(docs[0].file);
+            } else {
+                docTitle.textContent = "Error Loading Document";
+                stepContent.innerHTML = `<p>Could not load the document: ${file}. Please check the console for more details.</p>`;
+                stepList.innerHTML = "";
+                updateNavButtons();
+            }
+          }
         }
+      };
+      xhr.onerror = function () {
+          console.error("Network error or file not found for:", file);
+          alert(`Failed to load ${file}. Please check your network connection or if the file exists at the specified path.`);
+           if (docs.length > 0 && file !== docs[0].file) {
+                docSelect.value = docs[0].file;
+                loadDoc(docs[0].file);
+            } else {
+                docTitle.textContent = "Error Loading Document";
+                stepContent.innerHTML = `<p>Could not load the document: ${file} due to a network error or file not found.</p>`;
+                stepList.innerHTML = "";
+                updateNavButtons();
+            }
       };
       xhr.send();
     }
 
+    // Helper function to process document data once fetched/parsed
+    function processDocData(data) {
+        currentDoc = data;
+        currentPage = 0;
+        docTitle.textContent = currentDoc.title || "Untitled Document";
+        renderSidebar();
+        renderSteps();
+    }
+
+    // Dummy fileExists check for local testing without a server
+    // In a real server environment, a 404 would be handled by xhr.status
+    function fileExists(filename) {
+        // This is a very basic check and won't work reliably for all scenarios,
+        // especially without a server. For this example, we'll assume files
+        // might not exist and rely on the dummy data fallback in loadDoc.
+        // If you are running this with a local server, the XHR 404 will be the primary check.
+        return false; // Set to true if you have the files locally and want to skip dummy data.
+    }
+
+
     function renderSidebar() {
       stepList.innerHTML = '';
+      if (!currentDoc || !currentDoc.steps) {
+        console.warn("Cannot render sidebar: currentDoc or currentDoc.steps is undefined.");
+        return;
+      }
       const pages = Math.ceil(currentDoc.steps.length / stepsPerPage);
       for (var i = 0; i < pages; i++) {
         const li = document.createElement("li");
         li.textContent = `Page ${i + 1}`;
-        li.classList.toggle("active", i === currentPage);
-        li.onclick = () => {
-          currentPage = i;
-          renderSteps();
-        };
-        stepList.appendChild(li);
+        li.onclick = (function(pageIndex) { // Use a closure to capture 'i'
+          return function() {
+            currentPage = pageIndex;
+            renderSteps();
+          };
+        })(i);
+        stepList.appendChild(li); // Append first
       }
+      updateActiveSidebarPage();
     }
+
+    function updateActiveSidebarPage() {
+        const listItems = stepList.getElementsByTagName("li");
+        for (var j = 0; j < listItems.length; j++) {
+            listItems[j].classList.toggle("active", j === currentPage);
+        }
+    }
+
 
     function renderSteps() {
       stepContent.innerHTML = '';
+      if (!currentDoc || !currentDoc.steps) {
+        console.warn("Cannot render steps: currentDoc or currentDoc.steps is undefined.");
+        stepContent.innerHTML = "<p>No steps to display for this document.</p>";
+        updateNavButtons();
+        updateActiveSidebarPage(); // Ensure sidebar active state is correct
+        return;
+      }
       const start = currentPage * stepsPerPage;
       const end = Math.min(start + stepsPerPage, currentDoc.steps.length);
-      for (var i = start; i < end; i++) {
-        const step = currentDoc.steps[i];
-        const div = document.createElement("div");
-        div.className = "step";
 
-        if (step.title) {
-          const h2 = document.createElement("h2");
-          h2.textContent = step.title;
-          div.appendChild(h2);
+      if (currentDoc.steps.length === 0) {
+        stepContent.innerHTML = "<p>This document has no steps.</p>";
+      } else {
+        for (var i = start; i < end; i++) {
+          const step = currentDoc.steps[i];
+          if (!step) continue; // Skip if a step is undefined/null
+
+          const div = document.createElement("div");
+          div.className = "step";
+
+          if (step.title) {
+            const h2 = document.createElement("h2");
+            h2.textContent = step.title;
+            div.appendChild(h2);
+          }
+
+          if (step.description) {
+            const p = document.createElement("p");
+            p.textContent = step.description; // Using textContent for safety
+            div.appendChild(p);
+          }
+
+          if (step.code) {
+            const pre = document.createElement("pre");
+            const code = document.createElement("code");
+            code.textContent = step.code;
+            pre.appendChild(code);
+
+            const btn = document.createElement("button");
+            btn.className = "copy-btn";
+            btn.textContent = "Copy";
+
+            btn.onclick = (function(codeToCopy) { // Closure to capture step.code
+              return function() {
+                const currentButton = this; // 'this' refers to the button clicked
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                  navigator.clipboard.writeText(codeToCopy).then(() => {
+                    currentButton.textContent = "Copied!";
+                    setTimeout(() => currentButton.textContent = "Copy", 1500);
+                  }).catch(err => {
+                    console.error('Failed to copy with Clipboard API: ', err);
+                    fallbackCopyTextToClipboard(codeToCopy, currentButton);
+                  });
+                } else {
+                  fallbackCopyTextToClipboard(codeToCopy, currentButton);
+                }
+              };
+            })(step.code);
+
+            pre.appendChild(btn);
+            div.appendChild(pre);
+          }
+          stepContent.appendChild(div);
         }
-
-        if (step.description) {
-          const p = document.createElement("p");
-          p.textContent = step.description;
-          div.appendChild(p);
-        }
-
-        if (step.code) {
-          const pre = document.createElement("pre");
-          const code = document.createElement("code");
-          code.textContent = step.code;
-          pre.appendChild(code);
-
-          const btn = document.createElement("button");
-          btn.className = "copy-btn";
-          btn.textContent = "Copy";
-
-          // Clipboard fallback
-          btn.onclick = () => {
-            const textarea = document.createElement("textarea");
-            textarea.value = step.code;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-              document.execCommand("copy");
-              btn.textContent = "Copied!";
-              setTimeout(() => btn.textContent = "Copy", 1500);
-            } catch (err) {
-              alert("Copy failed");
-            }
-            document.body.removeChild(textarea);
-          };
-
-          pre.appendChild(btn);
-          div.appendChild(pre);
-        }
-
-        stepContent.appendChild(div);
       }
-      renderSidebar();
+      // renderSidebar(); // Called from loadDoc and after page change, not needed inside renderSteps directly
+      updateActiveSidebarPage(); // Update active page in sidebar
       updateNavButtons();
     }
 
+    function fallbackCopyTextToClipboard(text, buttonElement) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed"; // Prevent scrolling to bottom of page
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        if (buttonElement) {
+            buttonElement.textContent = "Copied!";
+            setTimeout(() => buttonElement.textContent = "Copy", 1500);
+        }
+      } catch (err) {
+        alert("Copy failed. Please copy manually.");
+        console.error("Fallback copy failed: ", err);
+      }
+      document.body.removeChild(textarea);
+    }
+
     function updateNavButtons() {
+      if (!currentDoc || !currentDoc.steps) {
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+      }
       prevBtn.disabled = currentPage === 0;
       nextBtn.disabled = (currentPage + 1) * stepsPerPage >= currentDoc.steps.length;
     }
 
-    // Initial Load
-    docSelect.value = docs[0].file;
-    loadDoc(docs[0].file);
+    // --- Initial Load Logic ---
+    function initializeApp() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const docFileFromUrl = urlParams.get('docfile');
+      var fileToLoad = null;
+
+      if (docFileFromUrl) {
+        // Check if the file from URL exists in our docs array
+        const foundDoc = docs.find(doc => doc.file === docFileFromUrl);
+        if (foundDoc) {
+          fileToLoad = docFileFromUrl;
+        } else {
+          console.warn(`Document file "${docFileFromUrl}" from URL not found in configuration. Loading default.`);
+        }
+      }
+
+      // If no valid file from URL, or URL param not present, load the first doc
+      if (!fileToLoad && docs.length > 0) {
+        fileToLoad = docs[0].file;
+      }
+
+      if (fileToLoad) {
+        docSelect.value = fileToLoad; // Set dropdown to the selected file
+        loadDoc(fileToLoad);
+      } else {
+        console.error("No documents configured or found to load.");
+        docTitle.textContent = "No Documents Available";
+        stepContent.innerHTML = "<p>Please configure documents to view.</p>";
+        updateNavButtons();
+      }
+    }
+
+    // Call initialization function when the DOM is ready
+    // (though for scripts at the end of body, it's usually fine directly)
+    document.addEventListener('DOMContentLoaded', initializeApp);
+
   </script>
 </body>
 </html>
