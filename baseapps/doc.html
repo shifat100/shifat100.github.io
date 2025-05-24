@@ -335,7 +335,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
 
           if (step.title) {
             const h2 = document.createElement("h2");
-            h2.textContent = step.title;
+            h2.innerHTML = step.title;
             div.appendChild(h2);
           }
 
