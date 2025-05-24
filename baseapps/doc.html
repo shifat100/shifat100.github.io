@@ -151,12 +151,16 @@
   </div>
 
   <script>
+    /*
+Here's how it works:
+When the page loads, it first populates the <select> dropdown with all available documents.
+Then, it checks for a docfile parameter in the URL (e.g., yourpage.html?docfile=alarm.json).
+If a valid docfile parameter is found (meaning it matches one of the file names in your docs array), that document will be loaded and the dropdown will be set to it.
+If the docfile parameter is missing, invalid, or blank, it will default to loading the first document in the docs array.*/
+    
     const docs = [
       { name: "Wallpaper Setup", file: "x.json" },
       { name: "Alarm Setup", file: "alarm.json" }
-      // Add dummy data for testing if x.json and alarm.json don't exist
-      // { name: "Dummy Doc 1", file: "dummy1.json" },
-      // { name: "Dummy Doc 2", file: "dummy2.json" }
     ];
 
     const stepsPerPage = 10;
@@ -200,32 +204,7 @@
     };
 
     function loadDoc(file) {
-      // Create dummy JSON content if actual files don't exist for testing
-      if (file === "x.json" && !fileExists(file)) {
-          console.warn("x.json not found, using dummy data for Wallpaper Setup.");
-          const dummyData = {
-              title: "Wallpaper Setup Guide",
-              steps: [
-                  { title: "Step 1: Choose Image", description: "Find a cool wallpaper." },
-                  { title: "Step 2: Set Wallpaper", description: "Right click and set as desktop background.", code: "echo 'Done'" }
-              ]
-          };
-          processDocData(dummyData);
-          return;
-      }
-      if (file === "alarm.json" && !fileExists(file)) {
-          console.warn("alarm.json not found, using dummy data for Alarm Setup.");
-          const dummyData = {
-              title: "Alarm Clock Configuration",
-              steps: [
-                  { title: "Step A: Open App", description: "Launch the alarm application." },
-                  { title: "Step B: Set Time", description: "Choose your desired wake-up time.", code: "alarm.setTime('07:00');" },
-                  { title: "Step C: Save", description: "Save the alarm settings." }
-              ]
-          };
-          processDocData(dummyData);
-          return;
-      }
+      
 
       const xhr = new XMLHttpRequest();
       xhr.open('GET', file, true);
