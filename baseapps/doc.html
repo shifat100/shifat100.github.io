@@ -177,7 +177,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
     docs.forEach(doc => {
       const opt = document.createElement("option");
       opt.value = doc.file;
-      opt.textContent = doc.name;
+      opt.innerHTMLt = doc.name;
       docSelect.appendChild(opt);
     });
 
@@ -221,7 +221,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
                     docSelect.value = docs[0].file;
                     loadDoc(docs[0].file);
                 } else {
-                    docTitle.textContent = "Error Loading Document";
+                    docTitle.innerHTMLt = "Error Loading Document";
                     stepContent.innerHTML = "<p>Could not load the selected document. It might be missing or corrupted.</p>";
                     stepList.innerHTML = "";
                     updateNavButtons();
@@ -235,7 +235,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
                 docSelect.value = docs[0].file;
                 loadDoc(docs[0].file);
             } else {
-                docTitle.textContent = "Error Loading Document";
+                docTitle.innerHTMLt = "Error Loading Document";
                 stepContent.innerHTML = `<p>Could not load the document: ${file}. Please check the console for more details.</p>`;
                 stepList.innerHTML = "";
                 updateNavButtons();
@@ -250,7 +250,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
                 docSelect.value = docs[0].file;
                 loadDoc(docs[0].file);
             } else {
-                docTitle.textContent = "Error Loading Document";
+                docTitle.innerHTMLt = "Error Loading Document";
                 stepContent.innerHTML = `<p>Could not load the document: ${file} due to a network error or file not found.</p>`;
                 stepList.innerHTML = "";
                 updateNavButtons();
@@ -263,7 +263,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
     function processDocData(data) {
         currentDoc = data;
         currentPage = 0;
-        docTitle.textContent = currentDoc.title || "Untitled Document";
+        docTitle.innerHTMLt = currentDoc.title || "Untitled Document";
         renderSidebar();
         renderSteps();
     }
@@ -288,7 +288,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
       const pages = Math.ceil(currentDoc.steps.length / stepsPerPage);
       for (var i = 0; i < pages; i++) {
         const li = document.createElement("li");
-        li.textContent = `Page ${i + 1}`;
+        li.innerHTMLt = `Page ${i + 1}`;
         li.onclick = (function(pageIndex) { // Use a closure to capture 'i'
           return function() {
             currentPage = pageIndex;
@@ -332,33 +332,33 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
 
           if (step.title) {
             const h2 = document.createElement("h2");
-            h2.textContent = step.title;
+            h2.innerHTMLt = step.title;
             div.appendChild(h2);
           }
 
           if (step.description) {
             const p = document.createElement("p");
-            p.textContent = step.description; // Using textContent for safety
+            p.innerHTMLt = step.description; // Using innerHTMLt for safety
             div.appendChild(p);
           }
 
           if (step.code) {
             const pre = document.createElement("pre");
             const code = document.createElement("code");
-            code.textContent = step.code;
+            code.innerHTMLt = step.code;
             pre.appendChild(code);
 
             const btn = document.createElement("button");
             btn.className = "copy-btn";
-            btn.textContent = "Copy";
+            btn.innerHTMLt = "Copy";
 
             btn.onclick = (function(codeToCopy) { // Closure to capture step.code
               return function() {
                 const currentButton = this; // 'this' refers to the button clicked
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                   navigator.clipboard.writeText(codeToCopy).then(() => {
-                    currentButton.textContent = "Copied!";
-                    setTimeout(() => currentButton.textContent = "Copy", 1500);
+                    currentButton.innerHTMLt = "Copied!";
+                    setTimeout(() => currentButton.innerHTMLt = "Copy", 1500);
                   }).catch(err => {
                     console.error('Failed to copy with Clipboard API: ', err);
                     fallbackCopyTextToClipboard(codeToCopy, currentButton);
@@ -390,8 +390,8 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
       try {
         document.execCommand("copy");
         if (buttonElement) {
-            buttonElement.textContent = "Copied!";
-            setTimeout(() => buttonElement.textContent = "Copy", 1500);
+            buttonElement.innerHTMLt = "Copied!";
+            setTimeout(() => buttonElement.innerHTMLt = "Copy", 1500);
         }
       } catch (err) {
         alert("Copy failed. Please copy manually.");
@@ -436,7 +436,7 @@ If the docfile parameter is missing, invalid, or blank, it will default to loadi
         loadDoc(fileToLoad);
       } else {
         console.error("No documents configured or found to load.");
-        docTitle.textContent = "No Documents Available";
+        docTitle.innerHTMLt = "No Documents Available";
         stepContent.innerHTML = "<p>Please configure documents to view.</p>";
         updateNavButtons();
       }
