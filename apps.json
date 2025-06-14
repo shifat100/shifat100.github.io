@@ -1,5 +1,21 @@
 {
-  "apps": [
+  "apps": [ 
+    {
+      "name": "",
+      "description": "",
+      "icon": "",
+      "link": "",
+      "platform": "",
+      "type": "app"
+    },
+    {
+      "name": "Jokebox Bangla",
+      "description": "Dec 19 2024",
+      "icon": "https://storage.kaiostech.com/v3.0/files/app/p/hzTTU8hrldcT6MHN43hgJ2R-l2AIHgfEfABZQr/ICON_IMAGE.png",
+      "link": "https://www.kaiostech.com/store/apps?bundle_id=com.xtgem.jokeboxbangla",
+      "platform": "kaios",
+      "type": "app"
+    },
     {
       "name": "mobimoon",
       "description": "Feb 09 2025",
