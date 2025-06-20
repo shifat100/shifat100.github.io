@@ -1,1 +1,116 @@
-<a href="https://www.profitableratecpm.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20">click</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visible Iframe Loader</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        #log-container { border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll; background-color: #f9f9f9; margin-top: 20px; }
+        .log-entry { margin-bottom: 5px; }
+        .log-time { color: #888; }
+        .log-create { color: blue; }
+        .log-load { color: green; }
+        .log-clear { color: orange; }
+        .log-error { color: darkred; font-weight: bold; }
+
+        /* Styles for the visible iframe container */
+        #iframe-container {
+            border: 2px dashed #333;
+            width: 90%;
+            height: 500px;
+            margin-top: 20px;
+            padding: 5px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Styles for the iframe itself */
+        #iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none; /* Remove the default iframe border */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Visible Iframe Loader</h1>
+    <p>This page will create a <strong>visible</strong> iframe, load a URL, and replace it every 30 seconds.</p>
+    <p><strong>Note:</strong> If the box below is blank, the target site is likely blocking this action.</p>
+
+    <!-- This div will hold the visible iframe -->
+    <div id="iframe-container">
+        <p>Waiting for the first iframe to load...</p>
+    </div>
+
+    <!-- This div will show the activity log -->
+    <div id="log-container"></div>
+
+    <script>
+        // --- Configuration ---
+        const TARGET_URL = 'https://www.profitableratecpm.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20';
+        const INTERVAL_MS = 30000; // 30 seconds
+
+        const logContainer = document.getElementById('log-container');
+        const iframeContainer = document.getElementById('iframe-container');
+
+        function logMessage(message, className) {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + className;
+            entry.innerHTML = `<span class="log-time">[${timeString}]</span> ${message}`;
+            logContainer.appendChild(entry);
+            // Auto-scroll to the bottom
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        /**
+         * The main function that creates, displays, and later replaces the iframe.
+         */
+        function cycleIframe() {
+            // 1. Clear the container of any previous iframe or message
+            logMessage('Clearing old iframe and preparing for new one.', 'log-clear');
+            iframeContainer.innerHTML = '';
+
+            logMessage('Creating new iframe...', 'log-create');
+
+            // 2. Create the new iframe element
+            const iframe = document.createElement('iframe');
+            
+            // Set a title for accessibility
+            iframe.title = "Dynamic Content Loader";
+
+            // 3. Set up event listeners BEFORE setting the src
+            
+            iframe.onload = function() {
+                logMessage(`Iframe successfully loaded content. It will be displayed for ${INTERVAL_MS / 1000} seconds.`, 'log-load');
+            };
+            
+            iframe.onerror = function() {
+                logMessage('ERROR: Iframe could not be loaded. The site may be blocking it (X-Frame-Options).', 'log-error');
+                iframeContainer.innerHTML = '<p style="color: red; text-align: center;">Failed to load content. The target website is likely blocking requests.</p>';
+            };
+            
+            // 4. Set the src attribute to start loading the URL
+            iframe.src = TARGET_URL;
+            
+            // 5. Append the iframe to our visible container
+            iframeContainer.appendChild(iframe);
+        }
+
+        // --- Start the Bot ---
+        logMessage(`Bot started. Will refresh the iframe every ${INTERVAL_MS / 1000} seconds.`);
+        
+        // Run the function once immediately to start
+        cycleIframe();
+
+        // Then, set it to run on an interval, replacing the old iframe with a new one each time
+        setInterval(cycleIframe, INTERVAL_MS);
+
+    </script>
+
+</body>
+</html>
