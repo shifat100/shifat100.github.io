@@ -99,9 +99,10 @@
     .quick-links-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-      gap: 6px;
+      gap: 12px 6px; /* Increased row gap for better spacing */
     }
     .grid-item {
+      position: relative; /* CHANGED: Added for positioning the delete button */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -116,6 +117,15 @@
       background: white;
       border: 1px solid var(--border-color);
     }
+    /* CHANGED: Added style for the text to handle overflow */
+    .grid-item span {
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 2px;
+    }
     .bookmark-list {
       margin-top: 10px;
     }
@@ -124,33 +134,27 @@
       margin-bottom: 4px;
       text-align: center;
     }
-    .bookmark-item {
-      font-size: 10px;
-      margin: 2px 0;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 5px;
-    }
-    .bookmark-item a {
-      color: #2c3e50;
-      text-decoration: none;
-      max-width: 80%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    
+    /* REMOVED: Old .bookmark-item styles are no longer needed */
+
+    /* CHANGED: Updated delete button style for corner positioning */
     .delete-btn {
+      position: absolute;
+      top: -5px;
+      right: -5px;
       background: red;
       color: white;
-      border: none;
+      border: 1px solid white;
       border-radius: 50%;
       width: 16px;
       height: 16px;
       font-size: 12px;
       line-height: 16px;
       cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .bottom-nav {
       background-color: var(--header-bg);
@@ -193,7 +197,8 @@
       </div>
       <div class="bookmark-list">
         <h4>বুকমার্ক</h4>
-        <div id="bookmarks"></div>
+        <!-- CHANGED: Added .quick-links-grid class to apply grid layout -->
+        <div id="bookmarks" class="quick-links-grid"></div>
       </div>
     </div>
     <div class="bottom-nav">
@@ -201,28 +206,50 @@
       <a href="#">OK</a>
       <a href="#">Exit</a>
     </div>
-  </div>  <script>
+  </div>
+  <script>
     const input = document.querySelector('.url-bar-input');
     const engineList = document.querySelector('.search-engine-list');
     const suffixList = document.querySelector('.url-suggestions');
     const bookmarkBtn = document.querySelector('.add-bookmark');
     const bookmarkContainer = document.getElementById('bookmarks');
 
+    // --- FUNCTION UPDATED ---
     function loadBookmarks() {
       const saved = JSON.parse(localStorage.getItem('bookmarks') || '[]');
       bookmarkContainer.innerHTML = '';
       saved.forEach((url, index) => {
-        const div = document.createElement('div');
-        div.className = 'bookmark-item';
-        div.innerHTML = `<a href="${url}" target="_blank">${url}</a> <button class="delete-btn" data-index="${index}">×</button>`;
-        bookmarkContainer.appendChild(div);
+        // Create an 'a' tag that looks like a grid item
+        const linkCard = document.createElement('a');
+        linkCard.className = 'grid-item';
+        linkCard.href = url;
+        linkCard.target = '_blank';
+
+        // Get a cleaner hostname for display
+        const hostname = new URL(url).hostname.replace(/^www\./, '');
+
+        // Set the inner content with an image, text, and delete button
+        linkCard.innerHTML = `
+          <img src="https://www.google.com/s2/favicons?domain=${hostname}" alt="${hostname}">
+          <span>${hostname}</span>
+          <button class="delete-btn" data-index="${index}">×</button>
+        `;
+        bookmarkContainer.appendChild(linkCard);
       });
+      
+      // Update event listeners for the new delete buttons
       document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          // Prevent the link from opening when the delete button is clicked
+          e.preventDefault();
+          e.stopPropagation();
+
           const i = parseInt(btn.dataset.index);
-          saved.splice(i, 1);
-          localStorage.setItem('bookmarks', JSON.stringify(saved));
-          loadBookmarks();
+          // Re-read bookmarks from storage to ensure we have the latest list
+          const currentBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+          currentBookmarks.splice(i, 1);
+          localStorage.setItem('bookmarks', JSON.stringify(currentBookmarks));
+          loadBookmarks(); // Refresh the view
         });
       });
     }
@@ -280,7 +307,10 @@
 
     bookmarkBtn.addEventListener('click', () => {
       const value = input.value.trim();
-      if (!value) return;
+      if (!value || !value.includes('.')) { // Added a check to ensure it's a potential URL
+        alert("Please enter a valid URL to bookmark.");
+        return;
+      };
       let url = value;
       if (!/^https?:\/\//.test(url)) url = 'https://' + url;
       const saved = JSON.parse(localStorage.getItem('bookmarks') || '[]');
@@ -292,5 +322,6 @@
     });
 
     loadBookmarks();
-  </script></body>
+  </script>
+</body>
 </html>
