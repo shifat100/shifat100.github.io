@@ -100,7 +100,6 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
       gap: 12px 6px; /* Increased row gap for better spacing */
-      padding: 5px 0px;
     }
     .grid-item {
       position: relative; /* CHANGED: Added for positioning the delete button */
@@ -132,8 +131,10 @@
     }
     .bookmark-list h4 {
       font-size: 12px;
-      margin-bottom: 4px;
-      text-align: center;
+      padding: 4px;
+      text-align: left;
+      font-weight: bold;
+      background: #f0f0f0;
     }
     
     /* REMOVED: Old .bookmark-item styles are no longer needed */
