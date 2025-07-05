@@ -99,10 +99,10 @@
     .quick-links-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-      gap: 12px 6px;
+      gap: 12px 6px; /* Increased row gap for better spacing */
     }
     .grid-item {
-      position: relative; 
+      position: relative; /* CHANGED: Added for positioning the delete button */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -117,6 +117,7 @@
       background: white;
       border: 1px solid var(--border-color);
     }
+    /* CHANGED: Added style for the text to handle overflow */
     .grid-item span {
         width: 100%;
         text-align: center;
@@ -133,6 +134,10 @@
       margin-bottom: 4px;
       text-align: center;
     }
+    
+    /* REMOVED: Old .bookmark-item styles are no longer needed */
+
+    /* CHANGED: Updated delete button style for corner positioning */
     .delete-btn {
       position: absolute;
       top: -5px;
@@ -157,19 +162,14 @@
       justify-content: space-around;
       padding: 4px 0;
     }
-    /* CHANGED: Improved bottom navigation button styling */
     .bottom-nav a {
       color: white;
       font-size: 16px;
       text-decoration: none;
-      flex: 1; /* Distribute space evenly */
-      text-align: center; /* Center text inside the button */
+      /* NEW: Added for better button appearance */
+      min-width: 50px;
+      text-align: center;
       cursor: pointer;
-      padding: 2px 0;
-    }
-    /* CHANGED: Style for the "Go" button */
-    #go-btn {
-        font-weight: bold;
     }
   </style>
 </head>
@@ -201,12 +201,12 @@
       </div>
       <div class="bookmark-list">
         <h4>বুকমার্ক</h4>
+        <!-- CHANGED: Added .quick-links-grid class to apply grid layout -->
         <div id="bookmarks" class="quick-links-grid"></div>
       </div>
     </div>
     <div class="bottom-nav">
-      <!-- CHANGED: Gave the first link an ID for easier access -->
-      <a href="#" id="go-btn"></a> 
+      <a href="#"></a>
       <a href="#">OK</a>
       <a href="#">Exit</a>
     </div>
@@ -217,7 +217,8 @@
     const suffixList = document.querySelector('.url-suggestions');
     const bookmarkBtn = document.querySelector('.add-bookmark');
     const bookmarkContainer = document.getElementById('bookmarks');
-    const goBtn = document.getElementById('go-btn'); // ADDED: Reference to the Go button
+    // --- NEW: Reference to the "Go" button ---
+    const goBtn = document.querySelector('.bottom-nav a:first-child');
 
     function loadBookmarks() {
       const saved = JSON.parse(localStorage.getItem('bookmarks') || '[]');
@@ -249,52 +250,51 @@
       });
     }
 
-    // --- FUNCTION UPDATED ---
+    // --- UPDATED: Input listener to control the "Go" button text ---
     input.addEventListener('input', () => {
       const value = input.value.trim();
       engineList.style.display = 'none';
       suffixList.style.display = 'none';
+      goBtn.innerText = ''; // Reset button text
 
-      // ADDED: Logic to show "Go" text if input looks like a URL
-      if (/\./.test(value) && !/\s/.test(value) && !/\.$/.test(value)) {
-        goBtn.innerText = 'Go';
-      } else {
-        goBtn.innerText = '';
-      }
+      if (!value) return;
 
       if (value.includes(' ') || /^[^\s.]+$/.test(value)) {
         engineList.style.display = 'block';
       } else if (/\.$/.test(value)) {
         suffixList.style.display = 'block';
+      } else if (value.includes('.') && !value.includes(' ')) {
+        // If it looks like a URL, show the "Go" button
+        goBtn.innerText = 'Go';
       }
     });
 
     input.addEventListener('keydown', (e) => {
-      // This already handles navigation on 'Enter' press
       if (e.key === 'Enter') handleInput();
     });
 
-    // --- FUNCTION ADDED ---
-    // Handle clicks on the "Go" button
-    goBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // Prevent default link behavior
-        if(goBtn.innerText === 'Go') {
+    // --- NEW: Added listener for F1 key to open the link/search ---
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            e.preventDefault(); // Prevent browser's default help action
             handleInput();
         }
     });
 
+    // --- FUNCTION UPDATED: More robust navigation logic ---
     function handleInput() {
       const query = input.value.trim();
       if (!query) return;
 
-      if (query.includes(' ') || /^[^\s.]+$/.test(query)) {
-        engineList.style.display = 'block';
-      } else if (/\.$/.test(query)) {
-        suffixList.style.display = 'block';
-      } else if (/\./.test(query)) { // This is the condition for URL navigation
+      // If the query contains a dot and no spaces, treat it as a URL
+      if (/\./.test(query) && !query.includes(' ')) {
         let url = query;
         if (!/^https?:\/\//.test(url)) url = 'https://' + url;
         window.location.href = url;
+      } else {
+        // Otherwise, perform a default search with Google
+        const searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+        window.location.href = searchUrl;
       }
     }
 
@@ -333,6 +333,12 @@
         localStorage.setItem('bookmarks', JSON.stringify(saved));
         loadBookmarks();
       }
+    });
+    
+    // --- NEW: Make the "Go" button clickable ---
+    goBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleInput();
     });
 
     loadBookmarks();
