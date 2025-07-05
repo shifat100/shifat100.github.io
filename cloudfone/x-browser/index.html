@@ -223,7 +223,7 @@
 
     function loadBookmarks() {
       const saved = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      if(saved.length <1) {bookmarkContainer.innerHTML = '<small style="background: #ddd; padding: 4px; border-radius: 5px; font-size: 10px; text-align: center">No Bookmark</small>';} else {
+      if(saved.length <1) {bookmarkContainer.innerHTML = '<small style="background: #ddd; padding:8px 4px; border-radius: 5px; font-size: 10px; text-align: center">No Bookmark</small>';} else {
       bookmarkContainer.innerHTML = '';
       saved.forEach((url, index) => {
         const linkCard = document.createElement('a');
