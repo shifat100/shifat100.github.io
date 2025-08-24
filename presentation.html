@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cats Eye: Enhanced Digital Transformation Presentation</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #005a9c;
+            --accent-color: #007bff;
+            --text-color: #333;
+            --bg-color: #f0f2f5;
+            --slide-bg: #ffffff;
+            --bubble-color: rgba(0, 123, 255, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: grid;
+            place-items: center;
+            height: 100vh;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 90vw;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--slide-bg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden; /* Important for corner shapes and bubbles */
+        }
+        
+        /* --- NEW: Corner Shapes --- */
+        .presentation-container::before,
+        .presentation-container::after {
+            content: '';
+            position: absolute;
+            z-index: 0;
+            border-radius: 50%;
+            opacity: 0.8;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background-size: 200% 200%;
+            animation: move-gradient 15s ease infinite;
+        }
+
+        .presentation-container::before {
+            width: 30%;
+            height: 30%;
+            top: -15%;
+            right: -10%;
+        }
+
+        .presentation-container::after {
+            width: 25%;
+            height: 25%;
+            bottom: -12%;
+            left: -8%;
+        }
+
+        @keyframes move-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            padding: 3% 5%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+            z-index: 2; /* Ensure slide content is above background elements */
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Slide Transitions */
+        @keyframes slideInFromRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutToLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+        @keyframes slideInFromLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutToRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+        .slide-enter-right { animation: slideInFromRight 0.6s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .slide-exit-left { animation: slideOutToLeft 0.6s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .slide-enter-left { animation: slideInFromLeft 0.6s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .slide-exit-right { animation: slideOutToRight 0.6s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        
+        /* Typography */
+        .slide h1 { font-size: clamp(1.8rem, 4vw, 3.2rem); color: var(--primary-color); margin-bottom: 15px; }
+        .slide h2 { font-size: clamp(1.2rem, 2.5vw, 2.2rem); color: var(--secondary-color); margin-bottom: 25px; font-weight: 500; }
+        .slide p { font-size: clamp(0.9rem, 1.5vw, 1.3rem); line-height: 1.6; max-width: 85%; }
+        .slide ul { list-style-type: none; padding: 0; font-size: clamp(0.85rem, 1.4vw, 1.2rem); text-align: left; max-width: 80%; margin-top: 20px; }
+        .slide ul li { background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23007bff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>') no-repeat left center; background-size: clamp(16px, 2vw, 22px); padding-left: clamp(25px, 3vw, 40px); margin-bottom: 15px; }
+        
+        .intro-slide { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; }
+        .intro-slide h1, .intro-slide h2, .intro-slide p { color: white; }
+        
+        /* Element Animation */
+        .revealable { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .revealable.is-visible { opacity: 1; transform: translateY(0); }
+
+        /* UI Elements */
+        .footer, .nav-button { z-index: 10; }
+        .footer { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: clamp(0.8rem, 1.2vw, 1rem); color: #888; background-color: rgba(255, 255, 255, 0.8); padding: 5px 15px; border-radius: 20px; }
+        .nav-button { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(0, 51, 102, 0.6); color: white; border: none; cursor: pointer; border-radius: 50%; width: clamp(40px, 5vw, 50px); height: clamp(40px, 5vw, 50px); font-size: clamp(1.2rem, 2vw, 1.5rem); display: flex; justify-content: center; align-items: center; user-select: none; transition: background-color 0.3s, transform 0.3s; }
+        .nav-button:hover { background-color: var(--secondary-color); transform: translateY(-50%) scale(1.1); }
+        #prev-btn { left: 2%; }
+        #next-btn { right: 2%; }
+
+        /* --- NEW: Animated Bubbles --- */
+        .bubbles {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .bubbles span {
+            position: absolute;
+            bottom: -50px;
+            width: 20px; height: 20px;
+            background-color: var(--bubble-color);
+            border-radius: 50%;
+            animation: move-bubbles 25s linear infinite;
+        }
+
+        @keyframes move-bubbles {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-110vh); }
+        }
+
+        /* Style each bubble differently for a random effect */
+        .bubbles span:nth-child(1) { left: 10%; width: 20px; height: 20px; animation-duration: 18s; animation-delay: 0s; }
+        .bubbles span:nth-child(2) { left: 20%; width: 35px; height: 35px; animation-duration: 25s; animation-delay: 2s; background-color: rgba(0,123,255,0.1); }
+        .bubbles span:nth-child(3) { left: 35%; width: 15px; height: 15px; animation-duration: 30s; animation-delay: 5s; }
+        .bubbles span:nth-child(4) { left: 50%; width: 50px; height: 50px; animation-duration: 15s; animation-delay: 0s; background-color: rgba(0,123,255,0.2); }
+        .bubbles span:nth-child(5) { left: 65%; width: 25px; height: 25px; animation-duration: 22s; animation-delay: 1s; }
+        .bubbles span:nth-child(6) { left: 75%; width: 40px; height: 40px; animation-duration: 35s; animation-delay: 3s; background-color: rgba(0,123,255,0.1); }
+        .bubbles span:nth-child(7) { left: 90%; width: 18px; height: 18px; animation-duration: 28s; animation-delay: 6s; }
+        .bubbles span:nth-child(8) { left: 5%; width: 30px; height: 30px; animation-duration: 20s; animation-delay: 8s; }
+        .bubbles span:nth-child(9) { left: 85%; width: 22px; height: 22px; animation-duration: 19s; animation-delay: 4s; }
+        .bubbles span:nth-child(10) { left: 55%; width: 15px; height: 15px; animation-duration: 40s; animation-delay: 10s; }
+    </style>
+</head>
+<body>
+
+<div class="presentation-container">
+    
+    <!-- NEW: Bubbles container added -->
+    <div class="bubbles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <!-- Slides (Content remains the same) -->
+    <div class="slide" id="slide-1">
+        <h1 class="revealable">Welcome</h1>
+        <p class="revealable">I am Gemini, an AI assistant built by Google.</p>
+        <h2 class="revealable">Today's Topic: A Digital Transformation Design for Cats Eye</h2>
+    </div>
+
+    <div class="slide" id="slide-2">
+        <h2 class="revealable">Current State & Vision</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Current State:</b> A heritage brand (since 1980) with a basic online presence.</li>
+            <li class="revealable"><b>The Challenge:</b> E-commerce sales are modest compared to offline retail.</li>
+            <li class="revealable"><b>The Vision:</b> Become a digital-first lifestyle brand, seamlessly integrating online and offline channels.</li>
+        </ul>
+    </div>
+
+    <div class="slide" id="slide-3">
+        <h2 class="revealable">Customer-Centric Strategy</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Market Segmentation:</b> Identify and target core segments.</li>
+            <li class="revealable"><b>Personalized Experiences:</b> Use customer data for tailored offers.</li>
+            <li class="revealable"><b>Omnichannel Consistency:</b> Ensure a seamless brand experience.</li>
+        </ul>
+    </div>
+    
+    <!-- ... (All other slides remain the same as the previous version) ... -->
+
+    <div class="slide" id="slide-4">
+        <h2 class="revealable">Technology Infrastructure</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>E-commerce Website & App:</b> A fast, secure, mobile-first platform.</li>
+            <li class="revealable"><b>Local Payment Integration:</b> Offer bKash, Nagad, etc.</li>
+            <li class="revealable"><b>Inventory Management (ERP):</b> Real-time stock synchronization.</li>
+            <li class="revealable"><b>CRM:</b> A central hub for all customer data.</li>
+        </ul>
+    </div>
+    
+    <div class="slide" id="slide-5">
+        <h2 class="revealable">Digital Marketing Approach</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Search Engine Optimization (SEO):</b> Improve Google search ranking.</li>
+            <li class="revealable"><b>Paid Advertising:</b> Run targeted campaigns on social media and Google.</li>
+        </ul>
+    </div>
+    
+    <div class="slide" id="slide-6">
+        <h2 class="revealable">Digital Marketing Approach</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Social Media & Influencers:</b> Engage community and collaborate with influencers.</li>
+            <li class="revealable"><b>Content Marketing:</b> Create valuable content like styling guides.</li>
+        </ul>
+    </div>
+
+    <div class="slide" id="slide-7">
+        <h2 class="revealable">Omni-channel Integration</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Unified Fulfillment:</b> Enable "Buy Online, Pick Up In-Store" (BOPIS).</li>
+            <li class="revealable"><b>In-Store Digital Experiences:</b> Use QR codes and interactive kiosks.</li>
+            <li class="revealable"><b>Cross-Channel Promotions:</b> Run unified campaigns and loyalty programs.</li>
+        </ul>
+    </div>
+
+    <div class="slide" id="slide-8">
+        <h2 class="revealable">Supply Chain & Operations</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Automation:</b> Use barcoding/RFID for efficient inventory tracking.</li>
+            <li class="revealable"><b>Logistics Partnerships:</b> Partner with 3rd-party delivery services.</li>
+            <li class="revealable"><b>Supplier Integration:</b> Digitize communication with suppliers.</li>
+        </ul>
+    </div>
+    
+    <div class="slide" id="slide-9">
+        <h2 class="revealable">Employee Training & Change Management</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Training Programs:</b> Train staff on all new digital tools.</li>
+            <li class="revealable"><b>Digital Culture:</b> Foster a "digital-first" mindset.</li>
+            <li class="revealable"><b>Upskilling & Hiring:</b> Hire digital experts and upskill existing staff.</li>
+        </ul>
+    </div>
+    
+    <div class="slide" id="slide-10">
+        <h2 class="revealable">Customer Engagement & Loyalty</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Loyalty Programs:</b> Reward repeat customers with points and benefits.</li>
+            <li class="revealable"><b>Personalized Communication:</b> Use CRM for targeted marketing.</li>
+            <li class="revealable"><b>Excellent Support:</b> Offer quick support via live chat or WhatsApp.</li>
+        </ul>
+    </div>
+
+    <div class="slide" id="slide-11">
+        <h2 class="revealable">Data Analytics & KPIs</h2>
+        <p class="revealable">Measure what matters to make data-driven decisions:</p>
+        <ul class="revealable">
+            <li class="revealable"><b>Conversion Rate:</b> Visitors who become buyers.</li>
+            <li class="revealable"><b>Average Order Value (AOV):</b> Average spend per order.</li>
+            <li class="revealable"><b>Customer Lifetime Value (CLV):</b> Total revenue from a customer.</li>
+            <li class="revealable"><b>Return on Investment (ROI):</b> Profitability of campaigns.</li>
+        </ul>
+    </div>
+    
+    <div class="slide" id="slide-12">
+        <h2 class="revealable">Innovation & Scaling</h2>
+        <ul class="revealable">
+            <li class="revealable"><b>Emerging Tech:</b> Pilot new technologies like AI chatbots or AR try-on tools.</li>
+            <li class="revealable"><b>New Markets:</b> Explore selling to the Bangladeshi diaspora and regional exports.</li>
+            <li class="revealable"><b>Product Expansion:</b> Use sales data to introduce new product lines like shoes or accessories.</li>
+            <li class="revealable"><b>Sustainability:</b> Highlight eco-friendly and ethical practices to attract conscious consumers.</li>
+        </ul>
+    </div>
+
+    <div class="slide intro-slide" id="slide-13">
+        <h1 class="revealable">Thank You</h1>
+        <p class="revealable">With the right strategy and technology, Cats Eye can successfully navigate its digital transformation and strengthen its position as a leading fashion brand.</p>
+    </div>
+
+    <div class="slide" id="slide-14">
+        <!-- This is a placeholder for the final Thank You slide. The JS logic expects 14 slides. -->
+        <h1 class="revealable">Thank You</h1>
+        <p class="revealable">With the right strategy and technology, Cats Eye can successfully navigate its digital transformation and strengthen its position as a leading fashion brand.</p>
+    </div>
+
+    <!-- Navigation & Footer UI -->
+    <button class="nav-button" id="prev-btn" aria-label="Previous Slide">&#10094;</button>
+    <button class="nav-button" id="next-btn" aria-label="Next Slide">&#10095;</button>
+    <div class="footer">
+        <span id="current-slide">1</span> / <span id="total-slides">14</span>
+    </div>
+</div>
+
+<script>
+    // JavaScript remains unchanged from the previous version.
+    let currentSlideIndex = 1;
+    const totalSlides = document.querySelectorAll('.slide').length;
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    
+    function revealElementsSequentially(slide) {
+        const elements = slide.querySelectorAll('.revealable');
+        const initialDelay = 400;
+        const staggerDelay = 1200;
+
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.classList.add('is-visible');
+            }, initialDelay + (index * staggerDelay));
+        });
+    }
+
+    function showSlide(newIndex, direction = 'next') {
+        const oldIndex = currentSlideIndex;
+        if (newIndex < 1 || newIndex > totalSlides) return;
+
+        const currentSlide = document.getElementById(`slide-${oldIndex}`);
+        const nextSlide = document.getElementById(`slide-${newIndex}`);
+
+        const exitClass = direction === 'next' ? 'slide-exit-left' : 'slide-exit-right';
+        const enterClass = direction === 'next' ? 'slide-enter-right' : 'slide-enter-left';
+        
+        if (currentSlide) {
+            currentSlide.classList.add(exitClass);
+            currentSlide.addEventListener('animationend', () => {
+                currentSlide.classList.remove('active', exitClass);
+            }, { once: true });
+        }
+        
+        nextSlide.classList.add('active', enterClass);
+        nextSlide.addEventListener('animationend', () => {
+            nextSlide.classList.remove(enterClass);
+        }, { once: true });
+
+        nextSlide.querySelectorAll('.revealable').forEach(el => el.classList.remove('is-visible'));
+        currentSlideIndex = newIndex;
+        updateUI();
+        
+        setTimeout(() => {
+            revealElementsSequentially(nextSlide);
+        }, 300);
+    }
+
+    function updateUI() {
+        document.getElementById('current-slide').textContent = currentSlideIndex;
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        prevBtn.style.visibility = (currentSlideIndex === 1) ? 'hidden' : 'visible';
+        nextBtn.style.visibility = (currentSlideIndex === totalSlides) ? 'hidden' : 'visible';
+    }
+
+    function handleNext() {
+        if (currentSlideIndex < totalSlides) {
+            showSlide(currentSlideIndex + 1, 'next');
+        }
+    }
+
+    function handlePrev() {
+        if (currentSlideIndex > 1) {
+            showSlide(currentSlideIndex - 1, 'prev');
+        }
+    }
+    
+    prevBtn.addEventListener('click', handlePrev);
+    nextBtn.addEventListener('click', handleNext);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') handleNext();
+        else if (e.key === 'ArrowLeft') handlePrev();
+    });
+
+    function init() {
+        const firstSlide = document.getElementById('slide-1');
+        firstSlide.classList.add('active');
+        updateUI();
+        revealElementsSequentially(firstSlide);
+    }
+
+    init();
+</script>
+
+</body>
+</html>
