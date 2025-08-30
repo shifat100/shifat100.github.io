@@ -1,1 +1,52 @@
-index file
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangla Dictionary</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    
+    <div id="loader">
+        <div class="loading-text">Loading Dictionary...</div>
+    </div>
+ 
+    
+    <div class="header">
+        <h1>Bangla To Bangla</h1>
+    </div>
+
+    
+    <div class="searchbar">
+        <input type="text" id="userinput" class="focusable" tabindex="0" placeholder="Type and press Enter">
+    </div>
+
+    
+    <div class="content">
+        
+        <div id="app">
+            <div class="welcome-message">
+                Type a word and press Enter or the OK key to search.
+            </div>
+            <div id="ad-container"></div>
+        </div>
+
+        
+        <div id="definition"></div>
+    </div>
+
+    
+    <div class="footer">
+        <div class="footerelement" id="softkey-left"></div>
+        <div class="footerelement" id="softkey-center">OK</div>
+        <div class="footerelement" id="softkey-right"></div>
+    </div>
+
+    
+    <script src="script-min.js"></script>
+    <script src="kaiads.v5.min.js"></script>
+
+</body>
+</html>
