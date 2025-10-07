@@ -1,19 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Manager</title>
     <style>
+        /* Light Theme (default) & Dark Theme Variables */
         :root {
             --primary-color: #6200EE;
-            --primary-variant-color: #3700B3;
             --secondary-color: #03DAC6;
+            --on-primary-color: #FFFFFF;
+            --on-secondary-color: #000000;
+            --background-color: #F5F5F5;
+            --surface-color: #FFFFFF;
+            --surface-hover-color: #EEEEEE;
+            --on-surface-color: #000000;
+            --on-surface-variant-color: #5f6368;
+            --error-color: #B00020;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --hover-overlay-color: rgba(0, 0, 0, 0.08);
+            --input-background-color: #E8E8E8;
+            --border-color: #DADCE0;
+        }
+
+        html[data-theme='dark'] {
+            --primary-color: #BB86FC;
+            --secondary-color: #03DAC6;
+            --on-primary-color: #000000;
+            --on-secondary-color: #000000;
             --background-color: #121212;
             --surface-color: #1E1E1E;
+            --surface-hover-color: #2C2C2C;
             --on-surface-color: #FFFFFF;
             --on-surface-variant-color: #B0B0B0;
             --error-color: #CF6679;
+            --shadow-color: rgba(0, 0, 0, 0.7);
+            --hover-overlay-color: rgba(255, 255, 255, 0.08);
+            --input-background-color: #333333;
+            --border-color: #3c4043;
         }
 
         * {
@@ -31,6 +55,7 @@
             background-color: var(--background-color);
             color: var(--on-surface-color);
             line-height: 1.5;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         .container {
@@ -46,7 +71,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 4px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -66,7 +91,7 @@
             border-radius: 50%;
         }
          .app-bar-actions .menu-btn:hover {
-            background-color: rgba(255,255,255,0.1);
+            background-color: var(--hover-overlay-color);
         }
 
         .dropdown-menu {
@@ -74,10 +99,11 @@
             position: absolute;
             right: 1.5rem;
             top: 4rem;
-            background-color: #2c2c2c;
+            background-color: var(--surface-color);
             border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 10px var(--shadow-color);
             overflow: hidden;
+            z-index: 101;
         }
 
         .dropdown-menu.show {
@@ -92,6 +118,7 @@
 
         .dropdown-item:hover {
             background-color: var(--primary-color);
+            color: var(--on-primary-color);
         }
 
         main {
@@ -106,27 +133,32 @@
             align-items: center;
         }
 
-        .form-group select {
+        .form-group select,
+        .form-group input {
             width: 100%;
-            max-width: 250px;
             padding: 0.75rem;
-            border: 1px solid #333;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
-            background-color: #333;
+            background-color: var(--input-background-color);
             color: var(--on-surface-color);
             font-size: 1rem;
         }
         
+        #category-filter {
+             max-width: 250px;
+        }
+        
         .category-manage-btn {
             background: none;
-            border: 1px solid #333;
+            border: 1px solid var(--border-color);
             color: var(--on-surface-variant-color);
             cursor: pointer;
             padding: 0.75rem;
             border-radius: 4px;
+            white-space: nowrap;
         }
          .category-manage-btn:hover {
-             background-color: #333;
+             background-color: var(--hover-overlay-color);
          }
 
 
@@ -148,7 +180,7 @@
         }
         
         .contact-card:hover {
-            background-color: #2c2c2c;
+            background-color: var(--surface-hover-color);
         }
 
         .contact-avatar {
@@ -161,7 +193,7 @@
             justify-content: center;
             font-size: 1.5rem;
             font-weight: 500;
-            color: #fff;
+            color: var(--on-primary-color);
             text-transform: uppercase;
         }
 
@@ -198,7 +230,7 @@
         }
         
         .btn-icon:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: var(--hover-overlay-color);
             color: var(--on-surface-color);
         }
 
@@ -212,12 +244,12 @@
 
         .fab {
             background-color: var(--secondary-color);
-            color: #000;
+            color: var(--on-secondary-color);
             border: none;
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 8px var(--shadow-color);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -254,7 +286,7 @@
             border-radius: 8px;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 20px var(--shadow-color);
         }
 
         .modal-header {
@@ -284,16 +316,6 @@
             margin-bottom: 0.5rem;
             color: var(--on-surface-variant-color);
         }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background-color: #333;
-            color: var(--on-surface-color);
-            font-size: 1rem;
-        }
         
         .modal-actions {
             display: flex;
@@ -313,10 +335,11 @@
         }
         .btn-primary {
              background-color: var(--primary-color);
-             color: #fff;
+             color: var(--on-primary-color);
         }
         
         #category-management-list li {
+            list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -336,6 +359,7 @@
                 </svg>
             </button>
             <div id="dropdown-menu" class="dropdown-menu">
+                <div class="dropdown-item" id="toggle-theme-btn">Toggle Theme</div>
                 <div class="dropdown-item" id="export-vcf-btn">Export Contacts (.vcf)</div>
             </div>
         </div>
@@ -375,7 +399,7 @@
                 </div>
                 <div class="form-group">
                     <label for="contact-category">Category</label>
-                    <select id="contact-category" required style="width: 100%"></select>
+                    <select id="contact-category" required></select>
                 </div>
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -393,7 +417,7 @@
             </div>
             <ul id="category-management-list"></ul>
             <form id="category-form" style="margin-top: 1.5rem; display: flex; gap: 1rem;">
-                <input type="text" id="category-name" placeholder="New category name" required style="width:100%">
+                <input type="text" id="category-name" placeholder="New category name" required>
                 <button type="submit" class="btn btn-primary">Add</button>
             </form>
         </div>
@@ -454,6 +478,28 @@
 
             // Export listener
             document.getElementById('export-vcf-btn').addEventListener('click', exportToVCF);
+            
+            // --- THEME SWITCHER ---
+            const themeToggleBtn = document.getElementById('toggle-theme-btn');
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            }
+
+            function toggleTheme() {
+                const currentTheme = localStorage.getItem('theme') || 'dark';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(newTheme);
+            }
+
+            function loadTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                applyTheme(savedTheme || 'dark');
+            }
+
+            themeToggleBtn.addEventListener('click', toggleTheme);
+
 
             // --- CATEGORY FUNCTIONS ---
             function renderCategories() {
@@ -538,7 +584,7 @@
                 request.onsuccess = () => {
                     const contacts = request.result;
                     if (contacts.length === 0) {
-                        contactList.innerHTML = '<p>No contacts found.</p>';
+                        contactList.innerHTML = '<p style="text-align:center; color: var(--on-surface-variant-color);">No contacts found.</p>';
                         return;
                     }
                     contacts.forEach(contact => {
@@ -646,6 +692,7 @@
             }
             
             // --- INITIALIZE ---
+            loadTheme();
             initDB();
         });
     </script>
