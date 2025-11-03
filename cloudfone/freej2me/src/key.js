@@ -6,7 +6,7 @@ export const codeMap = {
     'ArrowRight': 39,
     'ArrowUp': 38,
     'ArrowDown': 40,
-    'Escape': 27,
+    'F4': 115,
     'Digit0': 48,
     'Digit1': 49,
     'Digit2': 50,
