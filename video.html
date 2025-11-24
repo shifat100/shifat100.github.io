@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LocalFlix</title>
+    <title>LocalFlix Pro</title>
     <meta name="theme-color" content="#fdfcff">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,593 +13,774 @@
 
     <style>
         :root {
-            --md-sys-color-primary: #0061a4; --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #d1e4ff; --md-sys-color-on-primary-container: #001d36;
-            --md-sys-color-background: #fdfcff; --md-sys-color-on-background: #1a1c1e;
-            --md-sys-color-surface: #fdfcff; --md-sys-color-on-surface: #1a1c1e;
-            --md-sys-color-surface-variant: #dfe3eb; --md-sys-color-on-surface-variant: #42474e;
-            --md-sys-color-outline: #73777f; --md-sys-color-error: #ba1a1a;
-            --md-sys-color-on-error: #ffffff; --md-sys-color-error-container: #ffdad6;
-            --md-sys-color-on-error-container: #410002;
-            --md-animation-curve: cubic-bezier(0.4, 0, 0.2, 1);
+            /* Light Theme */
+            --md-primary: #0061a4; --md-on-primary: #ffffff;
+            --md-bg: #fdfcff; --md-on-bg: #1a1c1e;
+            --md-surface: #fdfcff; --md-surface-container: #eff4f9;
+            --md-on-surface: #1a1c1e; --md-outline: #73777f;
+            --md-error: #ba1a1a;
+            --anim: cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { background-color: var(--md-sys-color-background); }
+        
+        [data-theme="dark"] {
+            /* Dark Theme */
+            --md-primary: #9ecaff; --md-on-primary: #003258;
+            --md-bg: #1a1c1e; --md-on-bg: #e2e2e6;
+            --md-surface: #1a1c1e; --md-surface-container: #212529;
+            --md-on-surface: #e2e2e6; --md-outline: #8c9199;
+            --md-error: #ffb4ab;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            font-family: 'Roboto', sans-serif; background-color: var(--md-sys-color-background);
-            color: var(--md-sys-color-on-background); font-size: 16px; overflow: hidden;
+            font-family: 'Roboto', sans-serif; background-color: var(--md-bg);
+            color: var(--md-on-bg); font-size: 16px; overflow: hidden; height: 100vh;
         }
+        
+        /* Layout & Views */
         .view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
-            display: flex; flex-direction: column; background-color: var(--md-sys-color-background);
-            transition: transform 0.35s var(--md-animation-curve);
+            display: flex; flex-direction: column; background-color: var(--md-bg);
+            transition: transform 0.35s var(--anim);
         }
         #libraryView.hidden { transform: translateX(-100%); }
         #playerView { transform: translateX(0); z-index: 20; }
         #playerView.hidden { transform: translateX(100%); }
 
+        /* App Bar */
         .top-app-bar {
-            display: flex; align-items: center; padding: 12px 4px 12px 16px;
-            background-color: var(--md-sys-color-surface); box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 10; padding-top: calc(12px + env(safe-area-inset-top));
+            display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+            background-color: var(--md-surface); box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 10; padding-top: calc(8px + env(safe-area-inset-top)); height: calc(64px + env(safe-area-inset-top));
         }
-        .top-app-bar h1 { font-size: 1.375rem; font-weight: 500; color: var(--md-sys-color-primary); }
+        .top-app-bar h1 { font-size: 1.25rem; font-weight: 500; color: var(--md-primary); flex-grow: 1; }
         .icon-button {
-            background: none; border: none; border-radius: 50%; width: 48px; height: 48px;
+            background: none; border: none; border-radius: 50%; width: 40px; height: 40px;
             display: inline-flex; justify-content: center; align-items: center;
-            cursor: pointer; color: var(--md-sys-color-on-surface-variant); position: relative;
+            cursor: pointer; color: var(--md-on-surface); position: relative;
         }
-        .dialog-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); display: none; justify-content: center;
-            align-items: center; z-index: 10000;
+        .icon-button:active { background-color: rgba(128,128,128,0.1); }
+        .icon-button.active { color: var(--md-primary); background-color: rgba(0, 97, 164, 0.1); }
+
+        /* Search & Filter Bar */
+        #filterBar {
+            display: flex; gap: 8px; padding: 8px 16px; overflow-x: auto;
+            background: var(--md-bg); border-bottom: 1px solid var(--md-surface-container);
+            align-items: center;
         }
-        .dialog-overlay.visible { display: flex; }
-        .dialog-box {
-            background: var(--md-sys-color-surface); border-radius: 28px;
-            padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        .chip {
+            padding: 6px 16px; border-radius: 16px; border: 1px solid var(--md-outline);
+            background: transparent; color: var(--md-on-surface); font-size: 0.875rem; white-space: nowrap;
         }
-        .dialog-box h4 { font-size: 1.5rem; margin-bottom: 16px; color: var(--md-sys-color-on-surface); }
-        .dialog-box p { font-size: 1rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 24px; }
-        .dialog-actions { text-align: right; }
-        .dialog-actions button {
-            background: none; border: none; padding: 10px 12px; font-size: 0.875rem;
-            font-weight: 500; border-radius: 20px; cursor: pointer; margin-left: 8px;
-        }
-        .dialog-actions .primary-action { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-        .dialog-actions .text-action { color: var(--md-sys-color-primary); }
-        #loadingOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 9999;
-            flex-direction: column; color: var(--md-sys-color-on-surface);
-        }
-        #loadingOverlay.visible { display: flex; }
-        .spinner {
-            border: 4px solid var(--md-sys-color-surface-variant); border-top: 4px solid var(--md-sys-color-primary);
-            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
-        }
-        #loadingText { margin-top: 1rem; font-weight: 500; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        #appLockScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--md-sys-color-background); z-index: 10001;
-            display: none; flex-direction: column; justify-content: center; align-items: center; gap: 24px;
-        }
-        #appLockScreen.visible { display: flex; }
-        #appLockScreen .material-symbols-outlined { font-size: 4rem; color: var(--md-sys-color-primary); }
-        #appUnlockButton {
-            background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary);
-            border: none; border-radius: 24px; padding: 12px 24px;
-            font-size: 1rem; font-weight: 500; cursor: pointer;
-        }
-        /* --- NEW: PIN Input on Lock Screen --- */
-        #pinInputContainer { display: flex; gap: 10px; }
-        .pin-input {
-            width: 45px; height: 55px; font-size: 1.5rem; text-align: center; border-radius: 8px;
-            border: 2px solid var(--md-sys-color-outline); background: #fff;
-        }
-        .pin-input:focus { border-color: var(--md-sys-color-primary); outline: none; }
-        #pinErrorMessage { color: var(--md-sys-color-error); font-weight: 500; height: 1.2em; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
-        .shake { animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both; }
-        
-        /* --- NEW: Settings Dialog --- */
-        #settingsDialog .settings-section { margin-bottom: 24px; }
-        #settingsDialog h5 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--md-sys-color-primary); }
-        #settingsDialog .setting-option { display: flex; align-items: center; margin-bottom: 8px; }
-        #settingsDialog label { margin-left: 8px; }
-        #settingsPinContainer { display: none; margin-top: 16px; }
-        #settingsPinInput {
-            width: 100px; padding: 8px; font-size: 1rem; border: 1px solid var(--md-sys-color-outline); border-radius: 8px;
-        }
-        #clearCacheButton {
-            background-color: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container);
-            width: 100%; border: none; padding: 12px; border-radius: 20px; font-weight: 500; cursor: pointer;
+        .chip.selected { background: var(--md-primary); color: var(--md-on-primary); border-color: var(--md-primary); }
+        #searchInput {
+            flex-grow: 1; background: var(--md-surface-container); border: none;
+            padding: 8px 16px; border-radius: 20px; color: var(--md-on-surface); outline: none;
         }
 
-        #libraryView .top-app-bar { justify-content: space-between; }
-        .search-container {
-            flex-grow: 1; display: flex; align-items: center; background-color: #eef2f6;
-            border-radius: 28px; margin: 0 8px 0 16px; padding: 0 8px 0 16px;
-        }
-        #searchInput { width: 100%; border: none; font-size: 1rem; padding: 8px; background-color: transparent; outline: none; }
+        /* Video Grid/List */
         #videoGridContainer {
             flex-grow: 1; overflow-y: auto; padding: 16px;
             padding-bottom: calc(96px + env(safe-area-inset-bottom));
         }
-        #videoGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+        #videoGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+        #videoGrid.list-view { grid-template-columns: 1fr; }
+        
         .video-card {
-            background-color: var(--md-sys-color-surface); border-radius: 12px; overflow: hidden;
-            position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;
-            transition: transform 0.2s ease;
+            background-color: var(--md-surface-container); border-radius: 12px; overflow: hidden;
+            position: relative; transition: transform 0.2s; cursor: pointer;
         }
-        .video-card:active { transform: scale(0.97); }
+        .video-card:active { transform: scale(0.98); }
+        
+        /* List View specific styles */
+        #videoGrid.list-view .video-card { display: flex; align-items: center; height: 80px; }
+        #videoGrid.list-view .video-card-thumbnail { width: 120px; height: 100%; aspect-ratio: auto; }
+        #videoGrid.list-view .video-info { padding: 0 12px; flex-grow: 1; }
+        
         .video-card-thumbnail {
-            width: 100%; display: block; aspect-ratio: 16 / 10;
-            object-fit: cover; background-color: #212121;
+            width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #000;
         }
+        .video-info { padding: 10px; }
         .video-card-title {
-            font-size: 0.875rem; font-weight: 500; padding: 12px;
-            line-height: 1.3; color: var(--md-sys-color-on-surface);
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            font-size: 0.9rem; font-weight: 500; color: var(--md-on-surface);
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-        .delete-btn {
-            position: absolute; top: 4px; right: 4px;
-            width: 36px; height: 36px; background: rgba(0,0,0,0.5); color: white; z-index: 5;
+        .video-meta { font-size: 0.75rem; color: var(--md-outline); margin-top: 4px; }
+        
+        .card-actions {
+            position: absolute; bottom: 8px; right: 8px; display: flex; gap: 4px;
         }
+        .card-btn {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.6);
+            color: #fff; border: none; display: flex; justify-content: center; align-items: center;
+        }
+        .favorite-btn.is-fav { color: #ff4d4d; }
+
+        /* FAB */
         #addVideosButton {
-            position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); right: 16px;
-            width: 56px; height: 56px; background-color: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container); border-radius: 16px; border: none;
-            font-size: 1.8rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer;
-            display: flex; justify-content: center; align-items: center; z-index: 15;
+            position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); right: 24px;
+            width: 56px; height: 56px; background-color: var(--md-primary);
+            color: var(--md-on-primary); border-radius: 16px; border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 15;
+            display: flex; justify-content: center; align-items: center;
         }
-        #playerView .top-app-bar { justify-content: start; gap: 8px; }
-        #videoTitle { font-weight: 500; font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        #videoPlayerWrapper { width: 100%; background-color: #000; position: relative; aspect-ratio: 16/9; }
-        #videoPlayer { width: 100%; height: 100%; }
+
+        /* Player View */
+        #videoPlayerWrapper { 
+            width: 100%; background-color: #000; position: relative; 
+            flex-grow: 1; display: flex; justify-content: center; align-items: center;
+        }
+        #videoPlayer { width: 100%; max-height: 100%; object-fit: contain; }
+        #videoPlayer.fill-mode { object-fit: cover; }
+        
+        /* Custom Overlays (Gestures/Lock) */
+        .gesture-area {
+            position: absolute; top: 0; bottom: 0; width: 35%; z-index: 25;
+            display: flex; align-items: center; justify-content: center; opacity: 0;
+            color: #fff; font-size: 1.5rem; transition: opacity 0.2s; pointer-events: auto;
+        }
+        .gesture-left { left: 0; background: linear-gradient(90deg, rgba(0,0,0,0.4), transparent); }
+        .gesture-right { right: 0; background: linear-gradient(-90deg, rgba(0,0,0,0.4), transparent); }
+        .gesture-anim { opacity: 1; }
+
         #playerLockOverlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
-            z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 30;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         #playerLockOverlay.visible { opacity: 1; pointer-events: all; }
-        #unlockButton { background: rgba(255,255,255,0.2); border: 2px solid white; color: white; font-size: 2rem; width: 70px; height: 70px; border-radius: 50%; }
-        #playerControls { padding: 8px 16px; text-align: right; background-color: var(--md-sys-color-surface); border-bottom: 1px solid var(--md-sys-color-surface-variant); }
-        #lockButton {
-            background: none; border: 1px solid var(--md-sys-color-outline); padding: 8px 16px;
-            border-radius: 20px; font-size: 0.875rem; color: var(--md-sys-color-primary);
-            display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+        #unlockButton { padding: 16px; border: 2px solid white; border-radius: 50%; color: white; background: rgba(255,255,255,0.1); }
+
+        #playerControlsBar {
+            background: var(--md-surface); padding: 8px 16px; padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--md-outline); flex-shrink: 0;
         }
-        #upNextContainer { padding: 8px; flex-grow: 1; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom); }
-        #upNextContainer h3 { padding: 8px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); }
-        .up-next-item { display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 8px; transition: background-color 0.2s; }
-        .up-next-item:active { background-color: var(--md-sys-color-surface-variant); }
-        .up-next-item img { width: 120px; height: 67px; object-fit: cover; border-radius: 4px; margin-right: 16px; }
-        .up-next-item .title { font-weight: 500; color: var(--md-sys-color-on-surface); }
+        .control-group { display: flex; gap: 16px; align-items: center; }
+        select.player-select {
+            background: var(--md-surface-container); border: none; color: var(--md-on-surface);
+            padding: 6px; border-radius: 4px; font-size: 0.85rem;
+        }
+
+        /* Dialogs */
+        .dialog-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100;
+            display: none; justify-content: center; align-items: center; backdrop-filter: blur(2px);
+        }
+        .dialog-overlay.visible { display: flex; }
+        .dialog-box {
+            background: var(--md-surface); color: var(--md-on-surface);
+            border-radius: 24px; padding: 24px; width: 90%; max-width: 360px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .dialog-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; }
+        .dialog-option { margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+        .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+        .btn { border: none; padding: 10px 16px; border-radius: 20px; font-weight: 500; cursor: pointer; }
+        .btn-text { background: transparent; color: var(--md-primary); }
+        .btn-fill { background: var(--md-primary); color: var(--md-on-primary); }
+
+        /* Lock Screen */
+        #appLockScreen {
+            position: fixed; inset: 0; background: var(--md-bg); z-index: 2000;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+        }
+        #appLockScreen.visible { display: flex; }
+        .pin-inputs { display: flex; gap: 12px; margin: 24px 0; }
+        .pin-digit {
+            width: 48px; height: 56px; font-size: 24px; text-align: center;
+            background: var(--md-surface-container); border: 2px solid var(--md-outline);
+            border-radius: 8px; color: var(--md-on-surface);
+        }
+        .pin-digit:focus { border-color: var(--md-primary); outline: none; }
+
+        /* Loading */
+        #loading {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 3000;
+            display: none; justify-content: center; align-items: center; flex-direction: column; color: white;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid var(--md-primary); border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    
-    <input type="file" id="fileInput"  multiple hidden>
 
-    <!-- NEW/MODIFIED: Unified Lock Screen -->
+    <input type="file" id="fileInput" multiple hidden accept="video/*">
+    <input type="file" id="subtitleInput" hidden accept=".vtt,.srt">
+
+    <!-- Loading -->
+    <div id="loading"><div class="spinner"></div><p id="loadingText" style="margin-top:10px;">Loading...</p></div>
+
+    <!-- App Lock Screen -->
     <div id="appLockScreen">
-        <span class="material-symbols-outlined">lock</span>
-        <h2>App Locked</h2>
-        <div id="simpleLockContainer">
-            <button id="appUnlockButton">Unlock</button>
+        <span class="material-symbols-outlined" style="font-size: 64px; color: var(--md-primary);">lock</span>
+        <h2 style="margin-top: 16px;">Locked</h2>
+        <div id="lockMessage" style="color: var(--md-error); height: 20px; margin-top:8px;"></div>
+        <div class="pin-inputs" id="lockPinInputs">
+            <input type="number" class="pin-digit" maxlength="1">
+            <input type="number" class="pin-digit" maxlength="1">
+            <input type="number" class="pin-digit" maxlength="1">
+            <input type="number" class="pin-digit" maxlength="1">
         </div>
-        <div id="passwordLockContainer" style="display: none;">
-            <p id="pinErrorMessage"></p>
-            <div id="pinInputContainer">
-                <input type="number" class="pin-input" maxlength="1" data-index="0">
-                <input type="number" class="pin-input" maxlength="1" data-index="1">
-                <input type="number" class="pin-input" maxlength="1" data-index="2">
-                <input type="number" class="pin-input" maxlength="1" data-index="3">
-            </div>
-        </div>
+        <button id="simpleUnlockBtn" class="btn btn-fill" style="display:none;">Unlock</button>
     </div>
 
-    <!-- NEW: Comprehensive Settings Dialog -->
+    <!-- Settings Dialog -->
     <div id="settingsDialog" class="dialog-overlay">
         <div class="dialog-box">
-            <h4>Settings</h4>
-            <div class="settings-section">
-                <h5>App Lock</h5>
-                <div class="setting-option">
-                    <input type="radio" id="lockNone" name="lockMode" value="none">
-                    <label for="lockNone">None (No Lock)</label>
+            <div class="dialog-header">Settings</div>
+            
+            <div class="dialog-option">
+                <span>Dark Theme</span>
+                <input type="checkbox" id="themeToggle">
+            </div>
+
+            <div class="dialog-option" style="flex-direction: column; align-items: flex-start;">
+                <span>Security</span>
+                <div style="margin-top: 8px; width: 100%;">
+                    <select id="lockModeSelect" class="player-select" style="width: 100%; padding: 10px;">
+                        <option value="none">None</option>
+                        <option value="simple">Simple Lock</option>
+                        <option value="pin">PIN Lock</option>
+                    </select>
                 </div>
-                <div class="setting-option">
-                    <input type="radio" id="lockSimple" name="lockMode" value="simple">
-                    <label for="lockSimple">Simple Lock</label>
-                </div>
-                <div class="setting-option">
-                    <input type="radio" id="lockPassword" name="lockMode" value="password">
-                    <label for="lockPassword">Password Lock (4-Digit PIN)</label>
-                </div>
-                <div id="settingsPinContainer">
-                    <label for="settingsPinInput">Set/Change PIN:</label><br>
-                    <input type="number" id="settingsPinInput" placeholder="4 Digits">
+                <div id="setPinArea" style="display:none; margin-top:8px; width: 100%;">
+                    <input type="number" id="newPinInput" placeholder="Set 4-digit PIN" class="player-select" style="width: 100%;">
                 </div>
             </div>
-            <div class="settings-section">
-                <h5>Cache</h5>
-                <p>Clear all saved video resume points. Videos will start from the beginning.</p>
-                <button id="clearCacheButton">Clear Resume Data (Cache)</button>
+
+            <div class="dialog-option">
+                <span>Clear Resume Data</span>
+                <button class="btn-text" id="clearCacheBtn" style="color: var(--md-error);">Clear</button>
             </div>
+
             <div class="dialog-actions">
-                <button id="settingsCancel" class="text-action">Cancel</button>
-                <button id="settingsSave" class="primary-action">Save</button>
+                <button class="btn btn-text" id="closeSettings">Close</button>
+                <button class="btn btn-fill" id="saveSettings">Save</button>
             </div>
         </div>
     </div>
 
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
-        <p id="loadingText"></p>
-    </div>
-
-    <div id="confirmDialog" class="dialog-overlay">
-        <div class="dialog-box">
-            <h4 id="confirmTitle">Delete video?</h4>
-            <p id="confirmMessage">This will permanently remove the video from your library. This action cannot be undone.</p>
-            <div class="dialog-actions">
-                <button id="confirmCancel" class="text-action">Cancel</button>
-                <button id="confirmOk" style="background-color:var(--md-sys-color-error); color:var(--md-sys-color-on-error)">Delete</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Library View -->
     <div id="libraryView" class="view">
         <header class="top-app-bar">
-            <h1>videos</h1>
-            <div class="search-container">
-                <span class="material-symbols-outlined" style="color: var(--md-sys-color-on-surface-variant);">search</span>
-                <input type="search" id="searchInput" placeholder="Search library">
-            </div>
-            <button id="settingsButton" title="Settings" class="icon-button">
-                <span class="material-symbols-outlined">settings</span>
-            </button>
+            <h1>LocalFlix Pro</h1>
+            <button class="icon-button" id="settingsBtn"><span class="material-symbols-outlined">settings</span></button>
         </header>
+        
+        <div id="filterBar">
+            <input type="search" id="searchInput" placeholder="Search...">
+            <button class="icon-button" id="viewToggleBtn" title="Toggle View">
+                <span class="material-symbols-outlined">grid_view</span>
+            </button>
+            <select id="sortSelect" class="player-select">
+                <option value="date">Date</option>
+                <option value="name">Name</option>
+                <option value="size">Size</option>
+            </select>
+        </div>
+        
+        <div style="padding: 0 16px; margin-top: 8px; display:flex; gap: 8px;">
+            <button class="chip selected" id="filterAll">All</button>
+            <button class="chip" id="filterFav">Favorites</button>
+        </div>
+
         <main id="videoGridContainer">
             <div id="videoGrid"></div>
         </main>
-        <button id="addVideosButton" title="Add Videos" class="material-symbols-outlined">add</button>
+        
+        <button id="addVideosButton"><span class="material-symbols-outlined">add</span></button>
     </div>
 
+    <!-- Player View -->
     <div id="playerView" class="view hidden">
-        <header class="top-app-bar">
-            <button id="backButton" title="Back to Library" class="icon-button">
-                <span class="material-symbols-outlined">arrow_back</span>
-            </button>
-            <h2 id="videoTitle"></h2>
+        <header class="top-app-bar" style="background: rgba(0,0,0,0.5); position: absolute; top:0; left:0; width:100%; color: white;">
+            <button class="icon-button" id="backBtn" style="color: white;"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h2 id="videoTitle" style="color: white; font-size: 1rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-grow: 1;"></h2>
+            <button class="icon-button" id="addSubBtn" style="color: white;" title="Add Subtitle"><span class="material-symbols-outlined">subtitles</span></button>
         </header>
+
         <div id="videoPlayerWrapper">
-            <video id="videoPlayer" controls controlslist="nodownload"></video>
+            <video id="videoPlayer" playsinline></video>
+            
+            <!-- Gesture Overlays -->
+            <div class="gesture-area gesture-left" id="gestureLeft">
+                <span class="material-symbols-outlined">fast_rewind</span> <span style="font-size: 0.8rem; font-weight:bold;">10s</span>
+            </div>
+            <div class="gesture-area gesture-right" id="gestureRight">
+                <span class="material-symbols-outlined">fast_forward</span> <span style="font-size: 0.8rem; font-weight:bold;">10s</span>
+            </div>
+
+            <!-- Lock Overlay -->
             <div id="playerLockOverlay">
-                <button id="unlockButton" class="material-symbols-outlined">lock_open</button>
+                <button id="unlockButton"><span class="material-symbols-outlined">lock_open</span></button>
             </div>
         </div>
-        <div id="playerControls">
-             <button id="lockButton">
-                <span class="material-symbols-outlined">lock</span> Lock
-             </button>
+
+        <div id="playerControlsBar">
+            <div class="control-group">
+                <button class="icon-button" id="playerLockBtn" title="Lock Player"><span class="material-symbols-outlined">lock</span></button>
+                <button class="icon-button" id="aspectBtn" title="Fit/Fill"><span class="material-symbols-outlined">aspect_ratio</span></button>
+            </div>
+            <div class="control-group">
+                <button class="icon-button" id="pipBtn" title="PiP"><span class="material-symbols-outlined">picture_in_picture_alt</span></button>
+                <select id="speedSelect" class="player-select">
+                    <option value="0.5">0.5x</option>
+                    <option value="1.0" selected>1.0x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2.0">2.0x</option>
+                </select>
+            </div>
         </div>
-        <main id="upNextContainer">
-            <h3>Up Next</h3>
-            <div id="upNextList"></div>
-        </main>
     </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- Element References ---
-    const appLockScreen = document.getElementById('appLockScreen');
-    const simpleLockContainer = document.getElementById('simpleLockContainer');
-    const passwordLockContainer = document.getElementById('passwordLockContainer');
-    const appUnlockButton = document.getElementById('appUnlockButton');
-    const pinInputs = document.querySelectorAll('.pin-input');
-    const pinErrorMessage = document.getElementById('pinErrorMessage');
-    
-    const settingsButton = document.getElementById('settingsButton');
-    const settingsDialog = document.getElementById('settingsDialog');
-    const settingsPinContainer = document.getElementById('settingsPinContainer');
-    const settingsPinInput = document.getElementById('settingsPinInput');
-    const clearCacheButton = document.getElementById('clearCacheButton');
-    const settingsSave = document.getElementById('settingsSave');
-    const settingsCancel = document.getElementById('settingsCancel');
-    
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const loadingText = document.getElementById('loadingText');
-    const videoGrid = document.getElementById('videoGrid');
-    const fileInput = document.getElementById('fileInput');
-    const addVideosButton = document.getElementById('addVideosButton');
-    const searchInput = document.getElementById('searchInput');
-    const backButton = document.getElementById('backButton');
-    const videoPlayer = document.getElementById('videoPlayer');
-    const videoTitle = document.getElementById('videoTitle');
-    const upNextList = document.getElementById('upNextList');
-    const lockButton = document.getElementById('lockButton');
-    const playerLockOverlay = document.getElementById('playerLockOverlay');
-    const unlockButton = document.getElementById('unlockButton');
-    const confirmDialog = document.getElementById('confirmDialog');
-    const confirmOk = document.getElementById('confirmOk');
-    const confirmCancel = document.getElementById('confirmCancel');
-    const views = { library: document.getElementById('libraryView'), player: document.getElementById('playerView') };
-    
-    // --- App State & Constants ---
-    let db, allVideos = [], currentPlayingIndex = -1, currentObjectUrl = null;
-    let activeThumbnailUrls = [], confirmResolve = null, pendingResumeTime = 0;
-    const RESUME_DATA_KEY = 'videoResumeData';
-    const LOCK_CONFIG_KEY = 'lockConfig'; // NEW
+/**
+ * LocalFlix Pro - Unified Logic
+ */
 
-    // --- Helpers ---
-    const DBHelper = { 
-        init: () => new Promise((resolve, reject) => {
-            const r = indexedDB.open('VideoLibraryDB_V2', 1);
-            r.onerror = e => reject("DB error: " + e.target.errorCode);
-            r.onsuccess = e => { db = e.target.result; resolve(db); };
-            r.onupgradeneeded = e => { e.target.result.createObjectStore('videos', { keyPath: 'id', autoIncrement: true }).createIndex('name', 'name', { unique: false }); };
-        }),
-        addVideo: (file, thumb) => new Promise((resolve, reject) => { const t = db.transaction(['videos'],'readwrite'); t.objectStore('videos').add({ name: file.name, type: file.type, size: file.size, videoBlob: file, thumbnailBlob: thumb, added: new Date() }).onsuccess = resolve; t.onerror = e => reject(e.target.error); }),
-        getAllVideos: () => new Promise(r => { db.transaction(['videos']).objectStore('videos').getAll().onsuccess = e => r(e.target.result); }),
-        getVideo: id => new Promise(r => { db.transaction(['videos']).objectStore('videos').get(id).onsuccess = e => r(e.target.result); }),
-        deleteVideo: id => new Promise(r => { db.transaction(['videos'],'readwrite').objectStore('videos').delete(id).onsuccess = r; })
-    };
+// --- State Management ---
+const AppState = {
+    db: null,
+    videos: [],
+    currentVideoId: null,
+    objectUrls: [],
+    config: { theme: 'light', sort: 'date', view: 'grid', lockMode: 'none', pin: null },
+    filter: 'all' // 'all' or 'fav'
+};
 
-    const CacheHelper = {
-        get: () => { try { return JSON.parse(localStorage.getItem(RESUME_DATA_KEY)) || {}; } catch (e) { return {}; } },
-        save: (data) => { localStorage.setItem(RESUME_DATA_KEY, JSON.stringify(data)); },
-        clear: () => { localStorage.removeItem(RESUME_DATA_KEY); },
-        updateForVideo: (videoId, time) => {
-            const cache = CacheHelper.get();
-            if (time > 0 && time < videoPlayer.duration - 2) { cache[videoId] = time; } else { delete cache[videoId]; }
-            CacheHelper.save(cache);
-        },
-        clearForVideo: (videoId) => { const cache = CacheHelper.get(); delete cache[videoId]; CacheHelper.save(cache); }
-    };
-    
-    // --- NEW: Settings and Lock Management ---
-    const SettingsHelper = {
-        getConfig: () => {
-            const defaultConfig = { mode: 'none', pinHash: null };
-            try { return { ...defaultConfig, ...JSON.parse(localStorage.getItem(LOCK_CONFIG_KEY)) }; } 
-            catch (e) { return defaultConfig; }
-        },
-        saveConfig: (config) => {
-            localStorage.setItem(LOCK_CONFIG_KEY, JSON.stringify(config));
-        },
-        hashPin: (pin) => btoa(pin), // Simple obfuscation, not true security
-        open: () => {
-            const config = SettingsHelper.getConfig();
-            document.querySelector(`input[name="lockMode"][value="${config.mode}"]`).checked = true;
-            settingsPinContainer.style.display = config.mode === 'password' ? 'block' : 'none';
-            settingsPinInput.value = '';
-            settingsDialog.classList.add('visible');
-        },
-        close: () => settingsDialog.classList.remove('visible'),
-        save: () => {
-            const selectedMode = document.querySelector('input[name="lockMode"]:checked').value;
-            let newConfig = { mode: selectedMode, pinHash: null };
-            const currentConfig = SettingsHelper.getConfig();
+// --- DOM Elements ---
+const els = {
+    body: document.body,
+    fileInput: document.getElementById('fileInput'),
+    subInput: document.getElementById('subtitleInput'),
+    loading: document.getElementById('loading'),
+    loadingText: document.getElementById('loadingText'),
+    grid: document.getElementById('videoGrid'),
+    // Views
+    views: { lib: document.getElementById('libraryView'), player: document.getElementById('playerView') },
+    // Lock
+    lockScreen: document.getElementById('appLockScreen'),
+    pinInputs: document.querySelectorAll('.pin-digit'),
+    simpleUnlockBtn: document.getElementById('simpleUnlockBtn'),
+    lockMsg: document.getElementById('lockMessage'),
+    // Settings
+    settingsDialog: document.getElementById('settingsDialog'),
+    settingsBtn: document.getElementById('settingsBtn'),
+    themeToggle: document.getElementById('themeToggle'),
+    lockModeSelect: document.getElementById('lockModeSelect'),
+    newPinInput: document.getElementById('newPinInput'),
+    setPinArea: document.getElementById('setPinArea'),
+    saveSettings: document.getElementById('saveSettings'),
+    closeSettings: document.getElementById('closeSettings'),
+    clearCacheBtn: document.getElementById('clearCacheBtn'),
+    // Library
+    search: document.getElementById('searchInput'),
+    viewToggle: document.getElementById('viewToggleBtn'),
+    sortSelect: document.getElementById('sortSelect'),
+    filterAll: document.getElementById('filterAll'),
+    filterFav: document.getElementById('filterFav'),
+    addBtn: document.getElementById('addVideosButton'),
+    // Player
+    video: document.getElementById('videoPlayer'),
+    videoTitle: document.getElementById('videoTitle'),
+    backBtn: document.getElementById('backBtn'),
+    speedSelect: document.getElementById('speedSelect'),
+    pipBtn: document.getElementById('pipBtn'),
+    aspectBtn: document.getElementById('aspectBtn'),
+    playerLockBtn: document.getElementById('playerLockBtn'),
+    playerLockOverlay: document.getElementById('playerLockOverlay'),
+    unlockButton: document.getElementById('unlockButton'),
+    addSubBtn: document.getElementById('addSubBtn'),
+    gestureLeft: document.getElementById('gestureLeft'),
+    gestureRight: document.getElementById('gestureRight'),
+    videoWrapper: document.getElementById('videoPlayerWrapper')
+};
 
-            if (selectedMode === 'password') {
-                const pin = settingsPinInput.value;
-                if (pin && /^\d{4}$/.test(pin)) {
-                    newConfig.pinHash = SettingsHelper.hashPin(pin);
-                } else if (pin) {
-                    alert("PIN must be exactly 4 digits.");
-                    return;
-                } else {
-                    // Keep old PIN if input is empty
-                    newConfig.pinHash = currentConfig.pinHash;
-                    if (!newConfig.pinHash) {
-                        alert("Please set a 4-digit PIN for password lock.");
-                        return;
-                    }
-                }
+// --- Helpers ---
+const Helpers = {
+    fmtDuration: (s) => {
+        if(!s) return '';
+        const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
+        return `${m}:${sec.toString().padStart(2, '0')}`;
+    },
+    fmtSize: (b) => (b / (1024*1024)).toFixed(1) + ' MB',
+    showLoading: (txt) => { els.loadingText.innerText = txt; els.loading.style.display = 'flex'; },
+    hideLoading: () => { els.loading.style.display = 'none'; },
+    revokeUrls: () => { AppState.objectUrls.forEach(u => URL.revokeObjectURL(u)); AppState.objectUrls = []; },
+    saveConfig: () => localStorage.setItem('lf_config', JSON.stringify(AppState.config)),
+    loadConfig: () => {
+        const c = JSON.parse(localStorage.getItem('lf_config'));
+        if(c) AppState.config = { ...AppState.config, ...c };
+        Helpers.applyTheme();
+    },
+    applyTheme: () => {
+        document.documentElement.setAttribute('data-theme', AppState.config.theme);
+        els.themeToggle.checked = AppState.config.theme === 'dark';
+    }
+};
+
+// --- Database (IndexedDB) ---
+const DB = {
+    init: () => new Promise((resolve, reject) => {
+        const r = indexedDB.open('LocalFlixProDB', 2);
+        r.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains('videos')) {
+                d.createObjectStore('videos', { keyPath: 'id', autoIncrement: true });
             }
-            SettingsHelper.saveConfig(newConfig);
-            alert("Settings saved!");
-            SettingsHelper.close();
-        }
-    };
+        };
+        r.onsuccess = (e) => { AppState.db = e.target.result; resolve(); };
+        r.onerror = (e) => reject(e);
+    }),
+    add: (file, thumb) => new Promise((resolve, reject) => {
+        const tx = AppState.db.transaction(['videos'], 'readwrite');
+        tx.objectStore('videos').add({
+            name: file.name, type: file.type, size: file.size,
+            blob: file, thumb: thumb, added: Date.now(), isFavorite: false, resumeTime: 0
+        });
+        tx.oncomplete = resolve; tx.onerror = reject;
+    }),
+    getAll: () => new Promise(resolve => {
+        AppState.db.transaction(['videos']).objectStore('videos').getAll().onsuccess = e => resolve(e.target.result);
+    }),
+    update: (video) => new Promise(resolve => {
+        AppState.db.transaction(['videos'], 'readwrite').objectStore('videos').put(video).onsuccess = resolve;
+    }),
+    delete: (id) => new Promise(resolve => {
+        AppState.db.transaction(['videos'], 'readwrite').objectStore('videos').delete(id).onsuccess = resolve;
+    })
+};
+
+// --- Library Logic ---
+async function loadLibrary() {
+    Helpers.showLoading('Loading Library...');
+    try {
+        AppState.videos = await DB.getAll();
+        renderLibrary();
+    } catch(e) { console.error(e); }
+    Helpers.hideLoading();
+}
+
+function renderLibrary() {
+    Helpers.revokeUrls();
+    els.grid.innerHTML = '';
     
-    function handleAppLock() {
-        const config = SettingsHelper.getConfig();
-        if (config.mode === 'none') {
-            initializeApp();
-            return;
-        }
+    // Filter
+    let list = AppState.videos;
+    if (AppState.filter === 'fav') list = list.filter(v => v.isFavorite);
+    const term = els.search.value.toLowerCase();
+    if (term) list = list.filter(v => v.name.toLowerCase().includes(term));
 
-        appLockScreen.classList.add('visible');
-        if (config.mode === 'simple') {
-            simpleLockContainer.style.display = 'block';
-            passwordLockContainer.style.display = 'none';
-        } else if (config.mode === 'password') {
-            simpleLockContainer.style.display = 'none';
-            passwordLockContainer.style.display = 'block';
-            pinInputs[0].focus();
-        }
+    // Sort
+    list.sort((a, b) => {
+        if (AppState.config.sort === 'name') return a.name.localeCompare(b.name);
+        if (AppState.config.sort === 'size') return b.size - a.size;
+        return b.added - a.added; // default date
+    });
+
+    // View Mode
+    els.grid.className = AppState.config.view === 'list' ? 'list-view' : '';
+    els.viewToggle.innerHTML = `<span class="material-symbols-outlined">${AppState.config.view === 'list' ? 'grid_view' : 'view_list'}</span>`;
+
+    if (list.length === 0) {
+        els.grid.innerHTML = `<div style="text-align:center; padding:40px; color:var(--md-outline); grid-column:1/-1;">No videos found</div>`;
+        return;
     }
 
-    function checkPin() {
-        const enteredPin = Array.from(pinInputs).map(i => i.value).join('');
-        if (enteredPin.length < 4) return;
+    list.forEach(v => {
+        const url = URL.createObjectURL(v.thumb);
+        AppState.objectUrls.push(url);
+        
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.onclick = (e) => {
+            if(!e.target.closest('.card-btn')) playVideo(v);
+        };
 
-        const config = SettingsHelper.getConfig();
-        if (SettingsHelper.hashPin(enteredPin) === config.pinHash) {
-            appLockScreen.classList.remove('visible');
-            initializeApp();
-        } else {
-            pinErrorMessage.textContent = "Incorrect PIN";
-            passwordLockContainer.classList.add('shake');
-            pinInputs.forEach(input => input.value = '');
-            pinInputs[0].focus();
-            setTimeout(() => passwordLockContainer.classList.remove('shake'), 820);
-        }
-    }
+        const favClass = v.isFavorite ? 'material-symbols-outlined' : 'material-symbols-outlined';
+        const favColor = v.isFavorite ? '#ff4d4d' : 'white';
+        const iconTxt = v.isFavorite ? 'favorite' : 'favorite_border';
 
-    // --- Core App Logic ---
-    async function initializeApp() {
-        showLoading("Initializing...");
-        try {
-            await DBHelper.init(); await loadLibrary();
-        } catch (error) {
-            console.error("Initialization failed:", error); alert('Fatal Error: Could not start the application.');
-        } finally { hideLoading(); }
+        card.innerHTML = `
+            <img src="${url}" class="video-card-thumbnail">
+            <div class="video-info">
+                <div class="video-card-title">${v.name}</div>
+                <div class="video-meta">${Helpers.fmtSize(v.size)}</div>
+            </div>
+            <div class="card-actions">
+                <button class="card-btn favorite-btn" style="color: ${favColor}" onclick="toggleFav(${v.id}, this)">
+                    <span class="${favClass}">${iconTxt}</span>
+                </button>
+                <button class="card-btn" onclick="deleteVideo(${v.id})">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+            </div>
+        `;
+        els.grid.appendChild(card);
+    });
+}
+
+window.toggleFav = async (id, btn) => {
+    const v = AppState.videos.find(x => x.id === id);
+    if(v) {
+        v.isFavorite = !v.isFavorite;
+        await DB.update(v);
+        renderLibrary();
     }
+};
+
+window.deleteVideo = async (id) => {
+    if(confirm('Delete this video permanently?')) {
+        await DB.delete(id);
+        await loadLibrary();
+    }
+};
+
+// --- Player Logic ---
+async function playVideo(video) {
+    AppState.currentVideoId = video.id;
+    const blobUrl = URL.createObjectURL(video.blob);
+    AppState.objectUrls.push(blobUrl); // Managed in player scope technically, but lazy implementation here
     
-    function showConfirmation() { return new Promise(resolve => { confirmResolve = resolve; confirmDialog.classList.add('visible'); }); }
-    confirmOk.addEventListener('click', () => { if (confirmResolve) confirmResolve(true); confirmDialog.classList.remove('visible'); });
-    confirmCancel.addEventListener('click', () => { if (confirmResolve) confirmResolve(false); confirmDialog.classList.remove('visible'); });
-    function showLoading(text) { loadingText.textContent = text; loadingOverlay.classList.add('visible'); }
-    function hideLoading() { loadingOverlay.classList.remove('visible'); }
-    function revokeActiveThumbnailUrls() { activeThumbnailUrls.forEach(url => URL.revokeObjectURL(url)); activeThumbnailUrls = []; }
-    async function loadLibrary() { allVideos = await DBHelper.getAllVideos(); allVideos.sort((a,b) => b.added - a.added); renderVideoGrid(allVideos); }
-    function renderVideoGrid(videosToRender) {
-        revokeActiveThumbnailUrls(); videoGrid.innerHTML = '';
-        if (videosToRender.length === 0) {
-            videoGrid.innerHTML = `<p style="grid-column: 1 / -1; color: var(--md-sys-color-on-surface-variant); text-align: center; padding: 32px;">Your library is empty.<br>Tap the '+' button to add videos.</p>`;
-            return;
-        }
-        videosToRender.forEach(video => {
-            const card = document.createElement('div'); card.className = 'video-card'; card.dataset.videoId = video.id;
-            const img = document.createElement('img'); img.className = 'video-card-thumbnail';
-            const thumbnailUrl = URL.createObjectURL(video.thumbnailBlob); activeThumbnailUrls.push(thumbnailUrl); img.src = thumbnailUrl;
-            const title = document.createElement('div'); title.className = 'video-card-title'; title.textContent = video.name;
-            const deleteBtn = document.createElement('button'); deleteBtn.className = 'icon-button delete-btn';
-            deleteBtn.innerHTML = '<span class="material-symbols-outlined">delete</span>'; deleteBtn.dataset.videoId = video.id; deleteBtn.title = 'Delete Video';
-            card.append(img, title, deleteBtn); videoGrid.appendChild(card);
-        });
-    }
-    async function playVideo(videoId) {
-        currentPlayingIndex = allVideos.findIndex(v => v.id === videoId); if (currentPlayingIndex === -1) return;
-        const resumeCache = CacheHelper.get(); pendingResumeTime = resumeCache[videoId] || 0;
-        const videoData = await DBHelper.getVideo(videoId);
-        if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
-        currentObjectUrl = URL.createObjectURL(videoData.videoBlob);
-        videoPlayer.src = currentObjectUrl; videoPlayer.play();
-        videoTitle.textContent = videoData.name;
-        switchToView('player'); populateUpNextList();
-    }
-    function populateUpNextList() {
-        revokeActiveThumbnailUrls(); upNextList.innerHTML = '';
-        const playlist = [...allVideos.slice(currentPlayingIndex + 1), ...allVideos.slice(0, currentPlayingIndex)];
-        playlist.slice(0, 10).forEach(video => {
-            const item = document.createElement('div'); item.className = 'up-next-item'; item.dataset.videoId = video.id;
-            const img = document.createElement('img');
-            const thumbnailUrl = URL.createObjectURL(video.thumbnailBlob); activeThumbnailUrls.push(thumbnailUrl); img.src = thumbnailUrl;
-            const title = document.createElement('div'); title.className = 'title'; title.textContent = video.name;
-            item.append(img, title); upNextList.appendChild(item);
-        });
-    }
-    function playNextVideo() { let nextIndex = (currentPlayingIndex + 1) % allVideos.length; if (allVideos[nextIndex]) playVideo(allVideos[nextIndex].id); }
-    function generateThumbnail(file) {
-        return new Promise((resolve, reject) => {
-            const video = document.createElement('video'); const canvas = document.createElement('canvas');
-            video.onloadeddata = () => { video.currentTime = 1; };
-            video.onseeked = () => {
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(blob => { URL.revokeObjectURL(video.src); resolve(blob); }, 'image/jpeg', 0.8);
-            };
-            video.onerror = e => { URL.revokeObjectURL(video.src); reject(new Error("Could not decode video file.")); };
-            video.src = URL.createObjectURL(file);
-        });
-    }
-    function switchToView(viewName) {
-        if (viewName === 'player') {
-            views.library.classList.add('hidden'); views.player.classList.remove('hidden');
-        } else {
-            if (currentPlayingIndex > -1) { CacheHelper.updateForVideo(allVideos[currentPlayingIndex].id, videoPlayer.currentTime); }
-            views.player.classList.add('hidden'); views.library.classList.remove('hidden');
-            if (!videoPlayer.paused) videoPlayer.pause();
-            if (currentObjectUrl) { URL.revokeObjectURL(currentObjectUrl); currentObjectUrl = null; videoPlayer.removeAttribute('src'); }
-            renderVideoGrid(allVideos.filter(v => v.name.toLowerCase().includes(searchInput.value.toLowerCase())));
-        }
-    }
-
-    // --- Event Listeners ---
-    settingsButton.addEventListener('click', SettingsHelper.open);
-    settingsSave.addEventListener('click', SettingsHelper.save);
-    settingsCancel.addEventListener('click', SettingsHelper.close);
-    document.querySelectorAll('input[name="lockMode"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            settingsPinContainer.style.display = e.target.value === 'password' ? 'block' : 'none';
-        });
-    });
-    clearCacheButton.addEventListener('click', () => {
-        if (confirm("Are you sure you want to clear all resume data?")) {
-            CacheHelper.clear(); alert("Resume data (cache) cleared.");
-        }
-    });
-
-    appUnlockButton.addEventListener('click', () => { appLockScreen.classList.remove('visible'); initializeApp(); });
-    pinInputs.forEach(input => {
-        input.addEventListener('input', () => {
-            if (input.value) {
-                const next = pinInputs[parseInt(input.dataset.index) + 1];
-                if (next) { next.focus(); } else { checkPin(); }
-            }
-        });
-        input.addEventListener('keydown', (e) => {
-            if (e.key === "Backspace" && !input.value) {
-                const prev = pinInputs[parseInt(input.dataset.index) - 1];
-                if (prev) { prev.focus(); }
-            }
-        });
-    });
-
-    addVideosButton.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', async (event) => {
-        const files = event.target.files; if (files.length === 0) return;
-        showLoading('Processing...');
-        for (let i = 0; i < files.length; i++) {
-            showLoading(`Processing ${i + 1} of ${files.length}...`);
-            try { await DBHelper.addVideo(files[i], await generateThumbnail(files[i])); } 
-            catch (error) { console.error(`Failed on ${files[i].name}:`, error); alert(`Could not process ${files[i].name}.`); }
-        }
-        fileInput.value = ''; hideLoading(); await loadLibrary();
-    });
-    videoGrid.addEventListener('click', async (event) => {
-        const card = event.target.closest('.video-card'); const deleteBtn = event.target.closest('.delete-btn');
-        if (deleteBtn) {
-            event.stopPropagation();
-            const confirmed = await showConfirmation();
-            if (confirmed) {
-                const videoId = parseInt(deleteBtn.dataset.videoId, 10);
-                showLoading("Deleting...");
-                await DBHelper.deleteVideo(videoId);
-                CacheHelper.clearForVideo(videoId);
-                await loadLibrary(); hideLoading();
-            }
-        } else if (card) { playVideo(parseInt(card.dataset.videoId, 10)); }
-    });
+    els.video.src = blobUrl;
+    els.videoTitle.innerText = video.name;
+    els.video.currentTime = video.resumeTime || 0;
     
-    videoPlayer.addEventListener('loadedmetadata', () => { if (pendingResumeTime > 0) { videoPlayer.currentTime = pendingResumeTime; pendingResumeTime = 0; } });
-    let lastTimeUpdate = 0;
-    videoPlayer.addEventListener('timeupdate', () => {
-        const now = Date.now(); if (now - lastTimeUpdate < 5000) return;
-        if (currentPlayingIndex > -1) { CacheHelper.updateForVideo(allVideos[currentPlayingIndex].id, videoPlayer.currentTime); lastTimeUpdate = now; }
-    });
-    videoPlayer.addEventListener('ended', () => {
-        if (currentPlayingIndex > -1) { CacheHelper.clearForVideo(allVideos[currentPlayingIndex].id); }
-        playNextVideo();
-    });
+    // Reset Controls
+    els.speedSelect.value = "1.0";
+    els.video.playbackRate = 1.0;
+    els.video.classList.remove('fill-mode');
+    
+    switchView('player');
+    try { await els.video.play(); } catch(e){}
+}
 
-    upNextList.addEventListener('click', (e) => { const item = e.target.closest('.up-next-item'); if(item) playVideo(parseInt(item.dataset.videoId, 10)); });
-    searchInput.addEventListener('input', (e) => { const term = e.target.value.toLowerCase(); renderVideoGrid(allVideos.filter(v => v.name.toLowerCase().includes(term))); });
-    backButton.addEventListener('click', () => switchToView('library'));
-    lockButton.addEventListener('click', () => playerLockOverlay.classList.add('visible'));
-    unlockButton.addEventListener('click', () => playerLockOverlay.classList.remove('visible'));
+function switchView(name) {
+    if(name === 'player') {
+        els.views.lib.classList.add('hidden');
+        els.views.player.classList.remove('hidden');
+    } else {
+        // Save resume time
+        if(AppState.currentVideoId) {
+            const v = AppState.videos.find(x => x.id === AppState.currentVideoId);
+            if(v) {
+                v.resumeTime = els.video.currentTime;
+                DB.update(v);
+            }
+        }
+        els.video.pause();
+        els.video.src = "";
+        els.video.innerHTML = ""; // Remove tracks
+        els.views.player.classList.add('hidden');
+        els.views.lib.classList.remove('hidden');
+        AppState.currentVideoId = null;
+        renderLibrary(); // Refresh grid for resume times etc
+    }
+}
 
-    handleAppLock();
+// Player Features
+els.speedSelect.addEventListener('change', (e) => els.video.playbackRate = parseFloat(e.target.value));
+els.aspectBtn.addEventListener('click', () => els.video.classList.toggle('fill-mode'));
+els.pipBtn.addEventListener('click', () => {
+    if(document.pictureInPictureElement) document.exitPictureInPicture();
+    else els.video.requestPictureInPicture().catch(e => console.log(e));
 });
+
+// Subtitles
+els.addSubBtn.addEventListener('click', () => els.subInput.click());
+els.subInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const track = document.createElement('track');
+    track.kind = 'subtitles';
+    track.label = 'English';
+    track.srclang = 'en';
+    track.src = URL.createObjectURL(file);
+    track.default = true;
+    els.video.appendChild(track);
+    // VTT is native, SRT might fail in some browsers without conversion
+    // For this single file demo, assuming VTT or browser support
+    els.subInput.value = '';
+    alert('Subtitle loaded. Note: Use .vtt for best compatibility.');
+});
+
+// Double Tap Gestures
+let lastTap = 0;
+els.videoWrapper.addEventListener('click', (e) => {
+    // If controls or locked, ignore
+    if(els.playerLockOverlay.classList.contains('visible') || e.target.closest('#playerControlsBar')) return;
+    
+    const now = Date.now();
+    if(now - lastTap < 300) {
+        // Double tap detected
+        const rect = els.videoWrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const isRight = x > rect.width / 2;
+        
+        if(isRight) {
+            els.video.currentTime += 10;
+            triggerAnim(els.gestureRight);
+        } else {
+            els.video.currentTime -= 10;
+            triggerAnim(els.gestureLeft);
+        }
+    }
+    lastTap = now;
+});
+
+function triggerAnim(el) {
+    el.classList.add('gesture-anim');
+    setTimeout(() => el.classList.remove('gesture-anim'), 400);
+}
+
+// Player Lock
+els.playerLockBtn.addEventListener('click', () => els.playerLockOverlay.classList.add('visible'));
+els.unlockButton.addEventListener('click', () => els.playerLockOverlay.classList.remove('visible'));
+els.backBtn.addEventListener('click', () => switchView('lib'));
+
+// --- Settings & App Lock ---
+els.settingsBtn.addEventListener('click', () => {
+    els.settingsDialog.classList.add('visible');
+    els.lockModeSelect.value = AppState.config.lockMode;
+    els.setPinArea.style.display = AppState.config.lockMode === 'pin' ? 'block' : 'none';
+});
+
+els.closeSettings.addEventListener('click', () => els.settingsDialog.classList.remove('visible'));
+els.lockModeSelect.addEventListener('change', (e) => els.setPinArea.style.display = e.target.value === 'pin' ? 'block' : 'none');
+
+els.saveSettings.addEventListener('click', () => {
+    AppState.config.theme = els.themeToggle.checked ? 'dark' : 'light';
+    AppState.config.lockMode = els.lockModeSelect.value;
+    
+    if(AppState.config.lockMode === 'pin' && els.newPinInput.value.length === 4) {
+        AppState.config.pin = els.newPinInput.value;
+    }
+    
+    Helpers.saveConfig();
+    Helpers.applyTheme();
+    els.settingsDialog.classList.remove('visible');
+});
+
+els.clearCacheBtn.addEventListener('click', async () => {
+    const list = await DB.getAll();
+    list.forEach(v => { v.resumeTime = 0; DB.update(v); });
+    alert('Resume data cleared');
+});
+
+// App Lock Logic
+function checkAppLock() {
+    Helpers.loadConfig();
+    if(AppState.config.lockMode === 'none') return;
+    
+    els.lockScreen.classList.add('visible');
+    els.pinInputs.forEach(i => i.value = ''); // clear
+    els.lockMsg.innerText = '';
+
+    if(AppState.config.lockMode === 'simple') {
+        document.getElementById('lockPinInputs').style.display = 'none';
+        els.simpleUnlockBtn.style.display = 'block';
+    } else {
+        document.getElementById('lockPinInputs').style.display = 'flex';
+        els.simpleUnlockBtn.style.display = 'none';
+        els.pinInputs[0].focus();
+    }
+}
+
+els.simpleUnlockBtn.addEventListener('click', () => els.lockScreen.classList.remove('visible'));
+
+els.pinInputs.forEach((input, idx) => {
+    input.addEventListener('input', () => {
+        if(input.value.length > 0) {
+            if(idx < 3) els.pinInputs[idx+1].focus();
+            else validatePin();
+        }
+    });
+});
+
+function validatePin() {
+    const entered = Array.from(els.pinInputs).map(i => i.value).join('');
+    if(entered === AppState.config.pin) {
+        els.lockScreen.classList.remove('visible');
+    } else {
+        els.lockMsg.innerText = "Wrong PIN";
+        setTimeout(() => {
+            els.pinInputs.forEach(i => i.value = '');
+            els.pinInputs[0].focus();
+            els.lockMsg.innerText = "";
+        }, 1000);
+    }
+}
+
+// --- Video Adding & Thumbs ---
+els.addBtn.addEventListener('click', () => els.fileInput.click());
+els.fileInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    if(!files.length) return;
+    
+    Helpers.showLoading(`Processing ${files.length} videos...`);
+    
+    for(const file of files) {
+        try {
+            const thumb = await generateThumbnail(file);
+            await DB.add(file, thumb);
+        } catch(err) {
+            console.error(err);
+        }
+    }
+    
+    els.fileInput.value = '';
+    await loadLibrary();
+    Helpers.hideLoading();
+});
+
+function generateThumbnail(file) {
+    return new Promise((resolve) => {
+        const vid = document.createElement('video');
+        const can = document.createElement('canvas');
+        vid.autoplay = false;
+        vid.muted = true;
+        vid.src = URL.createObjectURL(file);
+        vid.onloadeddata = () => { vid.currentTime = 2; };
+        vid.onseeked = () => {
+            can.width = 320; can.height = 180;
+            can.getContext('2d').drawImage(vid, 0, 0, can.width, can.height);
+            can.toBlob(b => {
+                URL.revokeObjectURL(vid.src);
+                resolve(b);
+            }, 'image/jpeg', 0.7);
+        };
+        vid.onerror = () => { resolve(new Blob()); }; // Fallback empty
+    });
+}
+
+// --- Sorting & Filtering Listeners ---
+els.sortSelect.addEventListener('change', (e) => { AppState.config.sort = e.target.value; Helpers.saveConfig(); renderLibrary(); });
+els.viewToggle.addEventListener('click', () => { 
+    AppState.config.view = (AppState.config.view === 'grid') ? 'list' : 'grid'; 
+    Helpers.saveConfig(); renderLibrary(); 
+});
+els.filterAll.addEventListener('click', () => { AppState.filter = 'all'; updateFilterUI(); renderLibrary(); });
+els.filterFav.addEventListener('click', () => { AppState.filter = 'fav'; updateFilterUI(); renderLibrary(); });
+els.search.addEventListener('input', () => renderLibrary());
+
+function updateFilterUI() {
+    els.filterAll.classList.toggle('selected', AppState.filter === 'all');
+    els.filterFav.classList.toggle('selected', AppState.filter === 'fav');
+}
+
+// --- Init ---
+(async function init() {
+    Helpers.loadConfig();
+    checkAppLock();
+    await DB.init();
+    await loadLibrary();
+})();
+
 </script>
 </body>
-</html>
+    </html>
