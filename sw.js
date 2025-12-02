@@ -1,4 +1,4 @@
-// ১. ক্যাশের নাম এবং অফলাইনে দেখানোর জন্য ফাইলের তালিকা
+/*// ১. ক্যাশের নাম এবং অফলাইনে দেখানোর জন্য ফাইলের তালিকা
 const CACHE_NAME = 'shifat100-github';
 const urlsToCache = [
   '/',                // হোম পেজ
@@ -54,4 +54,4 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-});
+});*/
