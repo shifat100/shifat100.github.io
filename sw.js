@@ -6,7 +6,9 @@ const urlsToCache = [
   '/style.css',       // আপনার CSS ফাইল (নাম চেক করে নিন)
   '/script.js',       // আপনার JS ফাইল (নাম চেক করে নিন)
   'video.html',
-  'contacts.html'// কোনো লোগো বা ছবি থাকলে
+  'contacts.html',
+  'db.js',
+  'apps.json'
 ];
 
 // ২. Install Event: প্রথমবার ভিজিটের সময় ফাইলগুলো ক্যাশে সেভ হবে
