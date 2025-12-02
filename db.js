@@ -1,6 +1,12 @@
 var db = `{
     "root": [
     {
+    "title": "Text Master Tool",
+    "category": "utility",
+    "file": "textmaster", 
+    "description": "Advanced text tool with Replace, Repeat, Clean, and direct TXT/ZIP download features."
+},
+    {
     "title": "File Merger Pro",
     "category": "utility",
     "file": "filemerger", 
@@ -36,6 +42,7 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
 
