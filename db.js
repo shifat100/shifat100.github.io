@@ -1,6 +1,12 @@
 var db = `{
     "root": [
     {
+    "title": "HTML Runner & Console",
+    "category": "development",
+    "file": "htmlrunner", 
+    "description": "Run HTML/JS projects with Live Preview, Custom Console Logs, and Error Checker."
+},
+    {
     "title": "Code Validator & Fixer",
     "category": "utility",
     "file": "codevalid", 
@@ -48,6 +54,7 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
 
