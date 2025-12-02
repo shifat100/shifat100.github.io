@@ -3,7 +3,7 @@ var db = `{
     {
     "title": "Code Validator & Fixer",
     "category": "utility",
-    "file": "codevalidator", 
+    "file": "codevalid", 
     "description": "Validate syntax and Format/Beautify JSON, HTML, CSS, JS, and CSV files."
 },
     {
@@ -48,6 +48,7 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
 
