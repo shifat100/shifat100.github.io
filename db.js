@@ -23,6 +23,12 @@ var db = `{
     "category": "utility",
     "file": "unitconv", 
     "description": "Convert Length (Meter/Feet) and Weight (Kg/Pound) easily."
+},{
+    "title": "Universal JSON Converter",
+    "category": "utility",
+    "file": "jsonconv", 
+    "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
