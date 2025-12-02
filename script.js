@@ -1,6 +1,6 @@
 
 var toolNames = [];
-var categoryNames = ['utilities'];
+var categoryNames = [];
 
 var root = JSON.parse(db);
 var tool = root['root'];
@@ -254,4 +254,5 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('Service Worker registration failed', err));
   });
 }
+
 
