@@ -1,5 +1,5 @@
 // ১. ক্যাশের নাম এবং অফলাইনে দেখানোর জন্য ফাইলের তালিকা
-const CACHE_NAME = 'my-offline-site-v1';
+const CACHE_NAME = 'shifat100-github';
 const urlsToCache = [
   '/',                // হোম পেজ
   '/index.html',      // মেইন HTML ফাইল
@@ -8,7 +8,9 @@ const urlsToCache = [
   'video.html',
   'contacts.html',
   'db.js',
-  'apps.json'
+  'apps.json',
+  'apps.html',
+  ''
 ];
 
 // ২. Install Event: প্রথমবার ভিজিটের সময় ফাইলগুলো ক্যাশে সেভ হবে
