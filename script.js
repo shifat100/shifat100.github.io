@@ -1,6 +1,6 @@
 
 var toolNames = [];
-var categoryNames = ['kaios'];
+var categoryNames = ['utilities'];
 
 var root = JSON.parse(db);
 var tool = root['root'];
@@ -254,3 +254,4 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('Service Worker registration failed', err));
   });
 }
+
