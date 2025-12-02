@@ -1,144 +1,66 @@
-
 <!DOCTYPE html>
-<html lang="en" prefix="og: http://ogp.me/ns#">
+<html>
 
 <head>
-    <!-- Primary Meta Tags -->
-    <!-- REPLACE 'Shifat100 - Web Tools' WITH YOUR ACTUAL KEYWORD RICH TITLE -->
-    <title>Shifat100 - Free Web Tools, Programs & Emulators</title>
+    <div id="pagetitle" style="display: none;">Shifat100</div>
+    <div id="pagedescription" style="display: none;">shifat100 web tools, free web tools, online web tools, web tools, download programs, emulators, use emulators</div>
+    <div id="pagekeywords" style="display: none;">shifat100, web tools, tools, online emulator, emulator, program, download program</div>
+    <div id="pageauthor" style="display: none;">A.I SHIFAT</div>
+    <div id="pageimage" style="display: none;">icon.png</div>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <!-- SEO Meta Tags -->
-    <!-- Write a description between 150-160 characters describing exactly what the tool does -->
-    <meta name="description" id="meta-description" content="Access free online web tools, download programs, and use emulators. Shifat100 provides utilities for developers and casual users." />
-    <meta name="keywords" content="web tools, online emulators, free programs, utility site, Shifat100" />
-    <meta name="author" content="A.I SHIFAT" />
-    <meta name="robots" content="index, follow" />
-    
-    <!-- Canonical Tag (Prevents duplicate content issues) -->
-    <!-- REPLACE WITH YOUR ACTUAL URL -->
-    <link rel="canonical" href="https://shifat100.github.io/" />
-
-    <!-- Google Specific -->
-    <meta name="google" content="nositelinkssearchbox" />
-    <meta name="googlebot" content="notranslate" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" id="og-url" content="https://shifat100.github.io/">
-    <meta property="og:title" id="og-title" content="Shifat100 - Free Web Tools & Utilities">
-    <meta property="og:description" id="og-desc" content="Access free online web tools, download programs, and use emulators.">
-    <meta property="og:image" id="og-image" content="https://shifat100.github.io/social-share-image.jpg">
-    <meta property="og:locale" content="en_US">
-    <meta property="og:site_name" content="Shifat100">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" id="twitter-url" content="https://shifat100.github.io/">
-    <meta property="twitter:title" id="twitter-title" content="Shifat100 - Free Web Tools">
-    <meta property="twitter:description" id="twitter-desc" content="Access free online web tools, download programs, and use emulators.">
-    <meta property="twitter:creator" content="@YourTwitterHandle">
-
-    <!-- Favicons -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="manifest" href="/manifest.json">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="theme-color" content="#000000">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="stylesheet.css" type="text/css" media="all" crossorigin="anonymous">
+    <link rel="stylesheet" href="stylesheet.css" type="text/css" media="all" />
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="lib/selectbox/style.css">
     <link rel="stylesheet" href="lib/font-awesome/4.7.0/css/font-awesome.min.css">
-    
-    <!-- JSON-LD Structured Data (Schema.org) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Shifat100",
-      "url": "https://shifat100.github.io/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://shifat100.github.io?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    
-<script type='text/javascript' src='http://hollowsuspicion.com/f8/49/29/f8492924da30520cabdbb409c9928dec.js'></script>
+    <script src="lib/selectbox/script.js"></script>
+    <script type='text/javascript' src='//dd.hollowsuspicion.com/58/20/d1/5820d18084f7d0847b2c0199042b78b0.js'></script>
 </head>
 
 <body>
-
-
-<ul class="nav">
-    <li style="float: left;"><span id="logobtn" onclick="document.getElementsByClassName('leftbar')[0].style.display = 'block';">>_</span></li>
-    <li style="float: left;"><span
-            style="display: flex; font-weight: bold; font-size: 20px; height: 35px;align-items: center;"><h1>Shifat100</h1></span>
-    </li>
-    <li style="float: right;"><span class="navsidebarbtn" id="menubtn"><img src="icon/menu.png" width="20px"
-                alt="Menu"></img></span></li>
-</ul>
-<div id="rightmenubar"
-    style="display: none; position: fixed; width: 70%; height: 100%; left: 0px; top: 0px; background: rgba(0,0,0,0.5);z-index: 11;">
-</div>
-<div class="rightbar">
-    <div style="display: inline-block; font-size: large;
-    font-weight: bolder;cursor: pointer;" onclick=" document.getElementById('rightmenubar').style.display = 'none';document.getElementsByClassName('rightbar')[0].style.display = 'none';">&times;</div>
-    <div style="display: block; width: 100%; position: sticky; top: -20px;background: white;"><input type="search"
-            onkeyup="showFilterLoader();filterTool(this.value)" placeholder="keyword..."
-            style="border: 1px solid #ddd;border-radius: 3px; padding:8px 10px; font-size: 16px;width: 75%;margin: 0px 5px;"><button
-            class="btn" style="width: 20%;display: inline-block; padding: 8px 10px;"
-            onclick="showFilterLoader();filterTool(document.querySelector('input[type=search]').value)"><i
-                class="fa fa-search"></i></button></div>
-    <div id="filterresult">
-
+    <div class="nav">
+        <ul>
+            <li style="float: left;"><span id="logobtn" onclick="document.getElementsByClassName('leftbar')[0].style.display = 'block';">&gt;_</span></li>
+            <li style="float: left;"><span style="display: flex; font-weight: bold; font-size: 20px; height: 35px; align-items: center;">Shifat100</span></li>
+            <li style="float: right;"><span class="navsidebarbtn" id="menubtn"><img src="icon/menu.png" width="20" height="20"></span></li>
+        </ul>
     </div>
-</div>
+    <div id="rightmenubar" style="display: none; position: fixed; width: 70%; height: 100%; left: 0px; top: 0px; background: rgba(0,0,0,0.5); z-index: 11;"></div>
+    <div class="rightbar">
+        <div style="display: inline-block; font-size: large; font-weight: bolder; cursor: pointer;" onclick="document.getElementById('rightmenubar').style.display = 'none';document.getElementsByClassName('rightbar')[0].style.display = 'none';">&times;</div>
+        <div style="display: block; width: 100%; position: sticky; top: -20px; background: white;"><input type="search" onkeyup="showFilterLoader();filterTool(this.value)" placeholder="keyword..." style="border: 1px solid #ddd; border-radius: 3px; padding: 8px 10px; font-size: 16px; width: 75%; margin: 0px 5px;"><div class="btn" style="width: 20%; display: inline-block; padding: 8px 10px;" onclick="showFilterLoader();filterTool(document.querySelector('input[type=search]').value)"><i class="fa fa-search"></i></div></div>
+        <div id="filterresult"></div>
+    </div>
+    <div class="leftbar">
+        <span style="display: inline-flex; align-items: center; justify-content: center; font-size: large; font-weight: bolder; float: right; cursor: pointer; width: 18px; height: 18px;" onclick="document.getElementsByClassName('leftbar')[0].style.display = 'none';">&times;</span>
+        <a class="leftbarlink" href="apps.html">Programs</a>
+        <a class="leftbarlink">Emulators</a>
+        <a class="leftbarlink" onclick="about()">About</a>
+        <a class="leftbarlink">Contact Us</a>
+        <a href="ad.html" class="leftbarlink">ads</a>
+    </div>
 
-<div class="leftbar">
-    <span style="display: inline-flex; align-items: center; justify-content: center; font-size: large;font-weight: bolder;float: right; cursor: pointer; width: 18px; height: 18px;" onclick="document.getElementsByClassName('leftbar')[0].style.display = 'none';">&times;</span>
+    <div id="mousepos" style="position: fixed; right: 10px; top: 51px; background-color: #c0c0c0; padding: 5px; color: rgb(0, 0, 0); border-radius: 5px; font-size: small; z-index: 11;"></div>
 
-<a class="leftbarlink" href="apps.html">Programs</a>
-<a class="leftbarlink">Emulators</a>
-<a class="leftbarlink" onclick="about()">About</a>
-<a class="leftbarlink">Contact Us</a>
-<a href="ad.html" class="leftbarlink">ads</a>
-</div>
-<div id="mousepos"
-style="position: fixed; right: 10px; top: 51px; background-color: #c0c0c0; padding: 5px; color: rgb(0, 0, 0); border-radius: 5px; font-size: small;z-index: 11;">
-</div>
+    <div id="container">
+        Loading...
+    </div>
 
-
-<p id="container">Loading...</p>
-
-
-
-
-<div class="footer">
-    <center style="font-weight: bold">&copy; Copyright
-        <script> document.write(new Date().getFullYear()); </script> <br> All Right Reserved.
-    </center>
-</div>
-<script src="db.js"></script>
-<script src="script.js"></script>
-<script src="lib/zip.js"></script>
-<script src="lib/filesaver.js"></script>
-<script>
-    main();
-    checkNet();
-</script>
+    <div class="footer">
+        <div style="font-weight: bold; text-align: center;">
+            &copy; Copyright <span id="year"></span> <br> All Right Reserved.
+        </div>
+    </div>
+    <script src="db.js"></script>
+    <script src="script.js"></script>
+    <script src="lib/zip.js"></script>
+    <script src="lib/filesaver.js"></script>
+    <script>
+        main();
+        checkNet();
+    </script>
 </body>
 
 </html>
-
-
-
-
-
-
