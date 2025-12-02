@@ -1,6 +1,12 @@
 var db = `{
     "root": [
     {
+    "title": "File Merger Pro",
+    "category": "utility",
+    "file": "filemerger", 
+    "description": "Merge Text, Audio, Video. Supports Single Files and Full Folder Upload."
+},
+    {
     "title": "Age Calculator",
     "category": "utility",
     "file": "agecalculator", 
@@ -30,5 +36,6 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
