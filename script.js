@@ -224,8 +224,8 @@ function about() {
     app.innerHTML += '<div class="centerall" id="aboutbar"><div class="whitebox"><span style="display: inline-flex; align-items: center; justify-content: center; font-size: large;font-weight: bolder;float: right; cursor: pointer; width: 18px; height: 18px;" onclick="closewhitebox(document.querySelector(\'#aboutbar\'))">&times;</span>\
 \
 a tools website by shifat100<br><br>\
-<small>version: 1.00\
-email: alshahreya95@gmail.com\
+<small>version: 1.00<br>\
+email: alshahreya95@gmail.com<br>\
 phone: 01755555555</small>\
 </div></div>';
 }
@@ -254,5 +254,6 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('Service Worker registration failed', err));
   });
 }
+
 
 
