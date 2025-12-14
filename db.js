@@ -1,6 +1,12 @@
 var db = `{
     "root": [
     {
+    "title": "Speedometer",
+    "category": "Tools",
+    "file": "speedometer",
+    "description": "Measure your current moving speed using GPS."
+},
+{
     "title": "HTML Runner & Console",
     "category": "development",
     "file": "htmlrunner", 
@@ -54,6 +60,7 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
 
