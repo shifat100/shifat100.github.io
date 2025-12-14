@@ -1,6 +1,12 @@
 var db = `{
     "root": [
     {
+    "title": "Smart Compass",
+    "category": "Tools",
+    "file": "compass",
+    "description": "Real-time compass with fallback Sun-direction mode."
+},
+{
     "title": "Speedometer",
     "category": "Tools",
     "file": "speedometer",
@@ -60,6 +66,7 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
 
