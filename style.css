@@ -1,414 +1,485 @@
-/* =========================================
-   1. CSS VARIABLES (Theme Colors)
-   ========================================= */
-:root {
-    --primary-color: #007bff; /* Professional Blue */
-    --secondary-color: #0056b3;
-    --accent-color: #ff6f00; /* Orange for Call to Action */
-    --bg-color: #f4f6f9;
-    --text-color: #333333;
-    --white: #ffffff;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --border-radius: 8px;
-    --transition: all 0.3s ease;
+*{
+box-sizing: border-box;
+font-family: Arial, Helvetica, sans-serif;
+outline: 0px;
+word-wrap: break-word;
+word-break: keep-all;
 }
 
-/* =========================================
-   2. GLOBAL RESET & TYPOGRAPHY
-   ========================================= */
-* {
-    box-sizing: border-box;
-    outline: none;
-    word-wrap: break-word;
+*::selection {
+background: black;
+color: white;
+}
+
+div:hover {
+border-color: black;
 }
 
 body {
-    background-color: var(--bg-color);
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern Font Stack */
-    color: var(--text-color);
-    line-height: 1.6;
-    padding-bottom: 50px; /* Space for footer */
+background: #eee;
+margin: 0px;
+padding: 0px;
+text-transform: capitalize;
 }
 
-a {
-    text-decoration: none;
-    color: var(--primary-color);
-    transition: var(--transition);
+form {
+margin: 30px;
+padding: 30px;
+background-color: white;
 }
 
-a:hover {
-    color: var(--secondary-color);
+input[type=text],
+input[type=file],
+input[type=url] {
+padding: 10px;
+border-radius: 3px;
+width: 100%;
+display: inline-block;
+border: 1px solid #ddd;
+margin: 5px 0px;
 }
 
-/* Selection Color */
-::selection {
-    background: var(--primary-color);
-    color: var(--white);
+input[type=submit],
+.btn {
+background: #ddd;
+width: 100%;
+display: block;
+padding: 15px 5px;
+border: 1px solid #ddd;
+color: #000000;
+border-radius: 3px;
+margin: 15px auto;
+cursor: pointer;
 }
 
-/* =========================================
-   3. NAVIGATION BAR (Updated)
-   ========================================= */
-.nav {
-    background-color: var(--primary-color);
-    color: var(--white);
-    display: flex; /* Flexbox for better alignment */
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    list-style: none; /* Remove bullets */
-    height: 60px;
+input[type=submit]:hover,
+.btn:hover {
+background: #d3d6d6;
 }
 
-.nav li {
-    display: inline-flex;
-    align-items: center;
+input[type=checkbox] {
+width: 20px;
+height: 20px;
 }
 
-/* Logo Area */
-#logobtn {
-    background: var(--white);
-    color: var(--primary-color);
-    font-weight: bold;
-    font-size: 18px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: var(--transition);
+.inputgroup {
+display: block;
+width: 100%;
+margin: 5px 0px;
 }
 
-#logobtn:hover {
-    transform: rotate(90deg);
+.inputgroup>.label {
+width: 20%;
+display: inline-block;
+vertical-align: middle;
 }
 
-/* Menu Button */
-.navsidebarbtn {
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    padding: 5px;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
+.inputgroup>.input {
+width: 75%;
+display: inline-block;
+border: 1px solid transparent;
 }
 
-.navsidebarbtn:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.navsidebarbtn img {
-    filter: invert(1); /* Make icon white */
-}
-
-/* =========================================
-   4. SIDEBARS (Left & Right)
-   ========================================= */
-.leftbar, .rightbar {
-    position: fixed;
-    top: 60px; /* Below Nav */
-    height: calc(100% - 60px);
-    background: var(--white);
-    z-index: 999;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    overflow-y: auto;
-    transition: var(--transition);
-    display: none; /* Controlled by JS */
-}
-
-/* Left Sidebar (Menu) */
-.leftbar {
-    left: 0;
-    width: 250px;
-    padding: 20px;
-}
-
-.leftbarlink {
-    display: block;
-    padding: 12px 15px;
-    color: var(--text-color);
-    border-radius: 4px;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.leftbarlink:hover {
-    background-color: #eef2f7;
-    color: var(--primary-color);
-    padding-left: 20px; /* Slide effect */
-}
-
-/* Right Sidebar (Search) */
-.rightbar {
-    right: 0;
-    width: 300px;
-    padding: 20px;
-}
-
-/* Overlay */
-#rightmenubar {
-    backdrop-filter: blur(2px);
-}
-
-/* =========================================
-   5. MAIN CONTENT & SEO BOX
-   ========================================= */
-#container {
-    max-width: 1000px;
-    margin: 20px auto;
-    padding: 0 15px;
-    min-height: 60vh;
-}
-
-/* Static SEO Content Box (New) */
-.static-seo-content {
-    background: var(--white);
-    padding: 30px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    text-align: center;
-    border-top: 5px solid var(--primary-color);
-}
-
-.static-seo-content h1 {
-    color: var(--primary-color);
-    margin-bottom: 15px;
-}
-
-.static-seo-content ul {
-    text-align: left;
-    display: inline-block;
-    margin: 20px 0;
-}
-
-/* Tool Boxes (Dynamic JS Content) */
 .box {
-    background: var(--white);
-    border-radius: var(--border-radius);
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-    display: block; /* Ensure visibility */
+width: 95%;
+margin: 10px auto;
+border: 0px solid #ddd;
+border-radius: 5px;
+padding: 15px 0px;
+display: none;
+background-color: white;
+box-shadow: 2px 1px 5px #ccc;
 }
 
 .boxtitle {
-    font-size: 22px;
-    font-weight: bold;
-    color: var(--primary-color);
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-    text-align: center;
+font-size: 25px;
+font-weight: bold;
+text-align: center;
+padding: 0px 0px 15px 0px;
 }
 
-/* =========================================
-   6. TOOLS LIST & CARDS
-   ========================================= */
-/* Tool List Item */
+.boxcontent {
+padding: 0px 25px;
+}
+
+.box>.closebar {
+position: relative;
+text-align: right;
+display: block;
+width: 100%;
+padding: 10px;
+}
+
+.closebtn {
+font-size: 24px;
+padding: 10px 15px;
+cursor: pointer;
+}
+
+.closebtn:hover {
+color: red;
+}
+
+.box>.backbar {
+position: relative;
+text-align: right;
+display: block;
+width: 100%;
+padding: 10px;
+}
+
+.backbtn {
+font-size: 24px;
+padding: 10px 15px;
+cursor: pointer;
+}
+
+.backbtn:hover {
+color: red;
+}
+
+ul.nav {
+background-color: white;
+border-bottom: 1px solid #f1f1f1;
+display: block;
+list-style-type: none;
+padding: 0px;
+margin: 0px;
+position: sticky;
+left: 0px;
+top: 0px;
+overflow-x: auto;
+overflow-y: hidden;
+z-index: 10;
+}
+
+ul.nav li {
+display: inline-block;
+padding: 5px 10px;
+}
+
+.navsidebarbtn {
+display: inline-block;
+font-weight: bold;
+font-size: 18px;
+width: 35px;
+height: 35px;
+font-weight: bold;
+border: 1px solid #ddd;
+border-radius: 3px;
+padding: 6px;
+}
+
+.navsidebarbtn:hover {
+background-color: #f1f1f1;
+cursor: pointer;
+}
+
+#logobtn {
+display: inline-block;
+font-weight: bold;
+font-size: 18px;
+width: 35px;
+height: 35px;
+padding: 3px;
+border-radius: 50%;
+background: red;
+text-align: center;
+color: white;
+}
+
+#logobtn:hover {
+background: brown;
+color: #fff;
+cursor: pointer;
+}
+
+.footer {
+background: #888;
+color: white;
+padding: 5px;
+display: block;
+width: 100%;
+line-height: 25px;
+margin-top: 25px;
+}
+
+fieldset {
+border-color: #aaa;
+}
+
+legend {
+background-color: #eeeeee;
+padding: 8px 12px;
+font-size: 20px;
+text-align: center;
+border-radius: 30px;
+}
+
 .list {
-    background: var(--white);
-    border: 1px solid #e1e4e8;
-    border-radius: var(--border-radius);
-    padding: 15px;
-    margin: 10px;
-    width: 100%;
-    max-width: 400px; /* Limit width for desktop */
-    display: inline-block; /* Stack horizontally */
-    vertical-align: top;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.list:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-    border-color: var(--primary-color);
+background: #ffffff;
+text-align: left;
+width: 90%;
+display: inline-block;
+margin: 10px 0px;
+padding: 10px 15px;
+border: 1px solid #ddd;
+box-shadow: 2px 2px 5px 1px #ddd;
+border-radius: 5px;
+text-transform: capitalize;
+cursor: pointer;
 }
 
 .list .subtitle {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--text-color);
-    display: block;
-    margin-bottom: 8px;
+font-size: 18px;
+color: black;
+padding-bottom: 7px;
+border-width: 100%;
+padding: 7px;
+text-decoration: none;
+}
+
+.list .subtitle i {
+visibility: hidden;
+}
+
+.list .subtitle:hover i {
+visibility: visible;
 }
 
 .list post {
-    font-size: 14px;
-    color: #666;
-    display: block;
+font-size: 16px;
+text-transform: capitalize;
+padding-left: 25px;
 }
 
-/* Search Result List */
+.list post a {
+background-color: #d7d70a;
+}
+
 .srchlist {
-    background: var(--white);
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-    transition: var(--transition);
+background: #ffffff;
+text-align: left;
+width: 100%;
+display: inline-block;
+padding: 10px 15px;
+text-transform: capitalize;
+cursor: pointer;
 }
 
 .srchlist:hover {
-    background-color: #f9f9f9;
+background-color: #f1f1f1;
 }
 
-/* =========================================
-   7. INPUTS & BUTTONS
-   ========================================= */
-input[type=text],
-input[type=file],
-input[type=url],
-input[type=search],
-select,
-textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 16px;
-    transition: var(--transition);
+.srchlist a {
+color: black;
+text-decoration: none;
+padding: 3px;
 }
 
-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-}
-
-.btn, input[type=submit], .strtbtn, .alertbtn {
-    background-color: var(--primary-color);
-    color: var(--white);
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-    display: inline-block;
-    transition: var(--transition);
-    width: auto;
-    min-width: 120px;
-}
-
-.btn:hover, input[type=submit]:hover, .strtbtn:hover {
-    background-color: var(--secondary-color);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* Specific Style for Start Button */
 .strtbtn {
-    background: var(--accent-color);
-    margin-top: 15px;
+background: teal;
+border: 3px solid teal;
+padding: 15px 10px 15px 25px;
+color: white;
+font-weight: bold;
+border-radius: 5px 0px 0px 5px;
+box-shadow: 0px 0px 10px 1px #aaa;
+cursor: pointer;
+transition: .9s;
 }
+
+.strtbtn::after {
+content: '';
+border-width: 26px;
+border-style: solid;
+border-color: transparent transparent transparent teal;
+position: absolute;
+margin-left: 13px;
+top: 0px;
+}
+
 .strtbtn:hover {
-    background: #e65100;
-    color: white;
-}
-.strtbtn::after { display: none; } /* Removing old arrow style */
-
-/* =========================================
-   8. FOOTER & LEGAL LINKS
-   ========================================= */
-.footer {
-    background-color: #2c3e50; /* Dark footer */
-    color: #bdc3c7;
-    padding: 30px 20px;
-    margin-top: 40px;
-    text-align: center;
-    font-size: 14px;
+background: white;
+color: black;
 }
 
-.legal-links {
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+h1 {
+font-size: 25px;
 }
 
-.legal-links a {
-    color: #bdc3c7;
-    margin: 0 10px;
-    font-weight: 500;
+.rightbar {
+position: fixed;
+right: 0px;
+top: 0px;
+background: #ffffff;
+min-width: 240px;
+width: 30%;
+height: 100%;
+z-index: 11;
+display: none;
+padding: 20px;
+box-shadow: 0px 0px 10px 0px #000000;
+overflow-y: auto;
+overflow-x: hidden;
 }
 
-.legal-links a:hover {
-    color: var(--white);
-    text-decoration: underline;
+.leftbar{
+position: fixed;
+top: 60px;
+left: 10px;
+background: #ffffff;
+min-width: 200px;
+width: 30%;
+height: auto;
+max-height: 70%;
+display: none;
+padding: 10px;
+box-shadow: 0px 0px 10px 0px #555555;
+border-radius:5px;
+overflow-y: auto;
+overflow-x: hidden;
+}
+.leftbarlink {
+padding: 10px;
+color: #000000;
+text-decoration: none;
+display: inline-block;
+cursor: pointer;
 }
 
-/* =========================================
-   9. UTILITIES & ALERTS
-   ========================================= */
+.leftbarlink:nth-child(0) {
+width: 80%;
+}
+.leftbarlink:hover {
+background: #f0f0f0;
+}
+
 .alert {
+display: block;
+min-width: 240px;
+width: 50%;
+padding: 20px;
+background: #ffffff;
+position: fixed;
+left: 25%;
+top: 15%;
+margin: 10% auto;
+z-index: 5;
+border-radius: 5px;
+box-shadow: 0px 0px 15px 5px #000000;
+transition-duration: 1s;
+transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+transition-property: all;
+}
+
+.alert hr {
+border-top: 1px solid #ddd;
+border-right: 0px solid transparent;
+border-bottom: 0px solid transparent;
+border-left: 0px solid transparent;
+}
+
+.alertbtn {
+width: 100%;
+padding: 10px;
+background: #ff6f00;
+color: white;
+font-weight: bold;
+border: 1px solid transparent;
+cursor: pointer;
+}
+
+.alertbtn:hover {
+background: #b34f02;
+}
+
+.centerall {
+display: flex;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);
+align-items: center;
+justify-content: center;
+position: fixed;
+left: 0;
+top: 0px;
+
+}
+
+.whitebox{
+background: #ffffff;
+min-width: 200px;
+width: 50%;
+height: auto;
+max-height: 70%;
+display: block;
+padding: 20px;
+box-shadow: 0px 0px 10px 0px #555555;
+border-radius:5px;
+overflow-y: auto;
+overflow-x: hidden;
+margin: 5px auto;
+
+}
+
+@media screen And (max-width: 500px) {
+.inputgroup>.label {
+width: 100%;
+display: block;
+}
+   
+.inputgroup>.input {
+    width: 100%;
+    display: block;
+    border: 1px solid transparent
+}
+
+.box {
+    width: 98%;
+}
+
+
+.alert {
+    display: block;
+    min-width: 100px;
+    width: 90%;
+    padding: 10px;
+    background: #ffffff;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--white);
-    padding: 25px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    z-index: 2000;
-    min-width: 300px;
-    text-align: center;
-    animation: fadeIn 0.3s ease;
+    left: 5%;
+    top: 20%;
+    margin: 10% auto;
+    z-index: 5;
+    border-radius: 5px;
+    box-shadow: 0px 0px 15px 5px #000000;
+    overflow-y: auto;
+    max-height: 70%;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translate(-50%, -60%); }
-    to { opacity: 1; transform: translate(-50%, -50%); }
+.alert hr {
+    border-top: 1px solid #ddd;
+    border-right: 0px solid transparent;
+    border-bottom: 0px solid transparent;
+    border-left: 0px solid transparent;
 }
 
-/* Loader */
-#loader {
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(5px);
+.alertbtn {
+    width: 100%;
+    padding: 5px;
+    background: #ff6f00;
+    color: white;
+    font-weight: bold;
+    border: 1px solid transparent;
+    cursor: pointer;
 }
 
-/* =========================================
-   10. RESPONSIVE DESIGN (Mobile)
-   ========================================= */
-@media screen and (max-width: 600px) {
-    .nav {
-        padding: 10px 15px;
-    }
 
-    .leftbar, .rightbar {
-        width: 85%; /* Wider sidebar on mobile */
-    }
+.leftbar{
+    width: 90%;
+}
+.whitebox {
+    padding: 10px;
+}
 
-    #container {
-        padding: 0 10px;
-    }
-
-    .list {
-        max-width: 100%; /* Full width cards */
-        margin: 10px 0;
-    }
-
-    .static-seo-content {
-        padding: 20px;
-    }
-
-    .inputgroup > .label, .inputgroup > .input {
-        width: 100%;
-        display: block;
-    }
-    
-    .legal-links a {
-        display: block;
-        margin: 10px 0;
-    }
-    }
+}
