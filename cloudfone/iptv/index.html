@@ -473,7 +473,7 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
                 if (action === 'enter') togglePlay();
                 // D-Pad Player Controls
                 if (action === 'right') seekVideo(10);
-                if (action === 'left') seekVideo(-10);
+                if (action === 'seekleft') seekVideo(-10);
                 if (action === 'up') changeVol(0.1);
                 if (action === 'down') changeVol(-0.1);
                 return;
@@ -524,11 +524,11 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
 
             if (key === 'ArrowUp') action = 'up';
             else if (key === 'ArrowDown') action = 'down';
-            else if (key === 'ArrowLeft') action = 'left';
+            else if (key === 'ArrowLeft') action = 'seekleft';
             else if (key === 'ArrowRight') action = 'right';
             else if (key === 'Enter') action = 'enter';
-            else if (key === 'Escape' || key === 'F1') action = 'left';
-            else if (key === 'SoftRight' || key === 'F2' || key === 'Backspace') action = 'right';
+            else if (key === 'Escape') action = 'left';
+            
 
 
             // Quick Search
@@ -539,7 +539,8 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
             if (action) { e.preventDefault(); handleInput(action); }
         });
 
-     if (State.view === 'list') {  window.addEventListener('back', function () { e.preventDefault(); handleInput('back'); }); }
+     if (State.view === 'list') {  
+        window.addEventListener('back', function () { e.preventDefault(); handleInput('back'); }); }
      else if (State.view === 'player') {
          window.addEventListener('back', function () { e.preventDefault(); handleInput('right'); });
      }
@@ -741,7 +742,7 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
         const M_ITEMS = [
             { t: 'Load File', a: () => UI.fileIn.click() },
             { t: 'Reload', a: () => parseM3U(DEFAULT_PLAYLIST) },
-            { t: 'About', a: () => showOSD("Canvas Player v1") }
+            { t: 'About', a: () => showOSD("IPTV v1 by shifat100") }
         ];
         function openMenu() {
             State.view = 'menu'; document.getElementById('menu-modal').style.display = 'flex';
