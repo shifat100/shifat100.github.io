@@ -14,26 +14,33 @@
         #app-container { width: 100%; height: 100%; max-width: 240px; max-height: 320px; background-color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
 
         /* --- HEADER --- */
-        header { height: 28px; background-color: #202020; display: flex; align-items: center; padding: 0 8px; border-bottom: 2px solid #009be5; z-index: 10; position: relative; }
-        .header-title { font-size: 14px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #search-input { width: 100%; height: 22px; background: #fff; border: 2px solid #009be5; color: #000; font-size: 12px; padding: 0 5px; border-radius: 2px; display: none; position: absolute; left: 0; top: 3px; right: 0; margin: 0 4px; z-index: 20; }
+        header { height: 26px; background-color: #202020; display: flex; align-items: center; padding: 0 8px; border-bottom: 2px solid #009be5; z-index: 10; position: relative; }
+        .header-title { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #search-input { width: 100%; height: 22px; background: #fff; border: 2px solid #009be5; color: #000; font-size: 12px; padding: 0 5px; border-radius: 2px; display: none; position: absolute; left: 0; top: 2px; right: 0; margin: 0 4px; z-index: 20; }
 
         /* --- MAIN VIEW (List & Grid) --- */
         main { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; scroll-behavior: smooth; }
         
         /* List Style */
         .list-container { display: flex; flex-direction: column; }
-        .list-item { padding: 10px 12px; font-size: 16px; border-bottom: 1px solid #222; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+        .list-item { padding: 8px 10px; font-size: 14px; border-bottom: 1px solid #222; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
         .list-item.focused { background-color: #009be5; color: #fff; font-weight: 600; }
 
         /* Grid Style - Optimized for Small Screens */
         .grid-container { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* Strictly 3 columns */
+            grid-template-columns: repeat(3, 1fr); 
             gap: 2px; 
             padding: 2px; 
             width: 100%;
         }
+        /* Media Query for 128px width screens */
+        @media (max-width: 140px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr) !important; }
+            .header-title { font-size: 11px; }
+            .soft-btn { font-size: 10px; }
+        }
+
         .grid-item { 
             background: #333; 
             aspect-ratio: 1; 
@@ -54,7 +61,7 @@
             margin-bottom: 2px; 
         }
         .grid-item span { 
-            font-size: 9px; /* Smaller font for grid */
+            font-size: 10px; 
             text-align: center; 
             width: 100%; 
             overflow: hidden; 
@@ -66,10 +73,10 @@
         .grid-placeholder { width: 30px; height: 30px; background: #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; color: #888; margin-bottom: 2px;}
 
         /* --- FOOTER --- */
-        footer { height: 36px; background-color: #000; display: flex; justify-content: space-between; align-items: center; padding: 0 8px; border-top: 1px solid #333; z-index: 20; }
-        .soft-btn { min-width: 30px; height: 100%; display: flex; align-items: center; color: white; font-weight: 600; font-size: 12px; }
+        footer { height: 30px; background-color: #000; display: flex; justify-content: space-between; align-items: center; padding: 0 8px; border-top: 1px solid #333; z-index: 20; }
+        .soft-btn { min-width: 30px; height: 100%; display: flex; align-items: center; color: white; font-weight: 600; font-size: 11px; }
         .soft-center { flex: 1; justify-content: center; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        svg { fill: white; width: 20px; height: 20px; pointer-events: none; }
+        svg { fill: white; width: 18px; height: 18px; pointer-events: none; }
 
         /* --- PLAYER UI --- */
         #player-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 100; display: none; }
@@ -77,25 +84,39 @@
         canvas { width: 100%; height: 100%; display: block; }
         
         #video-controls, #player-top { position: absolute; width: 100%; background: rgba(0,0,0,0.7); z-index: 110; transition: opacity 0.3s; display: flex; }
-        #video-controls { bottom: 0; left: 0; padding: 5px; flex-direction: column; gap: 4px; }
-        #player-top { top: 0; left: 0; padding: 5px; justify-content: space-between; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
+        #video-controls { bottom: 0; left: 0; padding: 4px; flex-direction: column; gap: 2px; }
+        #player-top { top: 0; left: 0; padding: 4px; justify-content: space-between; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
         .hidden { opacity: 0; pointer-events: none; }
 
-        .ctrl-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .time-text { font-size: 10px; color: #ddd; min-width: 60px; }
+        .ctrl-row { display: flex; align-items: center; justify-content: space-between; gap: 5px; }
+        .time-text { font-size: 10px; color: #ddd; min-width: 50px; }
         input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; background: #555; border-radius: 2px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #009be5; border-radius: 50%; }
-        .icon-btn { width: 24px; height: 24px; padding: 2px; cursor: pointer; }
-        .p-title { font-size: 12px; color: #fff; font-weight: bold; text-shadow: 1px 1px 2px black; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: #009be5; border-radius: 50%; }
+        .icon-btn { width: 20px; height: 20px; padding: 2px; cursor: pointer; }
+        .p-title { font-size: 11px; color: #fff; font-weight: bold; text-shadow: 1px 1px 2px black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
 
-        /* --- MODALS --- */
+        /* --- MODALS (Optimized for 128x160) --- */
         .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; display: none; align-items: center; justify-content: center; }
-        .modal-box { background: #1a1a1a; width: 85%; max-height: 80%; border-radius: 4px; overflow-y: auto; border: 1px solid #444; display: flex; flex-direction: column; }
-        .modal-header { background: #009be5; color: white; padding: 8px; font-weight: bold; font-size: 14px; text-align: center; }
-        .menu-item { padding: 12px 10px; border-bottom: 1px solid #333; color: #ccc; font-size: 14px; }
-        .menu-item.focused { background: #333; color: white; border-left: 4px solid #009be5; }
+        .modal-box { 
+            background: #1a1a1a; 
+            width: 95%; /* Wider on small screens */
+            max-height: 90%; 
+            border-radius: 4px; 
+            overflow-y: auto; 
+            border: 1px solid #444; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .modal-header { background: #009be5; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: center; }
+        .menu-item { 
+            padding: 8px 6px; /* Compact padding */
+            border-bottom: 1px solid #333; 
+            color: #ccc; 
+            font-size: 12px; /* Smaller font */
+        }
+        .menu-item.focused { background: #333; color: white; border-left: 3px solid #009be5; }
 
-        #osd { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 10px 20px; border-radius: 5px; font-size: 16px; z-index: 300; display: none; pointer-events: none; text-align: center;}
+        #osd { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 6px 12px; border-radius: 4px; font-size: 14px; z-index: 300; display: none; pointer-events: none; text-align: center; border: 1px solid #555; width: max-content; max-width: 90%;}
         input[type="file"] { display: none; }
     </style>
 </head>
@@ -199,11 +220,10 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
 
         // --- INIT ---
         window.onload = () => {
-            // Load saved playlist if exists, else default
             const saved = localStorage.getItem(LS_KEY);
             if (saved) {
                 parseM3U(saved);
-                showOSD("Loaded Saved Playlist");
+                showOSD("Loaded Saved");
             } else {
                 parseM3U(DEFAULT_PLAYLIST);
             }
@@ -219,31 +239,35 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
             UI.canvas.height = UI.player.clientHeight;
         }
 
-        // --- GLOBAL EVENT LISTENERS ---
-        window.addEventListener('back', (e) => {
-            e.preventDefault();
-            handleInput('back');
-        });
+        // --- EVENT LISTENERS ---
+        window.addEventListener('back', (e) => { e.preventDefault(); handleInput('back'); });
 
         document.addEventListener('keydown', (e) => {
             let key = e.key;
             let action = null;
 
-            if (State.view === 'player') {
+            if (key === 'Escape') action = 'menu';
+            else if (key === 'Backspace' || key === 'F2') {
+                if (State.view === 'search' && document.activeElement === UI.search) {
+                    if (UI.search.value.length > 0) return;
+                    action = 'back';
+                } else action = 'back';
+            }
+            else if (State.view === 'player') {
                 if (key === '4') { State.pRot -= 90; showOSD("Rot -90"); return; }
                 if (key === '6') { State.pRot += 90; showOSD("Rot +90"); return; }
                 if (key === '1' || key === '*') { State.pZoom = Math.max(0.5, State.pZoom - 0.2); showOSD(`Zoom ${State.pZoom.toFixed(1)}`); return; }
                 if (key === '3' || key === '#') { State.pZoom += 0.2; showOSD(`Zoom ${State.pZoom.toFixed(1)}`); return; }
             }
 
-            if (key === 'ArrowUp') action = 'up';
-            else if (key === 'ArrowDown') action = 'down';
-            else if (key === 'ArrowLeft') action = State.view === 'list' && State.layout === 'grid' ? 'left' : 'seekleft';
-            else if (key === 'ArrowRight') action = 'right';
-            else if (key === 'Enter') action = 'enter';
-            else if (key === 'Escape' || key === 'Backspace') action = 'back';
-            else if (key === 'SoftRight') action = 'back';
-            else if (key === 'SoftLeft' || key === 'F1') action = 'menu';
+            if (!action) {
+                if (key === 'ArrowUp') action = 'up';
+                else if (key === 'ArrowDown') action = 'down';
+                else if (key === 'ArrowLeft') action = State.view === 'list' && State.layout === 'grid' ? 'left' : 'seekleft';
+                else if (key === 'ArrowRight') action = 'right';
+                else if (key === 'Enter') action = 'enter';
+                else if (key === 'SoftRight') action = 'back'; 
+            }
 
             if (State.view === 'list' && key.length === 1 && /[a-z0-9]/i.test(key)) {
                 enterSearch(); UI.search.value += key; triggerSearch(UI.search.value); return;
@@ -254,8 +278,6 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
 
         // --- INPUT ROUTER ---
         function handleInput(action) {
-            
-            // --- PLAYER ---
             if (State.view === 'player') {
                 showControlsTemp();
                 if (action === 'back') closePlayer();
@@ -268,35 +290,23 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
                 return;
             }
 
-            // --- LIST / GRID ---
             if (State.view === 'list') {
                 const isGrid = State.layout === 'grid';
-                
                 if (action === 'up') {
                     if (State.listIdx === 0 && UI.search.style.display === 'block') enterSearch();
-                    else moveList(isGrid ? -3 : -1);
+                    else moveList(isGrid ? (window.innerWidth < 140 ? -2 : -3) : -1); // Auto adjust for 2 col grid
                 }
-                if (action === 'down') moveList(isGrid ? 3 : 1);
+                if (action === 'down') moveList(isGrid ? (window.innerWidth < 140 ? 2 : 3) : 1);
                 
-                if (action === 'left') {
-                    if (isGrid) moveList(-1); 
-                    else openMenu();
-                }
-                
-                if (action === 'right') {
-                     if (isGrid) moveList(1);
-                     else if (UI.search.style.display === 'block') closeSearch(); else enterSearch();
-                }
+                if (action === 'left') { if (isGrid) moveList(-1); else openMenu(); }
+                if (action === 'right') { if (isGrid) moveList(1); else if (UI.search.style.display === 'block') closeSearch(); else enterSearch(); }
 
                 if (action === 'enter') playChannel(State.filtered[State.listIdx]);
                 if (action === 'menu') openMenu();
-                if (action === 'back') {
-                    if (UI.search.style.display === 'block') closeSearch();
-                }
+                if (action === 'back') { if (UI.search.style.display === 'block') closeSearch(); }
                 return;
             }
 
-            // --- MENUS ---
             if (State.view === 'menu' || State.view === 'quality') {
                 if (action === 'up') navMenu(-1);
                 if (action === 'down') navMenu(1);
@@ -305,7 +315,6 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
                 return;
             }
 
-            // --- SEARCH ---
             if (State.view === 'search') {
                 if (action === 'down' || action === 'enter') {
                     if (State.filtered.length > 0) { UI.search.blur(); State.view = 'list'; renderList(); }
@@ -317,7 +326,6 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
         // --- RENDER LOGIC ---
         function renderList() {
             UI.main.innerHTML = '';
-            
             const container = document.createElement('div');
             container.className = State.layout === 'grid' ? 'grid-container' : 'list-container';
 
@@ -327,25 +335,16 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
                 div.className = (State.layout === 'grid' ? 'grid-item' : 'list-item') + (focused ? ' focused' : '');
                 
                 if (State.layout === 'grid') {
-                    // Grid Content
                     if (ch.logo) {
-                        const img = document.createElement('img');
-                        img.src = ch.logo;
-                        div.appendChild(img);
+                        const img = document.createElement('img'); img.src = ch.logo; div.appendChild(img);
                     } else {
-                        const ph = document.createElement('div');
-                        ph.className = 'grid-placeholder';
-                        ph.innerText = ch.name.substring(0,1).toUpperCase();
-                        div.appendChild(ph);
+                        const ph = document.createElement('div'); ph.className = 'grid-placeholder';
+                        ph.innerText = ch.name.substring(0,1).toUpperCase(); div.appendChild(ph);
                     }
-                    const span = document.createElement('span');
-                    span.innerText = ch.name;
-                    div.appendChild(span);
+                    const span = document.createElement('span'); span.innerText = ch.name; div.appendChild(span);
                 } else {
-                    // List Content
                     div.innerText = ch.name;
                 }
-
                 div.onclick = () => { State.listIdx = i; renderList(); playChannel(ch); };
                 container.appendChild(div);
             });
@@ -354,56 +353,41 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
             const f = container.querySelector('.focused');
             if (f) {
                 f.scrollIntoView({ block: 'center' });
-                // Show title in header if Grid mode
                 UI.headerTitle.innerText = State.filtered[State.listIdx].name;
             }
         }
 
         function moveList(delta) {
             const n = State.listIdx + delta;
-            if (n >= 0 && n < State.filtered.length) {
-                State.listIdx = n;
-                renderList();
-            }
+            if (n >= 0 && n < State.filtered.length) { State.listIdx = n; renderList(); }
         }
 
         // --- MENU LOGIC ---
         function openMenu() {
             State.view = 'menu';
-            UI.mTitle.innerText = "Main Menu";
+            UI.mTitle.innerText = "Menu";
             UI.modal.style.display = 'flex';
             
             const items = [
-                { t: 'Toggle View (List/Grid)', a: () => { State.layout = State.layout === 'list' ? 'grid' : 'list'; closeMenu(); renderList(); } },
-                { t: 'Load M3U File', a: () => UI.fileIn.click() },
-                { t: 'Restore Default Playlist', a: () => { localStorage.removeItem(LS_KEY); parseM3U(DEFAULT_PLAYLIST); showOSD("Restored Default"); } },
-                { t: 'About', a: () => showOSD("IPTV v2.1") }
+                { t: 'Toggle List/Grid', a: () => { State.layout = State.layout === 'list' ? 'grid' : 'list'; closeMenu(); renderList(); } },
+                { t: 'Load Playlist', a: () => UI.fileIn.click() },
+                { t: 'Restore Default', a: () => { localStorage.removeItem(LS_KEY); parseM3U(DEFAULT_PLAYLIST); showOSD("Restored"); } },
+                { t: 'About', a: () => showOSD("IPTV v2.2") }
             ];
             renderMenuOptions(items);
         }
 
         function openQualityMenu() {
-             if (!State.hls || State.hls.levels.length === 0) {
-                 showOSD("No Qualities");
-                 return;
-             }
-             State.view = 'quality';
-             UI.mTitle.innerText = "Video Quality";
-             UI.modal.style.display = 'flex';
-             
-             const levels = State.hls.levels.map((l, i) => ({
-                 t: `${l.height}p (${Math.round(l.bitrate/1000)}k)`,
-                 a: () => { State.hls.currentLevel = i; showOSD("Quality: " + l.height + "p"); }
-             }));
-             levels.unshift({ t: "Auto", a: () => { State.hls.currentLevel = -1; showOSD("Quality: Auto"); }});
-             
+             if (!State.hls || State.hls.levels.length === 0) { showOSD("No Qualities"); return; }
+             State.view = 'quality'; UI.mTitle.innerText = "Quality"; UI.modal.style.display = 'flex';
+             const levels = State.hls.levels.map((l, i) => ({ t: `${l.height}p`, a: () => { State.hls.currentLevel = i; showOSD(l.height + "p"); } }));
+             levels.unshift({ t: "Auto", a: () => { State.hls.currentLevel = -1; showOSD("Auto"); }});
              renderMenuOptions(levels);
         }
 
         let currentMenuItems = [];
         function renderMenuOptions(items) {
-            currentMenuItems = items;
-            UI.mList.innerHTML = '';
+            currentMenuItems = items; UI.mList.innerHTML = '';
             items.forEach((it, i) => {
                 const d = document.createElement('div');
                 d.className = 'menu-item ' + (i === 0 ? 'focused' : '');
@@ -421,16 +405,8 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
             el[State.menuIdx].classList.add('focused');
         }
 
-        function execMenu() { 
-            closeMenu(); 
-            currentMenuItems[State.menuIdx].a(); 
-        }
-
-        function closeMenu() { 
-            State.view = State.isPlaying ? 'player' : 'list'; 
-            UI.modal.style.display = 'none'; 
-            updateSoftKeys(); 
-        }
+        function execMenu() { closeMenu(); currentMenuItems[State.menuIdx].a(); }
+        function closeMenu() { State.view = State.isPlaying ? 'player' : 'list'; UI.modal.style.display = 'none'; updateSoftKeys(); }
 
         // --- PLAYER LOGIC ---
         function playChannel(ch) {
@@ -441,17 +417,51 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
             UI.title.textContent = ch.name;
             resizeCanvas();
 
+            // Reset Error Handlers
+            UI.video.onerror = null;
+
+            // Common Error Handler
+            const onPlayError = () => {
+                showOSD("Playback Failed");
+                // Auto close after 2 seconds if failed
+                setTimeout(() => { if(State.view === 'player') closePlayer(); }, 2000);
+            };
+
+            UI.video.onerror = onPlayError;
+
             if (Hls.isSupported()) {
                 if (State.hls) State.hls.destroy();
                 State.hls = new Hls();
+                
+                // HLS Error Handling
+                State.hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                showOSD("Network Error");
+                                State.hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                showOSD("Media Error");
+                                State.hls.recoverMediaError();
+                                break;
+                            default:
+                                onPlayError();
+                                State.hls.destroy();
+                                break;
+                        }
+                    }
+                });
+
                 State.hls.loadSource(ch.url);
                 State.hls.attachMedia(UI.video);
                 State.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    UI.video.play().catch(e=>console.log(e));
+                    UI.video.play().catch(onPlayError);
                     State.isPlaying = true; updatePlayBtn();
                 });
             } else {
-                UI.video.src = ch.url; UI.video.play();
+                UI.video.src = ch.url; 
+                UI.video.play().catch(onPlayError);
                 State.isPlaying = true; updatePlayBtn();
             }
             showControlsTemp();
@@ -470,15 +480,8 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
 
         // --- HELPERS ---
         function parseM3U(d, saveToStore = false) {
-            if (saveToStore) {
-                try {
-                    localStorage.setItem(LS_KEY, d);
-                    showOSD("Playlist Saved");
-                } catch(e) { showOSD("Save Failed"); }
-            }
-
-            State.channels = [];
-            let tempInf = {};
+            if (saveToStore) { try { localStorage.setItem(LS_KEY, d); showOSD("Saved"); } catch(e) { showOSD("Save Failed"); } }
+            State.channels = []; let tempInf = {};
             d.split('\n').forEach(l => {
                 l = l.trim();
                 if (l.startsWith('#EXTINF')) {
@@ -490,8 +493,7 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
                     tempInf = {};
                 }
             });
-            State.filtered = State.channels;
-            renderList();
+            State.filtered = State.channels; renderList();
         }
 
         function startRenderLoop() { requestAnimationFrame(renderLoop); }
@@ -513,7 +515,7 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
             requestAnimationFrame(renderLoop);
         }
 
-        function showOSD(m) { UI.osd.innerText = m; UI.osd.style.display = 'block'; setTimeout(()=>UI.osd.style.display='none', 1500); }
+        function showOSD(m) { UI.osd.innerText = m; UI.osd.style.display = 'block'; setTimeout(()=>UI.osd.style.display='none', 2000); }
         function showControlsTemp() {
             UI.controls.classList.remove('hidden'); UI.topBar.classList.remove('hidden');
             clearTimeout(State.ctrlTimeout);
@@ -538,16 +540,7 @@ https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8`;
         UI.btnSet.onclick = openQualityMenu;
         UI.btnBack.onclick = closePlayer;
         
-        // Handle File Input & Persistence
-        UI.fileIn.onchange = e => { 
-            const f=e.target.files[0]; 
-            if(f){
-                const r=new FileReader();
-                r.onload=v => parseM3U(v.target.result, true); // True to save
-                r.readAsText(f);
-            } 
-        };
-
+        UI.fileIn.onchange = e => { const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=v => parseM3U(v.target.result, true); r.readAsText(f); } };
         function enterSearch() { State.view = 'search'; UI.search.style.display='block'; UI.search.focus(); updateSoftKeys(); }
         function closeSearch() { State.view = 'list'; UI.search.style.display='none'; UI.search.value=''; State.filtered=State.channels; renderList(); updateSoftKeys(); }
         function triggerSearch(t) { State.filtered=State.channels.filter(c=>c.name.toLowerCase().includes(t.toLowerCase())); State.listIdx=0; renderList(); }
