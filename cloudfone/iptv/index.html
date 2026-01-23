@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Touch IPTV Player (Keyboard Nav)</title>
+    <title>Touch IPTV Player</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         /* --- RESET & BASIC --- */
@@ -11,7 +11,7 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; color: white; overflow: hidden; }
 
         /* --- CONTAINER --- */
-        #app-container { width: 100%; height: 100%; /* max-width removed to adapt to small screens */ background-color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        #app-container { width: 100%; height: 100%; background-color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
 
         /* --- HEADER --- */
         header { height: 50px; background-color: #202020; display: flex; align-items: center; padding: 0 15px; border-bottom: 2px solid #009be5; z-index: 10; position: relative; }
@@ -25,9 +25,33 @@
         .list-container { display: flex; flex-direction: column; padding-bottom: 20px;}
         .list-item { padding: 15px 15px; font-size: 16px; border-bottom: 1px solid #333; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;}
         .list-item:active { background-color: #333; }
-        .list-item img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #fff; }
-        .list-item.focused { background-color: #009be5; color: #fff; font-weight: 600; } /* Added focused style for keyboard nav */
+        .list-item.focused { background-color: #009be5; color: #fff; font-weight: 600; }
         
+        /* Grid Style (using float and fixed width/height for old browser compatibility) */
+        .grid-container { padding: 15px; overflow: hidden; /* Clear floats */ }
+        .grid-item {
+            float: left; /* Use float for grid layout */
+            width: 90px; /* Fixed width */
+            height: 100px; /* Fixed height */
+            margin: 7.5px; /* Half of gap, for spacing */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #222;
+            border-radius: 8px;
+            padding: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 1px solid #333;
+            overflow: hidden; /* For text ellipsis */
+        }
+        .grid-item:active { background-color: #333; }
+        .grid-item img { width: 50px; height: 50px; object-fit: contain; border-radius: 4px; background: #fff; margin-bottom: 3px; }
+        .grid-item span { font-size: 11px; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; padding: 0 2px; }
+        .grid-item.focused { background-color: #009be5; color: #fff; font-weight: 600; border-color: #009be5; }
+
         /* No Channels Message */
         #no-channels-message { padding: 20px; text-align: center; color: #888; font-size: 14px; }
 
@@ -54,8 +78,8 @@
         footer { height: 50px; background-color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-top: 1px solid #333; z-index: 20; }
         .soft-btn { min-width: 50px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; }
         .soft-btn:active { opacity: 0.7; }
-        svg { fill: white; width: 26px; height: 26px; pointer-events: none; }
-        #sk-left-text, #sk-right-text { font-size: 14px; font-weight: 600; }
+        .soft-btn svg { fill: white; width: 26px; height: 26px; } /* SVG size for soft buttons */
+        #sk-left-text, #sk-right-text { font-size: 14px; font-weight: 600; display: none; } /* Hide text, show SVG */
 
         /* --- MODALS --- */
         .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
@@ -63,37 +87,44 @@
         .modal-header { background: #009be5; color: white; padding: 15px; font-weight: bold; font-size: 16px; text-align: center; }
         .menu-item { padding: 15px; border-bottom: 1px solid #333; color: #eee; font-size: 15px; cursor: pointer; }
         .menu-item:active { background: #333; }
-        .menu-item.focused { background: #333; color: white; border-left: 5px solid #009be5; } /* Added focused style for menu nav */
+        .menu-item.focused { background: #333; color: white; border-left: 5px solid #009be5; }
 
         #osd { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.9); color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; z-index: 300; display: none; pointer-events: none; text-align: center; border: 1px solid #555;}
         input[type="file"] { display: none; }
 
-        /* --- Small Screen Optimizations (240x320, 128x160 etc.) --- */
+        /* --- Small Screen Optimizations (240x320) --- */
         @media (max-height: 320px) { /* For 240x320 screens */
             header, footer { height: 40px; padding: 0 10px; }
             .header-title { font-size: 16px; }
             #search-input { height: 30px; font-size: 14px; top: 5px; }
             .list-item { padding: 10px; font-size: 14px; gap: 8px;}
             .list-item img { width: 30px; height: 30px; }
+            .grid-item { width: 70px; height: 80px; margin: 5px; padding: 4px; border-radius: 6px; }
+            .grid-item img { width: 40px; height: 40px; margin-bottom: 3px; }
+            .grid-item span { font-size: 9px; }
             #btn-close-player { width: 30px; height: 30px; }
             #btn-close-player svg { width: 20px; height: 20px; }
             #player-osd-title { top: 40px; font-size: 13px; padding: 5px 10px; }
-            #sk-left-text, #sk-right-text { font-size: 12px; }
+            .soft-btn svg { width: 22px; height: 22px; } /* Adjust SVG size for soft buttons */
             .modal-header { padding: 10px; font-size: 14px; }
             .menu-item { padding: 10px; font-size: 13px; }
             #osd { bottom: 60px; font-size: 12px; padding: 6px 15px; }
         }
 
+        /* --- Tiny Screen Optimizations (128x160) --- */
         @media (max-height: 160px) { /* For 128x160 screens */
             header, footer { height: 30px; padding: 0 5px; }
             .header-title { font-size: 12px; }
             #search-input { height: 24px; font-size: 10px; top: 3px; }
             .list-item { padding: 5px; font-size: 10px; gap: 5px; height: 40px;}
             .list-item img { width: 20px; height: 20px; }
+            .grid-item { width: 50px; height: 55px; margin: 2.5px; padding: 2px; border-radius: 4px; }
+            .grid-item img { width: 25px; height: 25px; margin-bottom: 2px; }
+            .grid-item span { font-size: 7px; }
             #btn-close-player { width: 24px; height: 24px; }
             #btn-close-player svg { width: 16px; height: 16px; }
             #player-osd-title { top: 30px; font-size: 10px; padding: 3px 8px; }
-            #sk-left-text, #sk-right-text { font-size: 10px; }
+            .soft-btn svg { width: 18px; height: 18px; } /* Adjust SVG size for soft buttons */
             .modal-header { padding: 8px; font-size: 12px; }
             .menu-item { padding: 8px; font-size: 11px; }
             #osd { bottom: 40px; font-size: 10px; padding: 4px 10px; }
@@ -115,10 +146,12 @@
         <!-- FOOTER -->
         <footer id="footer-bar">
             <div class="soft-btn soft-left" id="sk-left">
-                <span id="sk-left-text">Menu</span>
+                <svg id="sk-left-icon" viewBox="0 0 24 24" style="display: none;"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg> <!-- Menu icon -->
+                <span id="sk-left-text" style="display: none;">Menu</span>
             </div>
             <div class="soft-btn soft-right" id="sk-right">
-                <span id="sk-right-text">Search</span>
+                <svg id="sk-right-icon" viewBox="0 0 24 24" style="display: none;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <!-- Search icon -->
+                <span id="sk-right-text" style="display: none;">Search</span>
             </div>
         </footer>
 
@@ -155,23 +188,21 @@ http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8
 #EXTINF:-1 tvg-logo="https://example.com/fakelogo.png",Broken Logo Channel
 http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 #EXTINF:-1,Channel Without Logo (Long Name)
-http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
-#EXTINF:-1,Yet Another Channel
-http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8
-#EXTINF:-1,Last Test Channel
 http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
 
         const LS_KEY = 'touch_iptv_data';
+        const LS_VIEW_MODE_KEY = 'touch_iptv_view_mode';
 
         const State = {
-            view: 'list', // 'list', 'player', 'menu', 'search'
+            currentView: 'list', // 'list', 'player', 'menu', 'search'
             channels: [], 
             filtered: [], 
-            listIdx: 0, // Current focused index in the list
-            menuIdx: 0, // Current focused index in the menu
+            listIdx: 0, 
+            menuIdx: 0, 
             hls: null,
             osdTimer: null,
-            playerOsdTimer: null
+            playerOsdTimer: null,
+            viewMode: localStorage.getItem(LS_VIEW_MODE_KEY) || 'list' // 'list' or 'grid'
         };
 
         const UI = {
@@ -180,6 +211,8 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
             search: document.getElementById('search-input'),
             skL: document.getElementById('sk-left'), 
             skR: document.getElementById('sk-right'),
+            skLIcon: document.getElementById('sk-left-icon'), 
+            skRIcon: document.getElementById('sk-right-icon'), 
             skLText: document.getElementById('sk-left-text'),
             skRText: document.getElementById('sk-right-text'),
             playerContainer: document.getElementById('native-player-container'), 
@@ -195,14 +228,77 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
         window.onload = () => {
             const saved = localStorage.getItem(LS_KEY);
             parseM3U(saved ? saved : DEFAULT_PLAYLIST);
-            updateFooterButtons(); // Initial footer text
+            navigateTo('list', { replace: true }); 
         };
+
+        // --- HISTORY MANAGEMENT ---
+        function navigateTo(view, data = {}, options = { replace: false, render: true }) {
+            const currentHash = window.location.hash.slice(1);
+            if (!options.replace && currentHash === view) {
+                State.currentView = view;
+                updateViewDisplay(view);
+                updateFooterButtons();
+                return;
+            }
+
+            const newState = { view, data };
+            if (options.replace) {
+                history.replaceState(newState, '', `#${view}`);
+            } else {
+                history.pushState(newState, '', `#${view}`);
+            }
+            State.currentView = view;
+            if (options.render) {
+                updateViewDisplay(view);
+            }
+            updateFooterButtons();
+        }
+
+        window.addEventListener('popstate', (event) => {
+            const state = event.state;
+            if (state) {
+                State.currentView = state.view;
+                updateViewDisplay(state.view);
+                updateFooterButtons();
+            } else {
+                navigateTo('list', {}, { replace: true, render: true });
+            }
+        });
+
+        // This function handles displaying the correct UI for the current view
+        function updateViewDisplay(view) {
+            UI.main.style.display = 'flex'; 
+            document.getElementById('header-bar').style.display = 'flex';
+            document.getElementById('footer-bar').style.display = 'flex';
+            UI.playerContainer.style.display = 'none';
+            UI.modal.style.display = 'none';
+            UI.search.style.display = 'none';
+            UI.search.blur(); 
+
+            if (view === 'list') {
+                renderList();
+            } else if (view === 'player') {
+                UI.main.style.display = 'none'; 
+                document.getElementById('header-bar').style.display = 'none';
+                document.getElementById('footer-bar').style.display = 'none';
+                UI.playerContainer.style.display = 'flex';
+            } else if (view === 'menu') {
+                renderList(); 
+                UI.modal.style.display = 'flex';
+                State.menuIdx = 0; 
+                renderMenu();
+            } else if (view === 'search') {
+                UI.search.style.display = 'block';
+                UI.search.focus();
+                renderList(); 
+            }
+        }
+
 
         // --- KEYBOARD HANDLING ---
         document.addEventListener('keydown', (e) => {
             const key = e.key;
 
-            // Handle physical soft keys or function keys
             if (key === 'SoftLeft' || key === 'F1') {
                 e.preventDefault();
                 handleSoftLeft();
@@ -213,33 +309,40 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
                 handleSoftRight();
                 return;
             }
-            if (key === 'Backspace' || key === 'BrowserBack' || key === 'Escape') {
+            if (key === 'Backspace' || key === 'BrowserBack') {
                 e.preventDefault();
                 handleBack();
                 return;
             }
+            if (key === 'Escape') { 
+                e.preventDefault();
+                if (State.currentView === 'menu') {
+                    navigateTo('list', { from: 'menu' });
+                } else if (State.currentView === 'list') {
+                    navigateTo('menu', { from: 'list' });
+                } else {
+                    handleBack();
+                }
+                return;
+            }
             
-            if (State.view === 'list') {
+            if (State.currentView === 'list') {
                 if (key === 'ArrowDown') { e.preventDefault(); moveList(1); }
                 if (key === 'ArrowUp') { e.preventDefault(); moveList(-1); }
+                if (key === 'ArrowRight' && State.viewMode === 'grid') { e.preventDefault(); moveList(1, 'grid-h'); } 
+                if (key === 'ArrowLeft' && State.viewMode === 'grid') { e.preventDefault(); moveList(-1, 'grid-h'); }
                 if (key === 'Enter' && State.filtered.length > 0) {
                     e.preventDefault();
                     playChannel(State.filtered[State.listIdx]);
                 }
-                // If a letter/number is pressed, open search and type
                 if (key.length === 1 && /^[a-z0-9]$/i.test(key)) {
-                    openSearch();
+                    navigateTo('search', { from: 'list' });
                     UI.search.value += key;
                     filterSearch(UI.search.value);
                 }
-            } else if (State.view === 'player') {
-                e.preventDefault(); // Prevent default browser actions
-                if (key === 'Enter' || key === 'MediaPlayPause') togglePlay();
-                if (key === 'ArrowRight') seek(15);
-                if (key === 'ArrowLeft') seek(-15);
-                if (key === 'ArrowUp') adjustVolume(0.1);
-                if (key === 'ArrowDown') adjustVolume(-0.1);
-            } else if (State.view === 'menu') {
+            } else if (State.currentView === 'player') {
+                // Player key controls removed to rely on default video controls
+            } else if (State.currentView === 'menu') {
                 e.preventDefault();
                 const menuItems = UI.mList.children;
                 if (menuItems.length === 0) return;
@@ -247,61 +350,52 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
                 if (key === 'ArrowDown') moveMenu(1);
                 if (key === 'ArrowUp') moveMenu(-1);
                 if (key === 'Enter') executeMenu();
-            } else if (State.view === 'search') {
-                // If user presses Down while in search input, jump to list
+            } else if (State.currentView === 'search') {
                 if (key === 'ArrowDown') {
                     e.preventDefault();
-                    UI.search.blur(); // Remove focus from the input
-                    State.view = 'list';
-                    State.listIdx = 0; // Focus on the first item in the filtered list
+                    UI.search.blur();
+                    State.listIdx = 0; 
+                    navigateTo('list', { from: 'search', listIdx: State.listIdx }, { render: false });
                     renderList();
                 }
-                 // If user presses Up while in search input, jump to last item in list
                 if (key === 'ArrowUp') {
                     e.preventDefault();
                     UI.search.blur();
-                    State.view = 'list';
-                    // Ensure listIdx is valid if filtered list is empty
-                    State.listIdx = Math.max(0, State.filtered.length - 1); // Focus on the last item
+                    State.listIdx = Math.max(0, State.filtered.length - 1); 
+                    navigateTo('list', { from: 'search', listIdx: State.listIdx }, { render: false });
                     renderList();
                 }
-                // Other keys are handled by the input itself
             }
         });
 
         // --- Soft Key Handlers ---
         function handleSoftLeft() {
-            if (State.view === 'list') openMenu();
-            else if (State.view === 'player') togglePlay(); // Example: Play/Pause
-            else if (State.view === 'search') { /* do nothing or clear search? */ }
-            else if (State.view === 'menu') executeMenu(); // 'Select' functionality
+            if (State.currentView === 'list') navigateTo('menu', { from: 'list' });
+            else if (State.currentView === 'player') { /* default player controls */ }
+            else if (State.currentView === 'search') { /* no action defined for soft left in search */ }
+            else if (State.currentView === 'menu') executeMenu(); 
         }
 
         function handleSoftRight() {
-            if (State.view === 'list') openSearch();
-            else if (State.view === 'player') closePlayer();
-            else if (State.view === 'search') closeSearch();
-            else if (State.view === 'menu') closeMenu();
+            if (State.currentView === 'list') navigateTo('search', { from: 'list' });
+            else if (State.currentView === 'player') navigateTo('list', { from: 'player' });
+            else if (State.currentView === 'search') navigateTo('list', { from: 'search' });
+            else if (State.currentView === 'menu') navigateTo('list', { from: 'menu' });
         }
 
         function handleBack() {
-            if (State.view === 'player') closePlayer();
-            else if (State.view === 'menu') closeMenu();
-            else if (State.view === 'search') closeSearch();
-            else if (State.view === 'list') {
-                showOSD("Press Power Key to Exit App"); // Or some other exit logic
+            if (history.length > 1) {
+                history.back();
+            } else {
+                showOSD("Press Power Key to Exit App"); 
             }
         }
 
 
         // --- PLAYER LOGIC (NATIVE) ---
         function playChannel(ch) {
-            State.view = 'player';
-            UI.playerContainer.style.display = 'flex';
-            document.getElementById('header-bar').style.display = 'none';
-            document.getElementById('footer-bar').style.display = 'none';
-            UI.playerOsdTitle.innerText = ch.name;
-            showPlayerOSD(ch.name); // Show channel name on OSD
+            navigateTo('player', { channel: ch }); 
+            showPlayerOSD(ch.name); 
 
             const hlsConfig = {};
             if (ch.headers && Object.keys(ch.headers).length > 0) {
@@ -330,44 +424,11 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
             }
         }
 
-        function closePlayer() {
-            UI.video.pause(); 
-            UI.video.src = "";
-            UI.video.removeAttribute('src'); 
-            if (State.hls) { State.hls.destroy(); State.hls = null; }
-            
-            UI.playerContainer.style.display = 'none';
-            document.getElementById('header-bar').style.display = 'flex';
-            document.getElementById('footer-bar').style.display = 'flex';
-            State.view = 'list';
-            renderList(); // Re-render list to ensure focus is correct
-            updateFooterButtons();
-        }
-
-        function togglePlay() {
-            if (UI.video.paused) UI.video.play();
-            else UI.video.pause();
-            showOSD(UI.video.paused ? "Paused" : "Playing");
-        }
-
-        function seek(seconds) {
-            UI.video.currentTime += seconds;
-            showOSD((seconds > 0 ? "+" : "") + seconds + "s");
-        }
-
-        function adjustVolume(delta) {
-            let newVolume = UI.video.volume + delta;
-            if (newVolume < 0) newVolume = 0;
-            if (newVolume > 1) newVolume = 1;
-            UI.video.volume = newVolume;
-            showOSD("Volume: " + Math.round(newVolume * 100) + "%");
-        }
-
-        // --- LIST RENDER & NAVIGATION ---
+        // --- LIST/GRID RENDER & NAVIGATION ---
         function renderList() {
             UI.main.innerHTML = '';
             const container = document.createElement('div');
-            container.className = 'list-container';
+            container.className = State.viewMode === 'list' ? 'list-container' : 'grid-container';
 
             if (State.filtered.length === 0) {
                 const noChannelsMessage = document.createElement('div');
@@ -377,37 +438,109 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
             } else {
                 State.filtered.forEach((ch, i) => {
                     const div = document.createElement('div');
-                    // Only apply 'focused' class if current view is 'list'
-                    div.className = 'list-item' + (i === State.listIdx && State.view === 'list' ? ' focused' : '');
+                    div.className = (State.viewMode === 'list' ? 'list-item' : 'grid-item') + (i === State.listIdx && State.currentView === 'list' ? ' focused' : '');
                     
-                    // Add basic placeholder for broken/missing images
+                    let logoSize = State.viewMode === 'list' ? '40px' : '50px'; 
+                    let fontSize = State.viewMode === 'list' ? '10px' : '11px';
+
+                    if (window.innerHeight <= 320) { 
+                        if (State.viewMode === 'list') {
+                            logoSize = '30px';
+                            fontSize = '10px';
+                        } else { 
+                            logoSize = '40px';
+                            fontSize = '9px';
+                        }
+                    }
+                    if (window.innerHeight <= 160) { 
+                         if (State.viewMode === 'list') {
+                            logoSize = '20px';
+                            fontSize = '8px';
+                        } else { 
+                            logoSize = '25px';
+                            fontSize = '7px';
+                        }
+                    }
+
                     const logoHtml = ch.logo 
-                        ? `<img src="${ch.logo}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzMzMyI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6Ii8+PC9zdmc+'">`
-                        : `<div style="width:40px;height:40px;background:#333;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#777">TV</div>`; // Generic TV icon for missing logo
+                        ? `<img src="${ch.logo}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzMzMyI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6Ii8+PC9zdmc+'" style="width:${logoSize};height:${logoSize};">`
+                        : `<div style="width:${logoSize};height:${logoSize};background:#333;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:${fontSize};color:#777">TV</div>`;
                     
                     div.innerHTML = `${logoHtml}<span>${ch.name}</span>`;
                     
                     div.onclick = () => { 
-                        State.listIdx = i; // Update focus on click
-                        renderList(); // Re-render to show visual focus change
+                        State.listIdx = i; 
+                        renderList(); 
                         playChannel(ch); 
                     };
                     container.appendChild(div);
                 });
                 UI.main.appendChild(container);
-                scrollToFocus(UI.main); // Scroll the focused item into view
+                scrollToFocus(UI.main); 
             }
             updateFooterButtons();
         }
 
-        function moveList(direction) {
+        function moveList(direction, type = 'vertical') {
             if (State.filtered.length === 0) return;
-            const newIndex = State.listIdx + direction;
+
+            let newIndex = State.listIdx;
+
+            if (type === 'vertical') {
+                newIndex += direction;
+            } else if (type === 'grid-h') {
+                const gridContainer = UI.main.querySelector('.grid-container');
+                if (gridContainer) {
+                    const itemElement = gridContainer.querySelector('.grid-item');
+                    if (itemElement) {
+                        const itemWidth = itemElement.offsetWidth + (parseFloat(window.getComputedStyle(itemElement).marginLeft) * 2); // Calculate item width including margin
+                        const containerWidth = gridContainer.offsetWidth;
+                        const numColumns = Math.floor(containerWidth / itemWidth);
+                        
+                        // Calculate next index for horizontal movement
+                        let currentRowStartIdx = Math.floor(State.listIdx / numColumns) * numColumns;
+                        let nextHorizontalIndex = State.listIdx + direction;
+
+                        if (direction > 0) { // Moving right
+                            if (nextHorizontalIndex >= currentRowStartIdx + numColumns || nextHorizontalIndex >= State.filtered.length) {
+                                // If at end of row or end of list, wrap to next row (first item) or stay at end
+                                newIndex = Math.min(currentRowStartIdx + numColumns, State.filtered.length - 1);
+                                if (newIndex === State.listIdx && State.listIdx < State.filtered.length - 1) { // If already at end of current row, move to start of next
+                                    newIndex = Math.min(State.listIdx + numColumns, State.filtered.length - 1);
+                                } else if (newIndex === State.listIdx && State.listIdx === State.filtered.length - 1) { // If at absolute end
+                                    newIndex = State.listIdx;
+                                }
+                            } else {
+                                newIndex = nextHorizontalIndex;
+                            }
+                        } else { // Moving left
+                            if (nextHorizontalIndex < currentRowStartIdx || nextHorizontalIndex < 0) {
+                                // If at start of row or start of list, wrap to previous row (last item) or stay at start
+                                newIndex = Math.max(0, currentRowStartIdx - 1);
+                                if (newIndex === State.listIdx && State.listIdx > 0) { // If already at start of current row, move to end of previous
+                                     newIndex = Math.max(0, State.listIdx - numColumns);
+                                } else if (newIndex === State.listIdx && State.listIdx === 0) { // If at absolute start
+                                    newIndex = State.listIdx;
+                                }
+                            } else {
+                                newIndex = nextHorizontalIndex;
+                            }
+                        }
+                    } else {
+                        newIndex += direction; // Fallback to linear if no grid item found
+                    }
+                } else {
+                    newIndex += direction; // Fallback to linear if no grid container found
+                }
+            }
+
+
             if (newIndex >= 0 && newIndex < State.filtered.length) {
                 State.listIdx = newIndex;
                 renderList();
             }
         }
+
 
         function scrollToFocus(containerElement) {
             const focusedElement = containerElement.querySelector('.focused');
@@ -439,41 +572,28 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
                 }
             }
             State.filtered = State.channels; 
-            State.listIdx = 0; // Reset focus when new list is parsed
+            State.listIdx = 0; 
             renderList();
         }
 
         // --- UI ACTIONS ---
-        function openMenu() { 
-            State.view = 'menu'; 
-            UI.modal.style.display = 'flex'; 
-            State.menuIdx = 0; // Reset menu focus
-            renderMenu(); 
-            updateFooterButtons();
-        }
-
-        function closeMenu() { 
-            State.view = 'list'; 
-            UI.modal.style.display = 'none'; 
-            renderList(); // Re-render list to ensure focus is correct after menu close
-            updateFooterButtons();
-        }
-
-        UI.modal.addEventListener('click', (e) => { 
-            if(e.target === UI.modal) closeMenu(); 
-        });
-
         function renderMenu() {
             UI.mList.innerHTML = '';
             const menuOptions = [
-                { t: 'Load Playlist (File)', a: () => { UI.fileIn.click(); closeMenu(); } }, // Close menu immediately to let user interact with file picker
+                { t: 'Load Playlist (File)', a: () => { UI.fileIn.click(); navigateTo('list', { from: 'menu' }); } }, 
                 { t: 'Reload Default Playlist', a: () => { 
                     localStorage.removeItem(LS_KEY); 
                     parseM3U(DEFAULT_PLAYLIST, true); 
                     showOSD("Default Playlist Loaded!");
-                    closeMenu(); 
+                    navigateTo('list', { from: 'menu' }); 
                 }},
-                { t: 'Close Menu', a: closeMenu }
+                { t: `Toggle View (${State.viewMode === 'list' ? 'Grid' : 'List'})`, a: () => {
+                    State.viewMode = State.viewMode === 'list' ? 'grid' : 'list';
+                    localStorage.setItem(LS_VIEW_MODE_KEY, State.viewMode);
+                    renderList();
+                    navigateTo('list', { from: 'menu' }); 
+                }},
+                { t: 'Close Menu', a: () => navigateTo('list', { from: 'menu' }) }
             ];
 
             menuOptions.forEach((it, i) => {
@@ -481,12 +601,12 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
                 d.className = 'menu-item' + (i === State.menuIdx ? ' focused' : '');
                 d.innerText = it.t;
                 d.onclick = () => {
-                    State.menuIdx = i; // Update focus on click
+                    State.menuIdx = i; 
                     it.a();
                 };
                 UI.mList.appendChild(d);
             });
-            scrollToFocus(UI.mList); // Scroll the focused menu item into view
+            scrollToFocus(UI.mList); 
         }
 
         function moveMenu(direction) {
@@ -512,66 +632,56 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
         function showPlayerOSD(title) {
             UI.playerOsdTitle.innerText = title;
             UI.playerOsdTitle.style.display = 'block';
-            // Fix: Changed 'calc(100% - 20px))' to 'calc(100% - 20px)'
             UI.playerOsdTitle.style.maxWidth = 'calc(100% - 20px)'; 
             if (State.playerOsdTimer) clearTimeout(State.playerOsdTimer);
             State.playerOsdTimer = setTimeout(() => UI.playerOsdTitle.style.display = 'none', 3000);
         }
 
-        // --- FOOTER BUTTONS ---
+        // --- FOOTER BUTTONS (with SVG icons) ---
         function updateFooterButtons() {
-            if (State.view === 'list') {
-                UI.skLText.innerText = 'Menu';
-                UI.skRText.innerText = 'Search';
-            } else if (State.view === 'player') {
-                UI.skLText.innerText = 'Play/Pause';
-                UI.skRText.innerText = 'Back';
-            } else if (State.view === 'menu') {
-                UI.skLText.innerText = 'Select';
-                UI.skRText.innerText = 'Back';
-            } else if (State.view === 'search') {
-                UI.skLText.innerText = ''; // No action for soft left in search
-                UI.skRText.innerText = 'Cancel';
+            UI.skLIcon.style.display = 'none';
+            UI.skRIcon.style.display = 'none';
+            UI.skLText.style.display = 'none';
+            UI.skRText.style.display = 'none';
+
+            if (State.currentView === 'list') {
+                UI.skLIcon.innerHTML = '<path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>'; // Menu icon
+                UI.skLIcon.style.display = 'block';
+                UI.skRIcon.innerHTML = '<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>'; // Search icon
+                UI.skRIcon.style.display = 'block';
+            } else if (State.currentView === 'player') {
+                UI.skLText.innerText = ''; 
+                UI.skRIcon.innerHTML = '<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>'; // Back icon
+                UI.skRIcon.style.display = 'block';
+            } else if (State.currentView === 'menu') {
+                UI.skLIcon.innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>'; // Select (Checkmark) icon
+                UI.skLIcon.style.display = 'block';
+                UI.skRIcon.innerHTML = '<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>'; // Back icon
+                UI.skRIcon.style.display = 'block';
+            } else if (State.currentView === 'search') {
+                UI.skLText.innerText = ''; 
+                UI.skRIcon.innerHTML = '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'; // Cancel (Close) icon
+                UI.skRIcon.style.display = 'block';
             }
         }
 
         // --- SEARCH LOGIC ---
-        function openSearch() {
-            State.view = 'search'; 
-            UI.search.style.display='block'; 
-            UI.search.focus(); 
-            State.filtered = State.channels; // Show all channels when search opens
-            State.listIdx = 0; // Reset list focus
-            renderList();
-            updateFooterButtons();
-        }
-
-        function closeSearch() {
-            State.view = 'list';
-            UI.search.value = '';
-            UI.search.style.display = 'none';
-            State.filtered = State.channels; // Clear filter
-            State.listIdx = 0; // Reset list focus
-            renderList();
-            updateFooterButtons();
-        }
-        
         function filterSearch(term) {
             const t = term.toLowerCase();
             State.filtered = State.channels.filter(c => c.name.toLowerCase().includes(t));
-            State.listIdx = 0; // Reset focus when search changes
+            State.listIdx = 0; 
             renderList();
         }
 
         // --- EVENT BINDINGS (TOUCH & KEYBOARD) ---
-        UI.skL.onclick = handleSoftLeft; // Menu button
-        UI.skR.onclick = handleSoftRight; // Search button
+        UI.skL.onclick = handleSoftLeft; 
+        UI.skR.onclick = handleSoftRight; 
         
         UI.search.addEventListener('input', (e) => {
             filterSearch(e.target.value);
         });
         
-        UI.btnClose.onclick = closePlayer; // Close native player
+        UI.btnClose.onclick = () => navigateTo('list', { from: 'player' }); 
         UI.fileIn.onchange = e => { 
             if (e.target.files.length > 0) {
                 const r = new FileReader(); 
