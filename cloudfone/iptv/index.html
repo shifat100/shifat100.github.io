@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Touch IPTV Player (Native)</title>
+    <title>Touch IPTV Player (Keyboard Nav)</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         /* --- RESET & BASIC --- */
@@ -26,6 +26,7 @@
         .list-item { padding: 15px 15px; font-size: 16px; border-bottom: 1px solid #333; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;}
         .list-item:active { background-color: #333; }
         .list-item img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #fff; }
+        .list-item.focused { background-color: #009be5; color: #fff; font-weight: 600; } /* Added focused style for keyboard nav */
 
         /* --- NATIVE PLAYER CONTAINER --- */
         #native-player-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 100; display: none; flex-direction: column; }
@@ -50,6 +51,7 @@
         .modal-header { background: #009be5; color: white; padding: 15px; font-weight: bold; font-size: 16px; text-align: center; }
         .menu-item { padding: 15px; border-bottom: 1px solid #333; color: #eee; font-size: 15px; cursor: pointer; }
         .menu-item:active { background: #333; }
+        .menu-item.focused { background: #333; color: white; border-left: 5px solid #009be5; } /* Added focused style for menu nav */
 
         #osd { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.9); color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; z-index: 300; display: none; pointer-events: none; text-align: center; border: 1px solid #555;}
         input[type="file"] { display: none; }
@@ -80,7 +82,6 @@
                     <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                 </div>
             </div>
-            <!-- 'controls' attribute enables native player -->
             <video id="video-source" controls playsinline></video>
         </div>
 
@@ -105,8 +106,11 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
         const LS_KEY = 'touch_iptv_data';
 
         const State = {
-            view: 'list', 
-            channels: [], filtered: [], 
+            view: 'list', // 'list', 'player', 'menu', 'search'
+            channels: [], 
+            filtered: [], 
+            listIdx: 0, // Current focused index in the list
+            menuIdx: 0, // Current focused index in the menu
             hls: null
         };
 
@@ -130,6 +134,62 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
             parseM3U(saved ? saved : DEFAULT_PLAYLIST);
         };
 
+        // --- KEYBOARD HANDLING ---
+        document.addEventListener('keydown', (e) => {
+            if (State.view === 'list') {
+                if (e.key === 'ArrowDown') moveList(1);
+                if (e.key === 'ArrowUp') moveList(-1);
+                if (e.key === 'Enter' && State.filtered.length > 0) {
+                    playChannel(State.filtered[State.listIdx]);
+                }
+                if (e.key === 'Escape') {
+                    if (UI.search.style.display === 'block') { // If search is open, close it
+                        UI.search.value = '';
+                        UI.search.style.display = 'none';
+                        State.filtered = State.channels;
+                        renderList();
+                        State.listIdx = 0; // Reset list focus
+                    } else { // Otherwise, open menu
+                        openMenu();
+                    }
+                }
+            } else if (State.view === 'player') {
+                if (e.key === 'Enter') {
+                    if (UI.video.paused) UI.video.play();
+                    else UI.video.pause();
+                }
+                if (e.key === 'ArrowRight') UI.video.currentTime += 10;
+                if (e.key === 'ArrowLeft') UI.video.currentTime -= 10;
+                if (e.key === 'Backspace' || e.key === 'Escape') closePlayer();
+            } else if (State.view === 'menu') {
+                const menuItems = UI.mList.children;
+                if (menuItems.length === 0) return;
+
+                if (e.key === 'ArrowDown') {
+                    State.menuIdx = (State.menuIdx + 1) % menuItems.length;
+                    renderMenu();
+                }
+                if (e.key === 'ArrowUp') {
+                    State.menuIdx = (State.menuIdx - 1 + menuItems.length) % menuItems.length;
+                    renderMenu();
+                }
+                if (e.key === 'Enter') {
+                    menuItems[State.menuIdx].click(); // Simulate click on focused item
+                }
+                if (e.key === 'Escape') closeMenu();
+            } else if (State.view === 'search') {
+                if (e.key === 'Escape') {
+                    UI.search.value = '';
+                    UI.search.style.display = 'none';
+                    State.filtered = State.channels;
+                    renderList();
+                    State.listIdx = 0; // Reset list focus
+                    State.view = 'list';
+                }
+                // No specific arrow key navigation in search input itself
+            }
+        });
+
         // --- PLAYER LOGIC (NATIVE) ---
         function playChannel(ch) {
             State.view = 'player';
@@ -150,43 +210,59 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
                 State.hls.loadSource(ch.url);
                 State.hls.attachMedia(UI.video);
                 State.hls.on(Hls.Events.MANIFEST_PARSED, () => { 
-                    UI.video.play().catch(e => console.log("Autoplay blocked")); 
+                    UI.video.play().catch(e => console.log("Autoplay blocked:", e)); 
                 });
                 State.hls.on(Hls.Events.ERROR, (e, data) => { if(data.fatal) showOSD("Stream Error"); });
             } else {
-                // Native HLS support (Safari/iOS)
                 UI.video.src = ch.url; 
-                UI.video.play();
+                UI.video.play().catch(e => console.log("Autoplay blocked:", e));
             }
         }
 
         function closePlayer() {
             UI.video.pause(); 
             UI.video.src = "";
-            UI.video.removeAttribute('src'); // Clean cleanup
+            UI.video.removeAttribute('src'); 
             if (State.hls) { State.hls.destroy(); State.hls = null; }
             
             UI.playerContainer.style.display = 'none';
             document.getElementById('header-bar').style.display = 'flex';
             document.getElementById('footer-bar').style.display = 'flex';
             State.view = 'list';
+            renderList(); // Re-render list to ensure focus is correct
         }
 
-        // --- LIST RENDER ---
+        // --- LIST RENDER & NAVIGATION ---
         function renderList() {
             UI.main.innerHTML = '';
             const container = document.createElement('div');
             container.className = 'list-container';
-            State.filtered.forEach((ch) => {
+            State.filtered.forEach((ch, i) => {
                 const div = document.createElement('div');
-                div.className = 'list-item';
+                div.className = 'list-item' + (i === State.listIdx ? ' focused' : '');
                 if(ch.logo) div.innerHTML += `<img src="${ch.logo}" onerror="this.style.display='none'">`;
                 div.innerHTML += `<span>${ch.name}</span>`;
-                // Simple Click to Play
-                div.onclick = () => { playChannel(ch); };
+                div.onclick = () => { 
+                    State.listIdx = i; // Update focus on click
+                    renderList();
+                    playChannel(ch); 
+                };
                 container.appendChild(div);
             });
             UI.main.appendChild(container);
+
+            const focusedElement = container.querySelector('.focused');
+            if (focusedElement) {
+                focusedElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+
+        function moveList(direction) {
+            const newIndex = State.listIdx + direction;
+            if (newIndex >= 0 && newIndex < State.filtered.length) {
+                State.listIdx = newIndex;
+                renderList();
+            }
         }
 
         // --- PARSER ---
@@ -211,32 +287,69 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
                     if(tempCh.name) State.channels.push(tempCh);
                 }
             }
-            State.filtered = State.channels; renderList();
+            State.filtered = State.channels; 
+            State.listIdx = 0; // Reset focus when new list is parsed
+            renderList();
         }
 
         // --- UI ACTIONS ---
-        function openMenu() { State.view = 'menu'; UI.modal.style.display = 'flex'; renderMenu(); }
-        function closeMenu() { State.view = 'list'; UI.modal.style.display = 'none'; }
-        UI.modal.addEventListener('click', (e) => { if(e.target === UI.modal) closeMenu(); });
+        function openMenu() { 
+            State.view = 'menu'; 
+            UI.modal.style.display = 'flex'; 
+            State.menuIdx = 0; // Reset menu focus
+            renderMenu(); 
+        }
+
+        function closeMenu() { 
+            State.view = 'list'; 
+            UI.modal.style.display = 'none'; 
+            renderList(); // Re-render list to ensure focus is correct after menu close
+        }
+
+        UI.modal.addEventListener('click', (e) => { 
+            if(e.target === UI.modal) closeMenu(); 
+        });
 
         function renderMenu() {
             UI.mList.innerHTML = '';
-            [{ t: 'Load Playlist', a: () => UI.fileIn.click() }, { t: 'Reset', a: () => { localStorage.removeItem(LS_KEY); parseM3U(DEFAULT_PLAYLIST); closeMenu(); }}]
-            .forEach(it => {
-                const d = document.createElement('div'); d.className = 'menu-item'; d.innerText = it.t;
-                d.onclick = it.a; UI.mList.appendChild(d);
+            const menuOptions = [
+                { t: 'Load Playlist', a: () => UI.fileIn.click() }, 
+                { t: 'Reset Playlist', a: () => { localStorage.removeItem(LS_KEY); parseM3U(DEFAULT_PLAYLIST, true); closeMenu(); }}
+            ];
+
+            menuOptions.forEach((it, i) => {
+                const d = document.createElement('div'); 
+                d.className = 'menu-item' + (i === State.menuIdx ? ' focused' : '');
+                d.innerText = it.t;
+                d.onclick = () => {
+                    State.menuIdx = i; // Update focus on click
+                    it.a();
+                };
+                UI.mList.appendChild(d);
             });
+
+            const focusedElement = UI.mList.querySelector('.focused');
+            if (focusedElement) {
+                focusedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
         }
         
-        function showOSD(m) { UI.osd.innerText = m; UI.osd.style.display = 'block'; setTimeout(()=>UI.osd.style.display='none', 2000); }
+        function showOSD(m) { 
+            UI.osd.innerText = m; 
+            UI.osd.style.display = 'block'; 
+            setTimeout(()=>UI.osd.style.display='none', 2000); 
+        }
 
-        // --- EVENT BINDINGS (TOUCH ONLY) ---
-        UI.skL.onclick = openMenu;
-        UI.skR.onclick = () => { 
+        // --- EVENT BINDINGS (TOUCH & KEYBOARD) ---
+        UI.skL.onclick = openMenu; // Menu button
+        UI.skR.onclick = () => { // Search button
             if(UI.search.style.display === 'block') {
+                UI.search.value = '';
                 UI.search.style.display = 'none';
                 State.filtered = State.channels;
                 renderList();
+                State.listIdx = 0; // Reset list focus
+                State.view = 'list';
             } else {
                 State.view='search'; 
                 UI.search.style.display='block'; 
@@ -247,11 +360,19 @@ http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
         UI.search.addEventListener('input', (e) => {
             const t = e.target.value.toLowerCase();
             State.filtered = State.channels.filter(c => c.name.toLowerCase().includes(t));
+            State.listIdx = 0; // Reset focus when search changes
             renderList();
         });
         
-        UI.btnClose.onclick = closePlayer;
-        UI.fileIn.onchange = e => { const r=new FileReader(); r.onload=v=> { parseM3U(v.target.result, true); closeMenu(); }; r.readAsText(e.target.files[0]); };
+        UI.btnClose.onclick = closePlayer; // Close native player
+        UI.fileIn.onchange = e => { 
+            const r=new FileReader(); 
+            r.onload=v=> { 
+                parseM3U(v.target.result, true); 
+                closeMenu(); 
+            }; 
+            r.readAsText(e.target.files[0]); 
+        };
 
     </script>
 </body>
