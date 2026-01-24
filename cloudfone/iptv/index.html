@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CloudTV Pro</title>
+    <title>IPTV Pro</title>
+    <!-- HLS.js Library for Video Streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
+        /* --- 1. THEME VARIABLES (Cloud Phone Style) --- */
         :root {
-            --primary: #0091EA;
-            --bg: #111111;
-            --surface: #000000;
+            --primary: #0091EA;   /* Professional Blue */
+            --bg: #111111;        /* Deep Black/Grey */
+            --surface: #000000;   /* Black Surface */
             --text: #FFFFFF;
-            --focus: #0091EA;
+            --focus: #0091EA;     /* Highlight Color */
             --divider: #333333;
         }
 
+        /* --- 2. RESET & BASE --- */
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
         
         body {
@@ -24,9 +27,10 @@
             font-size: 16px;
             overflow: hidden;
             height: 100vh;
+            width: 100vw;
         }
 
-        /* Header */
+        /* --- 3. HEADER --- */
         #header {
             background-color: var(--primary);
             height: 40px;
@@ -38,69 +42,76 @@
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 10;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* Views Container */
+        /* --- 4. VIEWS CONTAINER --- */
         .view-section {
-            display: none; /* Hide all initially */
-            margin-top: 40px;
-            height: calc(100vh - 70px);
+            display: none; /* Hidden by default */
+            margin-top: 40px; /* Header height */
+            height: calc(100vh - 70px); /* Header 40 + Footer 30 */
             overflow-y: auto;
         }
         
         .view-section.active {
-            display: block;
+            display: block; /* Show active view */
         }
 
-        /* Channel List */
+        /* --- 5. CHANNEL LIST STYLES --- */
         .channel-item {
             padding: 12px 10px;
             border-bottom: 1px solid var(--divider);
             display: flex;
             align-items: center;
+            background-color: transparent;
         }
+        /* Focused State */
         .channel-item.focused, .menu-item.focused {
             background-color: var(--focus) !important;
             color: white !important;
         }
         .channel-logo {
-            width: 40px; height: 40px; margin-right: 15px; background: #fff; object-fit: contain;
+            width: 40px; height: 40px; 
+            margin-right: 15px; 
+            background: #fff; 
+            object-fit: contain;
+            border-radius: 2px;
         }
         .channel-info { flex: 1; overflow: hidden; }
         .channel-name { font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .group-title { font-size: 12px; color: #aaa; margin-top: 4px; display: block; }
-        .channel-item.focused .group-title { color: #eee; }
+        .channel-item.focused .group-title { color: #ddd; }
 
-        /* Menu List */
+        /* --- 6. MENU STYLES --- */
         .menu-item {
             padding: 15px 10px;
             border-bottom: 1px solid var(--divider);
-            font-size: 18px;
+            font-size: 16px;
             background: var(--surface);
             cursor: pointer;
         }
 
-        /* Search Input View */
-        #search-view { padding: 10px; }
+        /* --- 7. SEARCH VIEW STYLES --- */
+        #search-view { padding: 0; }
+        #search-container { padding: 10px; background: #222; }
         #search-input {
             width: 100%;
-            padding: 10px;
-            background: #222;
-            border: none;
-            border-bottom: 2px solid var(--primary);
+            padding: 8px;
+            background: #000;
+            border: 1px solid #555;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
         }
+        #search-input:focus { border-color: var(--primary); }
 
-        /* Player Overlay */
+        /* --- 8. VIDEO PLAYER --- */
         #player-view {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 100;
+            background: black; z-index: 100; display: none;
         }
-        video { width: 100%; height: 100%; }
+        video { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Soft Keys */
+        /* --- 9. SOFT KEYS (FOOTER) --- */
         #soft-keys {
             position: fixed; bottom: 0; left: 0; right: 0; height: 30px;
             background-color: var(--surface);
@@ -113,15 +124,36 @@
         #rsk { justify-content: flex-end; }
         .key-icon { width: 24px; height: 24px; fill: white; }
 
+        /* --- 10. CUSTOM ALERT BOX --- */
+        #custom-alert-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85); z-index: 9999;
+            display: none; justify-content: center; align-items: center;
+        }
+        .alert-box {
+            background-color: #222; width: 85%; max-width: 300px;
+            border: 1px solid #444; border-radius: 4px; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .alert-header { background: var(--primary); color: white; padding: 10px; font-weight: bold; }
+        .alert-body { padding: 20px 15px; color: #ddd; font-size: 15px; line-height: 1.4; }
+        .alert-footer { padding: 10px; text-align: right; background: #111; }
+        .alert-btn {
+            background: transparent; border: 2px solid var(--primary); color: var(--primary);
+            padding: 5px 15px; font-weight: bold; text-transform: uppercase;
+        }
+        .alert-btn:focus { background: var(--primary); color: white; }
+
         /* Hidden File Input */
         #file-upload { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="header">CloudTV</div>
+    <!-- Header -->
+    <div id="header">IPTV</div>
 
-    <!-- 1. HOME VIEW (List) -->
+    <!-- 1. HOME VIEW (Channel List) -->
     <div id="home-view" class="view-section active">
         <div id="channel-list"></div>
     </div>
@@ -130,41 +162,55 @@
     <div id="menu-view" class="view-section">
         <div class="menu-item focused" data-action="search">Search Channel</div>
         <div class="menu-item" data-action="upload">Load Playlist (M3U)</div>
-        <div class="menu-item" data-action="reset">Reset Default Channels</div>
+        <div class="menu-item" data-action="reset">Reset Defaults</div>
         <div class="menu-item" data-action="about">About</div>
     </div>
 
     <!-- 3. SEARCH VIEW -->
     <div id="search-view" class="view-section">
-        <input type="text" id="search-input" placeholder="Type channel name...">
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="Type name...">
+        </div>
         <div id="search-results"></div>
     </div>
 
     <!-- 4. PLAYER VIEW -->
-    <div id="player-view" style="display:none;">
+    <div id="player-view">
         <video id="video-player" controls playsinline></video>
     </div>
 
+    <!-- Hidden Input for File Loading -->
     <input type="file" id="file-upload" accept=".m3u,.txt">
+
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert-overlay">
+        <div class="alert-box">
+            <div class="alert-header">About</div>
+            <div class="alert-body" id="custom-alert-msg"></div>
+            <div class="alert-footer">
+                <center><button id="custom-alert-ok" class="alert-btn">OK</button></center>
+            </div>
+        </div>
+    </div>
 
     <!-- Soft Keys -->
     <div id="soft-keys">
         <div class="key-col" id="lsk">
-            <!-- Hamburger Menu -->
+            <!-- Hamburger Menu Icon -->
             <svg class="key-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </div>
         <div class="key-col" id="csk">
-            <!-- Checkmark (Tick) -->
+            <!-- Center Checkmark (Tick) Icon -->
             <svg class="key-icon" id="icon-center" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </div>
         <div class="key-col" id="rsk">
-            <!-- Arrow Back -->
+            <!-- Back Arrow Icon -->
             <svg class="key-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         </div>
     </div>
 
 <script>
-    // --- DEFAULT DATA (Embedded Playlist) ---
+    // --- 1. CONFIGURATION & DEFAULT DATA ---
     var DEFAULT_M3U = '#EXTM3U\n' +
     '#EXTINF:-1 group-title="Bangla" tvg-logo="https://dl.dropbox.com/s/leielj83em5kg7h/somoy_news.png",Somoy TV\n' +
     'https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8\n' +
@@ -172,19 +218,16 @@
     'https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/index.m3u8\n' +
     '#EXTINF:-1 group-title="Sports" tvg-logo="https://upload.wikimedia.org/wikipedia/en/2/29/TSportsBD.png",T Sports\n' +
     'http://103.60.204.26:3255/TSportsHD/tracks-v1a1/mono.m3u8\n' +
-    '#EXTINF:-1 group-title="Sports" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/GTV_Live_Sports.png/1200px-GTV_Live_Sports.png",GTV\n' +
-    'http://103.60.204.26:3255/GTVHD/tracks-v1a1/mono.m3u8\n' +
     '#EXTINF:-1 group-title="Entertainment" tvg-logo="https://upload.wikimedia.org/wikipedia/en/thumb/8/8c/Sony_Entertainment_Television_logo.svg/1200px-Sony_Entertainment_Television_logo.svg.png",Sony TV\n' +
     'http://103.60.204.26:3255/SonyEntertainmentTelevisionHD/tracks-v1a1/mono.m3u8';
 
-    // --- STATE VARIABLES ---
+    // --- 2. GLOBAL VARIABLES ---
     var channels = [];
     var filteredChannels = [];
-    var currentView = 'home'; // home, menu, search, player
-    var focusIndex = 0; // Universal focus index
-    var historyStack = []; // Manual check (browser history is main)
+    var currentView = 'home';
+    var focusIndex = 0;
 
-    // Elements
+    // UI References
     var elHeader = document.getElementById('header');
     var elHome = document.getElementById('home-view');
     var elMenu = document.getElementById('menu-view');
@@ -194,37 +237,58 @@
     var elList = document.getElementById('channel-list');
     var elSearchResults = document.getElementById('search-results');
     var elSearchInput = document.getElementById('search-input');
-    
-    // Icons
     var iconCenter = document.getElementById('icon-center');
+
+    // SVG Icons
     var ICON_TICK = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
     var ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
     var ICON_PAUSE = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
 
-    // --- INITIALIZATION ---
-    window.onload = function() {
-        var savedData = localStorage.getItem('bd_iptv_playlist');
-        if (!savedData) {
-            savedData = DEFAULT_M3U;
-            localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U);
-        }
-        parseM3U(savedData);
-        renderChannels(channels, elList);
+    // --- 3. CUSTOM ALERT OVERRIDE ---
+    window.alert = function(message) {
+        var overlay = document.getElementById('custom-alert-overlay');
+        var msgDiv = document.getElementById('custom-alert-msg');
+        var btn = document.getElementById('custom-alert-ok');
         
-        // Push initial state
-        history.replaceState({view: 'home'}, "Home", "");
+        msgDiv.innerText = message;
+        overlay.style.display = 'flex';
+        btn.focus();
         
-        // Handle Back Button (History)
-        window.onpopstate = function(event) {
-            if (event.state) {
-                switchView(event.state.view, false);
-            } else {
-                switchView('home', false);
+        btn.onclick = function() {
+            overlay.style.display = 'none';
+            // Restore focus based on view
+            if(currentView === 'home' || currentView === 'search') updateFocus();
+            else if(currentView === 'menu') {
+                var items = elMenu.children;
+                if(items[focusIndex]) items[focusIndex].classList.add('focused');
             }
         };
     };
 
-    // --- DATA PARSING ---
+    // --- 4. INITIALIZATION ---
+    window.onload = function() {
+        var savedData = localStorage.getItem('bd_iptv_playlist');
+        if (!savedData) {
+            localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U);
+            savedData = DEFAULT_M3U;
+        }
+        parseM3U(savedData);
+        renderChannels(channels, elList);
+        
+        // Initial History State
+        history.replaceState({view: 'home'}, "Home", "");
+
+        // Handle Browser/Phone Back Button
+        window.onpopstate = function(event) {
+            if (event.state) {
+                switchView(event.state.view, false);
+            } else {
+                switchView('home', false); // Fallback
+            }
+        };
+    };
+
+    // --- 5. DATA LOGIC ---
     function parseM3U(data) {
         var lines = data.split('\n');
         channels = [];
@@ -246,11 +310,11 @@
         }
     }
 
-    // --- RENDERING ---
+    // --- 6. RENDER LOGIC ---
     function renderChannels(data, container) {
         container.innerHTML = '';
         if (data.length === 0) {
-            container.innerHTML = '<div style="padding:20px;text-align:center;color:#777">No channels found</div>';
+            container.innerHTML = '<div style="padding:20px;text-align:center;color:#777">No channels</div>';
             return;
         }
         for (var i = 0; i < data.length; i++) {
@@ -259,7 +323,7 @@
             div.innerHTML = '<img src="' + (data[i].logo || '') + '" class="channel-logo" onerror="this.style.display=\'none\'">' +
                             '<div class="channel-info"><span class="channel-name">' + data[i].name + '</span><span class="group-title">' + data[i].group + '</span></div>';
             
-            // Capture index for click
+            // Mouse click handler
             (function(idx) {
                 div.onclick = function() {
                     focusIndex = idx;
@@ -273,45 +337,52 @@
         updateFocus();
     }
 
-    // --- NAVIGATION LOGIC ---
-    function switchView(viewName, pushToHistory) {
-        // Hide all
+    // --- 7. NAVIGATION SYSTEM ---
+    function switchView(viewName, pushHistory) {
+        // Reset States
         elHome.classList.remove('active');
         elMenu.classList.remove('active');
         elSearch.classList.remove('active');
         elPlayer.style.display = 'none';
         
-        // Stop video if leaving player
+        // Stop Player if leaving
         if (currentView === 'player' && viewName !== 'player') {
             elVideo.pause();
             elVideo.src = "";
         }
 
         currentView = viewName;
-        focusIndex = 0; // Reset focus on view change
+        focusIndex = 0; // Reset focus on new view
 
+        // Activate View
         if (viewName === 'home') {
             elHome.classList.add('active');
-            elHeader.innerText = "CloudTV";
+            elHeader.innerText = "IPTV";
+            iconCenter.innerHTML = ICON_TICK;
             updateFocus();
-        } else if (viewName === 'menu') {
+        } 
+        else if (viewName === 'menu') {
             elMenu.classList.add('active');
             elHeader.innerText = "Menu";
+            iconCenter.innerHTML = ICON_TICK;
             updateFocus();
-        } else if (viewName === 'search') {
+        } 
+        else if (viewName === 'search') {
             elSearch.classList.add('active');
             elHeader.innerText = "Search";
+            iconCenter.innerHTML = ICON_TICK;
             elSearchInput.value = '';
             elSearchInput.focus();
             elSearchResults.innerHTML = '';
-        } else if (viewName === 'player') {
+        } 
+        else if (viewName === 'player') {
             elPlayer.style.display = 'block';
-            elHeader.innerText = "Now Playing";
+            elHeader.innerText = "Playing...";
             iconCenter.innerHTML = ICON_PAUSE;
         }
 
-        // Push history if not a popstate event
-        if (pushToHistory) {
+        // Push to Browser History
+        if (pushHistory) {
             history.pushState({view: viewName}, viewName, "#" + viewName);
         }
     }
@@ -323,8 +394,10 @@
         else if (currentView === 'search') items = elSearchResults.children;
         else return;
 
+        // Remove focus from all
         for (var i = 0; i < items.length; i++) { items[i].classList.remove('focused'); }
         
+        // Apply focus
         if (items.length > 0) {
             if (focusIndex >= items.length) focusIndex = items.length - 1;
             if (focusIndex < 0) focusIndex = 0;
@@ -333,31 +406,40 @@
         }
     }
 
-    // --- ACTIONS ---
+    // --- 8. ACTION HANDLERS ---
     function handleEnter() {
         if (currentView === 'home') {
             if (channels[focusIndex]) playChannel(channels[focusIndex].url);
-        } else if (currentView === 'menu') {
+        } 
+        else if (currentView === 'menu') {
             var action = elMenu.children[focusIndex].getAttribute('data-action');
             if (action === 'search') switchView('search', true);
             else if (action === 'upload') document.getElementById('file-upload').click();
             else if (action === 'reset') {
-                if(confirm("Restore default channels?")) {
-                    localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U);
-                    location.reload();
-                }
-            } else if (action === 'about') alert("CloudTV Pro v1.0\nCreated for KaiOS/Cloud Phone");
-        } else if (currentView === 'search') {
+                localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U);
+                alert("Restored Defaults!");
+                location.reload();
+            } 
+            else if (action === 'about') alert("IPTV Pro v1.0\nFor CloudPhone");
+        } 
+        else if (currentView === 'search') {
             if (document.activeElement === elSearchInput) {
-                elSearchInput.blur(); // Focus list
+                // Move focus from Input to Results
+                elSearchInput.blur();
                 focusIndex = 0;
                 updateFocus();
             } else {
                 if (filteredChannels[focusIndex]) playChannel(filteredChannels[focusIndex].url);
             }
-        } else if (currentView === 'player') {
-            if (elVideo.paused) { elVideo.play(); iconCenter.innerHTML = ICON_PAUSE; }
-            else { elVideo.pause(); iconCenter.innerHTML = ICON_PLAY; }
+        } 
+        else if (currentView === 'player') {
+            if (elVideo.paused) { 
+                elVideo.play(); 
+                iconCenter.innerHTML = ICON_PAUSE; 
+            } else { 
+                elVideo.pause(); 
+                iconCenter.innerHTML = ICON_PLAY; 
+            }
         }
     }
 
@@ -374,9 +456,9 @@
         }
     }
 
-    // --- EVENT LISTENERS ---
-    
-    // File Upload
+    // --- 9. EVENT LISTENERS ---
+
+    // File Upload Handler
     document.getElementById('file-upload').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -386,12 +468,12 @@
             parseM3U(e.target.result);
             renderChannels(channels, elList);
             alert("Playlist Loaded!");
-            history.back(); // Go back from Menu to Home (usually)
+            history.back(); // Return to previous view
         };
         reader.readAsText(file);
     });
 
-    // Search Logic
+    // Search Input Logic
     elSearchInput.addEventListener('input', function(e) {
         var term = e.target.value.toLowerCase();
         filteredChannels = channels.filter(function(ch) {
@@ -400,35 +482,56 @@
         renderChannels(filteredChannels, elSearchResults);
     });
 
-    // Keypad Control
+    // KEYPAD CONTROLLER
     document.addEventListener('keydown', function(e) {
         var key = e.key;
 
-        // Soft Keys Mapping
-        if (key === 'Escape' || key === 'SoftLeft') {
-            // LSK: Open Menu from Home
-            if (currentView === 'home') switchView('menu', true);
-        } 
-        else if (key === 'F2' || key === 'SoftRight' || key === 'Backspace') {
-            // RSK: Back logic
-            history.back();
-            e.preventDefault(); // Prevent default browser back
+        // A. Prevent interaction if Alert is open
+        if (document.getElementById('custom-alert-overlay').style.display === 'flex') {
+            e.preventDefault(); e.stopPropagation();
+            if (key === 'Enter' || key === 'SoftCenter' || key === '5') {
+                document.getElementById('custom-alert-ok').click();
+            }
+            return;
         }
-        else if (key === 'Enter' || key === 'SoftCenter') {
-            handleEnter();
-        }
-        // Navigation
-        else if (key === 'ArrowDown') {
-            focusIndex++;
-            updateFocus();
+
+        // B. Standard Navigation
+        if (key === 'ArrowDown') {
+            if (currentView === 'search' && document.activeElement === elSearchInput) {
+                // Stay in input, allow user to press enter to go down
+            } else {
+                focusIndex++;
+                updateFocus();
+            }
         } 
         else if (key === 'ArrowUp') {
-            focusIndex--;
-            updateFocus();
+            if (currentView === 'search' && focusIndex === 0 && document.activeElement !== elSearchInput) {
+                 // Move focus back to Input
+                 elSearchInput.focus();
+            } else {
+                focusIndex--;
+                updateFocus();
+            }
+        } 
+        else if (key === 'Enter' || key === 'SoftCenter' || key === '5') {
+            handleEnter();
+        }
+        else if (key === 'SoftLeft' || key === 'F1') {
+            // SoftLeft: Menu button logic
+            if (currentView === 'home') switchView('menu', true);
+        }
+        else if (key === 'SoftRight' || key === 'F2' || key === 'Backspace') {
+            // SoftRight: Back button logic
+            if (currentView === 'search' && document.activeElement === elSearchInput && elSearchInput.value !== '') {
+                // If typing, let backspace delete text
+            } else {
+                history.back();
+                e.preventDefault(); // Stop browser back
+            }
         }
     });
 
-    // On-Screen Button Clicks
+    // MOUSE CLICK HANDLERS (Soft Keys)
     document.getElementById('lsk').onclick = function() {
         if(currentView === 'home') switchView('menu', true);
     };
@@ -439,4 +542,4 @@
 
 </script>
 </body>
-</html>
+    </html>
