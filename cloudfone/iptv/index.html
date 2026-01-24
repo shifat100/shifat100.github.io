@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Touch IPTV (Cloud Fixed)</title>
+    <title>Touch IPTV Player (Keyboard Nav)</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         /* --- RESET & BASIC --- */
@@ -11,76 +11,93 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; color: white; overflow: hidden; }
 
         /* --- CONTAINER --- */
-        #app-container { width: 100%; height: 100%; background-color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        #app-container { width: 100%; height: 100%; /* max-width removed to adapt to small screens */ background-color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
 
         /* --- HEADER --- */
-        header { height: 40px; background-color: #202020; display: flex; align-items: center; padding: 0 10px; border-bottom: 2px solid #009be5; z-index: 10; position: relative; }
-        .header-title { font-size: 14px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #search-input { width: calc(100% - 20px); height: 28px; background: #fff; border: 2px solid #009be5; color: #000; font-size: 12px; padding: 0 8px; border-radius: 4px; display: none; position: absolute; left: 10px; top: 6px; right: 10px; margin: 0; z-index: 20; }
+        header { height: 50px; background-color: #202020; display: flex; align-items: center; padding: 0 15px; border-bottom: 2px solid #009be5; z-index: 10; position: relative; }
+        .header-title { font-size: 18px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #search-input { width: calc(100% - 20px); height: 36px; background: #fff; border: 2px solid #009be5; color: #000; font-size: 16px; padding: 0 10px; border-radius: 4px; display: none; position: absolute; left: 10px; top: 7px; right: 10px; margin: 0; z-index: 20; }
 
         /* --- MAIN VIEW --- */
         main { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
         
         /* List Style */
-        .list-container { display: flex; flex-direction: column; padding-bottom: 10px; }
-        .list-item { 
-            padding: 8px 10px; 
-            font-size: 13px; 
-            border-bottom: 1px solid #333; 
-            color: #ccc; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            transition: background 0.2s;
-        }
+        .list-container { display: flex; flex-direction: column; padding-bottom: 20px;}
+        .list-item { padding: 15px 15px; font-size: 16px; border-bottom: 1px solid #333; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;}
         .list-item:active { background-color: #333; }
-        .list-item.focused { background-color: #009be5; color: #fff; font-weight: 600; }
+        .list-item img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #fff; }
+        .list-item.focused { background-color: #009be5; color: #fff; font-weight: 600; } /* Added focused style for keyboard nav */
         
-        .list-item img { width: 25px; height: 25px; object-fit: contain; border-radius: 3px; background: #fff; }
-        .tv-placeholder { width: 25px; height: 25px; background: #333; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #777; }
+        /* No Channels Message */
+        #no-channels-message { padding: 20px; text-align: center; color: #888; font-size: 14px; }
 
-        #no-channels-message { padding: 15px; text-align: center; color: #888; font-size: 12px; }
-
-        /* --- PLAYER CONTAINER --- */
+        /* --- NATIVE PLAYER CONTAINER --- */
         #native-player-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 100; display: none; flex-direction: column; }
         
-        #player-header { position: absolute; top: 0; left: 0; width: 100%; padding: 5px; z-index: 110; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); display: flex; justify-content: flex-start; pointer-events: none; }
-        #btn-close-player { pointer-events: auto; background: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(5px); }
-        #btn-close-player svg { width: 18px; height: 18px; fill: white; }
+        /* Close Button for Player */
+        #player-header { position: absolute; top: 0; left: 0; width: 100%; padding: 10px; z-index: 110; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); display: flex; justify-content: flex-start; pointer-events: none; }
+        #btn-close-player { pointer-events: auto; background: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(5px); }
+        #btn-close-player svg { width: 24px; height: 24px; fill: white; }
 
-        /* Video & Iframe Elements */
+        /* Video Element */
         video { width: 100%; height: 100%; display: block; object-fit: contain; }
-        iframe { width: 100%; height: 100%; border: none; display: none; background: #000; }
 
         /* Player OSD Title */
         #player-osd-title { 
-            position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 15px;
-            font-size: 12px; z-index: 110; display: none; max-width: 90%;
+            position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 20px;
+            font-size: 15px; z-index: 110; display: none; max-width: 90%;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         /* --- FOOTER --- */
-        footer { height: 40px; background-color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; border-top: 1px solid #333; z-index: 20; }
-        .soft-btn { min-width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; }
+        footer { height: 50px; background-color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-top: 1px solid #333; z-index: 20; }
+        .soft-btn { min-width: 50px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; }
         .soft-btn:active { opacity: 0.7; }
-        svg { fill: white; width: 22px; height: 22px; pointer-events: none; }
-        #sk-left-text, #sk-right-text { font-size: 12px; font-weight: 600; }
+        svg { fill: white; width: 26px; height: 26px; pointer-events: none; }
+        #sk-left-text, #sk-right-text { font-size: 14px; font-weight: 600; }
 
         /* --- MODALS --- */
         .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-box { background: #222; width: 85%; max-height: 70%; border-radius: 8px; overflow-y: auto; border: 1px solid #444; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .modal-header { background: #009be5; color: white; padding: 10px; font-weight: bold; font-size: 14px; text-align: center; }
-        .menu-item { padding: 10px; border-bottom: 1px solid #333; color: #eee; font-size: 13px; cursor: pointer; }
+        .modal-box { background: #222; width: 85%; max-height: 70%; border-radius: 12px; overflow-y: auto; border: 1px solid #444; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-header { background: #009be5; color: white; padding: 15px; font-weight: bold; font-size: 16px; text-align: center; }
+        .menu-item { padding: 15px; border-bottom: 1px solid #333; color: #eee; font-size: 15px; cursor: pointer; }
         .menu-item:active { background: #333; }
-        .menu-item.focused { background: #333; color: white; border-left: 5px solid #009be5; }
+        .menu-item.focused { background: #333; color: white; border-left: 5px solid #009be5; } /* Added focused style for menu nav */
 
-        #osd { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.9); color: white; padding: 6px 15px; border-radius: 15px; font-size: 12px; z-index: 300; display: none; pointer-events: none; text-align: center; border: 1px solid #555;}
+        #osd { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.9); color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; z-index: 300; display: none; pointer-events: none; text-align: center; border: 1px solid #555;}
         input[type="file"] { display: none; }
+
+        /* --- Small Screen Optimizations (240x320, 128x160 etc.) --- */
+        @media (max-height: 320px) { /* For 240x320 screens */
+            header, footer { height: 40px; padding: 0 10px; }
+            .header-title { font-size: 16px; }
+            #search-input { height: 30px; font-size: 14px; top: 5px; }
+            .list-item { padding: 10px; font-size: 14px; gap: 8px;}
+            .list-item img { width: 30px; height: 30px; }
+            #btn-close-player { width: 30px; height: 30px; }
+            #btn-close-player svg { width: 20px; height: 20px; }
+            #player-osd-title { top: 40px; font-size: 13px; padding: 5px 10px; }
+            #sk-left-text, #sk-right-text { font-size: 12px; }
+            .modal-header { padding: 10px; font-size: 14px; }
+            .menu-item { padding: 10px; font-size: 13px; }
+            #osd { bottom: 60px; font-size: 12px; padding: 6px 15px; }
+        }
+
+        @media (max-height: 160px) { /* For 128x160 screens */
+            header, footer { height: 30px; padding: 0 5px; }
+            .header-title { font-size: 12px; }
+            #search-input { height: 24px; font-size: 10px; top: 3px; }
+            .list-item { padding: 5px; font-size: 10px; gap: 5px; height: 40px;}
+            .list-item img { width: 20px; height: 20px; }
+            #btn-close-player { width: 24px; height: 24px; }
+            #btn-close-player svg { width: 16px; height: 16px; }
+            #player-osd-title { top: 30px; font-size: 10px; padding: 3px 8px; }
+            #sk-left-text, #sk-right-text { font-size: 10px; }
+            .modal-header { padding: 8px; font-size: 12px; }
+            .menu-item { padding: 8px; font-size: 11px; }
+            #osd { bottom: 40px; font-size: 10px; padding: 4px 10px; }
+        }
     </style>
 </head>
 <body>
@@ -88,8 +105,8 @@
     <div id="app-container">
         <!-- HEADER -->
         <header id="header-bar">
-            <div class="header-title">Touch IPTV</div>
-            <input type="text" id="search-input" placeholder="Search...">
+            <div class="header-title">IPTV Player</div>
+            <input type="text" id="search-input" placeholder="Search channel...">
         </header>
 
         <!-- MAIN VIEW -->
@@ -105,7 +122,7 @@
             </div>
         </footer>
 
-        <!-- PLAYER UI -->
+        <!-- NATIVE PLAYER UI -->
         <div id="native-player-container">
             <div id="player-header">
                 <div id="btn-close-player">
@@ -113,14 +130,10 @@
                 </div>
             </div>
             <div id="player-osd-title" style="display: none;"></div>
-            
-            <!-- Video for HLS -->
             <video id="video-source" controls playsinline></video>
-            <!-- Iframe for Web/Embed links (Cloud phone fix) -->
-            <iframe id="iframe-source" allowfullscreen></iframe>
         </div>
 
-        <!-- MENU MODAL -->
+        <!-- MENU/QUALITY MODAL -->
         <div id="menu-modal" class="modal-overlay">
             <div class="modal-box">
                 <div class="modal-header" id="modal-title">Menu</div>
@@ -134,25 +147,28 @@
     </div>
 
     <script>
-        // Sources from your provided working code
-        const M3U_MAIN = 'https://raw.githubusercontent.com/omnixmain/OMNIX-PLAYLIST-ZONE/refs/heads/main/playlist/RoarZoneTv.m3u';
-        const M3U_BD = 'https://raw.githubusercontent.com/cctvccplc/Tv-Test/refs/heads/main/BD26.m3u8';
-        
-        // Manual channels (Iframe based) from your code
-        const manualChannels = [
-            { name: "T-Sports HD", url: "https://bongoflixbd.top/r/?watch=b0aeb53ec98c74b3b1bb5f16acf8f056", logo: "https://upload.wikimedia.org/wikipedia/en/2/2f/T_Sports_logo.png", isIframe: true },
-            { name: "Star Sports 1", url: "https://bongoflixbd.top/r/?watch=339dcfaa4f761b545a5b815ee54a9bad", logo: "", isIframe: true },
-            { name: "GTV (Gazi TV)", url: "https://bongoflixbd.top/r/?watch=gtv", logo: "", isIframe: true }
-        ];
+        const DEFAULT_PLAYLIST = `#EXTM3U
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_buck_bunny_poster_big.jpg",Example Channel 1
+http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-logo="https://cdn.iconscout.com/icon/free/png-256/tv-channel-1447953-1221731.png",Example Channel 2 (Another)
+http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8
+#EXTINF:-1 tvg-logo="https://example.com/fakelogo.png",Broken Logo Channel
+http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1,Channel Without Logo (Long Name)
+http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1,Yet Another Channel
+http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8
+#EXTINF:-1,Last Test Channel
+http://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
 
-        const LS_KEY = 'touch_iptv_data_v2';
+        const LS_KEY = 'touch_iptv_data';
 
         const State = {
-            view: 'list', 
+            view: 'list', // 'list', 'player', 'menu', 'search'
             channels: [], 
             filtered: [], 
-            listIdx: 0, 
-            menuIdx: 0, 
+            listIdx: 0, // Current focused index in the list
+            menuIdx: 0, // Current focused index in the menu
             hls: null,
             osdTimer: null,
             playerOsdTimer: null
@@ -160,6 +176,7 @@
 
         const UI = {
             main: document.getElementById('main-view'),
+            headerTitle: document.querySelector('.header-title'),
             search: document.getElementById('search-input'),
             skL: document.getElementById('sk-left'), 
             skR: document.getElementById('sk-right'),
@@ -167,7 +184,6 @@
             skRText: document.getElementById('sk-right-text'),
             playerContainer: document.getElementById('native-player-container'), 
             video: document.getElementById('video-source'), 
-            iframe: document.getElementById('iframe-source'),
             btnClose: document.getElementById('btn-close-player'),
             playerOsdTitle: document.getElementById('player-osd-title'),
             modal: document.getElementById('menu-modal'), 
@@ -176,83 +192,92 @@
             fileIn: document.getElementById('fileInput')
         };
 
-        window.onload = async () => {
-            // First load manual channels
-            let allChannels = [...manualChannels];
-            
-            // Try to load external playlists
-            try {
-                showOSD("Loading Channels...");
-                const [r1, r2] = await Promise.all([
-                    fetch(M3U_MAIN).then(r=>r.text()).catch(()=>""), 
-                    fetch(M3U_BD).then(r=>r.text()).catch(()=>"")
-                ]);
-                
-                const p1 = parseM3UContent(r1);
-                const p2 = parseM3UContent(r2);
-                
-                allChannels = [...allChannels, ...p1, ...p2];
-                State.channels = allChannels;
-                State.filtered = allChannels;
-                renderList();
-                showOSD(`Loaded ${allChannels.length} Channels`);
-            } catch (e) {
-                showOSD("Error loading online lists");
-                State.channels = manualChannels;
-                State.filtered = manualChannels;
-                renderList();
-            }
-            updateFooterButtons();
+        window.onload = () => {
+            const saved = localStorage.getItem(LS_KEY);
+            parseM3U(saved ? saved : DEFAULT_PLAYLIST);
+            updateFooterButtons(); // Initial footer text
         };
-
+window.addEventListener('back', (event) => {
+  event.preventDefault();
+  handleSoftRight();
+});
         // --- KEYBOARD HANDLING ---
         document.addEventListener('keydown', (e) => {
             const key = e.key;
 
-            if (key === 'SoftLeft' || key === 'F1') { e.preventDefault(); handleSoftLeft(); return; }
-            if (key === 'SoftRight' || key === 'F2') { e.preventDefault(); handleSoftRight(); return; }
-            if (key === 'Backspace' || key === 'Escape') { e.preventDefault(); handleBack(); return; }
+            // Handle physical soft keys or function keys
+            if (key === 'SoftLeft' || key === 'Escape') {
+                e.preventDefault();
+                handleSoftLeft();
+                return;
+            }
+            if (key === 'SoftRight' || key === 'F2') {
+                e.preventDefault();
+                handleSoftRight();
+                return;
+            }
+            /*if (key === 'Backspace' || key === 'BrowserBack' || key === 'Escape') {
+                e.preventDefault();
+                handleBack();
+                return;
+            }*/
             
             if (State.view === 'list') {
                 if (key === 'ArrowDown') { e.preventDefault(); moveList(1); }
                 if (key === 'ArrowUp') { e.preventDefault(); moveList(-1); }
-                if (key === 'Enter') {
+                if (key === 'Enter' && State.filtered.length > 0) {
                     e.preventDefault();
-                    if(State.filtered.length > 0) playChannel(State.filtered[State.listIdx]);
+                    playChannel(State.filtered[State.listIdx]);
                 }
+                // If a letter/number is pressed, open search and type
                 if (key.length === 1 && /^[a-z0-9]$/i.test(key)) {
                     openSearch();
                     UI.search.value += key;
                     filterSearch(UI.search.value);
                 }
             } else if (State.view === 'player') {
-                // If Iframe, keys might not work well, but we try
-                if (UI.iframe.style.display === 'block') {
-                    if (key === 'Backspace' || key === 'Escape') closePlayer();
-                } else {
-                    if (key === 'Enter' || key === 'MediaPlayPause') togglePlay();
-                    if (key === 'ArrowRight') seek(15);
-                    if (key === 'ArrowLeft') seek(-15);
-                    if (key === 'ArrowUp') adjustVolume(0.1);
-                    if (key === 'ArrowDown') adjustVolume(-0.1);
-                }
+                e.preventDefault(); // Prevent default browser actions
+                if (key === 'Enter' || key === 'MediaPlayPause') togglePlay();
+                if (key === 'ArrowRight') seek(15);
+                if (key === 'ArrowLeft') seek(-15);
+                if (key === 'ArrowUp') adjustVolume(0.1);
+                if (key === 'ArrowDown') adjustVolume(-0.1);
             } else if (State.view === 'menu') {
                 e.preventDefault();
+                const menuItems = UI.mList.children;
+                if (menuItems.length === 0) return;
+
                 if (key === 'ArrowDown') moveMenu(1);
                 if (key === 'ArrowUp') moveMenu(-1);
                 if (key === 'Enter') executeMenu();
             } else if (State.view === 'search') {
+                // If user presses Down while in search input, jump to list
                 if (key === 'ArrowDown') {
-                    e.preventDefault(); UI.search.blur(); State.view = 'list'; State.listIdx = 0; renderList();
+                    e.preventDefault();
+                    UI.search.blur(); // Remove focus from the input
+                    State.view = 'list';
+                    State.listIdx = 0; // Focus on the first item in the filtered list
+                    renderList();
                 }
+                 // If user presses Up while in search input, jump to last item in list
+                if (key === 'ArrowUp') {
+                    e.preventDefault();
+                    UI.search.blur();
+                    State.view = 'list';
+                    // Ensure listIdx is valid if filtered list is empty
+                    State.listIdx = Math.max(0, State.filtered.length - 1); // Focus on the last item
+                    renderList();
+                }
+                // Other keys are handled by the input itself
             }
         });
 
-        // --- LOGIC ---
+        // --- Soft Key Handlers ---
         function handleSoftLeft() {
             if (State.view === 'list') openMenu();
-            else if (State.view === 'player' && UI.video.style.display !== 'none') togglePlay();
-            else if (State.view === 'menu') executeMenu();
+            else if (State.view === 'player') togglePlay(); // Example: Play/Pause
+            else if (State.view === 'search') { /* do nothing or clear search? */ }
+            else if (State.view === 'menu') executeMenu(); // 'Select' functionality
         }
 
         function handleSoftRight() {
@@ -266,55 +291,45 @@
             if (State.view === 'player') closePlayer();
             else if (State.view === 'menu') closeMenu();
             else if (State.view === 'search') closeSearch();
+            else if (State.view === 'list') {
+                showOSD("Press Power Key to Exit App"); // Or some other exit logic
+            }
         }
 
-        // --- PLAY PLAYER ---
+
+        // --- PLAYER LOGIC (NATIVE) ---
         function playChannel(ch) {
             State.view = 'player';
             UI.playerContainer.style.display = 'flex';
             document.getElementById('header-bar').style.display = 'none';
             document.getElementById('footer-bar').style.display = 'none';
             UI.playerOsdTitle.innerText = ch.name;
-            showPlayerOSD(ch.name);
+            showPlayerOSD(ch.name); // Show channel name on OSD
 
-            // Determine if Iframe or Video
-            const isIframe = ch.isIframe || ch.url.includes('bongoflix') || ch.url.includes('embed');
+            const hlsConfig = {};
+            if (ch.headers && Object.keys(ch.headers).length > 0) {
+                hlsConfig.xhrSetup = (xhr) => {
+                    for (const [key, value] of Object.entries(ch.headers)) xhr.setRequestHeader(key, value);
+                };
+            }
 
-            if (isIframe) {
-                // IFRAME MODE
-                UI.video.style.display = 'none';
-                UI.video.pause();
-                UI.iframe.style.display = 'block';
-                UI.iframe.src = ch.url;
+            if (Hls.isSupported()) {
+                if (State.hls) State.hls.destroy();
+                State.hls = new Hls(hlsConfig);
+                State.hls.loadSource(ch.url);
+                State.hls.attachMedia(UI.video);
+                State.hls.on(Hls.Events.MANIFEST_PARSED, () => { 
+                    UI.video.play().catch(e => console.log("Autoplay blocked:", e)); 
+                });
+                State.hls.on(Hls.Events.ERROR, (e, data) => { 
+                    if(data.fatal) showOSD("Stream Error: " + data.details); 
+                    console.error("HLS error:", e, data);
+                });
+            } else if (UI.video.canPlayType('application/vnd.apple.mpegurl')) {
+                UI.video.src = ch.url; 
+                UI.video.play().catch(e => console.log("Autoplay blocked:", e));
             } else {
-                // VIDEO MODE
-                UI.iframe.style.display = 'none';
-                UI.iframe.src = "";
-                UI.video.style.display = 'block';
-
-                const hlsConfig = {};
-                if (ch.headers) {
-                    hlsConfig.xhrSetup = (xhr) => {
-                        for (const [key, value] of Object.entries(ch.headers)) xhr.setRequestHeader(key, value);
-                    };
-                }
-
-                if (Hls.isSupported()) {
-                    if (State.hls) State.hls.destroy();
-                    State.hls = new Hls(hlsConfig);
-                    State.hls.loadSource(ch.url);
-                    State.hls.attachMedia(UI.video);
-                    State.hls.on(Hls.Events.MANIFEST_PARSED, () => { 
-                        UI.video.play().catch(e => showOSD("Tap to Play")); 
-                    });
-                    State.hls.on(Hls.Events.ERROR, (e, data) => { 
-                       if(data.fatal) showOSD("Stream Error"); 
-                    });
-                } else if (UI.video.canPlayType('application/vnd.apple.mpegurl')) {
-                    UI.video.src = ch.url; 
-                    UI.video.play().catch(e => console.log(e));
-                }
-                UI.video.focus();
+                showOSD("HLS not supported in this browser.");
             }
         }
 
@@ -322,152 +337,252 @@
             UI.video.pause(); 
             UI.video.src = "";
             UI.video.removeAttribute('src'); 
-            UI.iframe.src = ""; // Stop iframe
             if (State.hls) { State.hls.destroy(); State.hls = null; }
             
             UI.playerContainer.style.display = 'none';
             document.getElementById('header-bar').style.display = 'flex';
             document.getElementById('footer-bar').style.display = 'flex';
             State.view = 'list';
+            renderList(); // Re-render list to ensure focus is correct
             updateFooterButtons();
         }
 
         function togglePlay() {
-            if (UI.video.style.display === 'none') return; // Can't control iframe play/pause easily
-            if (UI.video.paused) { UI.video.play(); showOSD("Playing"); }
-            else { UI.video.pause(); showOSD("Paused"); }
-        }
-        
-        function seek(s) { if(UI.video.style.display !== 'none') UI.video.currentTime += s; }
-        function adjustVolume(d) { 
-            if(UI.video.style.display !== 'none') {
-                let v = UI.video.volume + d; 
-                if(v<0)v=0; if(v>1)v=1; 
-                UI.video.volume = v; showOSD("Vol: "+Math.round(v*100));
-            }
+            if (UI.video.paused) UI.video.play();
+            else UI.video.pause();
+            showOSD(UI.video.paused ? "Paused" : "Playing");
         }
 
-        // --- LIST RENDER ---
+        function seek(seconds) {
+            UI.video.currentTime += seconds;
+            showOSD((seconds > 0 ? "+" : "") + seconds + "s");
+        }
+
+        function adjustVolume(delta) {
+            let newVolume = UI.video.volume + delta;
+            if (newVolume < 0) newVolume = 0;
+            if (newVolume > 1) newVolume = 1;
+            UI.video.volume = newVolume;
+            showOSD("Volume: " + Math.round(newVolume * 100) + "%");
+        }
+
+        // --- LIST RENDER & NAVIGATION ---
         function renderList() {
             UI.main.innerHTML = '';
             const container = document.createElement('div');
             container.className = 'list-container';
 
             if (State.filtered.length === 0) {
-                const msg = document.createElement('div');
-                msg.id = 'no-channels-message';
-                msg.innerText = 'No channels found.';
-                UI.main.appendChild(msg);
+                const noChannelsMessage = document.createElement('div');
+                noChannelsMessage.id = 'no-channels-message';
+                noChannelsMessage.innerText = UI.search.style.display === 'block' ? 'No channels match your search.' : 'No channels loaded. Load a playlist from the menu.';
+                UI.main.appendChild(noChannelsMessage);
             } else {
                 State.filtered.forEach((ch, i) => {
                     const div = document.createElement('div');
+                    // Only apply 'focused' class if current view is 'list'
                     div.className = 'list-item' + (i === State.listIdx && State.view === 'list' ? ' focused' : '');
                     
+                    // Add basic placeholder for broken/missing images
                     const logoHtml = ch.logo 
-                        ? `<img src="${ch.logo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-                        : ``;
-                    const fallbackHtml = `<div class="tv-placeholder" style="${ch.logo?'display:none':''}">TV</div>`;
-
-                    div.innerHTML = `${logoHtml}${fallbackHtml}<span>${ch.name}</span>`;
-                    div.onclick = () => { State.listIdx = i; renderList(); playChannel(ch); };
+                        ? `<img src="${ch.logo}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzMzMyI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6Ii8+PC9zdmc+'">`
+                        : `<div style="width:40px;height:40px;background:#333;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#777">TV</div>`; // Generic TV icon for missing logo
+                    
+                    div.innerHTML = `${logoHtml}<span>${ch.name}</span>`;
+                    
+                    div.onclick = () => { 
+                        State.listIdx = i; // Update focus on click
+                        renderList(); // Re-render to show visual focus change
+                        playChannel(ch); 
+                    };
                     container.appendChild(div);
                 });
                 UI.main.appendChild(container);
-                scrollToFocus(UI.main);
+                scrollToFocus(UI.main); // Scroll the focused item into view
+            }
+            updateFooterButtons();
+        }
+
+        function moveList(direction) {
+            if (State.filtered.length === 0) return;
+            const newIndex = State.listIdx + direction;
+            if (newIndex >= 0 && newIndex < State.filtered.length) {
+                State.listIdx = newIndex;
+                renderList();
             }
         }
 
-        function parseM3UContent(data) {
-            const res = [];
+        function scrollToFocus(containerElement) {
+            const focusedElement = containerElement.querySelector('.focused');
+            if (focusedElement) {
+                focusedElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+
+        // --- PARSER ---
+        function parseM3U(data, save = false) {
+            if (save) try { localStorage.setItem(LS_KEY, data); } catch(e){}
+            State.channels = [];
             const lines = data.split('\n');
             let tempCh = {};
             for(let i=0; i<lines.length; i++) {
                 let line = lines[i].trim();
                 if (line.startsWith('#EXTINF')) {
+                    tempCh = { headers: {} }; 
                     const logo = line.match(/tvg-logo="([^"]*)"/);
-                    tempCh = { logo: logo ? logo[1] : null };
+                    tempCh.logo = logo ? logo[1] : null;
                     tempCh.name = line.split(',').pop().trim();
                 } else if (line.startsWith('http')) {
-                    tempCh.url = line;
-                    tempCh.isIframe = line.includes('bongoflix') || line.includes('embed');
-                    if(tempCh.name) res.push(tempCh);
-                    tempCh = {};
+                    if(line.includes('|')) {
+                        const p = line.split('|');
+                        tempCh.url = p[0];
+                        if(p[1].includes('User-Agent=')) tempCh.headers['User-Agent'] = p[1].match(/User-Agent=([^&]*)/)[1];
+                    } else tempCh.url = line;
+                    if(tempCh.name) State.channels.push(tempCh);
                 }
             }
-            return res;
+            State.filtered = State.channels; 
+            State.listIdx = 0; // Reset focus when new list is parsed
+            renderList();
         }
 
-        function scrollToFocus(container) {
-            const f = container.querySelector('.focused');
-            if (f) f.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        // --- UI ACTIONS ---
+        function openMenu() { 
+            State.view = 'menu'; 
+            UI.modal.style.display = 'flex'; 
+            State.menuIdx = 0; // Reset menu focus
+            renderMenu(); 
+            updateFooterButtons();
         }
 
-        function moveList(dir) {
-            if(State.filtered.length===0) return;
-            const next = State.listIdx + dir;
-            if(next >= 0 && next < State.filtered.length) {
-                State.listIdx = next;
-                renderList();
+        function closeMenu() { 
+            State.view = 'list'; 
+            UI.modal.style.display = 'none'; 
+            renderList(); // Re-render list to ensure focus is correct after menu close
+            updateFooterButtons();
+        }
+
+        UI.modal.addEventListener('click', (e) => { 
+            if(e.target === UI.modal) closeMenu(); 
+        });
+
+        function renderMenu() {
+            UI.mList.innerHTML = '';
+            const menuOptions = [
+                { t: 'Load Playlist (File)', a: () => { UI.fileIn.click(); closeMenu(); } }, // Close menu immediately to let user interact with file picker
+                { t: 'Reload Default Playlist', a: () => { 
+                    localStorage.removeItem(LS_KEY); 
+                    parseM3U(DEFAULT_PLAYLIST, true); 
+                    showOSD("Default Playlist Loaded!");
+                    closeMenu(); 
+                }},
+                { t: 'Close Menu', a: closeMenu }
+            ];
+
+            menuOptions.forEach((it, i) => {
+                const d = document.createElement('div'); 
+                d.className = 'menu-item' + (i === State.menuIdx ? ' focused' : '');
+                d.innerText = it.t;
+                d.onclick = () => {
+                    State.menuIdx = i; // Update focus on click
+                    it.a();
+                };
+                UI.mList.appendChild(d);
+            });
+            scrollToFocus(UI.mList); // Scroll the focused menu item into view
+        }
+
+        function moveMenu(direction) {
+            const menuItems = UI.mList.children;
+            if (menuItems.length === 0) return;
+            State.menuIdx = (State.menuIdx + direction + menuItems.length) % menuItems.length;
+            renderMenu();
+        }
+
+        function executeMenu() {
+            if (UI.mList.children.length > 0) {
+                UI.mList.children[State.menuIdx].click();
+            }
+        }
+        
+        function showOSD(m) { 
+            UI.osd.innerText = m; 
+            UI.osd.style.display = 'block'; 
+            if (State.osdTimer) clearTimeout(State.osdTimer);
+            State.osdTimer = setTimeout(()=>UI.osd.style.display='none', 2000); 
+        }
+
+        function showPlayerOSD(title) {
+            UI.playerOsdTitle.innerText = title;
+            UI.playerOsdTitle.style.display = 'block';
+            // Fix: Changed 'calc(100% - 20px))' to 'calc(100% - 20px)'
+            UI.playerOsdTitle.style.maxWidth = 'calc(100% - 20px)'; 
+            if (State.playerOsdTimer) clearTimeout(State.playerOsdTimer);
+            State.playerOsdTimer = setTimeout(() => UI.playerOsdTitle.style.display = 'none', 3000);
+        }
+
+        // --- FOOTER BUTTONS ---
+        function updateFooterButtons() {
+            if (State.view === 'list') {
+                UI.skLText.innerText = 'Menu';
+                UI.skRText.innerText = 'Search';
+            } else if (State.view === 'player') {
+                UI.skLText.innerText = 'Play/Pause';
+                UI.skRText.innerText = 'Back';
+            } else if (State.view === 'menu') {
+                UI.skLText.innerText = 'Select';
+                UI.skRText.innerText = 'Back';
+            } else if (State.view === 'search') {
+                UI.skLText.innerText = ''; // No action for soft left in search
+                UI.skRText.innerText = 'Cancel';
             }
         }
 
-        // --- MENU ---
-        function openMenu() { State.view = 'menu'; UI.modal.style.display = 'flex'; State.menuIdx = 0; renderMenu(); updateFooterButtons(); }
-        function closeMenu() { State.view = 'list'; UI.modal.style.display = 'none'; renderList(); updateFooterButtons(); }
+        // --- SEARCH LOGIC ---
+        function openSearch() {
+            State.view = 'search'; 
+            UI.search.style.display='block'; 
+            UI.search.focus(); 
+            State.filtered = State.channels; // Show all channels when search opens
+            State.listIdx = 0; // Reset list focus
+            renderList();
+            updateFooterButtons();
+        }
+
+        function closeSearch() {
+            State.view = 'list';
+            UI.search.value = '';
+            UI.search.style.display = 'none';
+            State.filtered = State.channels; // Clear filter
+            State.listIdx = 0; // Reset list focus
+            renderList();
+            updateFooterButtons();
+        }
         
-        function renderMenu() {
-            UI.mList.innerHTML = '';
-            const opts = [
-                { t: 'Reload Playlist', a: () => window.location.reload() },
-                { t: 'Load File', a: () => { UI.fileIn.click(); closeMenu(); } },
-                { t: 'Exit Menu', a: closeMenu }
-            ];
-            opts.forEach((o, i) => {
-                const d = document.createElement('div');
-                d.className = 'menu-item' + (i === State.menuIdx ? ' focused' : '');
-                d.innerText = o.t;
-                d.onclick = () => { State.menuIdx = i; o.a(); };
-                UI.mList.appendChild(d);
-            });
-        }
-        function moveMenu(d) {
-            const l = UI.mList.children.length;
-            if(l===0) return;
-            State.menuIdx = (State.menuIdx + d + l) % l;
-            renderMenu();
-        }
-        function executeMenu() { UI.mList.children[State.menuIdx].click(); }
-
-        // --- SEARCH ---
-        function openSearch() { State.view = 'search'; UI.search.style.display='block'; UI.search.focus(); State.filtered = State.channels; State.listIdx = 0; renderList(); updateFooterButtons(); }
-        function closeSearch() { State.view = 'list'; UI.search.style.display='none'; UI.search.value=''; State.filtered = State.channels; State.listIdx = 0; renderList(); updateFooterButtons(); }
-        function filterSearch(v) {
-            State.filtered = State.channels.filter(c => c.name.toLowerCase().includes(v.toLowerCase()));
-            State.listIdx = 0; renderList();
+        function filterSearch(term) {
+            const t = term.toLowerCase();
+            State.filtered = State.channels.filter(c => c.name.toLowerCase().includes(t));
+            State.listIdx = 0; // Reset focus when search changes
+            renderList();
         }
 
-        function showOSD(m) { UI.osd.innerText = m; UI.osd.style.display = 'block'; clearTimeout(State.osdTimer); State.osdTimer = setTimeout(()=>UI.osd.style.display='none', 2000); }
-        function showPlayerOSD(t) { UI.playerOsdTitle.innerText = t; UI.playerOsdTitle.style.display = 'block'; clearTimeout(State.playerOsdTimer); State.playerOsdTimer = setTimeout(()=>UI.playerOsdTitle.style.display='none', 3000); }
+        // --- EVENT BINDINGS (TOUCH & KEYBOARD) ---
+        UI.skL.onclick = handleSoftLeft; // Menu button
+        UI.skR.onclick = handleSoftRight; // Search button
         
-        function updateFooterButtons() {
-            if (State.view === 'list') { UI.skLText.innerText = 'Menu'; UI.skRText.innerText = 'Search'; }
-            else if (State.view === 'player') { UI.skLText.innerText = 'Play/Pause'; UI.skRText.innerText = 'Close'; }
-            else if (State.view === 'menu') { UI.skLText.innerText = 'Select'; UI.skRText.innerText = 'Back'; }
-            else if (State.view === 'search') { UI.skLText.innerText = ''; UI.skRText.innerText = 'Cancel'; }
-        }
-
-        UI.skL.onclick = handleSoftLeft;
-        UI.skR.onclick = handleSoftRight;
-        UI.btnClose.onclick = closePlayer;
-        UI.search.addEventListener('input', (e) => filterSearch(e.target.value));
-        UI.fileIn.onchange = (e) => {
-            if(e.target.files.length){
-                const r = new FileReader();
+        UI.search.addEventListener('input', (e) => {
+            filterSearch(e.target.value);
+        });
+        
+        UI.btnClose.onclick = closePlayer; // Close native player
+        UI.fileIn.onchange = e => { 
+            if (e.target.files.length > 0) {
+                const r = new FileReader(); 
                 r.onload = v => { 
-                    const p = parseM3UContent(v.target.result); 
-                    State.channels = p; State.filtered = p; renderList(); 
-                };
-                r.readAsText(e.target.files[0]);
+                    parseM3U(v.target.result, true); 
+                    showOSD("Playlist Loaded!");
+                }; 
+                r.readAsText(e.target.files[0]); 
             }
         };
 
