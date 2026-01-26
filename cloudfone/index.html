@@ -1,63 +1,389 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>CloudFone</title>
-    <style>
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CloudFone OS</title>
+    
+    <!-- Original Ad Scripts -->
     <script type='text/javascript' src='http://pl26953579.profitableratecpm.com/f8/49/29/f8492924da30520cabdbb409c9928dec.js'></script>
-</head>
-<script>(function(s){s.dataset.zone='10089094',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-<body>
-  
-</body>
-  <script>
-      if(confirm('Apps List?')) {
+    <script>(function(s){s.dataset.zone='10089094',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
-          document.body.innerHTML = `<title>Apps List</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        :root {
+            --bg-color: #0f1115;
+            --surface-color: #1e2229;
+            --primary-color: #3b82f6;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --radius: 12px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background-color: #f0f0f0;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        li a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        li:nth-child(odd) {
-            background-color: #d1e7dd; /* Light green */
-        }
-    </style><h1>Apps List</h1>
-    <ul>
-        <li><a href="./../Key Code" target="_blank">Key Code Tester</a></li>
-        <li><a href="mobimoon" target="_blank">Mobimoon</a></li>
-        <li><a href="dictionaries" target="_blank">Dictionaries</a></li>
-        <li><a href="x-browser" target="_blank">X-Browser</a></li>
-        <li><a href="https://shifat100.github.io/Word-Circle/" target="_blank">Word Circle</a></li>
-        <li><a href="https://shifat100.github.io/Dream-Explaination-Bangla/index.html" target="_blank">Dream Explaination</a></li>
-        <li><a href="https://shifat100.github.io/Age-Calculator/index.html" target="_blank">Age Calculator</a></li>
-        <li><a href="https://shifat100.github.io/cloudfone/iptv" target="_blank">IPTV</a></li>
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         
-        <li><a href="#" target="_blank">upcoming</a></li>
-    </ul>`;
-      } else { 
-//window.close();
-        document.write('Server Hosted At Port 8000');
-    //alert('hello cloudfone user');
-    window.location.href='https://www.cloudfone.com/auth/sign-in'; }
+        body {
+            background-color: var(--bg-color);
+            font-family: var(--font);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+    <!-- Main OS Element -->
+    <cloud-os></cloud-os>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- SVG PATH DATA ---
+        // Storing paths here to keep the HTML clean
+        const ICONS = {
+            keyboard: "M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z",
+            moon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z",
+            book: "M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM10 9h8v2h-8zm0 3h4v2h-4zm0-6h8v2h-8z",
+            globe: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z",
+            circle: "M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z",
+            cloud: "M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z",
+            calendar: "M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z",
+            tv: "M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM8 13.29l5-3.57v7.14l-5-3.57z", // Added play button inside TV
+            rocket: "M12 2.5s5 2.5 5 9c0 2.5-3 6.5-5 10-2-3.5-5-7.5-5-10 0-6.5 5-9 5-9zM12 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z", // Location/Map icon for 'upcoming' or similar
+            timer: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zM12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+        };
+
+        // --- APP DATA CONFIGURATION ---
+        const APPS_DATA = [
+            { name: "Key Code", url: "./../Key Code", icon: ICONS.keyboard, color: "#f59e0b" },
+            { name: "Mobimoon", url: "mobimoon", icon: ICONS.moon, color: "#6366f1" },
+            { name: "Dictionaries", url: "dictionaries", icon: ICONS.book, color: "#10b981" },
+            { name: "X-Browser", url: "x-browser", icon: ICONS.globe, color: "#3b82f6" },
+            { name: "Word Circle", url: "https://shifat100.github.io/Word-Circle/", icon: ICONS.circle, color: "#ec4899" },
+            { name: "Dream Exp.", url: "https://shifat100.github.io/Dream-Explaination-Bangla/index.html", icon: ICONS.cloud, color: "#8b5cf6" },
+            { name: "Age Calc", url: "https://shifat100.github.io/Age-Calculator/index.html", icon: ICONS.calendar, color: "#f97316" },
+            { name: "IPTV Pro", url: "https://shifat100.github.io/cloudfone/iptv", icon: ICONS.tv, color: "#ef4444" },
+            { name: "Upcoming", url: "#", icon: ICONS.timer, color: "#64748b" }
+        ];
+
+        // --- CUSTOM ELEMENTS ---
+
+        /**
+         * 1. <app-card>: The App Icon Component
+         */
+        class AppCard extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+            }
+
+            connectedCallback() {
+                const name = this.getAttribute('name');
+                const url = this.getAttribute('url');
+                const path = this.getAttribute('path');
+                const color = this.getAttribute('color') || '#555';
+
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host { display: block; height: 100%; }
+                        a {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            text-decoration: none;
+                            padding: 15px 10px;
+                            border-radius: var(--radius, 12px);
+                            background: var(--surface-color, #1e2229);
+                            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                            height: 100%;
+                            border: 1px solid rgba(255,255,255,0.05);
+                            position: relative;
+                            overflow: hidden;
+                        }
+                        a:hover, a:focus {
+                            background: rgba(255,255,255,0.1);
+                            border-color: ${color}60;
+                            transform: translateY(-2px);
+                        }
+                        a:active { transform: scale(0.96); }
+
+                        /* Glow effect */
+                        a::before {
+                            content: '';
+                            position: absolute;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: radial-gradient(circle at center, ${color}15 0%, transparent 70%);
+                            opacity: 0;
+                            transition: opacity 0.3s;
+                        }
+                        a:hover::before { opacity: 1; }
+
+                        .icon-box {
+                            width: 48px; height: 48px;
+                            border-radius: 12px;
+                            display: flex; align-items: center; justify-content: center;
+                            margin-bottom: 12px;
+                            background: ${color}20; /* 20% opacity bg */
+                            position: relative;
+                            z-index: 2;
+                        }
+                        
+                        svg {
+                            width: 28px; height: 28px;
+                            fill: ${color};
+                            filter: drop-shadow(0 2px 4px ${color}60);
+                        }
+
+                        .title {
+                            color: #eee;
+                            font-size: 13px;
+                            font-weight: 500;
+                            text-align: center;
+                            letter-spacing: 0.3px;
+                            z-index: 2;
+                        }
+                    </style>
+                    <a href="${url}" target="_blank">
+                        <div class="icon-box">
+                            <svg viewBox="0 0 24 24">
+                                <path d="${path}"/>
+                            </svg>
+                        </div>
+                        <span class="title">${name}</span>
+                    </a>
+                `;
+            }
+        }
+        customElements.define('app-card', AppCard);
+
+        /**
+         * 2. <cloud-header>: The Status Bar
+         */
+        class CloudHeader extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+            }
+            connectedCallback() {
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        header {
+                            height: 55px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: 0 20px;
+                            background: rgba(15, 17, 21, 0.8);
+                            border-bottom: 1px solid rgba(255,255,255,0.08);
+                            backdrop-filter: blur(12px);
+                            -webkit-backdrop-filter: blur(12px);
+                            position: sticky; top: 0; z-index: 10;
+                        }
+                        .brand { display: flex; align-items: center; gap: 8px; }
+                        h1 { font-size: 16px; color: white; margin: 0; font-weight: 600; letter-spacing: 0.5px; }
+                        .status { font-size: 11px; color: #10b981; background: #10b98120; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+                    </style>
+                    <header>
+                        <div class="brand">
+                            <!-- Simple Cloud Icon for Header -->
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                            <h1>CloudFone</h1>
+                        </div>
+                        <span class="status">ONLINE</span>
+                    </header>
+                `;
+            }
+        }
+        customElements.define('cloud-header', CloudHeader);
+
+        /**
+         * 3. <startup-modal>: The Prompt Replacement
+         */
+        class StartupModal extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+            }
+
+            connectedCallback() {
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        .overlay {
+                            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                            background: rgba(0,0,0,0.85);
+                            backdrop-filter: blur(8px);
+                            -webkit-backdrop-filter: blur(8px);
+                            display: flex; align-items: center; justify-content: center;
+                            z-index: 999;
+                        }
+                        .modal {
+                            background: #1e2229;
+                            padding: 30px;
+                            border-radius: 18px;
+                            width: 85%; max-width: 320px;
+                            text-align: center;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+                            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                        }
+                        .icon-circle {
+                            width: 50px; height: 50px; background: #3b82f620;
+                            border-radius: 50%; margin: 0 auto 15px;
+                            display: flex; align-items: center; justify-content: center;
+                        }
+                        .icon-circle svg { fill: #3b82f6; width: 24px; height: 24px; }
+                        
+                        h2 { margin: 0 0 8px 0; color: white; font-size: 19px; }
+                        p { margin: 0 0 25px 0; color: #9ca3af; font-size: 14px; line-height: 1.4; }
+                        
+                        .btn-group { display: flex; gap: 12px; flex-direction: column; }
+                        
+                        button {
+                            border: none; padding: 14px; border-radius: 10px;
+                            font-size: 15px; font-weight: 600; cursor: pointer;
+                            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+                        }
+                        
+                        .btn-primary { 
+                            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+                            color: white; 
+                            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+                        }
+                        
+                        .btn-secondary { 
+                            background: rgba(255,255,255,0.05); 
+                            border: 1px solid rgba(255,255,255,0.1); 
+                            color: #ccc; 
+                        }
+                        
+                        button:active { transform: scale(0.97); }
+                        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: white; }
+
+                        @keyframes popIn {
+                            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+                            to { opacity: 1; transform: scale(1) translateY(0); }
+                        }
+                    </style>
+                    <div class="overlay">
+                        <div class="modal">
+                            <div class="icon-circle">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            </div>
+                            <h2>System Action</h2>
+                            <p>Select destination to proceed.</p>
+                            <div class="btn-group">
+                                <button class="btn-primary" id="btn-apps">
+                                    <!-- App Icon -->
+                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+                                    Apps List
+                                </button>
+                                <button class="btn-secondary" id="btn-login">
+                                    Login Portal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.shadowRoot.getElementById('btn-apps').onclick = () => {
+                    this.dispatchEvent(new CustomEvent('choice', { detail: 'apps' }));
+                    this.remove(); 
+                };
+
+                this.shadowRoot.getElementById('btn-login').onclick = () => {
+                    this.dispatchEvent(new CustomEvent('choice', { detail: 'login' }));
+                };
+            }
+        }
+        customElements.define('startup-modal', StartupModal);
+
+        /**
+         * 4. <cloud-os>: Main Container
+         */
+        class CloudOS extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+            }
+
+            connectedCallback() {
+                this.render();
+                this.setupLogic();
+            }
+
+            setupLogic() {
+                const modal = this.shadowRoot.querySelector('startup-modal');
+                const appsGrid = this.shadowRoot.querySelector('.apps-grid');
+                
+                modal.addEventListener('choice', (e) => {
+                    if (e.detail === 'apps') {
+                        appsGrid.style.opacity = '1';
+                        appsGrid.style.transform = 'translateY(0)';
+                        appsGrid.style.pointerEvents = 'auto';
+                        document.title = "Apps List";
+                    } else {
+                        document.body.innerHTML = `
+                            <div style="display:flex;height:100vh;justify-content:center;align-items:center;color:white;flex-direction:column;text-align:center;">
+                                <svg width="60" height="60" fill="#3b82f6" viewBox="0 0 24 24" style="margin-bottom:20px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                                <h3 style="font-family:sans-serif;margin-bottom:10px;">Port 8000</h3>
+                                <p style="color:#aaa;font-family:sans-serif;">Redirecting to CloudFone Login...</p>
+                            </div>`;
+                        setTimeout(() => {
+                             window.location.href = 'https://www.cloudfone.com/auth/sign-in';
+                        }, 1200);
+                    }
+                });
+            }
+
+            render() {
+                // Generate App Cards HTML using SVG Paths
+                const cardsHtml = APPS_DATA.map(app => 
+                    `<app-card name="${app.name}" url="${app.url}" path="${app.icon}" color="${app.color}"></app-card>`
+                ).join('');
+
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host { display: block; height: 100%; }
+                        .container {
+                            max-width: 800px;
+                            margin: 0 auto;
+                            padding: 20px;
+                            height: calc(100vh - 55px);
+                            overflow-y: auto;
+                        }
+                        .apps-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                            gap: 15px;
+                            opacity: 0;
+                            transform: translateY(20px);
+                            pointer-events: none;
+                            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                            padding-bottom: 50px;
+                        }
+                    </style>
+
+                    <cloud-header></cloud-header>
+                    <div class="container">
+                        <div class="apps-grid">
+                            ${cardsHtml}
+                        </div>
+                    </div>
+                    <startup-modal></startup-modal>
+                `;
+            }
+        }
+        customElements.define('cloud-os', CloudOS);
+
     </script>
+</body>
 </html>
