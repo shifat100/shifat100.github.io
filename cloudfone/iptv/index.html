@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IPTV Pro</title>
-    <!-- HLS.js Library for Video Streaming -->
+    <title>IPTV Pro Ultimate</title>
+    <!-- HLS.js Library for Streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        /* --- 1. THEME VARIABLES (Cloud Phone Style) --- */
+        /* --- 1. THEME VARIABLES --- */
         :root {
-            --primary: #0091EA;   /* Professional Blue */
-            --bg: #111111;        /* Deep Black/Grey */
-            --surface: #000000;   /* Black Surface */
+            --primary: #0091EA;   
+            --bg: #121212;        
+            --surface: #1E1E1E;   
             --text: #FFFFFF;
-            --focus: #0091EA;     /* Highlight Color */
+            --focus: #0091EA;     
             --divider: #333333;
         }
 
         /* --- 2. RESET & BASE --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         body {
             background-color: var(--bg);
@@ -33,125 +33,145 @@
         /* --- 3. HEADER --- */
         #header {
             background-color: var(--primary);
-            height: 40px;
+            height: 50px;
             display: flex;
             align-items: center;
-            padding-left: 10px;
+            padding-left: 15px;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 20px;
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
         /* --- 4. VIEWS CONTAINER --- */
         .view-section {
-            display: none; /* Hidden by default */
-            margin-top: 40px; /* Header height */
-            height: calc(100vh - 70px); /* Header 40 + Footer 30 */
+            display: none; 
+            margin-top: 50px; 
+            height: calc(100vh - 100px); /* Header 50 + Footer 50 */
             overflow-y: auto;
+            scroll-behavior: smooth;
         }
-        
-        .view-section.active {
-            display: block; /* Show active view */
-        }
+        .view-section.active { display: block; }
 
-        /* --- 5. CHANNEL LIST STYLES --- */
+        /* --- 5. CHANNEL LIST --- */
         .channel-item {
-            padding: 12px 10px;
+            padding: 15px;
             border-bottom: 1px solid var(--divider);
             display: flex;
             align-items: center;
-            background-color: transparent;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        /* Focused State */
-        .channel-item.focused, .menu-item.focused {
+        .channel-item:active { background-color: #333; }
+        .channel-item.focused {
             background-color: var(--focus) !important;
             color: white !important;
         }
         .channel-logo {
-            width: 40px; height: 40px; 
+            width: 45px; height: 45px; 
             margin-right: 15px; 
             background: #fff; 
             object-fit: contain;
-            border-radius: 2px;
+            border-radius: 4px;
         }
         .channel-info { flex: 1; overflow: hidden; }
-        .channel-name { font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .group-title { font-size: 12px; color: #aaa; margin-top: 4px; display: block; }
+        .channel-name { font-weight: 500; font-size: 17px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .group-title { font-size: 13px; color: #aaa; margin-top: 5px; display: block; }
         .channel-item.focused .group-title { color: #ddd; }
 
-        /* --- 6. MENU STYLES --- */
+        /* --- 6. MENU & INPUT STYLES --- */
         .menu-item {
-            padding: 15px 10px;
+            padding: 18px 15px;
             border-bottom: 1px solid var(--divider);
-            font-size: 16px;
+            font-size: 17px;
             background: var(--surface);
             cursor: pointer;
         }
+        .menu-item:active { background: #333; }
+        .menu-item.focused { background-color: var(--focus); color: white; }
 
-        /* --- 7. SEARCH VIEW STYLES --- */
-        #search-view { padding: 0; }
-        #search-container { padding: 10px; background: #222; }
-        #search-input {
-            width: 100%;
-            padding: 8px;
-            background: #000;
-            border: 1px solid #555;
-            color: white;
-            font-size: 16px;
+        /* Generic Input Styling */
+        .input-container { padding: 15px; background: #222; }
+        .modern-input {
+            width: 100%; padding: 12px;
+            background: #000; border: 1px solid #555;
+            color: white; font-size: 16px; border-radius: 4px;
         }
-        #search-input:focus { border-color: var(--primary); }
+        .modern-input:focus { border-color: var(--primary); }
+        
+        .modern-btn {
+            width: 100%; padding: 12px;
+            background: var(--primary); color: white;
+            border: none; margin-top: 15px;
+            font-size: 16px; font-weight: bold;
+            border-radius: 4px; cursor: pointer;
+        }
+        .modern-btn:active { opacity: 0.8; }
 
-        /* --- 8. VIDEO PLAYER --- */
+        /* --- 7. VIDEO PLAYER --- */
         #player-view {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: black; z-index: 100; display: none;
         }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        video { width: 100%; height: 100%; }
+        
+        /* Player Close Button (Touch) */
+        #player-close-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(0,0,0,0.6); color: white;
+            border: 2px solid white; border-radius: 50%;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; cursor: pointer; z-index: 101;
+        }
 
-        /* --- 9. SOFT KEYS (FOOTER) --- */
+        /* --- 8. SOFT KEYS (FOOTER) --- */
         #soft-keys {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 30px;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 50px;
             background-color: var(--surface);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 10px; z-index: 200; border-top: 1px solid #333;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.5);
         }
-        .key-col { width: 33%; display: flex; align-items: center; height: 100%; }
+        .key-col { 
+            flex: 1; display: flex; align-items: center; height: 100%; 
+            cursor: pointer; active: opacity: 0.5;
+        }
         #lsk { justify-content: flex-start; }
         #csk { justify-content: center; }
         #rsk { justify-content: flex-end; }
-        .key-icon { width: 24px; height: 24px; fill: white; }
+        .key-icon { width: 28px; height: 28px; fill: white; pointer-events: none; }
+        .key-label { font-size: 12px; color: #aaa; margin-left: 5px; display: none; } /* Optional label */
 
-        /* --- 10. CUSTOM ALERT BOX --- */
+        /* --- 9. CUSTOM ALERT --- */
         #custom-alert-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.85); z-index: 9999;
             display: none; justify-content: center; align-items: center;
         }
         .alert-box {
-            background-color: #222; width: 85%; max-width: 300px;
-            border: 1px solid #444; border-radius: 4px; overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            background-color: #222; width: 85%; max-width: 320px;
+            border-radius: 8px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .alert-header { background: var(--primary); color: white; padding: 10px; font-weight: bold; }
-        .alert-body { padding: 20px 15px; color: #ddd; font-size: 15px; line-height: 1.4; }
-        .alert-footer { padding: 10px; text-align: right; background: #111; }
+        .alert-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; font-size: 18px;}
+        .alert-body { padding: 25px 20px; color: #ddd; font-size: 16px; line-height: 1.5; text-align: center;}
+        .alert-footer { padding: 15px; text-align: center; background: #1a1a1a; }
         .alert-btn {
-            background: transparent; border: 2px solid var(--primary); color: var(--primary);
-            padding: 5px 15px; font-weight: bold; text-transform: uppercase;
+            background: var(--primary); border: none; color: white;
+            padding: 10px 25px; font-weight: bold; border-radius: 20px;
+            font-size: 16px; cursor: pointer;
         }
-        .alert-btn:focus { background: var(--primary); color: white; }
 
-        /* Hidden File Input */
         #file-upload { display: none; }
     </style>
 </head>
 <body>
 
     <!-- Header -->
-    <div id="header">IPTV</div>
+    <div id="header">IPTV Pro</div>
 
     <!-- 1. HOME VIEW (Channel List) -->
     <div id="home-view" class="view-section active">
@@ -161,67 +181,76 @@
     <!-- 2. MENU VIEW -->
     <div id="menu-view" class="view-section">
         <div class="menu-item focused" data-action="search">Search Channel</div>
-        <div class="menu-item" data-action="upload">Load Playlist (M3U)</div>
+        <div class="menu-item" data-action="network">Play Network Stream</div>
+        <div class="menu-item" data-action="upload">Load M3U Playlist</div>
         <div class="menu-item" data-action="reset">Reset Defaults</div>
         <div class="menu-item" data-action="about">About</div>
     </div>
 
     <!-- 3. SEARCH VIEW -->
     <div id="search-view" class="view-section">
-        <div id="search-container">
-            <input type="text" id="search-input" placeholder="Type name...">
+        <div class="input-container">
+            <input type="text" id="search-input" class="modern-input" placeholder="Type channel name...">
         </div>
         <div id="search-results"></div>
     </div>
 
-    <!-- 4. PLAYER VIEW -->
+    <!-- 4. NETWORK STREAM VIEW -->
+    <div id="network-view" class="view-section">
+        <div class="input-container" style="height: 100%; display: flex; flex-direction: column;">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">Net Video Player</h3>
+            <input type="text" id="net-url-input" class="modern-input" placeholder="Paste video URL (m3u8/mp4)...">
+            <button id="btn-play-net" class="modern-btn">Play Video</button>
+            <p style="margin-top:20px; color:#777; font-size:14px;">Supports HLS (.m3u8) and standard video formats.</p>
+        </div>
+    </div>
+
+    <!-- 5. PLAYER VIEW -->
     <div id="player-view">
+        <div id="player-close-btn">✕</div>
         <video id="video-player" controls playsinline></video>
     </div>
 
-    <!-- Hidden Input for File Loading -->
+    <!-- Hidden Input -->
     <input type="file" id="file-upload" accept=".m3u,.txt">
 
-    <!-- Custom Alert Modal -->
+    <!-- Alert Modal -->
     <div id="custom-alert-overlay">
         <div class="alert-box">
-            <div class="alert-header">About</div>
+            <div class="alert-header">Notification</div>
             <div class="alert-body" id="custom-alert-msg"></div>
             <div class="alert-footer">
-                <center><button id="custom-alert-ok" class="alert-btn">OK</button></center>
+                <button id="custom-alert-ok" class="alert-btn">OK</button>
             </div>
         </div>
     </div>
 
-    <!-- Soft Keys -->
+    <!-- Soft Keys (Touch & Keypad) -->
     <div id="soft-keys">
-        <div class="key-col" id="lsk">
-            <!-- Hamburger Menu Icon -->
+        <div class="key-col" id="lsk" title="Menu">
             <svg class="key-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </div>
-        <div class="key-col" id="csk">
-            <!-- Center Checkmark (Tick) Icon -->
+        <div class="key-col" id="csk" title="Select/Play">
             <svg class="key-icon" id="icon-center" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </div>
-        <div class="key-col" id="rsk">
-            <!-- Back Arrow Icon -->
+        <div class="key-col" id="rsk" title="Back">
             <svg class="key-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         </div>
     </div>
 
 <script>
-    // --- 1. CONFIGURATION & DEFAULT DATA ---
+    // --- DEFAULT DATA ---
     var DEFAULT_M3U = '#EXTM3U\n' +
-    '#EXTINF:-1 group-title="Bangla" tvg-logo="https://dl.dropbox.com/s/leielj83em5kg7h/somoy_news.png",Somoy TV\n' +
+    '#EXTINF:-1 group-title="Bangla" tvg-logo="https://raw.githubusercontent.com/nurulhuda856/bd-iptv-icons/main/icons/somoy.png",Somoy TV\n' +
     'https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8\n' +
-    '#EXTINF:-1 group-title="Bangla" tvg-logo="https://dl.dropbox.com/s/k7z1dsec1jfjbkn/jamuna_tv_bd.png",Jamuna TV\n' +
+    '#EXTINF:-1 group-title="Bangla" tvg-logo="https://raw.githubusercontent.com/nurulhuda856/bd-iptv-icons/main/icons/jamuna.png",Jamuna TV\n' +
     'https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/index.m3u8\n' +
-    '#EXTINF:-1 group-title="Sports" tvg-logo="https://upload.wikimedia.org/wikipedia/en/2/29/TSportsBD.png",T Sports\n' +
+    '#EXTINF:-1 group-title="Sports" tvg-logo="https://raw.githubusercontent.com/nurulhuda856/bd-iptv-icons/main/icons/tsports.png",T Sports\n' +
     'http://103.60.204.26:3255/TSportsHD/tracks-v1a1/mono.m3u8\n' +
-    '#EXTINF:-1 group-title="Entertainment" tvg-logo="https://upload.wikimedia.org/wikipedia/en/thumb/8/8c/Sony_Entertainment_Television_logo.svg/1200px-Sony_Entertainment_Television_logo.svg.png",Sony TV\n' +
-    'http://103.60.204.26:3255/SonyEntertainmentTelevisionHD/tracks-v1a1/mono.m3u8';
+    '#EXTINF:-1 group-title="Movies" tvg-logo="",Sample Big Buck Bunny\n' +
+    'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 
-    // --- 2. GLOBAL VARIABLES ---
+    // --- VARIABLES ---
     var channels = [];
     var filteredChannels = [];
     var currentView = 'home';
@@ -232,40 +261,40 @@
     var elHome = document.getElementById('home-view');
     var elMenu = document.getElementById('menu-view');
     var elSearch = document.getElementById('search-view');
+    var elNetwork = document.getElementById('network-view');
     var elPlayer = document.getElementById('player-view');
     var elVideo = document.getElementById('video-player');
     var elList = document.getElementById('channel-list');
     var elSearchResults = document.getElementById('search-results');
-    var elSearchInput = document.getElementById('search-input');
     var iconCenter = document.getElementById('icon-center');
+    var btnPlayNet = document.getElementById('btn-play-net');
+    var inputNet = document.getElementById('net-url-input');
 
-    // SVG Icons
+    // Icons
     var ICON_TICK = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
     var ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
     var ICON_PAUSE = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
 
-    // --- 3. CUSTOM ALERT OVERRIDE ---
+    // --- OVERRIDE ALERT ---
     window.alert = function(message) {
         var overlay = document.getElementById('custom-alert-overlay');
         var msgDiv = document.getElementById('custom-alert-msg');
         var btn = document.getElementById('custom-alert-ok');
-        
         msgDiv.innerText = message;
         overlay.style.display = 'flex';
         btn.focus();
-        
-        btn.onclick = function() {
-            overlay.style.display = 'none';
-            // Restore focus based on view
-            if(currentView === 'home' || currentView === 'search') updateFocus();
-            else if(currentView === 'menu') {
-                var items = elMenu.children;
-                if(items[focusIndex]) items[focusIndex].classList.add('focused');
-            }
-        };
+        btn.onclick = function() { overlay.style.display = 'none'; restoreFocus(); };
     };
 
-    // --- 4. INITIALIZATION ---
+    function restoreFocus() {
+        if(currentView === 'home' || currentView === 'search') updateFocus();
+        else if(currentView === 'menu') {
+            var items = elMenu.children;
+            if(items[focusIndex]) items[focusIndex].classList.add('focused');
+        }
+    }
+
+    // --- INITIALIZATION ---
     window.onload = function() {
         var savedData = localStorage.getItem('bd_iptv_playlist');
         if (!savedData) {
@@ -274,21 +303,15 @@
         }
         parseM3U(savedData);
         renderChannels(channels, elList);
-        
-        // Initial History State
         history.replaceState({view: 'home'}, "Home", "");
 
-        // Handle Browser/Phone Back Button
         window.onpopstate = function(event) {
-            if (event.state) {
-                switchView(event.state.view, false);
-            } else {
-                switchView('home', false); // Fallback
-            }
+            if (event.state) switchView(event.state.view, false);
+            else switchView('home', false);
         };
     };
 
-    // --- 5. DATA LOGIC ---
+    // --- LOGIC ---
     function parseM3U(data) {
         var lines = data.split('\n');
         channels = [];
@@ -310,20 +333,18 @@
         }
     }
 
-    // --- 6. RENDER LOGIC ---
     function renderChannels(data, container) {
         container.innerHTML = '';
         if (data.length === 0) {
-            container.innerHTML = '<div style="padding:20px;text-align:center;color:#777">No channels</div>';
+            container.innerHTML = '<div style="padding:20px;text-align:center;color:#777">No channels found</div>';
             return;
         }
         for (var i = 0; i < data.length; i++) {
             var div = document.createElement('div');
             div.className = 'channel-item';
-            div.innerHTML = '<img src="' + (data[i].logo || '') + '" class="channel-logo" onerror="this.style.display=\'none\'">' +
+            div.innerHTML = '<img src="' + (data[i].logo || '') + '" class="channel-logo" onerror="this.src=\'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZD0iTTIxIDNIM3YxOGgxOFYzTTEyIDE1LjVsLTU1VjEybDUtNWw1IDV6Ii8+PC9zdmc+\'">' +
                             '<div class="channel-info"><span class="channel-name">' + data[i].name + '</span><span class="group-title">' + data[i].group + '</span></div>';
             
-            // Mouse click handler
             (function(idx) {
                 div.onclick = function() {
                     focusIndex = idx;
@@ -331,60 +352,50 @@
                     playChannel(data[idx].url);
                 };
             })(i);
-            
             container.appendChild(div);
         }
         updateFocus();
     }
 
-    // --- 7. NAVIGATION SYSTEM ---
     function switchView(viewName, pushHistory) {
-        // Reset States
-        elHome.classList.remove('active');
-        elMenu.classList.remove('active');
-        elSearch.classList.remove('active');
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
         elPlayer.style.display = 'none';
         
-        // Stop Player if leaving
         if (currentView === 'player' && viewName !== 'player') {
             elVideo.pause();
             elVideo.src = "";
         }
 
         currentView = viewName;
-        focusIndex = 0; // Reset focus on new view
+        focusIndex = 0; 
 
-        // Activate View
         if (viewName === 'home') {
             elHome.classList.add('active');
-            elHeader.innerText = "IPTV";
+            elHeader.innerText = "IPTV Pro";
             iconCenter.innerHTML = ICON_TICK;
             updateFocus();
-        } 
-        else if (viewName === 'menu') {
+        } else if (viewName === 'menu') {
             elMenu.classList.add('active');
             elHeader.innerText = "Menu";
             iconCenter.innerHTML = ICON_TICK;
             updateFocus();
-        } 
-        else if (viewName === 'search') {
+        } else if (viewName === 'search') {
             elSearch.classList.add('active');
             elHeader.innerText = "Search";
             iconCenter.innerHTML = ICON_TICK;
-            elSearchInput.value = '';
-            elSearchInput.focus();
-            elSearchResults.innerHTML = '';
-        } 
-        else if (viewName === 'player') {
+            document.getElementById('search-input').focus();
+        } else if (viewName === 'network') {
+            elNetwork.classList.add('active');
+            elHeader.innerText = "Net Stream";
+            iconCenter.innerHTML = ICON_PLAY;
+            inputNet.focus();
+        } else if (viewName === 'player') {
             elPlayer.style.display = 'block';
             elHeader.innerText = "Playing...";
             iconCenter.innerHTML = ICON_PAUSE;
         }
 
-        // Push to Browser History
-        if (pushHistory) {
-            history.pushState({view: viewName}, viewName, "#" + viewName);
-        }
+        if (pushHistory) history.pushState({view: viewName}, viewName, "#" + viewName);
     }
 
     function updateFocus() {
@@ -394,56 +405,37 @@
         else if (currentView === 'search') items = elSearchResults.children;
         else return;
 
-        // Remove focus from all
-        for (var i = 0; i < items.length; i++) { items[i].classList.remove('focused'); }
+        for (var i = 0; i < items.length; i++) items[i].classList.remove('focused');
         
-        // Apply focus
         if (items.length > 0) {
             if (focusIndex >= items.length) focusIndex = items.length - 1;
             if (focusIndex < 0) focusIndex = 0;
             items[focusIndex].classList.add('focused');
-            items[focusIndex].scrollIntoView({block: "center"});
+            items[focusIndex].scrollIntoView({block: "center", behavior: "smooth"});
         }
     }
 
-    // --- 8. ACTION HANDLERS ---
     function handleEnter() {
         if (currentView === 'home') {
             if (channels[focusIndex]) playChannel(channels[focusIndex].url);
-        } 
-        else if (currentView === 'menu') {
+        } else if (currentView === 'menu') {
             var action = elMenu.children[focusIndex].getAttribute('data-action');
             if (action === 'search') switchView('search', true);
+            else if (action === 'network') switchView('network', true);
             else if (action === 'upload') document.getElementById('file-upload').click();
-            else if (action === 'reset') {
-                localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U);
-                alert("Restored Defaults!");
-                location.reload();
-            } 
-            else if (action === 'about') alert("IPTV Pro v1.0\nFor CloudPhone");
-        } 
-        else if (currentView === 'search') {
-            if (document.activeElement === elSearchInput) {
-                // Move focus from Input to Results
-                elSearchInput.blur();
-                focusIndex = 0;
-                updateFocus();
-            } else {
-                if (filteredChannels[focusIndex]) playChannel(filteredChannels[focusIndex].url);
-            }
-        } 
-        else if (currentView === 'player') {
-            if (elVideo.paused) { 
-                elVideo.play(); 
-                iconCenter.innerHTML = ICON_PAUSE; 
-            } else { 
-                elVideo.pause(); 
-                iconCenter.innerHTML = ICON_PLAY; 
-            }
+            else if (action === 'reset') { localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U); alert("Reset Complete!"); location.reload(); }
+            else if (action === 'about') alert("IPTV Pro Ultimate\nBuilt with JS/HTML5");
+        } else if (currentView === 'search') {
+            if (filteredChannels[focusIndex]) playChannel(filteredChannels[focusIndex].url);
+        } else if (currentView === 'network') {
+            playNetworkStream();
+        } else if (currentView === 'player') {
+            elVideo.paused ? elVideo.play() : elVideo.pause();
         }
     }
 
     function playChannel(url) {
+        if (!url) return;
         switchView('player', true);
         if (Hls.isSupported()) {
             var hls = new Hls();
@@ -453,12 +445,43 @@
         } else if (elVideo.canPlayType('application/vnd.apple.mpegurl')) {
             elVideo.src = url;
             elVideo.play();
+        } else {
+            // Standard MP4 fallback
+            elVideo.src = url;
+            elVideo.play();
         }
     }
 
-    // --- 9. EVENT LISTENERS ---
+    function playNetworkStream() {
+        var url = inputNet.value.trim();
+        if(url) {
+            playChannel(url);
+        } else {
+            alert("Please enter a valid URL");
+        }
+    }
 
-    // File Upload Handler
+    // --- EVENT LISTENERS ---
+
+    // 1. Mouse/Touch on Menu Items
+    var menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach((item, index) => {
+        item.onclick = function() {
+            focusIndex = index;
+            updateFocus();
+            handleEnter();
+        }
+    });
+
+    // 2. Play Button in Network View
+    btnPlayNet.onclick = playNetworkStream;
+
+    // 3. Player Close Button
+    document.getElementById('player-close-btn').onclick = function() {
+        history.back();
+    };
+
+    // 4. File Upload
     document.getElementById('file-upload').addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -468,78 +491,61 @@
             parseM3U(e.target.result);
             renderChannels(channels, elList);
             alert("Playlist Loaded!");
-            history.back(); // Return to previous view
+            history.back();
         };
         reader.readAsText(file);
     });
 
-    // Search Input Logic
-    elSearchInput.addEventListener('input', function(e) {
+    // 5. Search Logic
+    document.getElementById('search-input').addEventListener('input', function(e) {
         var term = e.target.value.toLowerCase();
-        filteredChannels = channels.filter(function(ch) {
-            return ch.name.toLowerCase().indexOf(term) > -1;
-        });
+        filteredChannels = channels.filter(ch => ch.name.toLowerCase().includes(term));
         renderChannels(filteredChannels, elSearchResults);
     });
 
-    // KEYPAD CONTROLLER
+    // 6. KEYPAD & KEYBOARD CONTROLLER
     document.addEventListener('keydown', function(e) {
         var key = e.key;
 
-        // A. Prevent interaction if Alert is open
+        // Skip if Alert is open
         if (document.getElementById('custom-alert-overlay').style.display === 'flex') {
             e.preventDefault(); e.stopPropagation();
-            if (key === 'Enter' || key === 'SoftCenter' || key === '5') {
-                document.getElementById('custom-alert-ok').click();
-            }
+            if (key === 'Enter' || key === 'SoftCenter') document.getElementById('custom-alert-ok').click();
             return;
         }
 
-        // B. Standard Navigation
+        // Arrow Navigation
         if (key === 'ArrowDown') {
-            if (currentView === 'search' && document.activeElement === elSearchInput) {
-                // Stay in input, allow user to press enter to go down
-            } else {
-                focusIndex++;
-                updateFocus();
-            }
+            if (currentView === 'network' || (currentView === 'search' && document.activeElement.tagName === 'INPUT')) return;
+            focusIndex++; updateFocus();
+        } else if (key === 'ArrowUp') {
+            if (currentView === 'network' || (currentView === 'search' && document.activeElement.tagName === 'INPUT')) return;
+            focusIndex--; updateFocus();
         } 
-        else if (key === 'ArrowUp') {
-            if (currentView === 'search' && focusIndex === 0 && document.activeElement !== elSearchInput) {
-                 // Move focus back to Input
-                 elSearchInput.focus();
-            } else {
-                focusIndex--;
-                updateFocus();
-            }
-        } 
+        // Action Keys
         else if (key === 'Enter' || key === 'SoftCenter' || key === '5') {
             handleEnter();
         }
+        // Menu / SoftLeft
         else if (key === 'SoftLeft' || key === 'F1') {
-            // SoftLeft: Menu button logic
             if (currentView === 'home') switchView('menu', true);
         }
-        else if (key === 'SoftRight' || key === 'F2' || key === 'Backspace') {
-            // SoftRight: Back button logic
-            if (currentView === 'search' && document.activeElement === elSearchInput && elSearchInput.value !== '') {
-                // If typing, let backspace delete text
+        // Back / SoftRight
+        else if (key === 'SoftRight' || key === 'F2' || key === 'Backspace' || key === 'Escape') {
+            if((currentView === 'search' || currentView === 'network') && document.activeElement.tagName === 'INPUT' && document.activeElement.value !== '') {
+                // Allow default backspace in input
             } else {
                 history.back();
-                e.preventDefault(); // Stop browser back
+                e.preventDefault();
             }
         }
     });
 
-    // MOUSE CLICK HANDLERS (Soft Keys)
-    document.getElementById('lsk').onclick = function() {
-        if(currentView === 'home') switchView('menu', true);
-    };
-    document.getElementById('rsk').onclick = function() {
-        history.back();
-    };
+    // 7. SOFT KEYS CLICKS
+    document.getElementById('lsk').onclick = function() { if(currentView === 'home') switchView('menu', true); };
+    document.getElementById('rsk').onclick = function() { history.back(); };
     document.getElementById('csk').onclick = handleEnter;
 
 </script>
 </body>
-    </html>
+</html>
