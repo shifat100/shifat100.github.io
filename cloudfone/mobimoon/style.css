@@ -125,5 +125,6 @@ body {
 }
 
 #ad-container {
-    z-index:50px
+display:none
 }
+
