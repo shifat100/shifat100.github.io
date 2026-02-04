@@ -121,4 +121,9 @@ body {
         display: inline-block;
         font-size: 12px;
     }
+
+}
+
+#ad-container {
+    z-index:50px
 }
