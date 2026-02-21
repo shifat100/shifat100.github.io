@@ -1,8 +1,13 @@
 var db = `{
-    "root": [
+    "root": [{
+    "title": "JSON Category Sorter",
+    "category": "development",
+    "file": "json_sorter",
+    "description": "Upload a JSON file, create categories via tabs, and drag-and-drop items to sort and download them."
+},
     {
     "title": "JSON Master Studio",
-    "category": "developer",
+    "category": "development",
     "file": "json-master",
     "description": "All-in-one JSON tool: Minify, Prettify, Split (ZIP), Convert (XML/CSV/TOML), Sort, Dedupe, and Visualize."
 },
@@ -72,6 +77,7 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
 
