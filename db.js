@@ -1,6 +1,12 @@
 var db = `{
     "root": [
     {
+    "title": "JSON Master Studio",
+    "category": "developer",
+    "file": "json-master",
+    "description": "All-in-one JSON tool: Minify, Prettify, Split (ZIP), Convert (XML/CSV/TOML), Sort, Dedupe, and Visualize."
+},
+    {
     "title": "Smart Compass",
     "category": "Tools",
     "file": "compass",
@@ -66,6 +72,7 @@ var db = `{
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
 }
 ]}`;
+
 
 
 
