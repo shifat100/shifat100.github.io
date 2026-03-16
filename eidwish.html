@@ -749,10 +749,18 @@
         }
 
         function acceptInvite() {
-            if (document.exitFullscreen) document.exitFullscreen();
-            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-            alert("Awesome! See you soon. Eid Mubarak! 🌙");
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+
+            // Opens WhatsApp with a pre-filled message
+            const phoneNumber = "+8801743393670"; // Replace with your phone number (include country code, no +)
+            const message = encodeURIComponent("Awesome! See you soon. Eid Mubarak! 🌙");
+            window.open(`https://wa.me{phoneNumber}?text=${message}`, '_blank');
         }
+
 
     </script>
 </body>
