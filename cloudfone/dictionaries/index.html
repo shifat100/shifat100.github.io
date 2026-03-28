@@ -1,48 +1,223 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Dictionaries</title>
-    <style>
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Dictionaries - Cloudfone</title>
     
-</head>
-<script>(function(s){s.dataset.zone='10089094',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-<body>
-  
+    <!-- Original Ad Script -->
+    <script>(function(s){s.dataset.zone='10089094',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
+    <!-- Import modern font -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+            --bg-color: #0f1115;
+            --surface-color: #1e2229;
+            --surface-hover: #2a2f38;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        ul {
-            list-style-type: none;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        li {
-            background-color: #f0f0f0;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        body {
+            background-color: var(--bg-color);
+            font-family: var(--font);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
         }
-        li a {
+
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        /* Header Styling */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #10b981;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        /* Dictionary List (Grid of Cards) */
+        .dictionary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Individual Card Styling */
+        .card {
+            display: flex;
+            align-items: center;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 20px;
             text-decoration: none;
-            color: #333;
-            font-weight: bold;
+            color: var(--text-main);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        li:nth-child(odd) {
-            background-color: #d1e7dd; /* Light green */
+
+        .card:hover, .card:focus {
+            background-color: var(--surface-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.15);
         }
-    </style><h1>Dictionaries</h1>
-    <ul>
-        <li><a href="English Arbic" target="_blank">Arbic Dictionary</a></li>
-        <li><a href="English Bangla" target="_blank">Bangla Dictionary</a></li>
-        <li><a href="English Hindi" target="_blank">Hindi Dictionary</a></li>
-        <li><a href="English Tamil" target="_blank">Tamil Dictionary</a></li>
-    </ul>
-    </body>
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        /* Language Avatar Circle */
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin-right: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Custom Colors for each Language */
+        .bg-arabic { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+        .bg-bangla { background: linear-gradient(135deg, #10b981, #059669); }
+        .bg-hindi { background: linear-gradient(135deg, #f59e0b, #ea580c); }
+        .bg-tamil { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+
+        /* Card Text content */
+        .card-content {
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Right Arrow Icon */
+        .chevron {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .card:hover .chevron {
+            transform: translateX(4px);
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">
+                <!-- Book Icon -->
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM10 9h8v2h-8zm0 3h4v2h-4zm0-6h8v2h-8z"/>
+                </svg>
+            </div>
+            <h1>Dictionaries</h1>
+        </div>
+
+        <!-- Dictionary Cards -->
+        <div class="dictionary-list">
+            
+            <a href="English Arbic" target="_blank" class="card">
+                <div class="avatar bg-arabic">Ar</div>
+                <div class="card-content">
+                    <div class="card-title">Arabic Dictionary</div>
+                    <div class="card-subtitle">English ⇄ Arabic</div>
+                </div>
+                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
+            </a>
+
+            <a href="English Bangla" target="_blank" class="card">
+                <div class="avatar bg-bangla">Bn</div>
+                <div class="card-content">
+                    <div class="card-title">Bangla Dictionary</div>
+                    <div class="card-subtitle">English ⇄ Bangla</div>
+                </div>
+                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
+            </a>
+
+            <a href="English Hindi" target="_blank" class="card">
+                <div class="avatar bg-hindi">Hi</div>
+                <div class="card-content">
+                    <div class="card-title">Hindi Dictionary</div>
+                    <div class="card-subtitle">English ⇄ Hindi</div>
+                </div>
+                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
+            </a>
+
+            <a href="English Tamil" target="_blank" class="card">
+                <div class="avatar bg-tamil">Ta</div>
+                <div class="card-content">
+                    <div class="card-title">Tamil Dictionary</div>
+                    <div class="card-subtitle">English ⇄ Tamil</div>
+                </div>
+                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
+            </a>
+
+        </div>
+    </div>
+
+</body>
 </html>
