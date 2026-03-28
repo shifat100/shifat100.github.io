@@ -146,11 +146,10 @@ function updateSettingsUI() {
     var displayOffset = (tempOffset > 0) ? "+" + tempOffset : tempOffset;
     var si = '<div style="padding: 10px; text-align: center;">';
     si += '<h3 style="margin-top:0;">Adjust Hijri Date</h3>';
-    si += '<p style="font-size:11px;">Use Left/Right to adjust<br>Press Enter to save.</p>';
     si += '<div style="font-size: 22px; font-weight: bold; margin: 20px 0;">';
-    si += '<span onclick="changeTempOffset(-1)" style="padding:5px 10px; border:1px solid #000; cursor:pointer; background:#eee;">&lt;</span> ';
+    si += '<span onclick="changeTempOffset(-1)" style="border:0px solid #000; cursor:pointer; background:black; color: white; font-size: 24px; font-weight: bold;">&lt;</span> ';
     si += '<span style="display:inline-block; width:50px;">' + displayOffset + '</span> ';
-    si += '<span onclick="changeTempOffset(1)" style="padding:5px 10px; border:1px solid #000; cursor:pointer; background:#eee;">&gt;</span>';
+    si += '<span onclick="changeTempOffset(1)" style="border:0px solid #000; cursor:pointer; background:black; color: white; font-size: 24px; font-weight: bold;">&gt;</span>';
     si += '</div></div>';
     document.getElementById('content').innerHTML = si;
 }
