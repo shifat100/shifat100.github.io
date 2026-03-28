@@ -3,27 +3,27 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Cloudfone</title>
+    <title>Cloudfone OS</title>
     
     <!-- Original Ad Scripts -->
     <script type='text/javascript' src='http://pl26953579.profitableratecpm.com/f8/49/29/f8492924da30520cabdbb409c9928dec.js'></script>
     <script>(function(s){s.dataset.zone='10089094',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         :root {
             --bg-color: #0f1115;
-            --surface-color: #1e2229;
-            --primary-color: #3b82f6;
             --text-main: #ffffff;
             --text-muted: #9ca3af;
-            --radius: 12px;
-            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: var(--bg-color);
+            /* Beautiful deep gradient wallpaper */
+            background: radial-gradient(circle at 15% 50%, #1e1b4b, #0f1115 50%, #020617 100%);
             font-family: var(--font);
             color: var(--text-main);
             height: 100vh;
@@ -33,10 +33,8 @@
             flex-direction: column;
         }
 
-        /* Scrollbar styling */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+        /* Hide scrollbar for an app-like feel */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
@@ -47,7 +45,6 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // --- SVG PATH DATA ---
-        // Storing paths here to keep the HTML clean
         const ICONS = {
             keyboard: "M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z",
             moon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z",
@@ -56,8 +53,8 @@
             circle: "M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z",
             cloud: "M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z",
             calendar: "M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z",
-            tv: "M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM8 13.29l5-3.57v7.14l-5-3.57z", // Added play button inside TV
-            rocket: "M12 2.5s5 2.5 5 9c0 2.5-3 6.5-5 10-2-3.5-5-7.5-5-10 0-6.5 5-9 5-9zM12 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z", // Location/Map icon for 'upcoming' or similar
+            tv: "M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM8 13.29l5-3.57v7.14l-5-3.57z",
+            rocket: "M12 2.5s5 2.5 5 9c0 2.5-3 6.5-5 10-2-3.5-5-7.5-5-10 0-6.5 5-9 5-9zM12 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z",
             timer: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zM12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z",
             gbaemul: "M19 5h-2L15 7H9L7 5H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zM8 9h8v5H8V9zm-2 2.5a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v-1zm-1.5-1a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm.5 2.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm1.5-.5a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v-1zm7 2a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2z",
            j2me: "M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z",
@@ -68,13 +65,13 @@
             { name: "Key Code", url: "./../Key Code", icon: ICONS.keyboard, color: "#f59e0b" },
             { name: "Mobimoon", url: "mobimoon", icon: ICONS.moon, color: "#6366f1" },
             { name: "Dictionaries", url: "dictionaries", icon: ICONS.book, color: "#10b981" },
-            { name: "X-Browser", url: "x-browser", icon: ICONS.globe, color: "#3b82f6" },
+            { name: "Browser", url: "x-browser", icon: ICONS.globe, color: "#3b82f6" },
             { name: "Word Circle", url: "https://shifat100.github.io/Word-Circle/", icon: ICONS.circle, color: "#ec4899" },
             { name: "Dream Exp.", url: "https://shifat100.github.io/Dream-Explaination-Bangla/index.html", icon: ICONS.cloud, color: "#8b5cf6" },
             { name: "Age Calc", url: "https://shifat100.github.io/Age-Calculator/index.html", icon: ICONS.calendar, color: "#f97316" },
             { name: "IPTV Pro", url: "https://shifat100.github.io/cloudfone/iptv", icon: ICONS.tv, color: "#ef4444" },
-            { name: "GBA EMUL", url: "gbaemul", icon: ICONS.gbaemul, color: "#0093E0" },
-            { name: "JAVA", url: "https://shifat100.github.io/j2me-cloudfone/", icon: ICONS.j2me, color: "#fff" },
+            { name: "GBA EMUL", url: "gbaemul", icon: ICONS.gbaemul, color: "#0ea5e9" },
+            { name: "JAVA", url: "https://shifat100.github.io/j2me-cloudfone/", icon: ICONS.j2me, color: "#737373" },
             { name: "Upcoming", url: "#", icon: ICONS.timer, color: "#64748b" }
         ];
 
@@ -93,67 +90,72 @@
                 const name = this.getAttribute('name');
                 const url = this.getAttribute('url');
                 const path = this.getAttribute('path');
-                const color = this.getAttribute('color') || '#555';
+                const color = this.getAttribute('color');
+                const delay = this.getAttribute('delay') || '0s';
 
                 this.shadowRoot.innerHTML = `
                     <style>
-                        :host { display: block; height: 100%; }
+                        :host { 
+                            display: block; 
+                            opacity: 0;
+                            transform: translateY(20px) scale(0.9);
+                            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                            animation-delay: ${delay};
+                        }
+                        
+                        @keyframes popIn {
+                            to { opacity: 1; transform: translateY(0) scale(1); }
+                        }
+
                         a {
                             display: flex;
                             flex-direction: column;
                             align-items: center;
-                            justify-content: center;
+                            justify-content: flex-start;
                             text-decoration: none;
-                            padding: 10px 10px;
-                            border-radius: var(--radius, 12px);
-                            background: var(--surface-color, #1e2229);
-                            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                            height: 100%;
-                            border: 1px solid rgba(255,255,255,0.05);
-                            position: relative;
-                            overflow: hidden;
+                            gap: 8px;
+                            outline: none;
                         }
-                        a:hover, a:focus {
-                            background: rgba(255,255,255,0.1);
-                            border-color: ${color}60;
-                            transform: translateY(-2px);
-                        }
-                        a:active { transform: scale(0.96); }
-
-                        /* Glow effect */
-                        a::before {
-                            content: '';
-                            position: absolute;
-                            top: 0; left: 0; right: 0; bottom: 0;
-                            background: radial-gradient(circle at center, ${color}15 0%, transparent 70%);
-                            opacity: 0;
-                            transition: opacity 0.3s;
-                        }
-                        a:hover::before { opacity: 1; }
-
+                        
                         .icon-box {
-                            width: 48px; height: 48px;
-                            border-radius: 12px;
-                            display: flex; align-items: center; justify-content: center;
-                            margin-bottom: 12px;
-                            background: ${color}20; /* 20% opacity bg */
+                            width: 64px; 
+                            height: 64px;
+                            border-radius: 24%; /* Premium Squircle Look */
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center;
+                            background: linear-gradient(135deg, ${color}cc, ${color});
+                            box-shadow: 0 8px 16px ${color}40, inset 0 1px 1px rgba(255,255,255,0.3);
+                            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                             position: relative;
-                            z-index: 2;
+                        }
+                        
+                        a:hover .icon-box, a:focus .icon-box {
+                            transform: scale(1.08) translateY(-2px);
+                        }
+                        
+                        a:active .icon-box { 
+                            transform: scale(0.95); 
                         }
                         
                         svg {
-                            width: 28px; height: 28px;
-                            fill: ${color};
-                            filter: drop-shadow(0 2px 4px ${color}60);
+                            width: 30px; 
+                            height: 30px;
+                            fill: #ffffff;
+                            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
                         }
 
                         .title {
-                            color: #eee;
-                            font-size: 13px;
+                            color: #ffffff;
+                            font-size: 12px;
                             font-weight: 500;
                             text-align: center;
                             letter-spacing: 0.3px;
-                            z-index: 2;
+                            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            max-width: 80px;
                         }
                     </style>
                     <a href="${url}" target="_blank">
@@ -181,36 +183,55 @@
                 this.shadowRoot.innerHTML = `
                     <style>
                         header {
-                            height: 55px;
+                            height: 48px;
                             display: flex;
                             align-items: center;
                             justify-content: space-between;
-                            padding: 0 20px;
-                            background: rgba(15, 17, 21, 0.8);
-                            border-bottom: 1px solid rgba(255,255,255,0.08);
-                            backdrop-filter: blur(12px);
-                            -webkit-backdrop-filter: blur(12px);
+                            padding: 0 24px;
+                            background: rgba(15, 17, 21, 0.3);
+                            backdrop-filter: blur(20px);
+                            -webkit-backdrop-filter: blur(20px);
                             position: sticky; top: 0; z-index: 10;
+                            box-shadow: 0 1px 0 rgba(255,255,255,0.05);
                         }
                         .brand { display: flex; align-items: center; gap: 8px; }
-                        h1 { font-size: 16px; color: white; margin: 0; font-weight: 600; letter-spacing: 0.5px; }
-                        .status { font-size: 11px; color: #10b981; background: #10b98120; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+                        h1 { font-size: 15px; color: white; margin: 0; font-weight: 600; letter-spacing: 0.5px; }
+                        
+                        .right-side { display: flex; align-items: center; gap: 16px; }
+                        .time { color: white; font-size: 14px; font-weight: 500; }
+                        .status { 
+                            display: flex; align-items: center; gap: 6px;
+                            font-size: 11px; color: #10b981; 
+                            font-weight: 700; letter-spacing: 0.5px;
+                        }
+                        .dot { width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
                     </style>
                     <header>
                         <div class="brand">
-                            <!-- Simple Cloud Icon for Header -->
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
                             <h1>CloudFone</h1>
                         </div>
-                        <span class="status">ONLINE</span>
+                        <div class="right-side">
+                            <span class="time" id="clock">00:00</span>
+                            <div class="status"><div class="dot"></div> ONLINE</div>
+                        </div>
                     </header>
                 `;
+
+                this.updateClock();
+                setInterval(() => this.updateClock(), 1000);
+            }
+
+            updateClock() {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                this.shadowRoot.getElementById('clock').textContent = timeStr;
             }
         }
         customElements.define('cloud-header', CloudHeader);
 
         /**
-         * 3. <startup-modal>: The Prompt Replacement
+         * 3. <startup-modal>: The Prompt
          */
         class StartupModal extends HTMLElement {
             constructor() {
@@ -223,75 +244,78 @@
                     <style>
                         .overlay {
                             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                            background: rgba(0,0,0,0.85);
-                            backdrop-filter: blur(8px);
-                            -webkit-backdrop-filter: blur(8px);
+                            background: rgba(0,0,0,0.6);
+                            backdrop-filter: blur(16px);
+                            -webkit-backdrop-filter: blur(16px);
                             display: flex; align-items: center; justify-content: center;
                             z-index: 999;
+                            transition: opacity 0.4s ease;
                         }
                         .modal {
-                            background: #1e2229;
-                            padding: 30px;
-                            border-radius: 18px;
-                            width: 85%; max-width: 320px;
+                            background: rgba(30, 34, 41, 0.65);
+                            padding: 32px 24px;
+                            border-radius: 24px;
+                            width: 85%; max-width: 340px;
                             text-align: center;
                             border: 1px solid rgba(255,255,255,0.1);
-                            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-                            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                            box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+                            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
                         }
+                        
                         .icon-circle {
-                            width: 50px; height: 50px; background: #3b82f620;
-                            border-radius: 50%; margin: 0 auto 15px;
+                            width: 60px; height: 60px; 
+                            background: linear-gradient(135deg, #3b82f6, #2563eb);
+                            border-radius: 50%; margin: 0 auto 20px;
                             display: flex; align-items: center; justify-content: center;
+                            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
                         }
-                        .icon-circle svg { fill: #3b82f6; width: 24px; height: 24px; }
+                        .icon-circle svg { fill: #ffffff; width: 28px; height: 28px; }
                         
-                        h2 { margin: 0 0 8px 0; color: white; font-size: 19px; }
-                        p { margin: 0 0 25px 0; color: #9ca3af; font-size: 14px; line-height: 1.4; }
+                        h2 { margin: 0 0 10px 0; color: white; font-size: 22px; font-weight: 600; }
+                        p { margin: 0 0 30px 0; color: #9ca3af; font-size: 15px; line-height: 1.5; }
                         
-                        .btn-group { display: flex; gap: 12px; flex-direction: column; }
+                        .btn-group { display: flex; gap: 14px; flex-direction: column; }
                         
                         button {
-                            border: none; padding: 14px; border-radius: 10px;
-                            font-size: 15px; font-weight: 600; cursor: pointer;
-                            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+                            border: none; padding: 16px; border-radius: 14px;
+                            font-size: 16px; font-weight: 600; cursor: pointer;
+                            transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 10px;
                         }
                         
                         .btn-primary { 
-                            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-                            color: white; 
-                            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+                            background: white; 
+                            color: #0f1115; 
                         }
                         
                         .btn-secondary { 
-                            background: rgba(255,255,255,0.05); 
-                            border: 1px solid rgba(255,255,255,0.1); 
-                            color: #ccc; 
+                            background: rgba(255,255,255,0.08); 
+                            border: 1px solid rgba(255,255,255,0.05); 
+                            color: #ffffff; 
                         }
                         
-                        button:active { transform: scale(0.97); }
-                        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: white; }
+                        button:active { transform: scale(0.96); }
+                        .btn-primary:hover { background: #e5e7eb; }
+                        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
 
-                        @keyframes popIn {
-                            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+                        @keyframes slideUp {
+                            from { opacity: 0; transform: scale(0.9) translateY(30px); }
                             to { opacity: 1; transform: scale(1) translateY(0); }
                         }
                     </style>
-                    <div class="overlay">
+                    <div class="overlay" id="overlay">
                         <div class="modal">
                             <div class="icon-circle">
                                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                             </div>
-                            <h2>System Action</h2>
-                            <p>Select destination to proceed.</p>
+                            <h2>Welcome to OS</h2>
+                            <p>Choose your destination to initialize the workspace.</p>
                             <div class="btn-group">
                                 <button class="btn-primary" id="btn-apps">
-                                    <!-- App Icon -->
-                                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
-                                    Apps List
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+                                    Open App Grid
                                 </button>
                                 <button class="btn-secondary" id="btn-login">
-                                    Login Portal
+                                    Access Portal
                                 </button>
                             </div>
                         </div>
@@ -299,8 +323,12 @@
                 `;
 
                 this.shadowRoot.getElementById('btn-apps').onclick = () => {
-                    this.dispatchEvent(new CustomEvent('choice', { detail: 'apps' }));
-                    this.remove(); 
+                    const overlay = this.shadowRoot.getElementById('overlay');
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        this.dispatchEvent(new CustomEvent('choice', { detail: 'apps' }));
+                        this.remove(); 
+                    }, 400);
                 };
 
                 this.shadowRoot.getElementById('btn-login').onclick = () => {
@@ -326,20 +354,19 @@
 
             setupLogic() {
                 const modal = this.shadowRoot.querySelector('startup-modal');
-                const appsGrid = this.shadowRoot.querySelector('.apps-grid');
+                const appsContainer = this.shadowRoot.querySelector('.apps-container');
                 
                 modal.addEventListener('choice', (e) => {
                     if (e.detail === 'apps') {
-                        appsGrid.style.opacity = '1';
-                        appsGrid.style.transform = 'translateY(0)';
-                        appsGrid.style.pointerEvents = 'auto';
-                        document.title = "Apps List";
+                        appsContainer.style.display = 'block'; // Reveal apps to trigger CSS animations
+                        document.title = "Apps Grid - Cloudfone";
                     } else {
                         document.body.innerHTML = `
                             <div style="display:flex;height:100vh;justify-content:center;align-items:center;color:white;flex-direction:column;text-align:center;">
-                                <svg width="60" height="60" fill="#3b82f6" viewBox="0 0 24 24" style="margin-bottom:20px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                                <h3 style="font-family:sans-serif;margin-bottom:10px;">Port 8000</h3>
-                                <p style="color:#aaa;font-family:sans-serif;">Redirecting to CloudFone Login...</p>
+                                <svg width="60" height="60" fill="#3b82f6" viewBox="0 0 24 24" style="margin-bottom:20px; animation: pulse 1s infinite alternate;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                                <h3 style="font-family:sans-serif;margin-bottom:10px;font-size:20px;">Port 8000</h3>
+                                <p style="color:#aaa;font-family:sans-serif;">Redirecting to Login Portal...</p>
+                                <style>@keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }</style>
                             </div>`;
                         setTimeout(() => {
                              window.location.href = 'https://www.cloudfone.com/auth/sign-in';
@@ -349,35 +376,39 @@
             }
 
             render() {
-                // Generate App Cards HTML using SVG Paths
-                const cardsHtml = APPS_DATA.map(app => 
-                    `<app-card name="${app.name}" url="${app.url}" path="${app.icon}" color="${app.color}"></app-card>`
-                ).join('');
+                // Generate App Cards with staggered animation delays
+                const cardsHtml = APPS_DATA.map((app, index) => {
+                    const delay = (index * 0.05) + 's';
+                    return `<app-card name="${app.name}" url="${app.url}" path="${app.icon}" color="${app.color}" delay="${delay}"></app-card>`;
+                }).join('');
 
                 this.shadowRoot.innerHTML = `
                     <style>
                         :host { display: block; height: 100%; }
-                        .container {
-                            max-width: 800px;
+                        .apps-container {
+                            max-width: 900px;
                             margin: 0 auto;
-                            padding: 20px;
-                            height: calc(100vh - 55px);
+                            padding: 40px 20px;
+                            height: calc(100vh - 48px);
                             overflow-y: auto;
+                            display: none; /* Hidden until modal choice */
                         }
                         .apps-grid {
                             display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-                            gap: 15px;
-                            opacity: 0;
-                            transform: translateY(20px);
-                            pointer-events: none;
-                            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                            column-gap: 20px;
+                            row-gap: 32px;
                             padding-bottom: 50px;
+                        }
+                        
+                        /* Custom responsive tweaks */
+                        @media (min-width: 600px) {
+                            .apps-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); row-gap: 40px; }
                         }
                     </style>
 
                     <cloud-header></cloud-header>
-                    <div class="container">
+                    <div class="apps-container">
                         <div class="apps-grid">
                             ${cardsHtml}
                         </div>
