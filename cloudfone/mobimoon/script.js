@@ -1,125 +1,196 @@
-
-
-//global 
+// global 
 var now = new Date();
 var time = now.getTime();
 var date = now.getDate();
-var month = now.getMonth()+1;
+var month = now.getMonth() + 1;
 var year = now.getFullYear();
 var day = now.getDay();
-var hmonth = GregorianToHijri(date,month,year)[1];
-var hyear = GregorianToHijri(date,month,year)[2];
 
+// LocalStorage থেকে সেভ করা Offset (তারিখের পরিবর্তন) বের করা, না থাকলে 0 হবে
+var hijriOffset = parseInt(localStorage.getItem('hijriOffset')) || 0;
 
+var strgregdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+var strgregmonth = ['', 'January', 'February', 'March', 'April', 'May', 'Jun', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-
-
-var strgregdays= ['Sunday','Monday','Thesday','Wednesday','Thursday','Friday','Saturday'];
-var strgregmonth = ['','January', 'February', 'March', 'April', 'May', 'Jun', 'July', 'August', 'September', 'October', 'Novmber', 'December'];
-
-
-
-
-
-
-
-
-//functions
+// functions
 function addZero(d) {
-  if (d < 10) {
-    d = "0"+d;
-}
-return d;
-}
-
-
-
-function importantDates() { 
-
-console.log('hijri month is '+hmonth);
-var si='';
-for (var i = 0; i < 4; i++) {
-  console.log('(hmonth + i) % 13 is ' + (hmonth + i) % 13);
-
-  switch ((hmonth + i) % 13) {
-    case 1:
-     si += ('<strong>'+addZero(HijriToGregorian(1, 1, hyear)[0])+'-'+addZero(HijriToGregorian(1, 1, hyear)[1])+ '-'+addZero(HijriToGregorian(1, 1, hyear)[2])+'</strong>:  Awwal Muharram<br>');
-     si += ('<strong>'+addZero(HijriToGregorian(10, 1, hyear)[0])+'-'+addZero(HijriToGregorian(10, 1, hyear)[1])+ '-'+addZero(HijriToGregorian(10, 1, hyear)[2])+'</strong>:  Day of Ashura<br>');
-      break;
-    case 2:
-    si += ('<strong>'+addZero(HijriToGregorian(27, 2, hyear)[0])+'-'+addZero(HijriToGregorian(27, 2, hyear)[1])+ '-'+addZero(HijriToGregorian(27, 2, hyear)[2])+'</strong>:  Hijrah to Madinah<br>');
-      break;
-    case 3:
-    si += ('<strong>'+addZero(HijriToGregorian(12, 3, hyear)[0])+'-'+addZero(HijriToGregorian(12, 3, hyear)[1])+ '-'+addZero(HijriToGregorian(12, 3, hyear)[2])+'</strong>:  Birth of Prophet Muhammad (PBUH)<br>');
-      break;
-    case 7:
-    si += ('<strong>'+addZero(HijriToGregorian(27, 7, hyear)[0])+'-'+addZero(HijriToGregorian(27, 7, hyear)[1])+ '-'+addZero(HijriToGregorian(27, 7, hyear)[2])+'</strong>:  Israk Mikraj<br>');
-    break;
-    case 8:
-    si += ('<strong>'+addZero(HijriToGregorian(15, 8, hyear)[0])+'-'+addZero(HijriToGregorian(15, 8, hyear)[1])+ '-'+addZero(HijriToGregorian(15, 8, hyear)[2])+'</strong>:  Nisfu Shabaan<br>');
-    break;
-    case 9:
-    si += ('<strong>'+addZero(HijriToGregorian(1, 9, hyear)[0])+'-'+addZero(HijriToGregorian(1, 9, hyear)[1])+ '-'+addZero(HijriToGregorian(1, 9, hyear)[2])+'</strong>:  Awal Ramadan<br>');
-    si += ('<strong>'+addZero(HijriToGregorian(21, 9, hyear)[0])+'-'+addZero(HijriToGregorian(21, 9, hyear)[1])+ '-'+addZero(HijriToGregorian(21, 9, hyear)[2])+'</strong>:  Nuzul Quran<br>');
-    si += ('<strong>'+addZero(HijriToGregorian(27, 9, hyear)[0])+'-'+addZero(HijriToGregorian(27, 9, hyear)[1])+ '-'+addZero(HijriToGregorian(27, 9, hyear)[2])+'</strong>:  Lailatul Qadar<br>');
-    break;
-    case 10:
-    si += ('<strong>'+addZero(HijriToGregorian(1, 10, hyear)[0])+'-'+addZero(HijriToGregorian(1, 10, hyear)[1])+ '-'+addZero(HijriToGregorian(1, 10, hyear)[2])+'</strong>:  Eidul-Fitri<br>');
-      break;
-    case 12:
-    si += ('<strong>'+addZero(HijriToGregorian(10, 12, hyear)[0])+'-'+addZero(HijriToGregorian(10, 12, hyear)[1])+ '-'+addZero(HijriToGregorian(10, 12, hyear)[2])+'</strong>:  Eidul-Adha<br>');
-     break;
-  }
-}
-document.getElementById('content').innerHTML='<div style="padding: 5px">'+si+'</span>';
-document.body.addEventListener('keyup', keydownforimportantdates);
-document.body.removeEventListener('keyup', keydownformain);
-document.getElementsByClassName('header')[0].innerHTML = 'Important Dates';
-document.getElementsByClassName('footerelement')[0].innerHTML = 'Main';
-document.getElementsByClassName('footerelement')[1].innerHTML = ' ';
-document.getElementsByClassName('footerelement')[2].innerHTML = ' ';
+    if (d < 10) {
+        d = "0" + d;
+    }
+    return d;
 }
 
+// Offset হিসাব করে নতুন হিজরি তারিখ বের করার ফাংশন
+function getAdjustedHijri() {
+    var adjustedDate = new Date(now.getTime() + (hijriOffset * 24 * 60 * 60 * 1000));
+    return GregorianToHijri(adjustedDate.getDate(), adjustedDate.getMonth() + 1, adjustedDate.getFullYear());
+}
 
+function importantDates() {
+    // Offset অনুযায়ী বর্তমান মাস এবং বছর বের করা
+    var adjustedHijri = getAdjustedHijri();
+    var hmonth = adjustedHijri[1];
+    var hyear = adjustedHijri[2];
+
+    console.log('hijri month is ' + hmonth);
+    var si = '';
+    for (var i = 0; i < 4; i++) {
+        console.log('(hmonth + i) % 13 is ' + (hmonth + i) % 13);
+
+        switch ((hmonth + i) % 13) {
+            case 1:
+                si += ('<strong>' + addZero(HijriToGregorian(1, 1, hyear)[0]) + '-' + addZero(HijriToGregorian(1, 1, hyear)[1]) + '-' + addZero(HijriToGregorian(1, 1, hyear)[2]) + '</strong>:  Awwal Muharram<br>');
+                si += ('<strong>' + addZero(HijriToGregorian(10, 1, hyear)[0]) + '-' + addZero(HijriToGregorian(10, 1, hyear)[1]) + '-' + addZero(HijriToGregorian(10, 1, hyear)[2]) + '</strong>:  Day of Ashura<br>');
+                break;
+            case 2:
+                si += ('<strong>' + addZero(HijriToGregorian(27, 2, hyear)[0]) + '-' + addZero(HijriToGregorian(27, 2, hyear)[1]) + '-' + addZero(HijriToGregorian(27, 2, hyear)[2]) + '</strong>:  Hijrah to Madinah<br>');
+                break;
+            case 3:
+                si += ('<strong>' + addZero(HijriToGregorian(12, 3, hyear)[0]) + '-' + addZero(HijriToGregorian(12, 3, hyear)[1]) + '-' + addZero(HijriToGregorian(12, 3, hyear)[2]) + '</strong>:  Birth of Prophet Muhammad (PBUH)<br>');
+                break;
+            case 7:
+                si += ('<strong>' + addZero(HijriToGregorian(27, 7, hyear)[0]) + '-' + addZero(HijriToGregorian(27, 7, hyear)[1]) + '-' + addZero(HijriToGregorian(27, 7, hyear)[2]) + '</strong>:  Israk Mikraj<br>');
+                break;
+            case 8:
+                si += ('<strong>' + addZero(HijriToGregorian(15, 8, hyear)[0]) + '-' + addZero(HijriToGregorian(15, 8, hyear)[1]) + '-' + addZero(HijriToGregorian(15, 8, hyear)[2]) + '</strong>:  Nisfu Shabaan<br>');
+                break;
+            case 9:
+                si += ('<strong>' + addZero(HijriToGregorian(1, 9, hyear)[0]) + '-' + addZero(HijriToGregorian(1, 9, hyear)[1]) + '-' + addZero(HijriToGregorian(1, 9, hyear)[2]) + '</strong>:  Awal Ramadan<br>');
+                si += ('<strong>' + addZero(HijriToGregorian(21, 9, hyear)[0]) + '-' + addZero(HijriToGregorian(21, 9, hyear)[1]) + '-' + addZero(HijriToGregorian(21, 9, hyear)[2]) + '</strong>:  Nuzul Quran<br>');
+                si += ('<strong>' + addZero(HijriToGregorian(27, 9, hyear)[0]) + '-' + addZero(HijriToGregorian(27, 9, hyear)[1]) + '-' + addZero(HijriToGregorian(27, 9, hyear)[2]) + '</strong>:  Lailatul Qadar<br>');
+                break;
+            case 10:
+                si += ('<strong>' + addZero(HijriToGregorian(1, 10, hyear)[0]) + '-' + addZero(HijriToGregorian(1, 10, hyear)[1]) + '-' + addZero(HijriToGregorian(1, 10, hyear)[2]) + '</strong>:  Eidul-Fitri<br>');
+                break;
+            case 12:
+                si += ('<strong>' + addZero(HijriToGregorian(10, 12, hyear)[0]) + '-' + addZero(HijriToGregorian(10, 12, hyear)[1]) + '-' + addZero(HijriToGregorian(10, 12, hyear)[2]) + '</strong>:  Eidul-Adha<br>');
+                break;
+        }
+    }
+    document.getElementById('content').innerHTML = '<div style="padding: 5px">' + si + '</div>';
+
+    // Event Listeners
+    document.body.removeEventListener('keyup', keydownformain);
+    document.body.removeEventListener('keyup', keydownforsettings);
+    document.body.addEventListener('keyup', keydownforimportantdates);
+    
+    // UI Update
+    document.getElementsByClassName('header')[0].innerHTML = 'Important Dates';
+    var footers = document.getElementsByClassName('footerelement');
+    footers[0].innerHTML = 'Main';
+    footers[0].onclick = moonPhase;
+    footers[1].innerHTML = ' ';
+    footers[1].onclick = null;
+    footers[2].innerHTML = ' ';
+    footers[2].onclick = null;
+}
 
 function moonPhase() {
-var moonp = moonphase(date,now.getMonth(), year);
-console.log(moonp);
-var imgMoon = ['/b1.png','/b2.png','/b3.png','/b4.png','/b5.png','/b6.png','/b7.png','/b8.png'];
-var strPhase = ['New Moon','Waxing Cresent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Third Quarter','Waning Cresent'];
-var si = ('<center><span class="main">'+strPhase[moonp]+'<br><br><img src="res'+imgMoon[moonp]+'"/></span><br><br>'+strgregdays[day]+', '+GregorianToHijri(date, month, year)[0]+' '+GregorianToHijri(date, month, year)[3]+' '+GregorianToHijri(date, month, year)[2]+'<br>'+strgregdays[day]+', '+date+' '+strgregmonth[month]+' '+year+'</center>');
+    var adjustedHijri = getAdjustedHijri();
+    var moonp = moonphase(date, now.getMonth(), year);
+    
+    var imgMoon = ['/b1.png', '/b2.png', '/b3.png', '/b4.png', '/b5.png', '/b6.png', '/b7.png', '/b8.png'];
+    var strPhase = ['New Moon', 'Waxing Cresent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Third Quarter', 'Waning Cresent'];
+    
+    var si = ('<center><span class="main">' + strPhase[moonp] + '<br><br><img src="res' + imgMoon[moonp] + '"/></span><br><br>' + strgregdays[day] + ', ' + adjustedHijri[0] + ' ' + adjustedHijri[3] + ' ' + adjustedHijri[2] + '<br>' + strgregdays[day] + ', ' + date + ' ' + strgregmonth[month] + ' ' + year + '</center>');
 
-document.getElementById('content').innerHTML=si;
-document.body.addEventListener('keyup', keydownformain);
-document.body.removeEventListener('keyup', keydownforimportantdates);
-document.getElementsByClassName('header')[0].innerHTML = 'Mobimoon';
+    document.getElementById('content').innerHTML = si;
 
-document.getElementsByClassName('footerelement')[0].innerHTML = 'I. Dates';
-document.getElementsByClassName('footerelement')[1].innerHTML = '';
-document.getElementsByClassName('footerelement')[2].innerHTML = 'Exit';
+    // Event Listeners
+    document.body.removeEventListener('keyup', keydownforimportantdates);
+    document.body.removeEventListener('keyup', keydownforsettings);
+    document.body.addEventListener('keyup', keydownformain);
+    
+    // UI Update
+    document.getElementsByClassName('header')[0].innerHTML = 'Mobimoon';
+    var footers = document.getElementsByClassName('footerelement');
+    footers[0].innerHTML = 'I. Dates';
+    footers[0].onclick = importantDates;
+    footers[1].innerHTML = 'Settings';
+    footers[1].onclick = settingsPage;
+    footers[2].innerHTML = 'Exit';
+    footers[2].onclick = exit;
 }
 
+// ----------------------------------------------------
+// নতুন Settings ফিচার (হিজরি তারিখ -2 থেকে +2 পরিবর্তন)
+// ----------------------------------------------------
+var tempOffset = hijriOffset;
 
+function settingsPage() {
+    tempOffset = hijriOffset;
+    updateSettingsUI();
+
+    document.body.removeEventListener('keyup', keydownformain);
+    document.body.removeEventListener('keyup', keydownforimportantdates);
+    document.body.addEventListener('keyup', keydownforsettings);
+
+    document.getElementsByClassName('header')[0].innerHTML = 'Settings';
+
+    var footers = document.getElementsByClassName('footerelement');
+    footers[0].innerHTML = 'Back';
+    footers[0].onclick = moonPhase;
+    footers[1].innerHTML = 'Save';
+    footers[1].onclick = saveSettings;
+    footers[2].innerHTML = '';
+    footers[2].onclick = null;
+}
+
+function updateSettingsUI() {
+    var displayOffset = (tempOffset > 0) ? "+" + tempOffset : tempOffset;
+    var si = '<div style="padding: 10px; text-align: center;">';
+    si += '<h3 style="margin-top:0;">Adjust Hijri Date</h3>';
+    si += '<p style="font-size:11px;">Use Left/Right to adjust<br>Press Enter to save.</p>';
+    si += '<div style="font-size: 22px; font-weight: bold; margin: 20px 0;">';
+    si += '<span onclick="changeTempOffset(-1)" style="padding:5px 10px; border:1px solid #000; cursor:pointer; background:#eee;">&lt;</span> ';
+    si += '<span style="display:inline-block; width:50px;">' + displayOffset + '</span> ';
+    si += '<span onclick="changeTempOffset(1)" style="padding:5px 10px; border:1px solid #000; cursor:pointer; background:#eee;">&gt;</span>';
+    si += '</div></div>';
+    document.getElementById('content').innerHTML = si;
+}
+
+function changeTempOffset(val) {
+    tempOffset += val;
+    if (tempOffset > 2) tempOffset = 2;   // সর্বোচ্চ +2 
+    if (tempOffset < -2) tempOffset = -2; // সর্বনিম্ন -2
+    updateSettingsUI();
+}
+
+function saveSettings() {
+    hijriOffset = tempOffset;
+    localStorage.setItem('hijriOffset', hijriOffset);
+    moonPhase(); // সেভ করে মেইন পেজে ফিরে যাওয়া
+}
+
+// ----------------------------------------------------
+// কীবোর্ড/বাটন ইভেন্ট (Keyboard Navigation)
+// ----------------------------------------------------
 function keydownformain(e) {
-  switch(e.key) {
-    case 'Escape': importantDates(); break;
-  }
+    switch (e.key) {
+        case 'Escape':
+        case 'SoftLeft': importantDates(); break;
+        case 'Enter': settingsPage(); break;
+        case 'SoftRight': exit(); break;
+    }
 }
 
 function keydownforimportantdates(e) {
-  switch(e.key) {
-    case 'Escape': moonPhase(); break;
-  }
+    switch (e.key) {
+        case 'Escape':
+        case 'SoftLeft': moonPhase(); break;
+    }
 }
 
+function keydownforsettings(e) {
+    switch (e.key) {
+        case 'Escape':
+        case 'SoftLeft': moonPhase(); break; // সেভ না করে বের হওয়া
+        case 'ArrowLeft': changeTempOffset(-1); break; // বামে চাপলে কমবে
+        case 'ArrowRight': changeTempOffset(1); break; // ডানে চাপলে বাড়বে
+        case 'Enter': saveSettings(); break; // সেভ করা
+    }
+}
 
 function exit() {
-  window.close();
+    window.close();
 }
-
-
-// console.log(
-//   `%c 🌙 %c MobiMoon `,
-//   'background: #446adb; color: #fff; padding: 0.5em 0;',
-//   'background: #5144db; color: #fff; padding: 0.5em 0;',
-// );
