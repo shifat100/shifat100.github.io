@@ -20,50 +20,56 @@ function addZero(d) {
     return d;
 }
 
-// Offset হিসাব করে নতুন হিজরি তারিখ বের করার ফাংশন
+// Offset হিসাব করে আজকের নতুন হিজরি তারিখ বের করার ফাংশন
 function getAdjustedHijri() {
     var adjustedDate = new Date(now.getTime() + (hijriOffset * 24 * 60 * 60 * 1000));
     return GregorianToHijri(adjustedDate.getDate(), adjustedDate.getMonth() + 1, adjustedDate.getFullYear());
 }
 
+// Offset হিসাব করে Important Dates এর জন্য সঠিক ইংরেজি তারিখ বের করার ফাংশন
+function getAdjustedEventDate(d, m, y) {
+    var std = HijriToGregorian(d, m, y); // স্ট্যান্ডার্ড ক্যালকুলেশন
+    var dateObj = new Date(std[2], std[1] - 1, std[0]);
+    // হিজরি +1 হলে ইভেন্ট ১ দিন আগে হবে, তাই -hijriOffset করা হলো
+    dateObj.setDate(dateObj.getDate() - hijriOffset); 
+    
+    return '<strong>' + addZero(dateObj.getDate()) + '-' + addZero(dateObj.getMonth() + 1) + '-' + dateObj.getFullYear() + '</strong>';
+}
+
 function importantDates() {
-    // Offset অনুযায়ী বর্তমান মাস এবং বছর বের করা
     var adjustedHijri = getAdjustedHijri();
     var hmonth = adjustedHijri[1];
     var hyear = adjustedHijri[2];
 
-    console.log('hijri month is ' + hmonth);
     var si = '';
     for (var i = 0; i < 4; i++) {
-        console.log('(hmonth + i) % 13 is ' + (hmonth + i) % 13);
-
         switch ((hmonth + i) % 13) {
             case 1:
-                si += ('<strong>' + addZero(HijriToGregorian(1, 1, hyear)[0]) + '-' + addZero(HijriToGregorian(1, 1, hyear)[1]) + '-' + addZero(HijriToGregorian(1, 1, hyear)[2]) + '</strong>:  Awwal Muharram<br>');
-                si += ('<strong>' + addZero(HijriToGregorian(10, 1, hyear)[0]) + '-' + addZero(HijriToGregorian(10, 1, hyear)[1]) + '-' + addZero(HijriToGregorian(10, 1, hyear)[2]) + '</strong>:  Day of Ashura<br>');
+                si += (getAdjustedEventDate(1, 1, hyear) + ':  Awwal Muharram<br>');
+                si += (getAdjustedEventDate(10, 1, hyear) + ':  Day of Ashura<br>');
                 break;
             case 2:
-                si += ('<strong>' + addZero(HijriToGregorian(27, 2, hyear)[0]) + '-' + addZero(HijriToGregorian(27, 2, hyear)[1]) + '-' + addZero(HijriToGregorian(27, 2, hyear)[2]) + '</strong>:  Hijrah to Madinah<br>');
+                si += (getAdjustedEventDate(27, 2, hyear) + ':  Hijrah to Madinah<br>');
                 break;
             case 3:
-                si += ('<strong>' + addZero(HijriToGregorian(12, 3, hyear)[0]) + '-' + addZero(HijriToGregorian(12, 3, hyear)[1]) + '-' + addZero(HijriToGregorian(12, 3, hyear)[2]) + '</strong>:  Birth of Prophet Muhammad (PBUH)<br>');
+                si += (getAdjustedEventDate(12, 3, hyear) + ':  Birth of Prophet (PBUH)<br>');
                 break;
             case 7:
-                si += ('<strong>' + addZero(HijriToGregorian(27, 7, hyear)[0]) + '-' + addZero(HijriToGregorian(27, 7, hyear)[1]) + '-' + addZero(HijriToGregorian(27, 7, hyear)[2]) + '</strong>:  Israk Mikraj<br>');
+                si += (getAdjustedEventDate(27, 7, hyear) + ':  Israk Mikraj<br>');
                 break;
             case 8:
-                si += ('<strong>' + addZero(HijriToGregorian(15, 8, hyear)[0]) + '-' + addZero(HijriToGregorian(15, 8, hyear)[1]) + '-' + addZero(HijriToGregorian(15, 8, hyear)[2]) + '</strong>:  Nisfu Shabaan<br>');
+                si += (getAdjustedEventDate(15, 8, hyear) + ':  Nisfu Shabaan<br>');
                 break;
             case 9:
-                si += ('<strong>' + addZero(HijriToGregorian(1, 9, hyear)[0]) + '-' + addZero(HijriToGregorian(1, 9, hyear)[1]) + '-' + addZero(HijriToGregorian(1, 9, hyear)[2]) + '</strong>:  Awal Ramadan<br>');
-                si += ('<strong>' + addZero(HijriToGregorian(21, 9, hyear)[0]) + '-' + addZero(HijriToGregorian(21, 9, hyear)[1]) + '-' + addZero(HijriToGregorian(21, 9, hyear)[2]) + '</strong>:  Nuzul Quran<br>');
-                si += ('<strong>' + addZero(HijriToGregorian(27, 9, hyear)[0]) + '-' + addZero(HijriToGregorian(27, 9, hyear)[1]) + '-' + addZero(HijriToGregorian(27, 9, hyear)[2]) + '</strong>:  Lailatul Qadar<br>');
+                si += (getAdjustedEventDate(1, 9, hyear) + ':  Awal Ramadan<br>');
+                si += (getAdjustedEventDate(21, 9, hyear) + ':  Nuzul Quran<br>');
+                si += (getAdjustedEventDate(27, 9, hyear) + ':  Lailatul Qadar<br>');
                 break;
             case 10:
-                si += ('<strong>' + addZero(HijriToGregorian(1, 10, hyear)[0]) + '-' + addZero(HijriToGregorian(1, 10, hyear)[1]) + '-' + addZero(HijriToGregorian(1, 10, hyear)[2]) + '</strong>:  Eidul-Fitri<br>');
+                si += (getAdjustedEventDate(1, 10, hyear) + ':  Eidul-Fitri<br>');
                 break;
             case 12:
-                si += ('<strong>' + addZero(HijriToGregorian(10, 12, hyear)[0]) + '-' + addZero(HijriToGregorian(10, 12, hyear)[1]) + '-' + addZero(HijriToGregorian(10, 12, hyear)[2]) + '</strong>:  Eidul-Adha<br>');
+                si += (getAdjustedEventDate(10, 12, hyear) + ':  Eidul-Adha<br>');
                 break;
         }
     }
@@ -113,7 +119,7 @@ function moonPhase() {
 }
 
 // ----------------------------------------------------
-// নতুন Settings ফিচার (হিজরি তারিখ -2 থেকে +2 পরিবর্তন)
+// Settings ফিচার (হিজরি তারিখ -2 থেকে +2 পরিবর্তন)
 // ----------------------------------------------------
 var tempOffset = hijriOffset;
 
@@ -193,4 +199,4 @@ function keydownforsettings(e) {
 
 function exit() {
     window.close();
-}
+    }
