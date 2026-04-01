@@ -1,424 +1,514 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Cloudfone OS</title>
-    
-    <!-- Original Ad Scripts -->
-    <script type='text/javascript' src='http://pl26953579.profitableratecpm.com/f8/49/29/f8492924da30520cabdbb409c9928dec.js'></script>
-    <script>(function(s){s.dataset.zone='10089094',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Phone</title>
+    <link rel="stylesheet" href="style.css">
+    <style>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body {
+    background: #000;
+    color: white;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
 
-        :root {
-            --bg-color: #0f1115;
-            --text-main: #ffffff;
-            --text-muted: #9ca3af;
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+.screen {
+    width: 100%;
+    max-width: 360px;
+    min-width: 128px;
+    height: 100vh;
+    max-height: 480px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid #444;
+}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            /* Beautiful deep gradient wallpaper */
-            background: radial-gradient(circle at 15% 50%, #1e1b4b, #0f1115 50%, #020617 100%);
-            font-family: var(--font);
-            color: var(--text-main);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+/* ================== HOME SCREEN ================== */
+#screen-home { background: #2b2b2b; }
+#screen-home .top-bar { display: flex; justify-content: space-around; padding: 5px 0; background: transparent; }
+#screen-home .top-btn { padding: 5px 20px; border-radius: 20px; cursor: pointer; }
+#screen-home .top-btn.focused { background: #1a73e8; }
+#screen-home .grid { flex: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start; scrollbar-width: none; }
+#screen-home .grid::-webkit-scrollbar { display: none; }
+#screen-home .icon-box { aspect-ratio: 1/1; border-radius: 20px; background: white; display: flex; justify-content: center; align-items: center; border: 4px solid transparent; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+#screen-home .icon-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+#screen-home .icon-box.focused { border-color: #8c8c8c; transform: scale(1.05); }
+#screen-home .side-dots { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; }
+#screen-home .dot { width: 6px; height: 6px; background: #555; border-radius: 50%; transition: 0.3s; }
+#screen-home .dot.active { background: white; height: 12px; border-radius: 6px; }
+#screen-home .bottom-bar { background: #000; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Hide scrollbar for an app-like feel */
-        ::-webkit-scrollbar { display: none; }
-    </style>
+/* ================== CATEGORY SCREEN ================== */
+#screen-category { background: #2e2e2e; }
+#screen-category .top-bar { display: flex; justify-content: space-around; padding: 8px 0; background: #2e2e2e; }
+#screen-category .nav-item { padding: 6px 18px; border-radius: 20px; cursor: pointer; }
+#screen-category .nav-item.focused { background-color: #1a73e8; }
+#screen-category .content { flex: 1; overflow-y: auto; padding: 0px 10px; scrollbar-width: none; }
+#screen-category .content::-webkit-scrollbar { display: none; }
+#screen-category .header { font-size: 14px; font-weight: bold; margin: 8px 0px; color: #ccc; padding: 5px; border-radius: 5px; cursor: pointer; display: block; }
+#screen-category .header.focused { color: #fff; background: #1a73e8; border-color: #1a73e8; }
+#screen-category .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+#screen-category .app-card { aspect-ratio: 1/1; background: white; border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 12%; border: 4px solid transparent; transition: transform 0.15s, border-color 0.15s; cursor: pointer; }
+#screen-category .app-card img { width: 100%; height: 100%; object-fit: contain; }
+#screen-category .app-card.focused { border-color: #8c8c8c; transform: scale(1.05); }
+#screen-category .bottom-bar { background: #000; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+#screen-category .brand-text { font-weight: bold; font-size: 16px; color: #fff; }
+
+/* ================== LIST SCREEN ================== */
+#screen-list { background: #2b2b2b; }
+#screen-list .header-bar { background-color: #000; padding: 8px 12px; font-size: 18px; font-weight: bold; }
+#screen-list .list-container { flex: 1; overflow-y: auto; scrollbar-width: none; }
+#screen-list .list-container::-webkit-scrollbar { display: none; }
+#screen-list .list-item { display: flex; align-items: center; padding: 10px; cursor: pointer; border-bottom: 1px solid #3d3d3d; transition: background 0.1s; }
+#screen-list .list-item.focused { background-color: #1a73e8 !important; }
+#screen-list .list-item.focused .subtitle { color: #fff; }
+#screen-list .icon-wrapper { width: 55px; height: 55px; background: #fff; border-radius: 12px; margin-right: 12px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; overflow: hidden; }
+#screen-list .icon-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+#screen-list .text-info { display: flex; flex-direction: column; overflow: hidden; }
+#screen-list .title { font-size: 16px; font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#screen-list .subtitle { font-size: 13px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#screen-list .bottom-bar { background-color: #000; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+#screen-list .brand-text { font-weight: bold; font-size: 16px; }
+
+/* ================== SETTINGS & ABOUT SCREEN ================== */
+#screen-settings, #screen-about { background: #222; }
+.header-bar-blue { background-color: #00aeef; padding: 12px 15px; font-size: 24px; font-weight: bold; color: white; }
+.menu-list { flex: 1; }
+.menu-item { padding: 10px; font-size: 22px; color: white; cursor: pointer; transition: 0.1s; }
+.menu-item.focused { background-color: #00aeef; }
+.about-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+.cloud-icon { width: 100px; height: auto; fill: white; margin-bottom: 10px; }
+.app-name { font-size: 32px; font-weight: bold; margin-bottom: 15px; }
+.copyright { font-size: 16px; color: #ddd; line-height: 1.5; }
+.bottom-bar.flex-end { background: #000; padding: 10px 15px; display: flex; justify-content: flex-end; }
+.back-btn { width: 24px; height: 24px; fill: white; cursor: pointer; }
+
+/* Responsive adjustments */
+@media (max-width: 180px) {
+    .header-bar-blue { font-size: 18px; }
+    .menu-item { font-size: 16px; padding: 10px; }
+    .app-name { font-size: 20px; }
+    .copyright { font-size: 12px; }
+    .cloud-icon { width: 60px; }
+    #screen-list .icon-wrapper { width: 40px; height: 40px; }
+    #screen-list .title { font-size: 13px; }
+    #screen-list .subtitle { font-size: 10px; }
+    #screen-list .header-bar { font-size: 14px; }
+}</style>
 </head>
 <body>
 
-    <!-- Main OS Element -->
-    <cloud-os></cloud-os>
+    <!-- HOME SCREEN -->
+    <div id="screen-home" class="screen" style="display: flex;">
+        <div class="top-bar">
+            <div class="top-btn focusable" data-name="" onclick="router.navigate('category')">
+                <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>
+            </div>
+            <div class="top-btn focusable active" data-name="" onclick="router.navigate('home')">
+                <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></svg>
+            </div>
+            <div class="top-btn focusable" data-name="" onclick="router.navigate('pinned')">
+                <svg fill="#ffffff" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg"><path d="M1154.976 0 988.342 166.52c-60.448 60.447-63.436 153.418-15.4 220.646L670.359 689.751c-4.022 4.022-6.55 8.964-9.079 13.79-147.212-61.022-328.671-34.246-444.626 81.709l-98.027 98.141 418.31 418.195-520.129 520.129c-22.41 22.409-22.41 58.724 0 81.248 11.262 11.147 25.972 16.778 40.682 16.778s29.42-5.63 40.567-16.778l520.128-520.129 418.195 418.31 98.142-98.142c75.962-75.847 117.793-176.862 117.793-284.313 0-56.195-12.067-110.208-33.787-160.198 2.758-1.839 5.861-2.988 8.275-5.516l303.963-303.964c29.19 21.145 63.896 33.097 100.67 33.097 46.083 0 89.293-17.928 121.93-50.565L1920 764.909 1154.976 0Z"/></svg>
+            </div>
+        </div>
+        <div class="grid" id="appGrid"></div>
+        <div class="side-dots" id="dotContainer"></div>
+        <div class="bottom-bar">
+            <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            <span id="brandLabel">CloudChat</span>
+            <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </div>
+    </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        // --- SVG PATH DATA ---
-        const ICONS = {
-            keyboard: "M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z",
-            moon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z",
-            book: "M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM10 9h8v2h-8zm0 3h4v2h-4zm0-6h8v2h-8z",
-            globe: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z",
-            circle: "M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z",
-            cloud: "M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z",
-            calendar: "M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z",
-            tv: "M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM8 13.29l5-3.57v7.14l-5-3.57z",
-            rocket: "M12 2.5s5 2.5 5 9c0 2.5-3 6.5-5 10-2-3.5-5-7.5-5-10 0-6.5 5-9 5-9zM12 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z",
-            timer: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zM12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z",
-            gbaemul: "M19 5h-2L15 7H9L7 5H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zM8 9h8v5H8V9zm-2 2.5a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v-1zm-1.5-1a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm.5 2.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm1.5-.5a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v-1zm7 2a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2z",
-           j2me: "M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z",
-        };
+    <!-- CATEGORY SCREEN -->
+    <div id="screen-category" class="screen" style="display: none;">
+        <div class="top-bar">
+            <div class="nav-item focusable" data-name="" onclick="router.navigate('category')">
+                <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>
+            </div>
+            <div class="nav-item focusable" data-name="" onclick="router.navigate('home')">
+                <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </div>
+            <div class="nav-item focusable" data-name="" onclick="router.navigate('pinned')">
+                <svg fill="#ffffff" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg"><path d="M1154.976 0 988.342 166.52c-60.448 60.447-63.436 153.418-15.4 220.646L670.359 689.751c-4.022 4.022-6.55 8.964-9.079 13.79-147.212-61.022-328.671-34.246-444.626 81.709l-98.027 98.141 418.31 418.195-520.129 520.129c-22.41 22.409-22.41 58.724 0 81.248 11.262 11.147 25.972 16.778 40.682 16.778s29.42-5.63 40.567-16.778l520.128-520.129 418.195 418.31 98.142-98.142c75.962-75.847 117.793-176.862 117.793-284.313 0-56.195-12.067-110.208-33.787-160.198 2.758-1.839 5.861-2.988 8.275-5.516l303.963-303.964c29.19 21.145 63.896 33.097 100.67 33.097 46.083 0 89.293-17.928 121.93-50.565L1920 764.909 1154.976 0Z"/></svg>
+            </div>
+        </div>
+        <div class="content" id="appContent"></div>
+        <div class="bottom-bar">
+            <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            <span class="brand-text" id="catBrandText">CloudChat</span>
+            <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </div>
+    </div>
 
-        // --- APP DATA CONFIGURATION ---
-        const APPS_DATA = [
-            { name: "Key Code", url: "./../Key Code", icon: ICONS.keyboard, color: "#f59e0b" },
-            { name: "Mobimoon", url: "mobimoon", icon: ICONS.moon, color: "#6366f1" },
-            { name: "Dictionaries", url: "dictionaries", icon: ICONS.book, color: "#10b981" },
-            { name: "Browser", url: "x-browser", icon: ICONS.globe, color: "#3b82f6" },
-            { name: "Word Circle", url: "https://shifat100.github.io/Word-Circle/", icon: ICONS.circle, color: "#ec4899" },
-            { name: "Dream Exp.", url: "https://shifat100.github.io/Dream-Explaination-Bangla/index.html", icon: ICONS.cloud, color: "#8b5cf6" },
-            { name: "Age Calc", url: "https://shifat100.github.io/Age-Calculator/index.html", icon: ICONS.calendar, color: "#f97316" },
-            { name: "IPTV Pro", url: "https://shifat100.github.io/cloudfone/iptv", icon: ICONS.tv, color: "#ef4444" },
-            { name: "GBA EMUL", url: "gbaemul", icon: ICONS.gbaemul, color: "#0ea5e9" },
-            { name: "JAVA", url: "https://shifat100.github.io/j2me-cloudfone/", icon: ICONS.j2me, color: "#737373" },
-            { name: "Upcoming", url: "#", icon: ICONS.timer, color: "#64748b" }
-        ];
+    <!-- LIST SCREEN -->
+    <div id="screen-list" class="screen" style="display: none;">
+        <div class="header-bar" id="pageTitle">Categories</div>
+        <div class="list-container" id="listArea"></div>
+        <div class="bottom-bar">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            <span class="brand-text" id="listFooterText">Select App</span>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </div>
+    </div>
 
-        // --- CUSTOM ELEMENTS ---
+    <!-- PINNED SCREEN -->
+    <div id="screen-pinned" class="screen" style="display: none; background: #2b2b2b; color: white; justify-content: center; align-items: center;">
+        <div>coming soon...</div>
+    </div>
 
-        /**
-         * 1. <app-card>: The App Icon Component
-         */
-        class AppCard extends HTMLElement {
-            constructor() {
-                super();
-                this.attachShadow({ mode: 'open' });
-            }
+    <!-- SETTINGS SCREEN -->
+    <div id="screen-settings" class="screen" style="display: none;">
+        <div class="header-bar-blue">Settings</div>
+        <div class="menu-list">
+            <div class="menu-item focusable" onclick="router.navigate('about')">About</div>
+        </div>
+        <div class="bottom-bar flex-end">
+            <svg class="back-btn" viewBox="0 0 24 24" onclick="router.back()"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </div>
+    </div>
 
-            connectedCallback() {
-                const name = this.getAttribute('name');
-                const url = this.getAttribute('url');
-                const path = this.getAttribute('path');
-                const color = this.getAttribute('color');
-                const delay = this.getAttribute('delay') || '0s';
+    <!-- ABOUT SCREEN -->
+    <div id="screen-about" class="screen" style="display: none;">
+        <div class="about-content">
+            <svg class="cloud-icon" viewBox="0 0 24 24">
+                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+            </svg>
+            <div class="app-name">Cloud Phone</div>
+            <div class="copyright">
+                (c) 2023-2026 Shifat100,<br>All rights reserved.
+            </div>
+        </div>
+        <div class="bottom-bar flex-end">
+            <svg class="back-btn" viewBox="0 0 24 24" onclick="router.back()"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </div>
+    </div>
 
-                this.shadowRoot.innerHTML = `
-                    <style>
-                        :host { 
-                            display: block; 
-                            opacity: 0;
-                            transform: translateY(20px) scale(0.9);
-                            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-                            animation-delay: ${delay};
-                        }
-                        
-                        @keyframes popIn {
-                            to { opacity: 1; transform: translateY(0) scale(1); }
-                        }
+    <script>// --- APP DATA ---
+const appData = [
+    {
+      "category": "Featured Apps",
+      "apps": [
+        {"name": "Key Code", "icon": "https://storage.kaiostech.com/v3.0/files/app/A/fIRo4zrhvc4vdPxAksmg0AllQKmF8hxyDwHCVU/ICON_IMAGE.png", "bg": "#f59e0b", "url": "https://shifat100.github.io/Key Code"},
+        {"name": "Mobimoon", "icon": "https://storage.kaiostech.com/v3.0/files/app/6/XQ-oZpkyXLZyHtb2fA69MNz5_WT31VmEpqjHwx/ICON_IMAGE.png", "bg": "#6366f1", "url": "https://shifat100.github.io/cloudfone/mobimoon"},
+        {"name": "Dictionaries", "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTQgNkgydjE0YzAgMS4xLjkgMiAyIDJoMTR2LTJINFY2em0xNi00SDhjLTEuMSAwLTIgLjktMiAydjEyYzAgMS4xLjkgMiAyIDJoMTJjMS4xIDAgMi0uOSAyLTJWNGMwLTEuMS0uOS0yLTItMnptMCAxNEg4VjRoMTJ2MTJ6TTEwIDloOHYyaC04em0wIDNoNHYyaC00em0wLTZoOHYyaC04eiIvPjwvc3ZnPg==", "bg": "#10b981", "url": "https://shifat100.github.io/cloudfone/dictionaries"},
+        {"name": "Browser", "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bS0xIDE3LjkzYy0zLjk1LS40OS03LTMuODUtNy03LjkzIDAtLjYyLjA4LTEuMjEuMjEtMS43OUw5IDE1djFjMCAxLjEuOSAyIDIgMnYxLjkzem02LjktMi41NGMtLjI2LS44MS0xLTEuMzktMS45LTEuMzloLTF2LTNjMC0uNTUtLjQ1LTEtMS0xSDh2LTJoMmMuNTUgMCAxLS40NSAxLTFWN2gyYzEuMSAwIDItLjkgMi0ydi0uNDFjMi45MyAxLjE5IDUgNC4wNiA1IDcuNDEgMCAyLjA4LS44IDMuOTctMi4xIDUuMzl6Ii8+PC9zdmc+", "bg": "#3b82f6", "url": "https://shifat100.github.io/cloudfone/x-browser"}
+      ]
+    },
+    {
+      "category": "Popular Apps",
+      "apps": [
+        {"name": "Word Circle", "icon": "https://storage.kaiostech.com/v3.0/files/app/Z/hVYhSoebpq23Uz8_UM4YwERRkig3HjmhC8av2o/ICON_IMAGE.png", "bg": "#ec4899", "url": "https://shifat100.github.io/Word-Circle/"},
+        {"name": "Dream Exp.", "icon": "https://storage.kaiostech.com/v3.0/files/app/w/BGuqCBWGzL5VQEkgfiYdBnesVg7vfZhjf3bFUy/ICON_IMAGE.png", "bg": "#8b5cf6", "url": "https://shifat100.github.io/Dream-Explaination-Bangla/index.html"},
+        {"name": "Age Calc", "icon": "https://storage.kaiostech.com/v3.0/files/app/L/Fs7_PpBuztaDZCZXEoLlwCdtn9MQb7n-zv1FY0/ICON_IMAGE.png", "bg": "#f97316", "url": "https://shifat100.github.io/Age-Calculator/index.html"},
+        {"name": "IPTV Pro", "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxIDNIM2MtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmg1djJoOHYtMmg1YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLS45LTItMi0yem0wIDE0SDNWOWhMOHYxMnpNOCAxMy4yOWw1LTMuNTd2Ny4xNGwtNS0zLjU3eiIvPjwvc3ZnPg==", "bg": "#ef4444", "url": "https://shifat100.github.io/cloudfone/iptv"}
+      ]
+    },
+    {
+      "category": "Tools & Gaming",
+      "apps": [
+        {"name": "GBA EMUL", "icon": "https://storage.kaiostech.com/v3.0/files/app/c/TQSmpRHoTtmjPg4Oe8DXX9K6JJtFWUiwkC0KNR/ICON_IMAGE.png", "bg": "#0ea5e9", "url": "gbaemul"},
+        {"name": "JAVA", "icon": "https://storage.kaiostech.com/v3.0/files/app/-/hZi0ftQmqzAOKMuHXtbrSF9K2Ee63tQtegCHFa/ICON_IMAGE.png", "bg": "#737373", "url": "https://shifat100.github.io/j2me-cloudfone/"},
+        // {"name": "Upcoming", "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTExLjk5IDJDNi40NyAyIDIgNi40OCAyIDEyczQuNDcgMTAgOS45OSAxMEMxNy41MiAyMiAyMiAxNy41MiAyMiAxMlMxNy41MiAyIDExLjk5IDJ6TTEyIDIwYy00LjQyIDAtOC0zLjU4LTgtOHMzLjU4LTggOC04IDggMy41OCA4IDgtMy41OCA4LTggOHpNMTIuNSA3SDExdjZsNS4yNSAzLjE1Ljc1LTEuMjMtNC41LTIuNjd6Ii8+PC9zdmc+", "bg": "#64748b", "url": "#"}
+      ]
+    }
+];
 
-                        a {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: flex-start;
-                            text-decoration: none;
-                            gap: 8px;
-                            outline: none;
-                        }
-                        
-                        .icon-box {
-                            width: 64px; 
-                            height: 64px;
-                            border-radius: 24%; /* Premium Squircle Look */
-                            display: flex; 
-                            align-items: center; 
-                            justify-content: center;
-                            background: linear-gradient(135deg, ${color}cc, ${color});
-                            box-shadow: 0 8px 16px ${color}40, inset 0 1px 1px rgba(255,255,255,0.3);
-                            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                            position: relative;
-                        }
-                        
-                        a:hover .icon-box, a:focus .icon-box {
-                            transform: scale(1.08) translateY(-2px);
-                        }
-                        
-                        a:active .icon-box { 
-                            transform: scale(0.95); 
-                        }
-                        
-                        svg {
-                            width: 30px; 
-                            height: 30px;
-                            fill: #ffffff;
-                            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-                        }
-
-                        .title {
-                            color: #ffffff;
-                            font-size: 12px;
-                            font-weight: 500;
-                            text-align: center;
-                            letter-spacing: 0.3px;
-                            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            max-width: 80px;
-                        }
-                    </style>
-                    <a href="${url}" target="_blank">
-                        <div class="icon-box">
-                            <svg viewBox="0 0 24 24">
-                                <path d="${path}"/>
-                            </svg>
-                        </div>
-                        <span class="title">${name}</span>
-                    </a>
-                `;
-            }
+// --- SPA ROUTER ---
+const router = {
+    current: null,
+    currentParams: null,
+    history: [],
+    
+    navigate(screenId, params) {
+        if (this.current) {
+            this.history.push({ id: this.current, params: this.currentParams });
         }
-        customElements.define('app-card', AppCard);
-
-        /**
-         * 2. <cloud-header>: The Status Bar
-         */
-        class CloudHeader extends HTMLElement {
-            constructor() {
-                super();
-                this.attachShadow({ mode: 'open' });
-            }
-            connectedCallback() {
-                this.shadowRoot.innerHTML = `
-                    <style>
-                        header {
-                            height: 48px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: space-between;
-                            padding: 0 24px;
-                            background: rgba(15, 17, 21, 0.3);
-                            backdrop-filter: blur(20px);
-                            -webkit-backdrop-filter: blur(20px);
-                            position: sticky; top: 0; z-index: 10;
-                            box-shadow: 0 1px 0 rgba(255,255,255,0.05);
-                        }
-                        .brand { display: flex; align-items: center; gap: 8px; }
-                        h1 { font-size: 15px; color: white; margin: 0; font-weight: 600; letter-spacing: 0.5px; }
-                        
-                        .right-side { display: flex; align-items: center; gap: 16px; }
-                        .time { color: white; font-size: 14px; font-weight: 500; }
-                        .status { 
-                            display: flex; align-items: center; gap: 6px;
-                            font-size: 11px; color: #10b981; 
-                            font-weight: 700; letter-spacing: 0.5px;
-                        }
-                        .dot { width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
-                    </style>
-                    <header>
-                        <div class="brand">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-                            <h1>CloudFone</h1>
-                        </div>
-                        <div class="right-side">
-                            <span class="time" id="clock">00:00</span>
-                            <div class="status"><div class="dot"></div> ONLINE</div>
-                        </div>
-                    </header>
-                `;
-
-                this.updateClock();
-                setInterval(() => this.updateClock(), 1000);
-            }
-
-            updateClock() {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                this.shadowRoot.getElementById('clock').textContent = timeStr;
-            }
+        this.show(screenId, params);
+    },
+    
+    back() {
+        if (this.history.length > 0) {
+            const prev = this.history.pop();
+            this.show(prev.id, prev.params);
         }
-        customElements.define('cloud-header', CloudHeader);
+    },
+    
+    show(screenId, params) {
+        document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
+        document.getElementById(`screen-${screenId}`).style.display = 'flex';
+        this.current = screenId;
+        this.currentParams = params;
+        
+        // Trigger initialization/focus refresh logic per screen
+        if (screenId === 'home') homeModule.activate();
+        else if (screenId === 'category') categoryModule.activate();
+        else if (screenId === 'list') listModule.activate(params?.c);
+        else if (screenId === 'pinned') pinnedModule.activate();
+        else if (screenId === 'settings') settingsModule.activate();
+        else if (screenId === 'about') aboutModule.activate();
+    }
+};
 
-        /**
-         * 3. <startup-modal>: The Prompt
-         */
-        class StartupModal extends HTMLElement {
-            constructor() {
-                super();
-                this.attachShadow({ mode: 'open' });
-            }
+// --- MODULE: HOME ---
+const homeModule = {
+    focusList: [], currentIdx: 3, rendered: false,
+    activate() {
+        if (!this.rendered) {
+            const grid = document.getElementById('appGrid');
+            const dots = document.getElementById('dotContainer');
+            let allApps = [];
+            appData.forEach(s => allApps = [...allApps, ...s.apps]);
 
-            connectedCallback() {
-                this.shadowRoot.innerHTML = `
-                    <style>
-                        .overlay {
-                            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                            background: rgba(0,0,0,0.6);
-                            backdrop-filter: blur(16px);
-                            -webkit-backdrop-filter: blur(16px);
-                            display: flex; align-items: center; justify-content: center;
-                            z-index: 999;
-                            transition: opacity 0.4s ease;
-                        }
-                        .modal {
-                            background: rgba(30, 34, 41, 0.65);
-                            padding: 32px 24px;
-                            border-radius: 24px;
-                            width: 85%; max-width: 340px;
-                            text-align: center;
-                            border: 1px solid rgba(255,255,255,0.1);
-                            box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-                            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-                        }
-                        
-                        .icon-circle {
-                            width: 60px; height: 60px; 
-                            background: linear-gradient(135deg, #3b82f6, #2563eb);
-                            border-radius: 50%; margin: 0 auto 20px;
-                            display: flex; align-items: center; justify-content: center;
-                            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
-                        }
-                        .icon-circle svg { fill: #ffffff; width: 28px; height: 28px; }
-                        
-                        h2 { margin: 0 0 10px 0; color: white; font-size: 22px; font-weight: 600; }
-                        p { margin: 0 0 30px 0; color: #9ca3af; font-size: 15px; line-height: 1.5; }
-                        
-                        .btn-group { display: flex; gap: 14px; flex-direction: column; }
-                        
-                        button {
-                            border: none; padding: 16px; border-radius: 14px;
-                            font-size: 16px; font-weight: 600; cursor: pointer;
-                            transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 10px;
-                        }
-                        
-                        .btn-primary { 
-                            background: white; 
-                            color: #0f1115; 
-                        }
-                        
-                        .btn-secondary { 
-                            background: rgba(255,255,255,0.08); 
-                            border: 1px solid rgba(255,255,255,0.05); 
-                            color: #ffffff; 
-                        }
-                        
-                        button:active { transform: scale(0.96); }
-                        .btn-primary:hover { background: #e5e7eb; }
-                        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+            allApps.forEach((app, i) => {
+                const box = document.createElement('div');
+                box.className = 'icon-box focusable';
+                box.setAttribute('data-name', app.name);
+                if (app.bg) box.style.backgroundColor = app.bg;
+                box.innerHTML = `<img src="${app.icon}">`;
+                box.onclick = () => { window.location.href = app.url; };
+                grid.appendChild(box);
 
-                        @keyframes slideUp {
-                            from { opacity: 0; transform: scale(0.9) translateY(30px); }
-                            to { opacity: 1; transform: scale(1) translateY(0); }
-                        }
-                    </style>
-                    <div class="overlay" id="overlay">
-                        <div class="modal">
-                            <div class="icon-circle">
-                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                            </div>
-                            <h2>Welcome to OS</h2>
-                            <p>Choose your destination to initialize the workspace.</p>
-                            <div class="btn-group">
-                                <button class="btn-primary" id="btn-apps">
-                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
-                                    Open App Grid
-                                </button>
-                                <button class="btn-secondary" id="btn-login">
-                                    Access Portal
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                this.shadowRoot.getElementById('btn-apps').onclick = () => {
-                    const overlay = this.shadowRoot.getElementById('overlay');
-                    overlay.style.opacity = '0';
-                    setTimeout(() => {
-                        this.dispatchEvent(new CustomEvent('choice', { detail: 'apps' }));
-                        this.remove(); 
-                    }, 400);
-                };
-
-                this.shadowRoot.getElementById('btn-login').onclick = () => {
-                    this.dispatchEvent(new CustomEvent('choice', { detail: 'login' }));
-                };
-            }
+                if (i % 3 === 0) {
+                    const d = document.createElement('div');
+                    d.className = 'dot';
+                    dots.appendChild(d);
+                }
+            });
+            this.rendered = true;
         }
-        customElements.define('startup-modal', StartupModal);
+        
+        const topBtns = document.querySelectorAll('#screen-home .top-btn.focusable');
+        const gridIcons = document.querySelectorAll('#screen-home .icon-box.focusable');
+        this.focusList = [...topBtns, ...gridIcons];
+        this.refresh();
+    },
+    refresh() {
+        this.focusList.forEach(f => f.classList.remove('focused'));
+        const active = this.focusList[this.currentIdx];
+        active.classList.add('focused');
+        document.getElementById('brandLabel').innerText = active.getAttribute('data-name') || 'CloudChat';
+        active.scrollIntoView({ block: "center", behavior: "smooth" });
 
-        /**
-         * 4. <cloud-os>: Main Container
-         */
-        class CloudOS extends HTMLElement {
-            constructor() {
-                super();
-                this.attachShadow({ mode: 'open' });
-            }
+        const dotList = document.querySelectorAll('#screen-home .dot');
+        dotList.forEach(d => d.classList.remove('active'));
+        const topCount = document.querySelectorAll('#screen-home .top-btn.focusable').length;
+        if (this.currentIdx >= topCount) {
+            const rowIdx = Math.floor((this.currentIdx - topCount) / 3);
+            if (dotList[rowIdx]) dotList[rowIdx].classList.add('active');
+        } else {
+            if (dotList[0]) dotList[0].classList.add('active');
+        }
+    },
+    handleKey(e) {
+        const L = this.focusList.length;
+        const topCount = document.querySelectorAll('#screen-home .top-btn.focusable').length;
+        
+        if (e.key === 'ArrowRight' && this.currentIdx < L - 1) this.currentIdx++;
+        else if (e.key === 'ArrowLeft' && this.currentIdx > 0) this.currentIdx--;
+        else if (e.key === 'ArrowDown') {
+            if (this.currentIdx < topCount) this.currentIdx = topCount; 
+            else if (this.currentIdx + 3 < L) this.currentIdx += 3;
+            else this.currentIdx = L - 1;
+        } else if (e.key === 'ArrowUp') {
+            if (this.currentIdx >= topCount && this.currentIdx < topCount + 3) this.currentIdx = 0; 
+            else if (this.currentIdx - 3 >= topCount) this.currentIdx -= 3;
+            else this.currentIdx = 0;
+        } else if (e.key === 'Backspace') router.back();
+        else if (e.key === 'Escape') router.navigate('settings');
+        else if (e.key === 'Enter') this.focusList[this.currentIdx].click();
+        
+        this.refresh();
+    }
+};
 
-            connectedCallback() {
-                this.render();
-                this.setupLogic();
-            }
+// --- MODULE: CATEGORY ---
+const categoryModule = {
+    focusables: [], currentIndex: 0, rendered: false,
+    activate() {
+        if (!this.rendered) {
+            const container = document.getElementById('appContent');
+            appData.forEach(sec => {
+                const h = document.createElement('div');
+                h.className = 'header focusable';
+                h.innerText = sec.category + ' >';
+                h.setAttribute('data-name', sec.category);
+                h.onclick = () => router.navigate('list', {c: sec.category});
+                container.appendChild(h);
 
-            setupLogic() {
-                const modal = this.shadowRoot.querySelector('startup-modal');
-                const appsContainer = this.shadowRoot.querySelector('.apps-container');
-                
-                modal.addEventListener('choice', (e) => {
-                    if (e.detail === 'apps') {
-                        appsContainer.style.display = 'block'; // Reveal apps to trigger CSS animations
-                        document.title = "Apps Grid - Cloudfone";
-                    } else {
-                        document.body.innerHTML = `
-                            <div style="display:flex;height:100vh;justify-content:center;align-items:center;color:white;flex-direction:column;text-align:center;">
-                                <svg width="60" height="60" fill="#3b82f6" viewBox="0 0 24 24" style="margin-bottom:20px; animation: pulse 1s infinite alternate;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                                <h3 style="font-family:sans-serif;margin-bottom:10px;font-size:20px;">Port 8000</h3>
-                                <p style="color:#aaa;font-family:sans-serif;">Redirecting to Login Portal...</p>
-                                <style>@keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }</style>
-                            </div>`;
-                        setTimeout(() => {
-                             window.location.href = 'https://www.cloudfone.com/auth/sign-in';
-                        }, 1200);
-                    }
+                const g = document.createElement('div'); g.className = 'grid';
+                sec.apps.forEach(app => {
+                    const card = document.createElement('div');
+                    card.className = 'app-card focusable';
+                    card.setAttribute('data-name', app.name);
+                    if (app.bg) card.style.backgroundColor = app.bg;
+                    card.innerHTML = `<img src="${app.icon}" alt="${app.name}">`;
+                    card.onclick = () => { window.location.href = app.url; };
+                    g.appendChild(card);
                 });
-            }
+                container.appendChild(g);
+            });
+            this.rendered = true;
+        }
+        this.focusables = document.querySelectorAll('#screen-category .focusable');
+        this.refresh();
+    },
+    refresh() {
+        this.focusables.forEach(el => el.classList.remove('focused'));
+        const active = this.focusables[this.currentIndex];
+        active.classList.add('focused');
+        document.getElementById('catBrandText').innerText = active.getAttribute('data-name');
+        active.scrollIntoView({ block: "center", behavior: "smooth" });
+    },
+    handleKey(e) {
+        const total = this.focusables.length;
+        if (e.key === 'ArrowRight') {
+            if (this.currentIndex < total - 1) this.currentIndex++;
+        } else if (e.key === 'ArrowLeft') {
+            if (this.currentIndex > 0) this.currentIndex--;
+        } else if (e.key === 'ArrowDown') {
+            if (this.currentIndex < 3) this.currentIndex = 3; 
+            else if (this.currentIndex + 3 < total) this.currentIndex += 3;
+            else this.currentIndex = total - 1;
+        } else if (e.key === 'ArrowUp') {
+            if (this.currentIndex >= 3 && this.currentIndex <= 5) this.currentIndex = 0; 
+            else if (this.currentIndex - 3 >= 3) this.currentIndex -= 3;
+            else this.currentIndex = 0;
+        } else if (e.key === 'Enter') {
+            this.focusables[this.currentIndex].click();
+        } else if (e.key === 'Backspace') {
+            router.back();
+        } else if (e.key === 'Escape') {
+            router.navigate('settings');
+        }
+        this.refresh();
+    }
+};
 
-            render() {
-                // Generate App Cards with staggered animation delays
-                const cardsHtml = APPS_DATA.map((app, index) => {
-                    const delay = (index * 0.05) + 's';
-                    return `<app-card name="${app.name}" url="${app.url}" path="${app.icon}" color="${app.color}" delay="${delay}"></app-card>`;
-                }).join('');
+// --- MODULE: LIST ---
+const listModule = {
+    focusables: [], activeIdx: 0,
+    activate(categoryParam) {
+        this.focusables = [];
+        this.activeIdx = 0;
+        const listArea = document.getElementById('listArea');
+        const pageTitle = document.getElementById('pageTitle');
+        listArea.innerHTML = '';
 
-                this.shadowRoot.innerHTML = `
-                    <style>
-                        :host { display: block; height: 100%; }
-                        .apps-container {
-                            max-width: 900px;
-                            margin: 0 auto;
-                            padding: 40px 20px;
-                            height: calc(100vh - 48px);
-                            overflow-y: auto;
-                            display: none; /* Hidden until modal choice */
-                        }
-                        .apps-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-                            column-gap: 20px;
-                            row-gap: 32px;
-                            padding-bottom: 50px;
-                        }
-                        
-                        /* Custom responsive tweaks */
-                        @media (min-width: 600px) {
-                            .apps-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); row-gap: 40px; }
-                        }
-                    </style>
-
-                    <cloud-header></cloud-header>
-                    <div class="apps-container">
-                        <div class="apps-grid">
-                            ${cardsHtml}
-                        </div>
-                    </div>
-                    <startup-modal></startup-modal>
-                `;
+        if (!categoryParam) {
+            pageTitle.innerText = "Categories";
+            appData.forEach(item => {
+                const el = this.createItem(item.category, "Browse apps in this category", "https://cdn-icons-png.flaticon.com/512/707/707675.png", item.category, true);
+                listArea.appendChild(el);
+                this.focusables.push(el);
+            });
+        } else {
+            const foundCat = appData.find(s => s.category.toLowerCase() === categoryParam.toLowerCase());
+            if (foundCat) {
+                pageTitle.innerText = foundCat.category;
+                foundCat.apps.forEach(app => {
+                    const el = this.createItem(app.name, "Open " + app.name, app.icon, app.url, false, app.bg);
+                    listArea.appendChild(el);
+                    this.focusables.push(el);
+                });
+            } else {
+                listArea.innerHTML = "<p style='padding:20px;'>Category not found!</p>";
             }
         }
-        customElements.define('cloud-os', CloudOS);
+        if(this.focusables.length > 0) this.refresh();
+    },
+    createItem(title, sub, icon, actionData, isCategory, bgColor) {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.setAttribute('data-name', title);
+        div.innerHTML = `
+            <div class="icon-wrapper" style="background:${bgColor || '#fff'}"><img src="${icon}" alt=""></div>
+            <div class="text-info"><div class="title">${title}</div><div class="subtitle">${sub}</div></div>
+        `;
+        div.onclick = () => {
+            if (isCategory) router.navigate('list', {c: actionData});
+            else window.location.href = actionData; // external app url navigation
+        };
+        return div;
+    },
+    refresh() {
+        this.focusables.forEach(i => i.classList.remove('focused'));
+        if (this.focusables.length === 0) return;
+        const active = this.focusables[this.activeIdx];
+        active.classList.add('focused');
+        document.getElementById('listFooterText').innerText = active.getAttribute('data-name');
+        active.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    },
+    handleKey(e) {
+        if (this.focusables.length === 0) {
+            if(e.key === 'Backspace' || e.key === 'Escape') router.back();
+            return;
+        }
+        if (e.key === 'ArrowDown' && this.activeIdx < this.focusables.length - 1) this.activeIdx++;
+        else if (e.key === 'ArrowUp' && this.activeIdx > 0) this.activeIdx--;
+        else if (e.key === 'Enter') this.focusables[this.activeIdx].click();
+        else if (e.key === 'Backspace' || e.key === 'Escape') router.back();
+        this.refresh();
+    }
+};
 
-    </script>
+// --- MODULE: SETTINGS ---
+const settingsModule = {
+    items: null, idx: 0,
+    activate() {
+        this.items = document.querySelectorAll('#screen-settings .focusable');
+        this.refresh();
+    },
+    refresh() {
+        this.items.forEach(i => i.classList.remove('focused'));
+        this.items[this.idx].classList.add('focused');
+    },
+    handleKey(e) {
+        if(e.key === 'ArrowDown' && this.idx < this.items.length - 1) this.idx++;
+        else if(e.key === 'ArrowUp' && this.idx > 0) this.idx--;
+        else if(e.key === 'Enter') this.items[this.idx].click();
+        else if(e.key === 'Backspace' || e.key === 'Escape') router.back();
+        this.refresh();
+    }
+};
+
+// --- MODULE: ABOUT ---
+const aboutModule = {
+    activate() {},
+    handleKey(e) {
+        if(e.key === 'Backspace' || e.key === 'Escape') router.back();
+    }
+};
+
+// --- MODULE: PINNED ---
+const pinnedModule = {
+    activate() {},
+    handleKey(e) {
+        if(e.key === 'Backspace' || e.key === 'Escape') router.back();
+    }
+};
+
+// --- GLOBAL KEY LISTENER ---
+window.onkeydown = (e) => {
+    if (router.current === 'home') homeModule.handleKey(e);
+    else if (router.current === 'category') categoryModule.handleKey(e);
+    else if (router.current === 'list') listModule.handleKey(e);
+    else if (router.current === 'settings') settingsModule.handleKey(e);
+    else if (router.current === 'about') aboutModule.handleKey(e);
+    else if (router.current === 'pinned') pinnedModule.handleKey(e);
+};
+
+// START APP
+window.onload = () => router.navigate('home');</script>
 </body>
 </html>
