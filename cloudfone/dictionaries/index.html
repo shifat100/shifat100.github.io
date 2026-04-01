@@ -3,221 +3,232 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Dictionaries - Cloudfone</title>
+    <title>Dictionaries</title>
     
     <!-- Original Ad Script -->
     <script>(function(s){s.dataset.zone='10089094',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
-    <!-- Import modern font -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
-        :root {
-            --bg-color: #0f1115;
-            --surface-color: #1e2229;
-            --surface-hover: #2a2f38;
-            --text-main: #ffffff;
-            --text-muted: #9ca3af;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        
+        body {
+            background-color: #000; /* Dark background outside screen */
+            color: white;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            background-color: var(--bg-color);
-            font-family: var(--font);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .app-container {
+        .screen {
             width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-        }
-
-        /* Header Styling */
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .header-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(16, 185, 129, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .header-icon svg {
-            width: 22px;
-            height: 22px;
-            fill: #10b981;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
-
-        /* Dictionary List (Grid of Cards) */
-        .dictionary-list {
+            max-width: 360px;
+            min-width: 128px;
+            height: 100vh;
+            max-height: 480px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-        }
-
-        /* Individual Card Styling */
-        .card {
-            display: flex;
-            align-items: center;
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px 20px;
-            text-decoration: none;
-            color: var(--text-main);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: #2b2b2b;
+            border: 1px solid #444;
             position: relative;
-            overflow: hidden;
         }
 
-        .card:hover, .card:focus {
-            background-color: var(--surface-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.15);
+        /* Header */
+        .header-bar {
+            background-color: #000;
+            padding: 8px 12px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
         }
 
-        .card:active {
-            transform: scale(0.98);
+        /* List Container */
+        .list-container {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: none;
         }
+        .list-container::-webkit-scrollbar { display: none; }
 
-        /* Language Avatar Circle */
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
+        /* List Item UI */
+        .list-item {
             display: flex;
             align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #3d3d3d;
+            transition: background 0.1s;
+        }
+
+        /* Icon Square */
+        .icon-wrapper {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            margin-right: 12px;
+            display: flex;
             justify-content: center;
-            font-size: 18px;
-            font-weight: 600;
-            color: white;
-            margin-right: 16px;
+            align-items: center;
             flex-shrink: 0;
+            overflow: hidden;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        /* Custom Colors for each Language */
+        /* Custom Icon Gradients */
         .bg-arabic { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
         .bg-bangla { background: linear-gradient(135deg, #10b981, #059669); }
         .bg-hindi { background: linear-gradient(135deg, #f59e0b, #ea580c); }
         .bg-tamil { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
 
-        /* Card Text content */
-        .card-content {
+        /* Text Area */
+        .text-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             flex-grow: 1;
         }
-
-        .card-title {
+        .title {
             font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        .card-subtitle {
+        .subtitle {
             font-size: 13px;
-            color: var(--text-muted);
+            color: #ccc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Right Arrow Icon */
-        .chevron {
-            width: 20px;
-            height: 20px;
-            fill: var(--text-muted);
-            transition: transform 0.2s;
+        /* Focused State */
+        .list-item.focused {
+            background-color: #1a73e8 !important;
         }
+        .list-item.focused .subtitle { color: #fff; }
 
-        .card:hover .chevron {
-            transform: translateX(4px);
-            fill: white;
+        /* Bottom Bar */
+        .bottom-bar {
+            background-color: #000;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bottom-bar svg { width: 22px; height: 22px; fill: white; }
+        .brand-text { font-weight: bold; font-size: 16px; }
+
+        /* Responsiveness for extreme small screens */
+        @media (max-width: 180px) {
+            .icon-wrapper { width: 40px; height: 40px; font-size: 14px; }
+            .title { font-size: 13px; }
+            .subtitle { font-size: 10px; }
+            .header-bar { font-size: 14px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+<div class="screen">
+    <div class="header-bar" id="pageTitle">Dictionaries</div>
+
+    <div class="list-container" id="listArea">
         
-        <!-- Header -->
-        <div class="header">
-            <div class="header-icon">
-                <!-- Book Icon -->
-                <svg viewBox="0 0 24 24">
-                    <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM10 9h8v2h-8zm0 3h4v2h-4zm0-6h8v2h-8z"/>
-                </svg>
+        <div class="list-item focusable" data-name="Arabic Dictionary" data-url="English Arbic">
+            <div class="icon-wrapper bg-arabic">Ar</div>
+            <div class="text-info">
+                <div class="title">Arabic Dictionary</div>
+                <div class="subtitle">English ⇄ Arabic</div>
             </div>
-            <h1>Dictionaries</h1>
         </div>
 
-        <!-- Dictionary Cards -->
-        <div class="dictionary-list">
-            
-            <a href="English Arbic" target="_blank" class="card">
-                <div class="avatar bg-arabic">Ar</div>
-                <div class="card-content">
-                    <div class="card-title">Arabic Dictionary</div>
-                    <div class="card-subtitle">English ⇄ Arabic</div>
-                </div>
-                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
-            </a>
-
-            <a href="English Bangla" target="_blank" class="card">
-                <div class="avatar bg-bangla">Bn</div>
-                <div class="card-content">
-                    <div class="card-title">Bangla Dictionary</div>
-                    <div class="card-subtitle">English ⇄ Bangla</div>
-                </div>
-                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
-            </a>
-
-            <a href="English Hindi" target="_blank" class="card">
-                <div class="avatar bg-hindi">Hi</div>
-                <div class="card-content">
-                    <div class="card-title">Hindi Dictionary</div>
-                    <div class="card-subtitle">English ⇄ Hindi</div>
-                </div>
-                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
-            </a>
-
-            <a href="English Tamil" target="_blank" class="card">
-                <div class="avatar bg-tamil">Ta</div>
-                <div class="card-content">
-                    <div class="card-title">Tamil Dictionary</div>
-                    <div class="card-subtitle">English ⇄ Tamil</div>
-                </div>
-                <svg class="chevron" viewBox="0 0 24 24"><path d="M9.29 15.88L13.17 12 9.29 8.12c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3c-.39.39-1.02.39-1.41 0-.38-.39-.39-1.03 0-1.42z"/></svg>
-            </a>
-
+        <div class="list-item focusable" data-name="Bangla Dictionary" data-url="English Bangla">
+            <div class="icon-wrapper bg-bangla">Bn</div>
+            <div class="text-info">
+                <div class="title">Bangla Dictionary</div>
+                <div class="subtitle">English ⇄ Bangla</div>
+            </div>
         </div>
+
+        <div class="list-item focusable" data-name="Hindi Dictionary" data-url="English Hindi">
+            <div class="icon-wrapper bg-hindi">Hi</div>
+            <div class="text-info">
+                <div class="title">Hindi Dictionary</div>
+                <div class="subtitle">English ⇄ Hindi</div>
+            </div>
+        </div>
+
+        <div class="list-item focusable" data-name="Tamil Dictionary" data-url="English Tamil">
+            <div class="icon-wrapper bg-tamil">Ta</div>
+            <div class="text-info">
+                <div class="title">Tamil Dictionary</div>
+                <div class="subtitle">English ⇄ Tamil</div>
+            </div>
+        </div>
+
     </div>
 
+    <div class="bottom-bar">
+        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <span class="brand-text" id="footerText">Select App</span>
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </div>
+</div>
+
+<script>
+    let focusableItems = document.querySelectorAll('.focusable');
+    let activeIdx = 0;
+    const footer = document.getElementById('footerText');
+
+    function launchApp(url) {
+        // Using window.open to replicate target="_blank" from original code
+        window.open(url, '_blank');
+    }
+
+    function refreshFocus() {
+        focusableItems.forEach(i => i.classList.remove('focused'));
+        if(focusableItems.length === 0) return;
+        
+        const active = focusableItems[activeIdx];
+        active.classList.add('focused');
+        footer.innerText = active.getAttribute('data-name');
+        active.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    // Assign click events to each list item
+    focusableItems.forEach((item, index) => {
+        item.onclick = () => {
+            activeIdx = index; // Update focus on touch/click
+            refreshFocus();
+            launchApp(item.getAttribute('data-url'));
+        };
+    });
+
+    // Keyboard Navigation
+    window.onkeydown = (e) => {
+        if (focusableItems.length === 0) return;
+        
+        if (e.key === 'ArrowDown' && activeIdx < focusableItems.length - 1) {
+            activeIdx++;
+        } else if (e.key === 'ArrowUp' && activeIdx > 0) {
+            activeIdx--;
+        } else if (e.key === 'Enter') {
+            launchApp(focusableItems[activeIdx].getAttribute('data-url'));
+        } else if (e.key === 'Backspace' || e.key === 'Escape') {
+            window.history.back(-1); // Go back like the original list UI
+        }
+        
+        refreshFocus();
+    };
+
+    // Initialize focus on load
+    refreshFocus();
+</script>
 </body>
 </html>
