@@ -1,186 +1,393 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KaiOS অ্যাপ স্টোর</title>
+    <title>KaiOS App Hub | Professional Store</title>
+    <!-- Google Fonts for Professional Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 50px;
+        }
+
+        /* --- Header Section --- */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
         }
 
-        /* সার্চ বার স্টাইল */
-        .search-container {
-            margin-bottom: 30px;
-            width: 100%;
-            max-width: 500px;
+        /* --- Controls Section --- */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
         }
 
         #searchBar {
             width: 100%;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 25px;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.3s;
+            transition: var(--transition);
+            background: #f1f5f9;
         }
 
         #searchBar:focus {
-            border-color: var(--accent-color);
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
-        /* অ্যাপ লিস্ট স্টাইল */
-        #app-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            width: 100%;
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        select, .view-btn {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.6rem;
+            background: white;
+            font-family: inherit;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-main);
+        }
+
+        select:hover, .view-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* --- Main App Display --- */
+        .main-content {
             max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
 
+        /* Grid View */
+        #app-container.grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* List View */
+        #app-container.list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* App Card Base */
         .app-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: var(--transition);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            transition: transform 0.2s;
+            position: relative;
         }
 
         .app-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        /* List View Modifications */
+        .list-view .app-card {
+            flex-direction: row;
+            text-align: left;
+            align-items: center;
+            padding: 1rem 1.5rem;
         }
 
         .app-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 18px;
+            width: 70px;
+            height: 70px;
+            border-radius: 1rem;
             object-fit: cover;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .list-view .app-icon {
+            margin-bottom: 0;
+            margin-right: 1.5rem;
+        }
+
+        .app-info {
+            flex: 1;
         }
 
         .app-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin: 10px 0 5px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
         }
 
         .app-subtitle {
-            font-size: 14px;
-            color: #666;
-            font-style: italic;
-            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
         }
 
         .app-description {
-            font-size: 14px;
-            color: #777;
-            margin-bottom: 20px;
-            line-height: 1.4;
-            height: 40px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .list-view .app-description {
+            margin-bottom: 0;
+            max-width: 600px;
         }
 
         .manifest-btn {
-            background-color: var(--accent-color);
+            background: var(--primary);
             color: white;
             text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            white-space: nowrap;
         }
 
         .manifest-btn:hover {
-            background-color: #2980b9;
+            background: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
 
-        .no-result {
+        .list-view .manifest-btn {
+            margin-left: 1.5rem;
+        }
+
+        /* Loading & Empty States */
+        .status-msg {
             text-align: center;
-            font-size: 18px;
-            color: #888;
-            grid-column: 1 / -1;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            grid-column: 1/-1;
+            padding: 3rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .top-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .controls {
+                width: 100%;
+            }
+            .search-box {
+                min-width: 100%;
+                order: -1;
+            }
+            .list-view .app-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .list-view .app-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            .list-view .manifest-btn {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>KaiOS অ্যাপ লাইব্রেরি</h1>
+    <header>
+        <div class="header-container">
+            <div class="top-row">
+                <div class="logo">KaiOS App Hub</div>
+                <div class="action-group">
+                    <button class="view-btn active" id="gridBtn" onclick="setView('grid')">Grid</button>
+                    <button class="view-btn" id="listBtn" onclick="setView('list')">List</button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="searchBar" placeholder="Search apps by name or summary..." onkeyup="handleUpdate()">
+                </div>
+                
+                <div class="action-group">
+                    <label style="font-size: 0.875rem; color: var(--text-muted);">Sort By:</label>
+                    <select id="sortSelect" onchange="handleUpdate()">
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="size-desc">Size (Largest)</option>
+                        <option value="size-asc">Size (Smallest)</option>
+                        <option value="date-desc">Newest First</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <div class="search-container">
-        <input type="text" id="searchBar" placeholder="অ্যাপের নাম দিয়ে সার্চ করুন..." onkeyup="filterApps()">
-    </div>
-
-    <div id="app-list">
-        <!-- ডাটা এখানে লোড হবে -->
-        <p style="text-align: center; grid-column: 1/-1;">লোড হচ্ছে...</p>
-    </div>
+    <main class="main-content">
+        <div id="app-container" class="grid-view">
+            <div class="status-msg">Loading professional app catalog...</div>
+        </div>
+    </main>
 
     <script>
-        let allApps = []; // সব অ্যাপ ডাটা এখানে জমা থাকবে
+        let allApps = [];
+        let currentView = 'grid';
 
-        // XHR ব্যবহার করে JSON ফাইল লোড করা
-        function loadApps() {
+        // XHR to Load Data
+        function fetchApps() {
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', 'app_list.txt', true); // আপনার ফাইলের নাম app_list.txt
+            xhr.open('GET', 'app_list.txt', true);
 
             xhr.onload = function() {
                 if (this.status === 200) {
                     try {
                         const response = JSON.parse(this.responseText);
-                        allApps = response.data; // JSON এর 'data' অ্যারেটি নেওয়া হচ্ছে
-                        displayApps(allApps);
+                        allApps = response.data;
+                        handleUpdate();
                     } catch (e) {
-                        console.error("JSON পার্স করতে সমস্যা হয়েছে:", e);
-                        document.getElementById('app-list').innerHTML = "ডাটা লোড করতে সমস্যা হয়েছে।";
+                        showStatus("Error parsing data. Please check JSON format.");
                     }
                 } else {
-                    document.getElementById('app-list').innerHTML = "ফাইলটি খুঁজে পাওয়া যায়নি।";
+                    showStatus("Failed to load app list. File not found.");
                 }
             };
 
-            xhr.onerror = function() {
-                document.getElementById('app-list').innerHTML = "নেটওয়ার্ক সমস্যা হয়েছে।";
-            };
-
+            xhr.onerror = () => showStatus("Network error occurred.");
             xhr.send();
         }
 
-        // অ্যাপগুলো স্ক্রিনে দেখানোর ফাংশন
-        function displayApps(apps) {
-            const container = document.getElementById('app-list');
-            container.innerHTML = ''; // আগের কন্টেন্ট পরিষ্কার করা
+        // Main Logic Handler
+        function handleUpdate() {
+            let apps = [...allApps];
+
+            // 1. Filter
+            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            apps = apps.filter(app => 
+                app.name.toLowerCase().includes(searchTerm) || 
+                (app.summary && app.summary.toLowerCase().includes(searchTerm))
+            );
+
+            // 2. Sort
+            const sortVal = document.getElementById('sortSelect').value;
+            apps.sort((a, b) => {
+                if (sortVal === 'name-asc') return a.name.localeCompare(b.name);
+                if (sortVal === 'name-desc') return b.name.localeCompare(a.name);
+                if (sortVal === 'size-asc') return a.size - b.size;
+                if (sortVal === 'size-desc') return b.size - a.size;
+                if (sortVal === 'date-desc') return b.release_date - a.release_date;
+                return 0;
+            });
+
+            render(apps);
+        }
+
+        // Rendering Engine
+        function render(apps) {
+            const container = document.getElementById('app-container');
+            container.innerHTML = '';
 
             if (apps.length === 0) {
-                container.innerHTML = '<p class="no-result">কোনো অ্যাপ পাওয়া যায়নি!</p>';
+                showStatus("No apps match your search criteria.");
                 return;
             }
 
@@ -189,28 +396,40 @@
                 card.className = 'app-card';
 
                 card.innerHTML = `
-                    <img src="${app.thumbnail_url}" alt="${app.name}" class="app-icon">
-                    <div class="app-name">${app.name}</div>
-                    <div class="app-subtitle">${app.summary || 'কোন সাবটাইটেল নেই'}</div>
-                    <div class="app-description">${app.description}</div>
-                    <a href="${app.manifest_url}" target="_blank" class="manifest-btn">Manifest URL</a>
+                    <img src="${app.thumbnail_url}" alt="${app.name}" class="app-icon" loading="lazy">
+                    <div class="app-info">
+                        <div class="app-name">${app.name}</div>
+                        <div class="app-subtitle">${app.summary || 'General App'}</div>
+                        <div class="app-description">${app.description}</div>
+                    </div>
+                    <a href="${app.manifest_url}" target="_blank" class="manifest-btn">View Manifest</a>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // সার্চ ফিল্টার ফাংশন
-        function filterApps() {
-            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
-            const filtered = allApps.filter(app => 
-                app.name.toLowerCase().includes(searchTerm) || 
-                (app.summary && app.summary.toLowerCase().includes(searchTerm))
-            );
-            displayApps(filtered);
+        // View Switcher
+        function setView(view) {
+            currentView = view;
+            const container = document.getElementById('app-container');
+            
+            if (view === 'grid') {
+                container.className = 'grid-view';
+                document.getElementById('gridBtn').classList.add('active');
+                document.getElementById('listBtn').classList.remove('active');
+            } else {
+                container.className = 'list-view';
+                document.getElementById('listBtn').classList.add('active');
+                document.getElementById('gridBtn').classList.remove('active');
+            }
+            handleUpdate();
         }
 
-        // পেজ লোড হলে ডাটা কল করা
-        window.onload = loadApps;
+        function showStatus(msg) {
+            document.getElementById('app-container').innerHTML = `<div class="status-msg">${msg}</div>`;
+        }
+
+        window.onload = fetchApps;
     </script>
 </body>
 </html>
