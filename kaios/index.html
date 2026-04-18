@@ -2,41 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Essential for mobile zooming and fit -->
+    <!-- Optimized for QVGA (240x320) and QQVGA (128x160) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KaiOS Hub</title>
+    <title>KaiOS App Hub</title>
     <style>
-        /* OLD BROWSER COMPATIBLE CSS - No Grid, No Gap, No Vars */
+        /* OLD BROWSER CSS - No Grid, No Flex Gap, No CSS Variables */
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
             color: #333;
             margin: 0;
             padding: 0;
-            font-size: 12px; /* Smaller base font for tiny screens */
+            font-size: 12px;
         }
 
-        /* Header */
+        /* Header - Professional Purple Theme from Source Code */
         header {
-            background-color: #4f46e5;
+            background-color: #6f02b5;
             color: #ffffff;
-            padding: 10px;
+            padding: 12px 5px;
             text-align: center;
-            border-bottom: 2px solid #333;
+            border-bottom: 3px solid #4a0084;
         }
 
         .logo {
             font-size: 16px;
             font-weight: bold;
             display: block;
-            margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
-        /* Controls Section */
+        /* Controls Area */
         .controls {
-            background-color: #fff;
-            padding: 8px;
-            border-bottom: 1px solid #ccc;
+            background-color: #ffffff;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
         }
 
         .search-box, .sort-box {
@@ -45,134 +45,141 @@
         }
 
         input[type="text"], select {
-            width: 95%;
-            padding: 5px;
-            font-size: 12px;
-            border: 1px solid #999;
-            background: #fff;
+            width: 94%;
+            padding: 6px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fafafa;
         }
 
-        /* Layout Containers */
+        /* App List Container */
         .main-content {
-            padding: 5px;
+            padding: 8px;
         }
 
-        /* APP CARD - Using Block/Float for old browser support */
+        /* App Card - Float based for old Gecko engines */
         .app-card {
             background-color: #ffffff;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            padding: 10px;
             overflow: hidden; /* Clearfix */
             display: block;
         }
 
-        /* QQVGA/QVGA Optimized Image */
+        /* App Icon */
         .app-icon {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             float: left;
             margin-right: 10px;
-            border: 1px solid #ddd;
-            background: #eee;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
         }
 
+        /* Info Area */
         .app-info {
             float: left;
-            width: calc(100% - 65px); /* Subtract icon width + margin */
+            width: calc(100% - 65px);
             overflow: hidden;
         }
 
         .app-name {
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             display: block;
-            color: #000;
+            color: #6f02b5;
+            margin-bottom: 2px;
         }
 
         .app-subtitle {
             font-size: 11px;
-            color: #666;
+            color: #888;
             display: block;
             margin-bottom: 4px;
         }
 
         .app-description {
             font-size: 11px;
-            color: #777;
+            color: #666;
             display: block;
             margin-bottom: 8px;
-            line-height: 1.2;
+            line-height: 1.3;
         }
 
-        /* Install Button */
+        /* Install Button - Linking to Manifest URL */
         .install-btn {
-            background-color: #4f46e5;
+            background-color: #6f02b5;
             color: #ffffff;
             text-decoration: none;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 3px;
+            padding: 5px 12px;
+            border-radius: 4px;
             display: inline-block;
             text-align: center;
+            border: 1px solid #4a0084;
         }
 
         .install-btn:active {
-            background-color: #333;
+            background-color: #4a0084;
         }
 
         /* Status Message */
         .status-msg {
             text-align: center;
-            padding: 20px;
-            color: #666;
+            padding: 30px 10px;
+            color: #999;
         }
 
-        /* CLEARFIX for floats */
+        /* Clearfix helper */
         .clearfix::after {
             content: "";
             clear: both;
             display: table;
         }
 
-        /* QQVGA Specific Override (128px width) */
+        /* QQVGA (128x160) Extreme Optimization */
         @media screen and (max-width: 140px) {
             .app-icon {
-                width: 32px;
-                height: 32px;
+                width: 36px;
+                height: 36px;
             }
             .app-info {
-                width: calc(100% - 42px);
+                width: calc(100% - 50px);
             }
-            .logo { font-size: 12px; }
-            body { font-size: 10px; }
+            .logo { font-size: 13px; }
+            body { font-size: 11px; }
+            .app-name { font-size: 12px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <span class="logo">KaiOS Apps</span>
+        <span class="logo">KaiOS App Store</span>
     </header>
 
     <div class="controls">
         <div class="search-box">
-            <input type="text" id="searchBar" placeholder="Search..." onkeyup="handleUpdate()">
+            <input type="text" id="searchBar" placeholder="Search apps..." onkeyup="handleUpdate()">
         </div>
         <div class="sort-box">
             <select id="sortSelect" onchange="handleUpdate()">
-                <option value="name-asc">A-Z</option>
-                <option value="name-desc">Z-A</option>
-                <option value="size-asc">Smallest</option>
-                <option value="size-desc">Largest</option>
-                <option value="date-desc">Newest</option>
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="size-asc">Size (Smallest)</option>
+                <option value="size-desc">Size (Largest)</option>
+                <option value="date-desc">Newest First</option>
             </select>
         </div>
     </div>
 
     <div class="main-content" id="app-container">
-        <div class="status-msg">Loading...</div>
+        <div class="status-msg">Loading apps...</div>
     </div>
 
     <script>
@@ -189,25 +196,26 @@
                         allApps = response.data;
                         handleUpdate();
                     } catch (e) {
-                        showStatus("Error loading data.");
+                        showStatus("JSON Parse Error.");
                     }
                 } else {
-                    showStatus("File not found.");
+                    showStatus("App list not found.");
                 }
             };
 
-            xhr.onerror = function() { showStatus("Network error."); };
+            xhr.onerror = function() { showStatus("Network Error."); };
             xhr.send();
         }
 
         function handleUpdate() {
-            var apps = allApps.slice(); // Clone array
+            var apps = allApps.slice();
 
-            // Filter
+            // Filter (indexOf for old browser support)
             var searchTerm = document.getElementById('searchBar').value.toLowerCase();
             apps = apps.filter(function(app) {
-                return app.name.toLowerCase().indexOf(searchTerm) !== -1 || 
-                       (app.summary && app.summary.toLowerCase().indexOf(searchTerm) !== -1);
+                var name = app.name.toLowerCase();
+                var summary = (app.summary || "").toLowerCase();
+                return name.indexOf(searchTerm) !== -1 || summary.indexOf(searchTerm) !== -1;
             });
 
             // Sort
@@ -238,17 +246,20 @@
                 var card = document.createElement('div');
                 card.className = 'app-card clearfix';
 
-                // IMPORTANT: The link is changed to kaios-store://app/[id] 
-                // to open the store and start the installation process.
-                var storeLink = 'kaios-store://app/' + app.id;
+                /* 
+                   Correct Logic based on source and KaiOS:
+                   The source code used bundle_id to go to a detail page.
+                   To trigger an INSTALL, we must point the browser to the manifest_url.
+                */
+                var installLink = app.manifest_url;
 
                 card.innerHTML = 
                     '<img src="' + app.thumbnail_url + '" class="app-icon">' +
                     '<div class="app-info">' +
                         '<span class="app-name">' + app.name + '</span>' +
-                        '<span class="app-subtitle">' + (app.summary || '') + '</span>' +
+                        '<span class="app-subtitle">' + (app.summary || 'Application') + '</span>' +
                         '<span class="app-description">' + app.description + '</span>' +
-                        '<a href="' + storeLink + '" class="install-btn">Install</a>' +
+                        '<a href="' + installLink + '" class="install-btn">Install</a>' +
                     '</div>';
                 
                 container.appendChild(card);
