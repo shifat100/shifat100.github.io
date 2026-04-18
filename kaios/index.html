@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KaiOS App Hub</title>
     <style>
-        /* OLD BROWSER COMPATIBLE CSS - NO MODERN GRID/FLEX GAP */
+        /* OLD BROWSER COMPATIBLE CSS */
         body {
             font-family: Arial, Helvetica, sans-serif;
             background-color: #f0f2f5;
@@ -16,7 +16,6 @@
             font-size: 12px;
         }
 
-        /* Header - matching the softloft/kaios professional theme */
         header {
             background-color: #6f02b5; 
             color: #ffffff;
@@ -33,7 +32,6 @@
             letter-spacing: 1px;
         }
 
-        /* Search and Filter Section */
         .controls {
             background-color: #ffffff;
             padding: 10px;
@@ -54,12 +52,10 @@
             background: #fafafa;
         }
 
-        /* Main Content Area */
         .main-content {
             padding: 8px;
         }
 
-        /* APP CARD - Block layout for total compatibility */
         .app-card {
             background-color: #ffffff;
             border: 1px solid #ddd;
@@ -71,7 +67,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        /* App Icon - Floated Left */
         .app-icon {
             width: 54px;
             height: 54px;
@@ -82,7 +77,6 @@
             background: #fff;
         }
 
-        /* Info Section */
         .app-info {
             float: left;
             width: calc(100% - 72px); 
@@ -113,7 +107,7 @@
             line-height: 1.3;
         }
 
-        /* Universal Install Button */
+        /* Professional Native Button */
         .install-btn {
             background: linear-gradient(to bottom, #851dd6, #4a0084);
             color: #ffffff;
@@ -132,7 +126,6 @@
             background: #4a0084;
         }
 
-        /* Status Message */
         .status-msg {
             text-align: center;
             padding: 40px 10px;
@@ -140,26 +133,18 @@
             font-size: 14px;
         }
 
-        /* Clearfix helper for floats */
         .clearfix::after {
             content: "";
             clear: both;
             display: table;
         }
 
-        /* EXTREME OPTIMIZATION FOR QQVGA (128x160) */
         @media screen and (max-width: 140px) {
-            .app-icon {
-                width: 38px;
-                height: 38px;
-            }
-            .app-info {
-                width: calc(100% - 55px);
-            }
+            .app-icon { width: 38px; height: 38px; }
+            .app-info { width: calc(100% - 55px); }
             .logo { font-size: 14px; }
             body { font-size: 11px; }
             .app-name { font-size: 12px; }
-            .install-btn { padding: 4px 10px; font-size: 11px; }
         }
     </style>
 </head>
@@ -190,6 +175,46 @@
 
     <script>
         var allApps = [];
+        
+        // DETECTION: Check KaiOS version based on the script you provided
+        var isKaiOS2 = ("object" == typeof window && "MozActivity" in window);
+        var isKaiOS3 = ("object" == typeof window && !isKaiOS2 && "WebActivity" in window);
+
+        // NATIVE INSTALL FUNCTION
+        function triggerNativeInstall(appName, manifestUrl) {
+            if (isKaiOS2) {
+                // KaiOS 2.5 Logic
+                var activity = new MozActivity({
+                    name: "open-app",
+                    data: { url: manifestUrl, type: "url", appName: appName }
+                });
+                activity.onerror = function() {
+                    // Fallback to open-page if open-app fails
+                    new MozActivity({
+                        name: "open-page",
+                        data: { url: manifestUrl, type: "url", appName: appName }
+                    });
+                };
+            } else if (isKaiOS3) {
+                // KaiOS 3.0 Logic
+                var activity = new WebActivity("open-app", {
+                    url: manifestUrl,
+                    type: "url",
+                    appName: appName
+                });
+                activity.onerror = function() {
+                    // Fallback to open-page if open-app fails
+                    new WebActivity("open-page", {
+                        url: manifestUrl,
+                        type: "url",
+                        appName: appName
+                    });
+                };
+            } else {
+                // Non-KaiOS devices (Android/PC) simply open the manifest URL
+                window.location.href = manifestUrl;
+            }
+        }
 
         function fetchApps() {
             var xhr = new XMLHttpRequest();
@@ -216,7 +241,6 @@
         function handleUpdate() {
             var apps = allApps.slice();
 
-            // Filter logic for old browsers
             var searchTerm = document.getElementById('searchBar').value.toLowerCase();
             apps = apps.filter(function(app) {
                 var name = app.name.toLowerCase();
@@ -224,7 +248,6 @@
                 return name.indexOf(searchTerm) !== -1 || summary.indexOf(searchTerm) !== -1;
             });
 
-            // Sort logic
             var sortVal = document.getElementById('sortSelect').value;
             apps.sort(function(a, b) {
                 if (sortVal === 'name-asc') return a.name.localeCompare(b.name);
@@ -252,23 +275,25 @@
                 var card = document.createElement('div');
                 card.className = 'app-card clearfix';
 
-                /* 
-                   UNIVERSAL INSTALL LOGIC:
-                   Linking directly to the manifest_url is the standard for KaiOS.
-                   1. On KaiOS: Triggers the native app installation window.
-                   2. On Android/PC: Downloads the manifest file (compatible with all OS).
-                */
-                var universalLink = app.manifest_url;
+                // Create a button that calls the Native JS function
+                var btn = document.createElement('a');
+                btn.className = 'install-btn';
+                btn.innerHTML = 'Install';
+                btn.href = 'javascript:void(0)'; // Prevent page jump
+                
+                // Attach the native install logic
+                btn.onclick = function() {
+                    triggerNativeInstall(app.name, app.manifest_url);
+                };
 
                 card.innerHTML = 
                     '<img src="' + app.thumbnail_url + '" class="app-icon">' +
                     '<div class="app-info">' +
                         '<span class="app-name">' + app.name + '</span>' +
                         '<span class="app-subtitle">' + (app.summary || 'Application') + '</span>' +
-                        '<span class="app-description">' + app.description + '</span>' +
-                        '<a href="' + universalLink + '" class="install-btn">Install</a>' +
-                    '</div>';
+                        '<span class="app-description">' + app.description + '</span>';
                 
+                card.appendChild(btn);
                 container.appendChild(card);
             }
         }
