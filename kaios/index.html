@@ -2,374 +2,217 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KaiOS App Hub | Professional Store</title>
-    <!-- Google Fonts for Professional Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Essential for mobile zooming and fit -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KaiOS Hub</title>
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            box-sizing: border-box;
+        /* OLD BROWSER COMPATIBLE CSS - No Grid, No Gap, No Vars */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
             margin: 0;
             padding: 0;
+            font-size: 12px; /* Smaller base font for tiny screens */
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding-bottom: 50px;
-        }
-
-        /* --- Header Section --- */
+        /* Header */
         header {
-            background-color: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.5rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+            background-color: #4f46e5;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid #333;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            letter-spacing: -0.5px;
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
         }
 
-        /* --- Controls Section --- */
+        /* Controls Section */
         .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-            justify-content: space-between;
+            background-color: #fff;
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
         }
 
-        .search-box {
-            position: relative;
-            flex: 1;
-            min-width: 300px;
-        }
-
-        #searchBar {
+        .search-box, .sort-box {
             width: 100%;
-            padding: 0.75rem 1rem;
-            padding-left: 2.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            font-size: 0.95rem;
-            outline: none;
-            transition: var(--transition);
-            background: #f1f5f9;
+            margin-bottom: 8px;
         }
 
-        #searchBar:focus {
-            border-color: var(--primary);
+        input[type="text"], select {
+            width: 95%;
+            padding: 5px;
+            font-size: 12px;
+            border: 1px solid #999;
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
-        .search-box::before {
-            content: '🔍';
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.9rem;
-            opacity: 0.5;
-        }
-
-        .action-group {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-
-        select, .view-btn {
-            padding: 0.6rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.6rem;
-            background: white;
-            font-family: inherit;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text-main);
-        }
-
-        select:hover, .view-btn:hover {
-            border-color: var(--primary);
-        }
-
-        .view-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* --- Main App Display --- */
+        /* Layout Containers */
         .main-content {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            padding: 5px;
         }
 
-        /* Grid View */
-        #app-container.grid-view {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        /* List View */
-        #app-container.list-view {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        /* App Card Base */
+        /* APP CARD - Using Block/Float for old browser support */
         .app-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 8px;
+            overflow: hidden; /* Clearfix */
+            display: block;
         }
 
-        .app-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
-            border-color: var(--primary);
-        }
-
-        /* List View Modifications */
-        .list-view .app-card {
-            flex-direction: row;
-            text-align: left;
-            align-items: center;
-            padding: 1rem 1.5rem;
-        }
-
+        /* QQVGA/QVGA Optimized Image */
         .app-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 1rem;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .list-view .app-icon {
-            margin-bottom: 0;
-            margin-right: 1.5rem;
+            width: 48px;
+            height: 48px;
+            float: left;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            background: #eee;
         }
 
         .app-info {
-            flex: 1;
-        }
-
-        .app-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 0.25rem;
-        }
-
-        .app-subtitle {
-            font-size: 0.85rem;
-            color: var(--primary);
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .app-description {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-bottom: 1.25rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            float: left;
+            width: calc(100% - 65px); /* Subtract icon width + margin */
             overflow: hidden;
         }
 
-        .list-view .app-description {
-            margin-bottom: 0;
-            max-width: 600px;
+        .app-name {
+            font-weight: bold;
+            font-size: 13px;
+            display: block;
+            color: #000;
         }
 
-        .manifest-btn {
-            background: var(--primary);
-            color: white;
+        .app-subtitle {
+            font-size: 11px;
+            color: #666;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .app-description {
+            font-size: 11px;
+            color: #777;
+            display: block;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        /* Install Button */
+        .install-btn {
+            background-color: #4f46e5;
+            color: #ffffff;
             text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.5rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: var(--transition);
-            white-space: nowrap;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 3px;
+            display: inline-block;
+            text-align: center;
         }
 
-        .manifest-btn:hover {
-            background: var(--primary-hover);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        .install-btn:active {
+            background-color: #333;
         }
 
-        .list-view .manifest-btn {
-            margin-left: 1.5rem;
-        }
-
-        /* Loading & Empty States */
+        /* Status Message */
         .status-msg {
             text-align: center;
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            grid-column: 1/-1;
-            padding: 3rem;
+            padding: 20px;
+            color: #666;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .top-row {
-                flex-direction: column;
-                align-items: flex-start;
+        /* CLEARFIX for floats */
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* QQVGA Specific Override (128px width) */
+        @media screen and (max-width: 140px) {
+            .app-icon {
+                width: 32px;
+                height: 32px;
             }
-            .controls {
-                width: 100%;
+            .app-info {
+                width: calc(100% - 42px);
             }
-            .search-box {
-                min-width: 100%;
-                order: -1;
-            }
-            .list-view .app-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            .list-view .app-icon {
-                margin-right: 0;
-                margin-bottom: 1rem;
-            }
-            .list-view .manifest-btn {
-                margin-left: 0;
-                margin-top: 1rem;
-            }
+            .logo { font-size: 12px; }
+            body { font-size: 10px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-container">
-            <div class="top-row">
-                <div class="logo">KaiOS App Hub</div>
-                <div class="action-group">
-                    <button class="view-btn active" id="gridBtn" onclick="setView('grid')">Grid</button>
-                    <button class="view-btn" id="listBtn" onclick="setView('list')">List</button>
-                </div>
-            </div>
-            
-            <div class="controls">
-                <div class="search-box">
-                    <input type="text" id="searchBar" placeholder="Search apps by name or summary..." onkeyup="handleUpdate()">
-                </div>
-                
-                <div class="action-group">
-                    <label style="font-size: 0.875rem; color: var(--text-muted);">Sort By:</label>
-                    <select id="sortSelect" onchange="handleUpdate()">
-                        <option value="name-asc">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                        <option value="size-desc">Size (Largest)</option>
-                        <option value="size-asc">Size (Smallest)</option>
-                        <option value="date-desc">Newest First</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+        <span class="logo">KaiOS Apps</span>
     </header>
 
-    <main class="main-content">
-        <div id="app-container" class="grid-view">
-            <div class="status-msg">Loading professional app catalog...</div>
+    <div class="controls">
+        <div class="search-box">
+            <input type="text" id="searchBar" placeholder="Search..." onkeyup="handleUpdate()">
         </div>
-    </main>
+        <div class="sort-box">
+            <select id="sortSelect" onchange="handleUpdate()">
+                <option value="name-asc">A-Z</option>
+                <option value="name-desc">Z-A</option>
+                <option value="size-asc">Smallest</option>
+                <option value="size-desc">Largest</option>
+                <option value="date-desc">Newest</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="main-content" id="app-container">
+        <div class="status-msg">Loading...</div>
+    </div>
 
     <script>
-        let allApps = [];
-        let currentView = 'grid';
+        var allApps = [];
 
-        // XHR to Load Data
         function fetchApps() {
-            const xhr = new XMLHttpRequest();
+            var xhr = new XMLHttpRequest();
             xhr.open('GET', 'app_list.txt', true);
 
             xhr.onload = function() {
-                if (this.status === 200) {
+                if (xhr.status === 200) {
                     try {
-                        const response = JSON.parse(this.responseText);
+                        var response = JSON.parse(xhr.responseText);
                         allApps = response.data;
                         handleUpdate();
                     } catch (e) {
-                        showStatus("Error parsing data. Please check JSON format.");
+                        showStatus("Error loading data.");
                     }
                 } else {
-                    showStatus("Failed to load app list. File not found.");
+                    showStatus("File not found.");
                 }
             };
 
-            xhr.onerror = () => showStatus("Network error occurred.");
+            xhr.onerror = function() { showStatus("Network error."); };
             xhr.send();
         }
 
-        // Main Logic Handler
         function handleUpdate() {
-            let apps = [...allApps];
+            var apps = allApps.slice(); // Clone array
 
-            // 1. Filter
-            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
-            apps = apps.filter(app => 
-                app.name.toLowerCase().includes(searchTerm) || 
-                (app.summary && app.summary.toLowerCase().includes(searchTerm))
-            );
+            // Filter
+            var searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            apps = apps.filter(function(app) {
+                return app.name.toLowerCase().indexOf(searchTerm) !== -1 || 
+                       (app.summary && app.summary.toLowerCase().indexOf(searchTerm) !== -1);
+            });
 
-            // 2. Sort
-            const sortVal = document.getElementById('sortSelect').value;
-            apps.sort((a, b) => {
+            // Sort
+            var sortVal = document.getElementById('sortSelect').value;
+            apps.sort(function(a, b) {
                 if (sortVal === 'name-asc') return a.name.localeCompare(b.name);
                 if (sortVal === 'name-desc') return b.name.localeCompare(a.name);
                 if (sortVal === 'size-asc') return a.size - b.size;
@@ -381,52 +224,39 @@
             render(apps);
         }
 
-        // Rendering Engine
         function render(apps) {
-            const container = document.getElementById('app-container');
+            var container = document.getElementById('app-container');
             container.innerHTML = '';
 
             if (apps.length === 0) {
-                showStatus("No apps match your search criteria.");
+                showStatus("No apps found.");
                 return;
             }
 
-            apps.forEach(app => {
-                const card = document.createElement('div');
-                card.className = 'app-card';
+            for (var i = 0; i < apps.length; i++) {
+                var app = apps[i];
+                var card = document.createElement('div');
+                card.className = 'app-card clearfix';
 
-                card.innerHTML = `
-                    <img src="${app.thumbnail_url}" alt="${app.name}" class="app-icon" loading="lazy">
-                    <div class="app-info">
-                        <div class="app-name">${app.name}</div>
-                        <div class="app-subtitle">${app.summary || 'General App'}</div>
-                        <div class="app-description">${app.description}</div>
-                    </div>
-                    <a href="${app.manifest_url}" target="_blank" class="manifest-btn">View Manifest</a>
-                `;
+                // IMPORTANT: The link is changed to kaios-store://app/[id] 
+                // to open the store and start the installation process.
+                var storeLink = 'kaios-store://app/' + app.id;
+
+                card.innerHTML = 
+                    '<img src="' + app.thumbnail_url + '" class="app-icon">' +
+                    '<div class="app-info">' +
+                        '<span class="app-name">' + app.name + '</span>' +
+                        '<span class="app-subtitle">' + (app.summary || '') + '</span>' +
+                        '<span class="app-description">' + app.description + '</span>' +
+                        '<a href="' + storeLink + '" class="install-btn">Install</a>' +
+                    '</div>';
+                
                 container.appendChild(card);
-            });
-        }
-
-        // View Switcher
-        function setView(view) {
-            currentView = view;
-            const container = document.getElementById('app-container');
-            
-            if (view === 'grid') {
-                container.className = 'grid-view';
-                document.getElementById('gridBtn').classList.add('active');
-                document.getElementById('listBtn').classList.remove('active');
-            } else {
-                container.className = 'list-view';
-                document.getElementById('listBtn').classList.add('active');
-                document.getElementById('gridBtn').classList.remove('active');
             }
-            handleUpdate();
         }
 
         function showStatus(msg) {
-            document.getElementById('app-container').innerHTML = `<div class="status-msg">${msg}</div>`;
+            document.getElementById('app-container').innerHTML = '<div class="status-msg">' + msg + '</div>';
         }
 
         window.onload = fetchApps;
