@@ -6,7 +6,7 @@ var month = now.getMonth() + 1;
 var year = now.getFullYear();
 var day = now.getDay();
 
-// LocalStorage থেকে সেভ করা Offset (তারিখের পরিবর্তন) বের করা, না থাকলে 0 হবে
+ে
 var hijriOffset = parseInt(localStorage.getItem('hijriOffset')) || 0;
 
 var strgregdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -20,7 +20,7 @@ function addZero(d) {
     return d;
 }
 
-// Offset হিসাব করে আজকের নতুন হিজরি তারিখ বের করার ফাংশন
+
 function getAdjustedHijri() {
     var adjustedDate = new Date(now.getTime() + (hijriOffset * 24 * 60 * 60 * 1000));
     return GregorianToHijri(adjustedDate.getDate(), adjustedDate.getMonth() + 1, adjustedDate.getFullYear());
@@ -84,11 +84,8 @@ function importantDates() {
     document.getElementsByClassName('header')[0].innerHTML = 'Important Dates';
     var footers = document.getElementsByClassName('footerelement');
     footers[0].innerHTML = 'Main';
-    footers[0].onclick = moonPhase;
     footers[1].innerHTML = ' ';
-    footers[1].onclick = null;
     footers[2].innerHTML = ' ';
-    footers[2].onclick = null;
 }
 
 function moonPhase() {
@@ -111,11 +108,8 @@ function moonPhase() {
     document.getElementsByClassName('header')[0].innerHTML = 'Mobimoon';
     var footers = document.getElementsByClassName('footerelement');
     footers[0].innerHTML = 'I. Dates';
-    footers[0].onclick = importantDates;
     footers[1].innerHTML = 'Settings';
-    footers[1].onclick = settingsPage;
     footers[2].innerHTML = 'Exit';
-    footers[2].onclick = exit;
 }
 
 // ----------------------------------------------------
@@ -135,11 +129,8 @@ function settingsPage() {
 
     var footers = document.getElementsByClassName('footerelement');
     footers[0].innerHTML = 'Back';
-    footers[0].onclick = moonPhase;
     footers[1].innerHTML = 'Save';
-    footers[1].onclick = saveSettings;
     footers[2].innerHTML = '';
-    footers[2].onclick = null;
 }
 
 function updateSettingsUI() {
