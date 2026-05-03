@@ -440,7 +440,7 @@
         }
     }
 
-    // --- MEDIA PLAYER ---
+   /* // --- MEDIA PLAYER ---
     function playMedia(url) {
         if (!url) return;
         navigate('player');
@@ -457,6 +457,18 @@
             elVideo.src = url;
             elVideo.play();
         }
+    }*/
+    
+    function playMedia(url) {
+    if (!url) return;
+    navigate('player');
+    
+    // hls.js এর সব কোড সরিয়ে দিয়ে শুধু এই দুটি লাইন লিখুন
+    elVideo.src = url;
+    elVideo.play().catch(function(error) {
+        console.log("Playback failed:", error);
+        openModal("Stream Error: Browser doesn't support native HLS", function(){ history.back(); });
+    });
     }
 
     // --- SEARCH / DATA LOGIC ---
