@@ -1,29 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Random Iframes</title>
+  <title>Random Iframe Loader</title>
   <style>
-    body { margin:0; }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2px;
-    }
+    body { margin:0; background:#000; }
     iframe {
       width: 100%;
-      height: 150px;
+      height: 100vh;
       border: none;
     }
   </style>
 </head>
 <body>
 
-<div class="grid">
-  <iframe id="f1"></iframe>
-  <iframe id="f2"></iframe>
-  <iframe id="f3"></iframe>
-  <iframe id="f4"></iframe>
-</div>
+<iframe id="screen"></iframe>
 
 <script>
   var links = [
@@ -31,22 +21,24 @@
     "https://example2.com",
     "https://example3.com",
     "https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20331819c57a0e4e6203da3f03fe993d20",
-    "https://example5.com",
-    "https://shifat100.xtgem.com/files.html"
+    "https://example5.com"
   ];
 
-  function getRandomLink() {
+  function randomLink() {
     return links[Math.floor(Math.random() * links.length)];
   }
 
-  function loadRandom() {
-    document.getElementById("f1").src = getRandomLink();
-    document.getElementById("f2").src = getRandomLink();
-    document.getElementById("f3").src = getRandomLink();
-    document.getElementById("f4").src = getRandomLink();
+  function randomTime() {
+    // minimum 30 sec (30000 ms) + up to 20 sec extra randomness
+    return 30000 + Math.floor(Math.random() * 20000);
   }
 
-  setInterval(loadRandom, 40000);
+  function loadRandomScreen() {
+    document.getElementById("screen").src = randomLink();
+    setTimeout(loadRandomScreen, randomTime());
+  }
+
+  loadRandomScreen();
 </script>
 
 </body>
