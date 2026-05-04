@@ -1,45 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Random Iframe Loader</title>
-  <style>
-    body { margin:0; background:#000; }
-    iframe {
-      width: 100%;
-      height: 100vh;
-      border: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Link Visitor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        iframe {
+            position: absolute;
+            border: 2px solid #333;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+    </style>
 </head>
 <body>
 
-<iframe id="screen"></iframe>
+    <div class="info" id="status">Starting process...</div>
 
-<script>
-  var links = [
-    "https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20331819c57a0e4e6203da3f03fe993d20",
-    "https://example2.com",
-    "https://example3.com",
-    "https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20331819c57a0e4e6203da3f03fe993d20",
-    "https://example5.com"
-  ];
+    <script>
+        // ১. আপনার লিংকগুলোর অ্যারে এখানে দিন
+        const links = [
+            "https://www.wikipedia.org", 
+            "https://www.bing.com", 
+            "https://example.com",
+            "https://www.openstreetmap.org"
+            // আরও লিংক যোগ করুন...
+        ];
 
-  function randomLink() {
-    return links[Math.floor(Math.random() * links.length)];
-  }
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
 
-  function randomTime() {
-    // minimum 30 sec (30000 ms) + up to 20 sec extra randomness
-    return 30000 + Math.floor(Math.random() * 20000);
-  }
+        function loadRandomLink() {
+            // রেন্ডম লিংক নির্বাচন
+            const randomLink = links[Math.floor(Math.random() * links.length)];
+            
+            // রেন্ডম সাইজ নির্ধারণ (৩০০ থেকে ৮০০ পিক্সেল)
+            const width = getRandomInt(300, 800);
+            const height = getRandomInt(300, 600);
+            
+            // রেন্ডম পজিশন নির্ধারণ যাতে স্ক্রিনের বাইরে না যায়
+            const top = getRandomInt(0, window.innerHeight - height);
+            const left = getRandomInt(0, window.innerWidth - width);
 
-  function loadRandomScreen() {
-    document.getElementById("screen").src = randomLink();
-    setTimeout(loadRandomScreen, randomTime());
-  }
+            // আইফ্রেম তৈরি
+            const iframe = document.createElement('iframe');
+            iframe.src = randomLink;
+            iframe.style.width = width + 'px';
+            iframe.style.height = height + 'px';
+            iframe.style.top = top + 'px';
+            iframe.style.left = left + 'px';
 
-  loadRandomScreen();
-</script>
+            document.body.appendChild(iframe);
 
+            document.getElementById('status').innerText = `Loading: ${randomLink} | Size: ${width}x${height}`;
+
+            // ২. ৩০-৫০ সেকেন্ড পর আইফ্রেমটি বন্ধ (রিমুভ) করা
+            const closeTime = getRandomInt(30000, 50000); 
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+                console.log("Closed iframe after " + (closeTime/1000) + " seconds");
+            }, closeTime);
+
+            // ৩. পরবর্তী লিংকটি কতক্ষণ পর লোড হবে তার রেন্ডম সময় (যেমন: ৫-১৫ সেকেন্ড পর)
+            const nextLoadTime = getRandomInt(5000, 15000);
+            setTimeout(loadRandomLink, nextLoadTime);
+        }
+
+        // স্ক্রিপ্ট শুরু করা
+        window.onload = () => {
+            loadRandomLink();
+        };
+    </script>
 </body>
 </html>
