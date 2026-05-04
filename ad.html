@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Link Visitor</title>
+    <title>Auto Link Visitor with Cooldown</title>
     <style>
         body {
             margin: 0;
@@ -21,6 +21,7 @@
             padding: 10px;
             border-radius: 5px;
             z-index: 1000;
+            font-size: 14px;
         }
         iframe {
             position: absolute;
@@ -31,37 +32,59 @@
 </head>
 <body>
 
-    <div class="info" id="status">Starting process...</div>
+    <div class="info" id="status">Initializing...</div>
 
     <script>
-        // ১. আপনার লিংকগুলোর অ্যারে এখানে দিন
+        // ১. আপনার লিংকগুলোর অ্যারে
         const links = [
-            "https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20331819c57a0e4e6203da3f03fe993d20", 
+            "https://www.wikipedia.org", 
             "https://omg10.com/4/9569147", 
-            "https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20331819c57a0e4e6203da3f03fe993d20",
-            "https://omg10.com/4/9569147"
-        
+
+            "https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20331819c57a0e4e6203da3f03fe993d20"
         ];
+
+        // কোন লিংকটি শেষ কবে বন্ধ হয়েছে তা রাখার জন্য অবজেক্ট
+        const lastUsed = {}; 
+        const COOLDOWN_TIME = 2 * 60 * 1000; // ২ মিনিট (মিলি-সেকেন্ডে)
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
         function loadRandomLink() {
-            // রেন্ডম লিংক নির্বাচন
-            const randomLink = links[Math.floor(Math.random() * links.length)];
+            const currentTime = Date.now();
             
-            // রেন্ডম সাইজ নির্ধারণ (৩০০ থেকে ৮০০ পিক্সেল)
+            // ২. শুধুমাত্র সেই লিংকগুলো ফিল্টার করা হবে যাদের ২ মিনিট সময় পার হয়ে গেছে
+            const availableLinks = links.filter(link => {
+                if (!lastUsed[link]) return true; // যদি লিংকটি আগে ব্যবহার না হয়ে থাকে
+                return (currentTime - lastUsed[link]) > COOLDOWN_TIME; // ২ মিনিট পার হলে
+            });
+
+            let selectedLink;
+
+            if (availableLinks.length > 0) {
+                // অ্যাভেইলেবল লিংক থেকে একটি রেন্ডমলি নেওয়া হবে
+                selectedLink = availableLinks[Math.floor(Math.random() * availableLinks.length)];
+            } else {
+                // যদি সব লিংকই কুলডাউন পিরিয়ডে থাকে, তবে সামান্য অপেক্ষা করে আবার চেষ্টা করবে
+                document.getElementById('status').innerText = "All links in cooldown. Waiting...";
+                setTimeout(loadRandomLink, 5000); 
+                return;
+            }
+
+            // রেন্ডম সাইজ এবং পজিশন
             const width = getRandomInt(300, 800);
             const height = getRandomInt(300, 600);
-            
-            // রেন্ডম পজিশন নির্ধারণ যাতে স্ক্রিনের বাইরে না যায়
             const top = getRandomInt(0, window.innerHeight - height);
             const left = getRandomInt(0, window.innerWidth - width);
 
             // আইফ্রেম তৈরি
             const iframe = document.createElement('iframe');
-            iframe.src = randomLink;
+            iframe.src = selectedLink;
+            
+            // sandbox যোগ করা হয়েছে যাতে মেইন পেজ রিডাইরেক্ট না হয়
+            iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin');
+            
             iframe.style.width = width + 'px';
             iframe.style.height = height + 'px';
             iframe.style.top = top + 'px';
@@ -69,21 +92,25 @@
 
             document.body.appendChild(iframe);
 
-            document.getElementById('status').innerText = `Loading: ${randomLink} | Size: ${width}x${height}`;
+            document.getElementById('status').innerText = `Loading: ${selectedLink} | Cooldown active for others.`;
 
-            // ২. ৩০-৫০ সেকেন্ড পর আইফ্রেমটি বন্ধ (রিমুভ) করা
+            // ৩. ৩০-৫০ সেকেন্ড পর আইফ্রেমটি বন্ধ করা
             const closeTime = getRandomInt(30000, 50000); 
             setTimeout(() => {
                 document.body.removeChild(iframe);
-                console.log("Closed iframe after " + (closeTime/1000) + " seconds");
+                
+                // বন্ধ হওয়ার সময়টি রেকর্ড করে রাখা হচ্ছে (Cool-down শুরু)
+                lastUsed[selectedLink] = Date.now(); 
+                
+                console.log(`Closed ${selectedLink}. It will be available again in 2 minutes.`);
             }, closeTime);
 
-            // ৩. পরবর্তী লিংকটি কতক্ষণ পর লোড হবে তার রেন্ডম সময় (যেমন: ৫-১৫ সেকেন্ড পর)
+            // ৪. পরবর্তী লিংকটি ৫-১৫ সেকেন্ড পর লোড হবে
             const nextLoadTime = getRandomInt(5000, 15000);
             setTimeout(loadRandomLink, nextLoadTime);
         }
 
-        // স্ক্রিপ্ট শুরু করা
+        // স্ক্রিপ্ট শুরু
         window.onload = () => {
             loadRandomLink();
         };
