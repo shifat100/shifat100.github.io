@@ -225,7 +225,13 @@
     var channels = [];
     var filteredChannels = [];
     var currentView = 'home';
-    var focusIndex = 0;
+    var focusIndices = {
+    home: 0,
+    menu: 0,
+    search: 0,
+    network: 0
+};
+var focusIndex = 0; 
     var hlsInstance = null;
     var modalCallback = null;
 
@@ -281,7 +287,9 @@
         document.getElementById('player-view').style.display = 'none';
 
         currentView = viewName;
-        focusIndex = 0;
+// Load the saved index for this view, or default to 0 if it doesn't exist
+focusIndex = focusIndices[viewName] !== undefined ? focusIndices[viewName] : 0;
+        
 
         if (viewName === 'home') {
             document.getElementById('home-view').classList.add('active');
@@ -326,6 +334,8 @@
     }
 
     function updateFocus() {
+        focusIndices[currentView] = focusIndex; 
+
         var items = getFocusableItems();
         if (items.length === 0) return;
 
