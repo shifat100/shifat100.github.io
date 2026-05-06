@@ -141,6 +141,29 @@
         .sk-right { justify-content: flex-end; }
 
         #file-upload { display: none; }
+    /* Grid View Styles */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+.grid-container .list-item {
+    flex-direction: column;
+    text-align: center;
+    border: 1px solid var(--divider);
+    border-radius: 5px;
+    justify-content: center;
+    padding: 15px 5px;
+}
+.grid-container .channel-logo {
+    margin-right: 0;
+    margin-bottom: 8px;
+    width: 50px;
+    height: 50px;
+}
+.grid-container .text-container {
+    align-items: center;
+}
     </style>
 </head>
 <body>
@@ -163,6 +186,9 @@
         </div>
         <div class="list-item focusable" data-action="upload">
             <div class="text-container"><span class="truncate">Load Playlist</span></div>
+        </div>
+        <div class="list-item focusable" data-action="toggle-view">
+        <div class="text-container"><span class="truncate">Toggle View (List/Grid)</span></div>
         </div>
         <div class="list-item focusable" data-action="reset">
             <div class="text-container"><span class="truncate">Reset Defaults</span></div>
@@ -232,6 +258,7 @@
     network: 0
 };
 var focusIndex = 0; 
+    var viewMode = localStorage.getItem('iptv_view_mode') || 'list';
     var hlsInstance = null;
     var modalCallback = null;
 
@@ -427,6 +454,11 @@ focusIndex = focusIndices[viewName] !== undefined ? focusIndices[viewName] : 0;
                     if(res) { localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U); location.reload(); }
                 });
             }
+            else if (action === 'toggle-view') {
+    viewMode = (viewMode === 'list') ? 'grid' : 'list';
+    localStorage.setItem('iptv_view_mode', viewMode);
+    renderList(channels, listContainer); 
+            }    
             else if (action === 'about') {
                 openModal("IPTV Pro\nCloud Phone Edition v1.0", null);
                 setSoftkeys("", "OK", "");
@@ -519,6 +551,7 @@ focusIndex = focusIndices[viewName] !== undefined ? focusIndices[viewName] : 0;
 
     function renderList(data, container) {
         container.innerHTML = '';
+        container.className = (viewMode === 'grid') ? 'grid-container' : '';
         for (var i = 0; i < data.length; i++) {
             var div = document.createElement('div');
             div.className = 'list-item';
