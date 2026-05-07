@@ -144,25 +144,37 @@
     /* Grid View Styles */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    /* এখানে repeat(2, 1fr) এর বদলে 60px করা হয়েছে */
+    grid-template-columns: repeat(auto-fill, 60px); 
     gap: 10px;
+    justify-content: center; /* আইটেমগুলোকে মাঝখানে রাখার জন্য */
 }
+
 .grid-container .list-item {
+    display: flex; /* flex-direction কাজ করার জন্য display: flex প্রয়োজন */
     flex-direction: column;
     text-align: center;
     border: 1px solid var(--divider);
     border-radius: 5px;
     justify-content: center;
-    padding: 15px 5px;
+    align-items: center; /* কন্টেন্ট মাঝখানে রাখার জন্য */
+    padding: 10px 5px; /* প্যাডিং কিছুটা কমিয়ে দেওয়া হয়েছে যাতে ৬০ পিক্সেলের মধ্যে ফিট হয় */
+    width: 60px; /* আইটেমের উইডথ ফিক্সড করা হয়েছে */
 }
+
 .grid-container .channel-logo {
     margin-right: 0;
     margin-bottom: 8px;
-    width: 50px;
-    height: 50px;
+    width: 40px;  /* ৬০ পিক্সেল কন্টেইনারের জন্য লোগোটি ৪০-৫০ পিক্সেল রাখা ভালো */
+    height: 40px;
+    object-fit: cover;
 }
+
 .grid-container .text-container {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    font-size: 12px; /* ছোট স্পেসের জন্য ফন্ট সাইজ কমিয়ে দেওয়া হয়েছে */
 }
     </style>
 </head>
