@@ -473,7 +473,7 @@ const ICONS = {
                 var data = xhr.responseText;
                 localStorage.setItem('bd_iptv_playlist', data); // Cache it
                 parseM3U(data);
-                renderList(channels, listContainer);
+                renderList(channels, listContainer); history.back();
             } else {
                 openModal("Failed to load playlist.\nStatus: " + xhr.status, function() {
                     history.back();
@@ -662,7 +662,7 @@ const ICONS = {
     openModal("Refresh playlist from server?", function (res) {
         if (res) { 
             localStorage.removeItem('bd_iptv_playlist'); 
-            fetchRemotePlaylist(); 
+            fetchRemotePlaylist();
         }
     });
 }    
