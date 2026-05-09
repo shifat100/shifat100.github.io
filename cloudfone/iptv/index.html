@@ -278,33 +278,24 @@
         }
 
         /* Grid View Styles */
-        /* ডিফল্ট ভাবে ২টা আইটেম থাকবে (১২৮ পিক্সেলের জন্য) */
         .grid-container {
-            display: block;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 2px;
             width: 100%;
         }
 
-
-         @media (min-width: 160px) {
-            .grid-container .list-item {
-            display: inline-block;
-            width: 55px;
-            text-align: center;
-            border: 1px solid var(--divider);
-            border-radius: 5px;
-            box-sizing: border-box;
-            margin: 5px;
-        }
-        } 
-
         .grid-container .list-item {
-            display: inline-block;
-            width: 45px;
-            text-align: center;
-            border: 1px solid var(--divider);
-            border-radius: 5px;
-            box-sizing: border-box;
-            margin: 5px;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 6px 8px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            overflow: hidden;
+
         }
 
         .grid-container .channel-logo {
@@ -314,7 +305,6 @@
 
         .grid-container .text-container {
             display: none;
-            /* ছোট স্ক্রিনের জন্য ফন্ট সাইজ আরও কমানো হয়েছে */
         }
     </style>
 </head>
