@@ -389,6 +389,8 @@
     </div>
 
     <script>
+        // Replace with your actual .m3u link
+var PLAYLIST_URL = "https://raw.githubusercontent.com/sanyahmed07/playlist1/refs/heads/main/playlist.m3u";
         // --- DATA ---
         var DEFAULT_M3U = `#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/T_Sports_logo.svg/500px-T_Sports_logo.svg.png" group-title="Sany Sports",T Sports
 http://luckonline.eu/live/y49sz6KMQs/6115263489/1142.ts
@@ -573,7 +575,7 @@ http://ytoxw6un.ottclub.xyz/iptv/VSQZTL9D68WBD9/19203/index.m3u8
         var skRSK = document.getElementById('sk-rsk');
 
         // --- INITIALIZATION ---
-        window.onload = function () {
+        /*window.onload = function () {
             var savedData = localStorage.getItem('bd_iptv_playlist') || DEFAULT_M3U;
             parseM3U(savedData);
             renderList(channels, listContainer);
@@ -581,7 +583,54 @@ http://ytoxw6un.ottclub.xyz/iptv/VSQZTL9D68WBD9/19203/index.m3u8
 
             history.replaceState({ view: 'home' }, "Home", "#home");
             updateUI('home');
-        };
+        };*/
+        window.onload = function () {
+    var savedData = localStorage.getItem('bd_iptv_playlist');
+    
+    if (savedData) {
+        // Load from cache for instant startup
+        parseM3U(savedData);
+        renderList(channels, listContainer);
+    } else {
+        // No cache, fetch from URL
+        fetchRemotePlaylist();
+    }
+
+    setupTouchControls();
+    history.replaceState({ view: 'home' }, "Home", "#home");
+    updateUI('home');
+};
+
+        function fetchRemotePlaylist() {
+    openModal("Loading Playlist...", null);
+    setSoftkeys("", "Wait", "");
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', PLAYLIST_URL, true);
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            closeModal();
+            if (xhr.status === 200) {
+                var data = xhr.responseText;
+                localStorage.setItem('bd_iptv_playlist', data); // Cache it
+                parseM3U(data);
+                renderList(channels, listContainer);
+            } else {
+                openModal("Failed to load playlist.\nStatus: " + xhr.status, function() {
+                    history.back();
+                });
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+        closeModal();
+        openModal("Network error occurred.", null);
+    };
+
+    xhr.send();
+}
 
         // --- ROUTER (HISTORY API) ---
         window.onpopstate = function (e) {
@@ -746,11 +795,19 @@ http://ytoxw6un.ottclub.xyz/iptv/VSQZTL9D68WBD9/19203/index.m3u8
                 if (action === 'search') navigate('search');
                 else if (action === 'network') navigate('network');
                 else if (action === 'upload') document.getElementById('file-upload').click();
-                else if (action === 'reset') {
+                /*else if (action === 'reset') {
                     openModal("Reset all data?", function (res) {
                         if (res) { localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U); location.reload(); }
                     });
-                }
+                }*/
+                else if (action === 'reset') {
+    openModal("Refresh playlist from server?", function (res) {
+        if (res) { 
+            localStorage.removeItem('bd_iptv_playlist'); 
+            fetchRemotePlaylist(); 
+        }
+    });
+}    
                 else if (action === 'toggle-view') {
                     viewMode = (viewMode === 'list') ? 'grid' : 'list';
                     localStorage.setItem('iptv_view_mode', viewMode);
