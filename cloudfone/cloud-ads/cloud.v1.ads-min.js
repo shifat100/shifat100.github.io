@@ -1,6 +1,5 @@
 (function (window) {
 
-
     const bannerAds = [
         {
             type: 'custom',
