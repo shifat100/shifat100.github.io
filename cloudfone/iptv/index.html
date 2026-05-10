@@ -64,7 +64,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 30px; /*var(--header-h);*/
+            height: 30px;
+            /*var(--header-h);*/
             background-color: var(--brand);
             display: flex;
             align-items: center;
@@ -138,6 +139,17 @@
         .group-title {
             font-size: var(--font-sm);
             color: #ccc;
+        }
+
+        .ad-container {
+            padding: var(--list-p);
+            border-bottom: 1px solid var(--divider);
+            background: rgba(255, 255, 255, 0.04);
+            color: #ccc;
+            font-size: var(--font-sm);
+            text-align: center;
+            display: block;
+            pointer-events: auto;
         }
 
         .list-item.focused .marquee-text {
@@ -277,7 +289,14 @@
         #file-upload {
             display: none;
         }
-       svg { fill: white; width: 18px; height: 18px; pointer-events: none; }
+
+        svg {
+            fill: white;
+            width: 18px;
+            height: 18px;
+            pointer-events: none;
+        }
+
         /* Grid View Styles */
         .grid-container {
             display: grid;
@@ -307,6 +326,10 @@
         .grid-container .text-container {
             display: none;
         }
+
+        .grid-container .ad-container {
+            grid-column: 1 / -1;
+        }
     </style>
 </head>
 
@@ -318,6 +341,7 @@
     <!-- 1. HOME VIEW (Channel List) -->
     <div id="home-view" class="view-section active">
         <div id="channel-list"></div>
+        <div class="list-item focusable ad-container" style="margin-top: 10px;">Advertisement</div>
     </div>
 
     <!-- 2. MENU VIEW -->
@@ -340,6 +364,7 @@
         <div class="list-item focusable" data-action="about">
             <div class="text-container"><span class="truncate">About</span></div>
         </div>
+        <div class="list-item focusable ad-container">Advertisement</div>
     </div>
 
     <!-- 3. SEARCH VIEW -->
@@ -374,14 +399,21 @@
 
     <!-- Softkeys -->
     <div id="softkeys">
-        <div class="sk-btn sk-left" id="sk-lsk"><svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></div>
-        <div class="sk-btn sk-center" id="sk-csk"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-        <div class="sk-btn sk-right" id="sk-rsk"><svg viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H10v2h10v14H10v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg></div>
+        <div class="sk-btn sk-left" id="sk-lsk"><svg viewBox="0 0 24 24">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+            </svg></div>
+        <div class="sk-btn sk-center" id="sk-csk"><svg viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg></div>
+        <div class="sk-btn sk-right" id="sk-rsk"><svg viewBox="0 0 24 24">
+                <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H10v2h10v14H10v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+            </svg></div>
     </div>
+    <script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
 
     <script>
         // Replace with your actual .m3u link
-var PLAYLIST_URL = "https://raw.githubusercontent.com/sanyahmed07/playlist1/refs/heads/main/playlist.m3u";
+        var PLAYLIST_URL = "https://raw.githubusercontent.com/sanyahmed07/playlist1/refs/heads/main/playlist.m3u";
         // --- DATA ---
         var DEFAULT_M3U = `
         #EXTM3U
@@ -394,7 +426,7 @@ http://103.60.204.26:3255/TSportsHD/tracks-v1a1/mono.m3u8
 #EXTINF:-1 group-title="Movies" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Big.Buck.Bunny.-.Opening.Screen.png/960px-Big.Buck.Bunny.-.Opening.Screen.png",Sample Big Buck Bunny
 https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 `;
-const ICONS = {
+        const ICONS = {
             play: `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`,
             pause: `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`,
             menu: `<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`,
@@ -403,7 +435,7 @@ const ICONS = {
             close: `<svg viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H10v2h10v14H10v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`,
             check: `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`
         };
-        
+
         // --- APP STATE ---
         var channels = [];
         var filteredChannels = [];
@@ -432,6 +464,24 @@ const ICONS = {
         var skCSK = document.getElementById('sk-csk');
         var skRSK = document.getElementById('sk-rsk');
 
+        function loadAds() {
+            var containers = document.querySelectorAll('.ad-container');
+            for (var i = 0; i < containers.length; i++) {
+                (function (container) {
+                    getCloudAd({
+                        publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+                        container: container,
+                        onerror: function (err) { console.error('CloudAd Banner Error:', err); },
+                        onready: function (ad) {
+                            // Only update the reference once the new ad is actually ready
+                            container.cloudAd = ad;
+                            ad.call('display');
+                        },
+                    });
+                })(containers[i]);
+            }
+        }
+
         // --- INITIALIZATION ---
         /*window.onload = function () {
             var savedData = localStorage.getItem('bd_iptv_playlist') || DEFAULT_M3U;
@@ -443,52 +493,52 @@ const ICONS = {
             updateUI('home');
         };*/
         window.onload = function () {
-    var savedData = localStorage.getItem('bd_iptv_playlist');
-    
-    if (savedData) {
-        // Load from cache for instant startup
-        parseM3U(savedData);
-        renderList(channels, listContainer);
-    } else {
-        // No cache, fetch from URL
-        fetchRemotePlaylist();
-    }
+            var savedData = localStorage.getItem('bd_iptv_playlist');
 
-    setupTouchControls();
-    history.replaceState({ view: 'home' }, "Home", "#home");
-    updateUI('home');
-};
+            if (savedData) {
+                // Load from cache for instant startup
+                parseM3U(savedData);
+                renderList(channels, listContainer);
+            } else {
+                // No cache, fetch from URL
+                fetchRemotePlaylist();
+            }
+
+            setupTouchControls();
+            history.replaceState({ view: 'home' }, "Home", "#home");
+            updateUI('home');
+        };
 
         function fetchRemotePlaylist() {
-    openModal("Loading Playlist...", null);
-    setSoftkeys("", "Wait", "");
+            openModal("Loading Playlist...", null);
+            setSoftkeys("", "Wait", "");
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', PLAYLIST_URL, true);
-    
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            closeModal();
-            if (xhr.status === 200) {
-                var data = xhr.responseText;
-                localStorage.setItem('bd_iptv_playlist', data); // Cache it
-                parseM3U(data);
-                renderList(channels, listContainer); history.back();
-            } else {
-                openModal("Failed to load playlist.\nStatus: " + xhr.status, function() {
-                    history.back();
-                });
-            }
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', PLAYLIST_URL, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    closeModal();
+                    if (xhr.status === 200) {
+                        var data = xhr.responseText;
+                        localStorage.setItem('bd_iptv_playlist', data); // Cache it
+                        parseM3U(data);
+                        renderList(channels, listContainer); history.back();
+                    } else {
+                        openModal("Failed to load playlist.\nStatus: " + xhr.status, function () {
+                            history.back();
+                        });
+                    }
+                }
+            };
+
+            xhr.onerror = function () {
+                closeModal();
+                openModal("Network error occurred.", null);
+            };
+
+            xhr.send();
         }
-    };
-
-    xhr.onerror = function () {
-        closeModal();
-        openModal("Network error occurred.", null);
-    };
-
-    xhr.send();
-}
 
         // --- ROUTER (HISTORY API) ---
         window.onpopstate = function (e) {
@@ -557,8 +607,8 @@ const ICONS = {
 
         // --- NAVIGATION & FOCUS ---
         function getFocusableItems() {
-            if (currentView === 'home') return listContainer.children;
-            if (currentView === 'menu') return menuList.children;
+            if (currentView === 'home') return document.querySelectorAll('#home-view .list-item, #home-view .ad-container');
+            if (currentView === 'menu') return menuList.querySelectorAll('.list-item.focusable');
             if (currentView === 'search') return document.querySelectorAll('#search-view .focusable, #search-results .list-item');
             if (currentView === 'network') return document.querySelectorAll('#network-view .focusable');
             return [];
@@ -646,26 +696,33 @@ const ICONS = {
             if (!target) return;
 
             if (currentView === 'home') {
-                playMedia(channels[focusIndex].url);
+                if (target.classList.contains('ad-container')) {
+                    window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_blank');
+                } else {
+                    playMedia(target.dataset.channelUrl);
+                }
             }
             else if (currentView === 'menu') {
+                if (target.classList.contains('ad-container')) {
+                    if (target.cloudAd && typeof target.cloudAd.click === 'function') {
+                        window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_blank');
+                    } else {
+                        console.log("Ad not loaded yet...");
+                        // Optional: trigger a manual reload of the ad if it's missing
+                    }
+                }
                 var action = target.getAttribute('data-action');
                 if (action === 'search') navigate('search');
                 else if (action === 'network') navigate('network');
                 else if (action === 'upload') document.getElementById('file-upload').click();
-                /*else if (action === 'reset') {
-                    openModal("Reset all data?", function (res) {
-                        if (res) { localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U); location.reload(); }
-                    });
-                }*/
                 else if (action === 'reset') {
-    openModal("Refresh playlist from server?", function (res) {
-        if (res) { 
-            localStorage.removeItem('bd_iptv_playlist'); 
-            fetchRemotePlaylist();
-        }
-    });
-}    
+                    openModal("Refresh playlist from server?", function (res) {
+                        if (res) {
+                            localStorage.removeItem('bd_iptv_playlist');
+                            fetchRemotePlaylist();
+                        }
+                    });
+                }
                 else if (action === 'toggle-view') {
                     viewMode = (viewMode === 'list') ? 'grid' : 'list';
                     localStorage.setItem('iptv_view_mode', viewMode);
@@ -679,8 +736,13 @@ const ICONS = {
             }
             else if (currentView === 'search') {
                 if (target.tagName === 'INPUT') return;
-                var actualIndex = focusIndex - 1;
-                if (filteredChannels[actualIndex]) playMedia(filteredChannels[actualIndex].url);
+                if (target.classList.contains('ad-container')) {
+                    if (target.cloudAd) {
+                        window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_blank');
+                    }
+                } else if (target.dataset.channelUrl) {
+                    playMedia(target.dataset.channelUrl);
+                }
             }
             else if (currentView === 'network') {
                 if (target.id === 'net-play-btn') {
@@ -767,16 +829,37 @@ const ICONS = {
             container.className = (viewMode === 'grid') ? 'grid-container' : '';
             for (var i = 0; i < data.length; i++) {
                 var div = document.createElement('div');
-                div.className = 'list-item';
+                div.className = 'list-item focusable';
+                div.dataset.channelUrl = data[i].url;
+                div.dataset.channelIndex = i;
                 div.innerHTML = '<img src="' + (data[i].logo || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=') + '" class="channel-logo" onerror="this.style.display=\'none\'">' +
                     '<div class="text-container"><span class="truncate">' + data[i].name + '</span><span class="group-title truncate">' + data[i].group + '</span></div>';
 
-                // Touch click handler for dynamically created items
                 (function (element) {
                     element.onclick = function () { handleTouchSelect(element); };
                 })(div);
 
                 container.appendChild(div);
+
+                // --- FIXED AD SECTION ---
+                if ((i + 1) % 10 === 0) {
+                    var adDiv = document.createElement('div');
+                    adDiv.className = 'list-item focusable ad-container';
+                    adDiv.innerText = 'Advertisement';
+
+                    // Initialize the Ad SDK for this specific new div
+                    getCloudAd({
+                        publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+                        container: adDiv,
+                        onready: function (ad) {
+                            adDiv.cloudAd = ad; // Attach the ad instance to the element
+                            ad.call('display');
+                        },
+                    });
+
+                    adDiv.onclick = function () { handleTouchSelect(adDiv); };
+                    container.appendChild(adDiv);
+                }
             }
         }
 
@@ -848,6 +931,16 @@ const ICONS = {
             // Modal Click (Defaults to Center/OK action)
             document.getElementById('modal-box').onclick = function () { triggerKey('Enter'); };
         }
+
+        loadAds();
+        setInterval(function () {
+            loadAds();
+        }, 30000);
+
+        getCloudAd({
+            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+            onready: ad => { ad.call('display'); }
+        });
     </script>
 </body>
 
