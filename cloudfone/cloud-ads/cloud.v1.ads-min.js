@@ -1,5 +1,3 @@
-(function (window) {
-
     const bannerAds = [
         {
             type: 'custom',
@@ -202,5 +200,3 @@
             if (config.onready) config.onready(ad);
         }, 300);
     };
-
-})(window);
