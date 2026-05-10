@@ -11,7 +11,7 @@
     const bannerAds = [
         {
             type: 'custom',
-            imageUrl: 'images/banner/' + (Math.floor(Math.random() * 9) + 1) + '.png',
+            imageUrl: 'https://shifat100.github.io/cloudfone/cloud-ads/images/banner/' + (Math.floor(Math.random() * 9) + 1) + '.png',
             clickUrl: 'https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20'
         },
         {
