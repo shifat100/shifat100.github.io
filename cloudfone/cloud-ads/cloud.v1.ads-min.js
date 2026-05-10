@@ -7,13 +7,13 @@
             imageUrl: 'images/banner/' + (Math.floor(Math.random() * 9) + 1) + '.png',
             clickUrl: 'https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20'
         },
-        // {
-        //     type: 'adsterra',
-        //     adsterraKey: '3768c5dda0b47669346bd50d7189ab3b',
-        //     adsterraSrc: 'https://matcheshonoraryunderwater.com/3768c5dda0b47669346bd50d7189ab3b/invoke.js',
-        //     width: 468,
-        //     height: 60
-        // }
+        {
+            type: 'adsterra',
+            adsterraKey: '3768c5dda0b47669346bd50d7189ab3b',
+            adsterraSrc: 'https://matcheshonoraryunderwater.com/3768c5dda0b47669346bd50d7189ab3b/invoke.js',
+            width: 468,
+            height: 60
+        }
     ];
 
     const fullscreenAds = [
