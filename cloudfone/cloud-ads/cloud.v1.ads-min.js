@@ -176,11 +176,15 @@
             
             const adInstance = {
                 on: (name, cb) => { events[name] = cb; },
-                call: (cmd) => { if (cmd === 'display') displayAd(config, selectedAd, triggerEvent); },
-                click: () => { 
-                    triggerEvent('click'); 
-                    if (selectedAd.clickUrl) {
-                        window.open(selectedAd.clickUrl, '_blank');
+                call: (cmd) => { 
+                    if (cmd === 'display') {
+                        displayAd(config, selectedAd, triggerEvent); 
+                    } else if (cmd === 'click') {
+                        // ad.call('click') কল করলে এই অংশ কাজ করবে
+                        triggerEvent('click'); 
+                        if (selectedAd.clickUrl) {
+                            window.open(selectedAd.clickUrl, '_blank');
+                        }
                     }
                 }
             };
