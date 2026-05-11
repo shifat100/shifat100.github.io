@@ -1,14 +1,13 @@
 /**
- * CloudAds SDK - Refactored for Direct Calling
+ * CloudAds SDK - KaiAds Style Direct Calling & Fullscreen Key Blocker
  */
 (function (window, document) {
     'use strict';
 
-    // 1. Setup a command queue to prevent "ReferenceError"
-    // If getCloudAd is called before this script loads, the request is saved here.
-    window.cloudAdsQueue = window.cloudAdsQueue || [];
+    // Command queue to prevent "ReferenceError"
+    window.cloudAdsQueue = window.cloudAdsQueue ||[];
 
-    const bannerAds = [
+    const bannerAds =[
         {
             type: 'custom',
             imageUrl: 'https://shifat100.github.io/cloudfone/cloud-adsimages/banner/' + (Math.floor(Math.random() * 9) + 1) + '.png',
@@ -23,7 +22,7 @@
         }
     ];
 
-    const fullscreenAds = [
+    const fullscreenAds =[
         { clickUrl: 'https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20' }
     ];
 
@@ -35,10 +34,10 @@
         const style = document.createElement('style');
         style.id = 'cloudads-sdk-styles';
         style.innerHTML = `
-            .cloudads-fs-wrapper { position: fixed; inset: 0; width: 100%; height: 100%; min-height: 100vh; background-color: #000000; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Roboto', Arial, sans-serif; color: #FFFFFF; z-index: 9999; overflow: hidden; }
+            .cloudads-fs-wrapper { position: fixed; inset: 0; width: 100%; height: 100%; min-height: 100vh; background-color: #000000; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Roboto', Arial, sans-serif; color: #FFFFFF; z-index: 999999; overflow: hidden; }
             .cloudads-header { width: 100%; flex: 0 0 auto; background-color: #0093E0; display: none; align-items: center; justify-content: center; font-weight: bold; height: 20px; font-size: 10px; }
-            .cloudads-body { width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; background-color: #202020; border: none; cursor: pointer; padding: 0; min-height: 0; overflow: hidden; }
-            .cloudads-body:focus { background-color: #05AEF2; outline: none; }
+            .cloudads-body { width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; background-color: #202020; border: none; cursor: pointer; padding: 0; min-height: 0; overflow: hidden; outline: none; }
+            .cloudads-body:focus { background-color: #05AEF2; }
             .cloudads-img { width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
             .cloudads-footer { width: 100%; flex: 0 0 auto; background-color: #202020; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #4a4a4a; height: 20px; padding: 0 4px; font-size: 10px; position: relative; }
             .cloudads-lsk, .cloudads-rsk { color: #FFFFFF; cursor: pointer; font-weight: bold; }
@@ -74,24 +73,54 @@
             document.body.appendChild(adWrapper);
 
             const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_blank'); };
+            
             const handleClose = () => {
                 document.body.removeChild(adWrapper);
                 document.body.style.overflow = previousBodyOverflow;
+                // ইভেন্ট লিসেনারগুলো রিমুভ করা হচ্ছে অ্যাড ক্লোজ হলে
                 document.removeEventListener('keydown', handleAdKeyDown, true);
+                document.removeEventListener('keyup', blockKeyUp, true);
                 triggerEvent('close');
             };
 
+            // সম্পূর্ণ কীবোর্ড কন্ট্রোল এবং ব্লক করার লজিক
             const handleAdKeyDown = (event) => {
-                if (event.key === 'Escape' || event.key === 'Esc') handleClose();
-                if (event.key === 'Enter') handleOpen();
+                // পেজের অন্যান্য স্ক্রিপ্টকে কি-বোর্ড ইভেন্ট পাওয়া থেকে পুরোপুরি ব্লক করা হচ্ছে
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+
+                const key = event.key || event.keyIdentifier;
+
+                // KaiOS এবং Web এর জন্য Close বাটন ম্যাপ (SoftLeft, Backspace, Esc)
+                if (key === 'Escape' || key === 'Esc' || key === 'Backspace' || key === 'SoftLeft' || key === 'BrowserBack') {
+                    handleClose();
+                } 
+                // KaiOS এবং Web এর জন্য Open বাটন ম্যাপ (Enter, SoftRight)
+                else if (key === 'Enter' || key === 'SoftRight') {
+                    handleOpen();
+                }
+                // অন্য কোনো কি চাপলে কিছুই হবে না, কিন্তু পেজও কোনো রেসপন্স করবে না
             };
 
+            // KeyUp ইভেন্টগুলোকেও ব্লক করা হচ্ছে যেন গেমিং বা অন্য পেজের লজিক ট্রিগার না হয়
+            const blockKeyUp = (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+            };
+
+            // 'true' ব্যবহার করে Capture Phase এ ইভেন্ট ধরা হয়েছে (যাতে সবার আগে SDK ইভেন্ট পায়)
             document.addEventListener('keydown', handleAdKeyDown, true);
+            document.addEventListener('keyup', blockKeyUp, true);
+
             document.getElementById('cloudads-ad-body').onclick = handleOpen;
             document.getElementById('cloudads-btn-open').onclick = handleOpen;
             document.getElementById('cloudads-btn-close').onclick = handleClose;
+            
             setTimeout(() => document.getElementById('cloudads-ad-body').focus(), 50);
         } else {
+            // Banner Ad Logic
             config.container.innerHTML = '';
             if (selectedAd.type === 'adsterra') {
                 const scalerWrapper = document.createElement('div');
@@ -128,8 +157,6 @@
         triggerEvent('display');
     }
 
-    // The core logic function
-   // --- FIXED SDK PART ---
     const processAdRequest = function (config) {
         if (!config || !config.publisher) return;
         
@@ -150,7 +177,6 @@
             const adInstance = {
                 on: (name, cb) => { events[name] = cb; },
                 call: (cmd) => { if (cmd === 'display') displayAd(config, selectedAd, triggerEvent); },
-                // ADD THIS CLICK METHOD BELOW:
                 click: () => { 
                     triggerEvent('click'); 
                     if (selectedAd.clickUrl) {
@@ -163,12 +189,10 @@
         }, 300);
     };
 
-    // Define the global function
     window.getCloudAd = function (config) {
         processAdRequest(config);
     };
 
-    // 2. Process any requests that were queued before the script loaded
     while (window.cloudAdsQueue.length > 0) {
         const queuedConfig = window.cloudAdsQueue.shift();
         processAdRequest(queuedConfig);
