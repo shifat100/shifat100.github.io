@@ -19,7 +19,7 @@ This is a simple client-side ad SDK for displaying banner and fullscreen ads in 
 <script src="cloud.v1.ads.js"></script>
 ```
 ```html
-<script src="https://raw.githubusercontent.com/shifat100/shifat100.github.io/refs/heads/main/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
+<script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
 ```
 
 2. Request a banner ad:
