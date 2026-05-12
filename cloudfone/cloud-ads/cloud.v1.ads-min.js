@@ -56,8 +56,9 @@
                         <img src="${selectedAd.imageUrl}" class="cloudads-img" alt="Ad">
                     </button>
                     <div class="cloudads-footer">
-                        <div id="cloudads-btn-open" class="cloudads-lsk">Close</div>
-                        <div id="cloudads-btn-close" class="cloudads-rsk">Open</div>
+                        <!-- FIXED: Swapped IDs so 'Close' triggers handleClose and 'Open' triggers handleOpen -->
+                        <div id="cloudads-btn-close" class="cloudads-lsk">Close</div>
+                        <div id="cloudads-btn-open" class="cloudads-rsk">Open</div>
                     </div>
                 </div>`;
             document.body.appendChild(adWrapper);
@@ -85,6 +86,7 @@
             document.addEventListener('keyup', blockKeyUp, true);
 
             document.getElementById('cloudads-ad-body').onclick = handleOpen;
+            // Now clicking the text correctly executes the mapped functions
             document.getElementById('cloudads-btn-open').onclick = handleOpen;
             document.getElementById('cloudads-btn-close').onclick = handleClose;
             
