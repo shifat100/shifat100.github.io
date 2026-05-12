@@ -48,22 +48,25 @@
             const previousBodyOverflow = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
             
+            // Detect Android device
+            const isAndroid = /android/i.test(navigator.userAgent || navigator.vendor || window.opera);
+
             const adWrapper = document.createElement('div');
             adWrapper.innerHTML = `
                 <div class="cloudads-fs-wrapper">
+                    ${isAndroid ? '<div id="cloudads-btn-cross" style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); color:white; border:2px solid white; display:flex; align-items:center; justify-content:center; font-size:24px; font-family:sans-serif; font-weight:bold; cursor:pointer; z-index:999999;">&times;</div>' : ''}
                     <div class="cloudads-header">Advertisement</div>
                     <button id="cloudads-ad-body" class="cloudads-body">
                         <img src="${selectedAd.imageUrl}" class="cloudads-img" alt="Ad">
                     </button>
                     <div class="cloudads-footer">
-                        <!-- FIXED: Swapped IDs so 'Close' triggers handleClose and 'Open' triggers handleOpen -->
                         <div id="cloudads-btn-close" class="cloudads-lsk">Close</div>
                         <div id="cloudads-btn-open" class="cloudads-rsk">Open</div>
                     </div>
                 </div>`;
             document.body.appendChild(adWrapper);
 
-            const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_blank'); };
+            const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_self'); };
             
             const handleClose = () => {
                 document.body.removeChild(adWrapper);
@@ -86,9 +89,13 @@
             document.addEventListener('keyup', blockKeyUp, true);
 
             document.getElementById('cloudads-ad-body').onclick = handleOpen;
-            // Now clicking the text correctly executes the mapped functions
             document.getElementById('cloudads-btn-open').onclick = handleOpen;
             document.getElementById('cloudads-btn-close').onclick = handleClose;
+            
+            // Attach close event to the cross button if it's an Android device
+            if (isAndroid) {
+                document.getElementById('cloudads-btn-cross').onclick = handleClose;
+            }
             
             setTimeout(() => document.getElementById('cloudads-ad-body').focus(), 50);
             triggerEvent('display');
