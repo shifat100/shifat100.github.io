@@ -66,7 +66,7 @@
                 </div>`;
             document.body.appendChild(adWrapper);
 
-            const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_self'); };
+            const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_blank'); };
             
             const handleClose = () => {
                 document.body.removeChild(adWrapper);
