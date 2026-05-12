@@ -62,7 +62,7 @@
                 </div>`;
             document.body.appendChild(adWrapper);
 
-            const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_blank'); };
+            const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_self'); };
             
             const handleClose = () => {
                 document.body.removeChild(adWrapper);
@@ -106,7 +106,7 @@
                 const key = event.key || event.keyIdentifier;
                 if (key === 'Enter' || key === 'SoftRight') {
                     triggerEvent('click');
-                    if (selectedAd.clickUrl) window.open(selectedAd.clickUrl, '_blank');
+                    if (selectedAd.clickUrl) window.open(selectedAd.clickUrl, '_self');
                 }
             });
 
@@ -142,7 +142,7 @@
                 let w = config.w ? config.w + 'px' : '100%';
                 
                 bannerImg.style.cssText = `width:${w}; height:${h}; max-height:264px; object-fit:fill; cursor:pointer;`;
-                bannerImg.onclick = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_blank'); };
+                bannerImg.onclick = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_self'); };
                 container.appendChild(bannerImg);
             }
             triggerEvent('display');
@@ -181,7 +181,7 @@
                     } else if (cmd === 'click') {
                         triggerEvent('click'); 
                         if (selectedAd.clickUrl) {
-                            window.open(selectedAd.clickUrl, '_blank');
+                            window.open(selectedAd.clickUrl, '_self');
                         }
                     }
                 }
