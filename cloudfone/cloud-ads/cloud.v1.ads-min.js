@@ -182,6 +182,8 @@
                         triggerEvent('click'); 
                         if (selectedAd.clickUrl) {
                             window.open(selectedAd.clickUrl, '_self');
+                        } else {
+                             window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_self');
                         }
                     }
                 }
