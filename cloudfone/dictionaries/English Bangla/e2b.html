@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cm-gray-020': '#202020',
+                        'cm-blue-009': '#0093E0',
+                        'cm-blue-05a': '#05AEF2',
+                        'cm-green-00a': '#00A539',
+                    },
+                    screens: {
+                        'cm-qvga': { 'min-width': '15rem' }, // 240px and up
+                        'cm-qqvga': { 'max-width': '8rem' },  // 128px
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
+    <script src="https://shifat100.github.io/key-simulator/Keysim-min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Focus state for D-pad Navigation */
+        .focusable:focus {
+            background-color: #05AEF2 !important;
+            color: #FFFFFF !important;
+            font-weight: bold !important;
+            outline: none !important;
+        }
+
+        /* Hide native scrollbar for feature phone aesthetic */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white w-full h-screen flex flex-col overflow-hidden select-none">
+
+    <!-- Loader Overlay -->
+    <div id="loader" style="display: none;"
+        class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center">
+        <div class="w-6 h-6 border-4 border-cm-blue-009 border-t-transparent rounded-full animate-spin mb-2"></div>
+        <span class="text-[10px] uppercase text-white tracking-wider">Wait...</span>
+    </div>
+
+    <!-- Custom Alert Overlay (New Feature) -->
+    <div id="custom-alert" class="hidden fixed inset-0 z-[60] bg-black/90 flex-col items-center justify-center px-2">
+        <div class="bg-cm-gray-020 border border-gray-600 rounded-[2px] p-3 w-full text-center">
+            <p id="alert-message" class="text-[10px] cm-qvga:text-sm text-white mb-4"></p>
+            <button id="alert-ok-btn"
+                class="focusable w-full bg-cm-blue-009 text-white px-2 py-1.5 rounded-[2px] text-[10px] cm-qvga:text-sm font-bold outline-none">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="w-full shrink-0 h-[20px] cm-qvga:h-[40px] bg-cm-blue-009 flex items-center px-1 cm-qvga:px-2 z-40">
+        <h1 id="header-title" class="text-[10px] cm-qvga:text-sm font-bold truncate">Select Dictionary</h1>
+    </header>
+
+    <!-- Selection Screen -->
+    <div id="selection-screen"
+        class="flex-1 w-full flex flex-col justify-center px-1 cm-qvga:px-3 space-y-1.5 cm-qvga:space-y-4 bg-black">
+        <button
+            class="focusable w-full bg-cm-gray-020 border border-gray-600 px-1 py-1.5 cm-qvga:px-2 cm-qvga:py-4 text-[9px] cm-qvga:text-sm font-bold outline-none text-white text-center rounded-[2px] cm-qvga:rounded-sm"
+            data-dict="e2b" tabindex="0">
+            English To Bangla
+        </button>
+
+        <button
+            class="focusable w-full bg-cm-gray-020 border border-gray-600 px-1 py-1.5 cm-qvga:px-2 cm-qvga:py-4 text-[9px] cm-qvga:text-sm font-bold outline-none text-white text-center rounded-[2px] cm-qvga:rounded-sm"
+            data-dict="b2e" tabindex="0">
+            Bangla To English
+        </button>
+
+        <div id="menu-ad"
+            class="focusable w-full bg-[#151515] border border-gray-700 px-1 py-1.5 cm-qvga:px-2 cm-qvga:py-4 text-[6px] cm-qvga:text-xs font-bold outline-none text-gray-400 text-center rounded-[2px] cm-qvga:rounded-sm cursor-pointer ad-container"
+            tabindex="0">
+            Advertisement
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="dictionary-screen" class="flex-1 flex-col hidden w-full overflow-hidden">
+        <div class="w-full shrink-0 bg-cm-gray-020 px-1 py-1 cm-qvga:px-2 cm-qvga:py-2 border-b border-gray-700">
+            <input type="text" id="userinput"
+                class="focusable w-full bg-black border border-gray-600 px-1 py-1 cm-qvga:px-2 cm-qvga:py-1.5 text-[10px] cm-qvga:text-sm outline-none text-white placeholder-gray-400"
+                placeholder="Type Your Text" tabindex="0">
+        </div>
+
+        <main id="app" class="flex-1 w-full overflow-y-auto no-scrollbar px-1 cm-qvga:px-2 py-1">
+            <div class="text-center text-gray-500 text-[10px] cm-qvga:text-xs mt-4">No data loaded yet</div>
+        </main>
+    </div>
+
+    <!-- Softkey Footer -->
+    <footer
+        class="w-full shrink-0 h-[20px] cm-qvga:h-[40px] bg-cm-gray-020 flex justify-between items-center px-1 cm-qvga:px-2 text-[8px] cm-qvga:text-xs font-bold border-t border-gray-800 z-40">
+        <div class="text-left w-1/3 truncate text-white"><span id="lsk-text">About</span></div>
+        <div class="text-center w-1/3 truncate text-white">OK</div>
+        <div class="text-right w-1/3 truncate text-white" id="rsk-text">Exit</div>
+    </footer>
+
+    <script>
+        const selScreen = document.getElementById('selection-screen');
+        const dictScreen = document.getElementById('dictionary-screen');
+        const headerTitle = document.getElementById('header-title');
+        const app = document.getElementById('app');
+        const userinput = document.getElementById('userinput');
+        const loader = document.getElementById('loader');
+        const lskText = document.getElementById('lsk-text');
+        const rskText = document.getElementById('rsk-text');
+
+        // Custom Alert Elements
+        const customAlertBox = document.getElementById('custom-alert');
+        const alertMessage = document.getElementById('alert-message');
+        const alertOkBtn = document.getElementById('alert-ok-btn');
+
+        let dictionaryData = {};
+        let currentDict = 'e2b';
+
+        // Lazy Loading Variables
+        let allMatchedWords = [];
+        let currentlyRenderedIndex = 0;
+        const CHUNK_SIZE = 50;
+        let globalFocusCounter = 1;
+        let adCounter = 0;
+
+        // Custom Alert Setup
+        let isAlertOpen = false;
+        let elementBeforeAlert = null;
+        var cloudAds = null;
+
+        function loadAds() {
+            var containers = document.querySelectorAll('.ad-container');
+            for (var i = 0; i < containers.length; i++) {
+                (function (container) {
+                    getCloudAd({
+                        publisher: '1748228c05773e8ab91b3c2a48efae79',
+                        container: container,
+                        onerror: function (err) { console.error('CloudAd Banner Error:', err); },
+                        onready: function (ad) {
+                            container.cloudAd = ad;
+                            cloudAds = ad;
+                            ad.call('display');
+                        },
+                    });
+                })(containers[i]);
+            }
+        }
+
+        window.alert = function (msg) {
+            isAlertOpen = true;
+            elementBeforeAlert = document.activeElement; // Save previously focused element
+            alertMessage.innerText = msg;
+            customAlertBox.classList.remove('hidden');
+            customAlertBox.classList.add('flex');
+
+            // Temporary softkey change for alert
+            lskText.innerText = '';
+            rskText.innerText = 'Close';
+
+            focusElement(alertOkBtn);
+        };
+
+        function closeAlert() {
+            isAlertOpen = false;
+            customAlertBox.classList.remove('flex');
+            customAlertBox.classList.add('hidden');
+
+            // Restore proper softkey texts based on context
+            if (!selScreen.classList.contains('hidden')) {
+                lskText.innerText = 'About';
+                rskText.innerText = 'Exit';
+            } else if (userinput.value.trim() !== '') {
+                lskText.innerText = 'Search';
+                rskText.innerText = 'Clear';
+            } else {
+                lskText.innerText = 'About';
+                rskText.innerText = 'Back';
+            }
+
+            if (elementBeforeAlert) focusElement(elementBeforeAlert); // Restore focus
+        }
+
+        // Setup Initial State
+        focusElement(document.querySelector('[data-dict="e2b"]'));
+        setupKeyNavigation();
+
+        // Dictionary Loading Logic
+        function loadDictionary(type) {
+            currentDict = type;
+            loader.style.display = 'flex';
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    let rawData = JSON.parse(xhttp.responseText);
+                    dictionaryData = {};
+
+                    if (type === 'b2e') {
+                        for (let eng in rawData) {
+                            let bngWords = rawData[eng].split(/,\s*/);
+                            bngWords.forEach(bng => {
+                                let cleanBng = bng.trim();
+                                if (cleanBng) {
+                                    if (dictionaryData[cleanBng]) {
+                                        if (!dictionaryData[cleanBng].includes(eng)) {
+                                            dictionaryData[cleanBng] += ", " + eng;
+                                        }
+                                    } else {
+                                        dictionaryData[cleanBng] = eng;
+                                    }
+                                }
+                            });
+                        }
+                        headerTitle.innerText = 'Bangla To English';
+                       
+                    } else {
+                        dictionaryData = rawData;
+                        headerTitle.innerText = 'English To Bangla';
+                    }
+
+                    loader.style.display = 'none';
+                    selScreen.classList.remove('flex', 'hidden'); // safe reset
+                    selScreen.classList.add('hidden');
+                    dictScreen.classList.remove('hidden', 'flex'); // safe reset
+                    dictScreen.classList.add('flex');
+
+                    app.innerHTML = '<div class="text-center text-gray-500 text-[10px] cm-qvga:text-xs mt-4">Search a word...</div>';
+                    userinput.value = '';
+                    focusElement(userinput);
+                    lskText.innerText = 'About';
+                    rskText.innerText = 'Back';
+                } else {
+                    app.innerHTML = '<div class="text-center text-red-500 text-[10px] cm-qvga:text-xs mt-4">Error loading data.</div>';
+                    loader.style.display = 'none';
+                }
+
+                 getCloudAd({ publisher: '1748228c05773e8ab91b3c2a48efae79', onready: ad => { ad.call('display'); } });
+            };
+            xhttp.onerror = function () {
+                alert('Network Connection Error');
+                loader.style.display = 'none';
+            }
+
+            xhttp.open('GET', 'https://shifat100.github.io/cloudfone/dictionaries/English%20Bangla/data.json', true);
+            xhttp.send();
+        }
+
+        // On Input Change
+        userinput.addEventListener('input', function () {
+            if (userinput.value.trim() !== '') {
+                filter(userinput.value);
+            } else {
+                app.innerHTML = '<div class="text-center text-gray-500 text-[10px] cm-qvga:text-xs mt-4">Search a word...</div>';
+                lskText.innerText = 'About';
+                rskText.innerText = 'Back';
+            }
+        });
+
+        // Filter Logic (Modified for Lazy Loading)
+        function filter(key) {
+            app.innerHTML = '';
+            const searchKey = key.toLowerCase();
+
+            // Reset lazy load variables
+            allMatchedWords = [];
+            currentlyRenderedIndex = 0;
+            globalFocusCounter = 1;
+            adCounter = 0;
+
+            // Find ALL matches without breaking (Modern JS is fast enough for this iteration)
+            for (let word in dictionaryData) {
+                if (word.toLowerCase().startsWith(searchKey)) {
+                    allMatchedWords.push({ word: word, meaning: dictionaryData[word] });
+                }
+            }
+
+            if (allMatchedWords.length > 0) {
+                renderMoreResults(); // Render first chunk
+                lskText.innerText = 'Search';
+                rskText.innerText = 'Clear';
+            } else {
+                app.innerHTML = '<div class="text-center text-red-500 text-[10px] cm-qvga:text-sm mt-4 font-bold">No Word Found</div>';
+            }
+
+            loadAds();
+            setInterval(loadAds, 40000);
+        }
+
+        // Render Chunk Function
+        function renderMoreResults() {
+            let endIndex = Math.min(currentlyRenderedIndex + CHUNK_SIZE, allMatchedWords.length);
+
+            for (let i = currentlyRenderedIndex; i < endIndex; i++) {
+                let item = allMatchedWords[i];
+                let div = document.createElement('div');
+                div.className = 'focusable list-item w-full p-1 cm-qvga:p-2 mb-[1px] bg-black border-b border-gray-800 text-[10px] cm-qvga:text-sm cursor-pointer';
+                div.tabIndex = globalFocusCounter++;
+
+                let wordToSpeak = currentDict === 'e2b' ? item.word : item.meaning;
+                div.setAttribute('speakword', wordToSpeak);
+
+                div.innerHTML = `${item.word} = <span class="text-gray-300">${item.meaning}</span>`;
+                div.onclick = function () { speak(this.getAttribute('speakword')); };
+                app.appendChild(div);
+
+                adCounter++;
+
+                // Ad Logic
+                if (adCounter % 10 === 0) {
+                    let adDiv = document.createElement('div');
+                    adDiv.className = 'focusable w-full p-2 bg-[#151515] text-center text-[8px] cm-qvga:text-xs text-gray-400 border-y border-gray-700 my-1 cursor-pointer  ad-container';
+                    adDiv.tabIndex = globalFocusCounter++;
+                    adDiv.innerHTML = 'Advertisement';
+                    app.appendChild(adDiv);
+                }
+            }
+
+            currentlyRenderedIndex = endIndex;
+        }
+
+        function focusElement(element) {
+            if (!element) return;
+            element.focus();
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // D-pad Key Navigation (Modified)
+        function setupKeyNavigation() {
+            window.addEventListener("back", (event) => {
+                simulateNaturalPress('SoftRight', 0);
+            });
+            document.addEventListener('keydown', function (e) {
+
+                // Handle Custom Alert overrides first
+                if (isAlertOpen) {
+                    e.preventDefault();
+                    if (e.key === 'Enter') {
+                        closeAlert();
+                    }
+                    return;
+                }
+
+                const focusables = Array.from(document.querySelectorAll('.focusable')).filter(el => el.offsetParent !== null);
+                if (focusables.length === 0) return;
+
+                let currentIndex = focusables.indexOf(document.activeElement);
+
+                switch (e.key) {
+                    case 'ArrowDown':
+                    case 'Down':
+                        e.preventDefault();
+                        let next = currentIndex + 1;
+
+                        // Check if we are at the bottom of the rendered list
+                        if (next >= focusables.length) {
+                            // Check if more data exists to load
+                            if (currentlyRenderedIndex < allMatchedWords.length) {
+                                renderMoreResults(); // Load next chunk
+                                // Re-query visible focusables to include newly added ones
+                                const newFocusables = Array.from(document.querySelectorAll('.focusable')).filter(el => el.offsetParent !== null);
+                                focusElement(newFocusables[currentIndex + 1]);
+                                return; // Stop here, focus is updated
+                            } else {
+                                next = 0; // If no more data, loop back to top
+                            }
+                        }
+
+                        focusElement(focusables[next]);
+                        break;
+
+                    case 'ArrowUp':
+                    case 'Up':
+                        e.preventDefault();
+                        let prev = currentIndex - 1;
+                        if (prev < 0) prev = focusables.length - 1;
+                        focusElement(focusables[prev]);
+                        break;
+
+                    case 'Enter':
+                        if (document.activeElement.hasAttribute('data-dict')) {
+                            loadDictionary(document.activeElement.getAttribute('data-dict'));
+
+                        }
+                        // Fix: Changed .includes() to .contains()
+                        else if (document.activeElement.classList.contains('ad-container')) {
+                            if (document.activeElement.cloudAd) {
+                                document.activeElement.cloudAd.call('click');
+                            }
+                        }
+                        else if (document.activeElement === userinput) {
+                            if (focusables.length > 1) focusElement(focusables[1]);
+                        }
+                        else {
+                            document.activeElement.click();
+                        }
+                        break;
+
+
+                    case 'Escape': // LSK
+                        if (rskText.innerText.includes('Clear')) {
+                            focusElement(userinput);
+                        } else {
+                            alert('A Dictionary App By Shifat100'); // Triggers Custom Alert
+                        }
+                        break;
+
+                    case 'SoftRight':  case ' ':// RSK
+                        if (document.activeElement === userinput && userinput.value !== '') {
+                            return; // allow native backspace
+                        }
+                        e.preventDefault();
+
+                        if (!selScreen.classList.contains('hidden')) {
+                            window.location.href = '/index.html';
+                        }
+                        else if (rskText.innerText.includes('Clear')) {
+                            userinput.value = '';
+                            userinput.dispatchEvent(new Event('input'));
+                            focusElement(userinput);
+                        }
+                        else {
+                            dictScreen.classList.remove('flex');
+                            dictScreen.classList.add('hidden');
+                            selScreen.classList.remove('hidden');
+                            selScreen.classList.add('flex');
+                            headerTitle.innerText = 'Select Dictionary';
+                            rskText.innerText = 'Exit';
+                            lskText.innerText = 'About';
+                            userinput.value = '';
+                            app.innerHTML = '';
+                            focusElement(document.querySelector('[data-dict="e2b"]'));
+                        }
+                        break;
+                }
+            });
+        }
+
+        function speak(word) {
+            const synth = window.speechSynthesis;
+            const speakText = new SpeechSynthesisUtterance(word);
+            synth.speak(speakText);
+            console.log('Speaking:', word);
+        }
+
+        loadAds();
+     
+    </script>
+</body>
+
+</html>
