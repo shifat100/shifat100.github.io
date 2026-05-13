@@ -28,7 +28,7 @@ This is a simple client-side ad SDK for displaying banner and fullscreen ads in 
 <div id="ad-container"></div>
 <script>
 getCloudAd({
-    publisher: 'pub_123',
+    publisher: 'c7f1d9ae-8b24-4f63-9c71-2e5ab84d3f90',
     container: document.getElementById('ad-container'),
     onready: ad => { ad.call('display'); }
 });
@@ -40,7 +40,7 @@ getCloudAd({
 ```html
 <script>
 getCloudAd({
-    publisher: 'pub_123',
+    publisher: 'c7f1d9ae-8b24-4f63-9c71-2e5ab84d3f90',
     onready: ad => { ad.call('display'); }
 });
 </script>
