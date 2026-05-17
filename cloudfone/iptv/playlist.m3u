@@ -1,0 +1,112 @@
+#EXTM3U
+
+#EXTINF:-1 tvg-id="live1" group-title="Sports",T Sports
+http://103.59.176.72:8083/live1/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="live2" group-title="Entertainment",Star Jalsha
+http://103.59.176.72:8083/live2/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="live3" group-title="Sports",Star Sports 1
+http://103.59.176.72:8083/live3/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="live4" group-title="Entertainment",Jalsha Movies
+http://103.59.176.72:8083/live4/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="ss1_hindi" group-title="Sports",Star Sports 1 Hindi
+http://103.59.176.72:8083/ss1_hindi/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="ss_select_1" group-title="Sports",Star Sports Select 1
+http://103.59.176.72:8083/ss_select_1/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="ss_select_2" group-title="Sports",Star Sports 3
+http://103.59.176.72:8083/ss_select_2/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="ss1_en" group-title="Entertainment",Sun Bangla
+http://103.59.176.72:8083/ss1_en/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="ananda_tv" group-title="Entertainment",Ananda TV
+http://103.59.176.72:8083/ananda_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="atn_news" group-title="News",ATN News
+http://103.59.176.72:8083/atn_news/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="dbc_news" group-title="News",DBC News
+http://103.59.176.72:8083/dbc_news/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="ekattor_tv" group-title="News",Ekattor TV
+http://103.59.176.72:8083/ekattor_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="jamuna_tv" group-title="News",Jamuna TV
+http://103.59.176.72:8083/jamuna_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="news24" group-title="News",News24
+http://103.59.176.72:8083/news24/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="somoy_tv" group-title="News",Somoy TV
+http://103.59.176.72:8083/somoy_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="channel24" group-title="News",Channel 24
+http://103.59.176.72:8083/channel24/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="banglavision" group-title="Entertainment",Bangla Vision
+http://103.59.176.72:8083/banglavision/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="bijoy_tv" group-title="Entertainment",Bijoy TV
+http://103.59.176.72:8083/bijoy_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="boishakhi_tv" group-title="Entertainment",Boishakhi TV
+http://103.59.176.72:8083/boishakhi_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="btv_world" group-title="Entertainment",BTV World
+http://103.59.176.72:8083/btv_world/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="channel_9" group-title="Entertainment",Channel 9
+http://103.59.176.72:8083/channel_9/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="channel_i" group-title="Entertainment",Channel i
+http://103.59.176.72:8083/channel_i/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="deepto_tv" group-title="Entertainment",Deepto TV
+http://103.59.176.72:8083/deepto_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="desh_tv" group-title="Entertainment",Desh TV
+http://103.59.176.72:8083/desh_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="ekushey_tv" group-title="Entertainment",Ekushey TV
+http://103.59.176.72:8083/ekushey_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="gtv" group-title="Entertainment",GTV
+http://103.59.176.72:8083/gtv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="mohona_tv" group-title="Entertainment",Mohona TV
+http://103.59.176.72:8083/mohona_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="global_hd" group-title="Entertainment",Global HD Television
+http://103.59.176.72:8083/global_hd/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="maasranga" group-title="Entertainment",Maasranga TV
+http://103.59.176.72:8083/maasranga/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="nexus_tv" group-title="Entertainment",Nexus Television
+http://103.59.176.72:8083/nexus_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="rtv" group-title="Entertainment",Rtv
+http://103.59.176.72:8083/rtv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="satv" group-title="Entertainment",SATV
+http://103.59.176.72:8083/satv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="mytv" group-title="Entertainment",My TV
+http://103.59.176.72:8083/mytv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="nagorik_tv" group-title="News",Nagorik TV
+http://103.59.176.72:8083/nagorik_tv/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="sun_bangla" group-title="Entertainment",Sun Bangla
+http://103.59.176.72:8083/sun_bangla/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="star_sports_3" group-title="Sports",Star Sports 3
+http://103.59.176.72:8083/star_sports_3/video.m3u8?token=123
+
+#EXTINF:-1 tvg-id="duronto_tv" group-title="Entertainment",Duronto TV
+http://103.59.176.72:8083/duronto_tv/video.m3u8?token=123
