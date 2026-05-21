@@ -70,5 +70,3 @@ Supported events:
 - The SDK selects a new ad image each time `getCloudAd()` is called
 - Fullscreen ads close on Escape and restore keyboard behavior after dismiss
 
-## Demo
-Open `ads.html` in a browser to see the SDK in action.
