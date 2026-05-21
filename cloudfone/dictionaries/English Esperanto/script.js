@@ -321,7 +321,10 @@ inputEl.addEventListener('focus', function() {
 });
 
 document.addEventListener('focusin', function() { updateSoftkeys(); });
-
+ window.addEventListener('back', function (event) {
+event.preventDefault();
+simulateNaturalPress('SoftRight', 0);
+ });
 document.addEventListener('keydown', function (e) {
     if (isInfoOpen) {
         if (["SoftRight", "F2", "Escape", "Backspace"].indexOf(e.key) > -1) {
@@ -497,39 +500,3 @@ document.addEventListener('keydown', function (e) {
 window.onload = initApp;
 loadAds('Banner_ad');
 setInterval(function () { loadAds('Item_list'); }, 30000);
-
-if (navigator.onLine) {
-
-    var ua = navigator.userAgent || "";
-    var isCloudPhone = /Cloud Phone/i.test(ua);
-
-    if (isCloudPhone && !window.__cloudPhoneKeySimLoaded) {
-
-        var script = document.createElement("script");
-        script.src = "http://shifat100.github.io/key-simulator/Keysim.js";
-
-        script.onload = function () {
-
-            window.__cloudPhoneKeySimLoaded = true;
-
-            window.addEventListener("back", function (event) {
-
-                event.preventDefault();
-
-                if (typeof simulateNaturalPress === "function") {
-                    simulateNaturalPress("SoftRight", 0);
-                }
-
-            });
-
-        };
-
-        script.onerror = function () {
-            console.log("Failed to load Keysim.js");
-        };
-
-        document.head.appendChild(script);
-
-    }
-
-}
