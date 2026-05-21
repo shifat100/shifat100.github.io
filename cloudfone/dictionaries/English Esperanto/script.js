@@ -321,10 +321,10 @@ inputEl.addEventListener('focus', function() {
 });
 
 document.addEventListener('focusin', function() { updateSoftkeys(); });
- window.addEventListener('back', function (event) {
-event.preventDefault();
+window.addEventListener("back", (event) => {
+  event.preventDefault();
 simulateNaturalPress('SoftRight', 0);
- });
+});
 document.addEventListener('keydown', function (e) {
     if (isInfoOpen) {
         if (["SoftRight", "F2", "Escape", "Backspace"].indexOf(e.key) > -1) {
