@@ -1,0 +1,353 @@
+/* =========================================
+   Base Reset & Common Styles
+   ========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    outline: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+    background-color: #f5f5f5;
+}
+
+/* =========================================
+   Header & Search Box (Modern Look)
+   ========================================= */
+#header {
+    text-align: center;
+    padding: 6px 0;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+    z-index: 10;
+}
+
+#search-container {
+    display: flex;
+    padding: 6px 8px;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 4px;
+}
+
+#search-input {
+    flex-grow: 1;
+    border-radius: 12px; /* Rounded / Modern Box */
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    border: 1px solid #ddd;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    transition: border-color 0.2s;
+}
+
+.flag {
+    font-size: 16px;
+    margin-left: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+}
+
+.flag img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+/* =========================================
+   List Container & Dictionary Words
+   ========================================= */
+#list-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+.list-item {
+    padding: 8px;
+    line-height: 1.4;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.head-row {
+    margin-bottom: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
+.word {
+    font-weight: 700;
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+/* Part of Speech ([n], [v] tags) */
+.p-blue {
+    font-size: 13px;
+    margin-right: 4px;
+    color: #0056b3;
+}
+.p-red {
+    font-size: 13px;
+    margin-right: 4px;
+    color: #c62828;
+}
+.p-blue:focus, .p-red:focus {
+    border: 2px solid red;
+    padding: 1px 2px;
+    border-radius: 5px;
+}
+
+.def-row {
+    padding-left: 2px;
+    line-height: 1;
+}
+
+/* Translation Words (Professional Pill Shape) */
+.trans {
+    cursor: pointer;
+    display: inline-block;
+    padding: 3px 10px;
+    margin: 3px 3px 0 0;
+    border-radius: 5px; /* Pill Shape */
+    font-size: 13px;
+    font-weight: 600;
+    background-color: #f0f2f5;
+    color: #444;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s;
+}
+
+.trans:focus, .trans:active {
+    background-color: #00A5CC;
+    color: white;
+    border-color: #00A5CC;
+}
+
+#floating-flag {
+    position: absolute;
+    right: 5px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.3);
+    z-index: 10;
+}
+
+/* =========================================
+   Softkeys (Bottom Navigation)
+   ========================================= */
+#softkeys {
+    height: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    padding: 0 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 100;
+}
+
+#sk-left, #sk-center, #sk-right {
+    flex: 1;
+}
+#sk-left { text-align: left; }
+#sk-center { text-align: center; }
+#sk-right { text-align: right; }
+
+/* =========================================
+   Menus & Overlays
+   ========================================= */
+#menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 32px);
+    display: none;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.menu-header {
+    padding: 8px;
+    text-align: center;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-size: 15px;
+}
+
+.menu-item {
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+}
+
+#info-box {
+    display: none;
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    width: 90%;
+    height: 80%;
+    border-radius: 8px;
+    z-index: 200;
+    padding: 12px;
+    overflow-y: auto;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+
+/* =========================================
+   Ads Configuration
+   ========================================= */
+.ad-container {
+    text-align: center;
+    font-size: 13px;
+    padding: 6px 0;
+    outline: none;
+    margin: 6px 0;
+    font-weight: 600;
+    border: 2px solid transparent;
+}
+
+.ad-container:focus {
+    border-color: red;
+    background-color: #00A5CC !important;
+    color: white !important;
+}
+
+/* =========================================
+   THEMES: Classic (Light) Mode
+   ========================================= */
+body.theme-classic { background-color: #ffffff; color: #333; }
+body.theme-classic #header { background: linear-gradient(to bottom, #00B4DB, #00A5CC); color: white; }
+body.theme-classic #search-container { background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }
+body.theme-classic #search-input { background: #fff; color: #000; }
+body.theme-classic #search-input:focus { border-color: #00A5CC; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 0 0 2px rgba(0,165,204,.3); }
+body.theme-classic #list-container { background: #fff; }
+body.theme-classic .word { color: #222; }
+body.theme-classic #softkeys { background-color: #f1f1f1; color: #555; border-top: 1px solid #ddd; }
+body.theme-classic #menu-overlay { background: #ffffff; }
+body.theme-classic .menu-header { background: #00A5CC; color: white; }
+body.theme-classic .menu-item { border-bottom: 1px solid #f0f0f0; color: #333; }
+body.theme-classic .menu-item.selected { background-color: #00A5CC; color: white; }
+body.theme-classic #info-box { background: #ffffff; color: #333; border: 2px solid #00A5CC; }
+body.theme-classic .ad-container { background: #f9f9f9; border: 1px solid #eee; }
+
+/* =========================================
+   THEMES: KaiUI (Dark) Mode
+   ========================================= */
+body.theme-kaiui { background-color: #121212; color: #eeeeee; }
+body.theme-kaiui #header { background: #1f1f1f; color: #00A5CC; border-bottom: 1px solid #333; }
+body.theme-kaiui #search-container { background: #1a1a1a; border-bottom: 1px solid #333; }
+body.theme-kaiui #search-input { background: #2a2a2a; color: #ffffff; border: 1px solid #444; }
+body.theme-kaiui #search-input:focus { border-color: #00A5CC; }
+body.theme-kaiui #list-container { background: #121212; }
+body.theme-kaiui .list-item { border-bottom: 1px solid #222; }
+body.theme-kaiui .word { color: #ffffff; }
+body.theme-kaiui .p-blue { color: #64b5f6; }
+body.theme-kaiui .p-red { color: #e57373; }
+body.theme-kaiui .trans { background-color: #2a2a2a; color: #bbb; border: 1px solid #444; }
+body.theme-kaiui .trans:focus, body.theme-kaiui .trans:active { background-color: #00A5CC; color: white; border-color: #00A5CC; }
+body.theme-kaiui #softkeys { background-color: #1f1f1f; color: #aaa; border-top: 1px solid #333; }
+body.theme-kaiui #sk-center { color: #ffffff; }
+body.theme-kaiui #menu-overlay { background: #111111; }
+body.theme-kaiui .menu-header { background: #222222; color: #00A5CC; border-bottom: 1px solid #333; }
+body.theme-kaiui .menu-item { border-bottom: 1px solid #222; color: #eeeeee; }
+body.theme-kaiui .menu-item.selected { background-color: #00A5CC; color: white; }
+body.theme-kaiui #info-box { background: #222222; color: #eeeeee; border: 2px solid #00A5CC; }
+body.theme-kaiui .ad-container { background: #222222; border: 1px solid #333; }
+
+/* =========================================
+   Font Size Toggles (From JS Settings)
+   ========================================= */
+body.font-small .word { font-size: 13px; }
+body.font-small .def-row { font-size: 13px; }
+body.font-small #search-input { font-size: 14px; }
+body.font-large .word { font-size: 18px; }
+body.font-large .def-row { font-size: 15px; }
+body.font-large .list-item { padding: 8px; }
+body.font-large #search-input { font-size: 16px; padding: 6px 10px; }
+
+/* =========================================
+   Splash Screen
+   ========================================= */
+#splash-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #ffffff; z-index: 9999;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+#splash-logo { width: 80px; height: 80px; margin-bottom: 20px; object-fit: contain; }
+#splash-progress-container { width: 70%; height: 6px; background-color: #e0e0e0; border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+#splash-progress-bar { width: 0; height: 100%; background-color: #00A5CC; transition: width .3s ease; }
+#splash-text { font-size: 14px; font-weight: 600; color: #333; }
+body.theme-kaiui #splash-screen { background-color: #111111; }
+body.theme-kaiui #splash-progress-container { background-color: #333333; }
+body.theme-kaiui #splash-text { color: #eeeeee; }
+
+/* =========================================
+   ⭐⭐⭐ 128x160 px Specific Fixes ⭐⭐⭐
+   ========================================= */
+@media screen and (max-width: 160px), screen and (max-height: 160px) {
+    #header { font-size: 10px; padding: 3px 0; }
+    
+    #search-container { padding: 2px; gap: 1px; }
+    #search-input { 
+        font-size: 9px; 
+        padding: 2px 6px; 
+        border-radius: 8px; /* Slightly smaller curves for tiny screen */
+    }
+    
+    .flag { width: 12px; }
+    .flag img { width: 10px; height: 10px; }
+    
+    .list-item { padding: 4px; }
+    .word { font-size: 13px; }
+    .p-blue, .p-red { font-size: 9px; margin-right: 2px; }
+    .p-blue:focus, .p-red:focus { padding: 1px; border-width: 1px; }
+    
+    .def-row { line-height: 1.3; font-size: 11px; padding-left: 0px;}
+    
+    /* Modern Pill on Tiny Screen */
+    .trans { 
+        font-size: 10px; 
+        padding: 1px 6px; 
+        margin: 1px 1px 0 0; 
+        border-radius: 2px; 
+    }
+    
+    /* Navigation Bar Scale Down */
+    #softkeys { height: 16px; font-size: 9px; padding: 0 2px; }
+    
+    /* Menu Scale Down */
+    #menu-overlay { height: calc(100vh - 16px); }
+    .menu-header { padding: 2px; font-size: 10px; }
+    .menu-item { padding: 3px; font-size: 10px; }
+    
+    #info-box { width: 96%; left: 2%; top: 5%; height: 90%; font-size: 10px; padding: 6px; }
+    .ad-container { font-size: 10px; padding: 3px 0; margin: 3px 0; }
+    
+    #splash-logo { width: 50px; height: 50px; margin-bottom: 10px; }
+    #splash-text { font-size: 11px; }
+    
+    /* Force Large Font not to break 128x160 screens */
+    body.font-large .word { font-size: 14px; }
+    body.font-large .def-row { font-size: 12px; }
+    body.font-large .list-item { padding: 5px 4px; }
+    body.font-large #search-input { font-size: 12px; padding: 3px 5px; }
+}
