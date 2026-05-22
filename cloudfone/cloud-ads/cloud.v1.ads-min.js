@@ -1,965 +1,217 @@
-<!DOCTYPE html>
-<html lang="en">
+/**
+ * CloudAds SDK - 100% KaiAds Compatible (Fullscreen + Responsive)
+ */
+(function (window, document) {
+    'use strict';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IPTV </title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        /* --- THEME VARIABLES --- */
-        :root {
-            --bg: #000000;
-            --bg-black: #000000;
-            --brand: #0093E0;
-            --focus: #05AEF2;
-            --positive: #00A539;
-            --text: #FFFFFF;
-            --divider: #333333;
-        }
+    // Command queue
+    window.cloudAdsQueue = window.cloudAdsQueue || [];
 
-        /* --- RESET & BASE --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            font-family: 'Roboto', sans-serif;
-        }
+    const bannerAds =[
+        { type: 'custom', imageUrl: 'https://shifat100.github.io/cloudfone/cloud-adsimages/banner/' + (Math.floor(Math.random() * 9) + 1) + '.png', clickUrl: 'https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20' },
+        { type: 'adsterra', adsterraKey: '3768c5dda0b47669346bd50d7189ab3b', adsterraSrc: 'https://matcheshonoraryunderwater.com/3768c5dda0b47669346bd50d7189ab3b/invoke.js', width: 468, height: 60 }
+    ];
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-        }
+    const fullscreenAds =[
+        { clickUrl: 'https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20' }
+    ];
 
-        /* --- RESPONSIVE TYPOGRAPHY & LAYOUT --- */
-        /* Default: QVGA (240x320) & Above */
-        :root {
-            --safe-margin: 8px;
-            --header-h: 40px;
-            --footer-h: 30px;
-            --font-base: 16px;
-            --font-sm: 12px;
-            --list-p: 10px;
-        }
+    const getRandomFullscreenImage = () => 'https://shifat100.github.io/cloudfone/cloud-ads/images/fullscreen/' + (Math.floor(Math.random() * 9) + 1) + '.png';
+    const getRandomBannerImage = () => 'https://shifat100.github.io/cloudfone/cloud-ads/images/banner/' + (Math.floor(Math.random() * 9) + 1) + '.png';
 
-        /* QQVGA (128x160) */
-        @media (max-width: 160px) {
-            :root {
-                --safe-margin: 4px;
-                --header-h: 20px;
-                --footer-h: 20px;
-                --font-base: 12px;
-                --font-sm: 10px;
-                --list-p: 6px;
-            }
-        }
+    const injectCSS = () => {
+        if (document.getElementById('cloudads-sdk-styles')) return;
+        const style = document.createElement('style');
+        style.id = 'cloudads-sdk-styles';
+        style.innerHTML = `
+            .cloudads-fs-wrapper { position: fixed; inset: 0; width: 100%; height: 100%; min-height: 100vh; background-color: #000000; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Roboto', Arial, sans-serif; color: #FFFFFF; z-index: 999999; overflow: hidden; }
+            .cloudads-header { width: 100%; flex: 0 0 auto; background-color: #0093E0; display: none; align-items: center; justify-content: center; font-weight: bold; height: 20px; font-size: 10px; }
+            .cloudads-body { width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; background-color: #202020; border: none; cursor: pointer; padding: 0; min-height: 0; overflow: hidden; outline: none; }
+            .cloudads-body:focus { background-color: #05AEF2; }
+            .cloudads-img { width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+            .cloudads-footer { width: 100%; flex: 0 0 auto; background-color: #202020; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #4a4a4a; height: 20px; padding: 0 4px; font-size: 10px; position: relative; }
+            .cloudads-lsk, .cloudads-rsk { color: #FFFFFF; cursor: pointer; font-weight: bold; }
+            .cloudads-lsk { color: #00A539; }
+            .cloudads-rsk { position: absolute; left: 50%; transform: translateX(-50%); }
+            @media (min-width: 240px) { .cloudads-header { height: 35px; font-size: 14px; } .cloudads-footer { height: 35px; font-size: 14px; } }
+            @media (max-width: 320px) { .cloudads-header { height: 25px; font-size: 11px; } .cloudads-footer { height: 25px; font-size: 11px; } }
+            @media (max-width: 480px) { .cloudads-fs-wrapper { font-size: 12px; } }
+        `;
+        document.head.appendChild(style);
+    };
 
-        /* --- HEADER --- */
-        #header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 30px;
-            /*var(--header-h);*/
-            background-color: var(--brand);
-            display: flex;
-            align-items: center;
-            padding: 0 var(--safe-margin);
-            font-weight: bold;
-            font-size: var(--font-base);
-            z-index: 10;
-            text-align: center;
-        }
+    function displayAd(config, selectedAd, triggerEvent, displayOptions = {}) {
+        const isFullscreen = !config.container;
 
-        /* --- CONTENT CONTAINER --- */
-        .view-section {
-            display: none;
-            position: absolute;
-            top: var(--header-h);
-            bottom: var(--footer-h);
-            left: 0;
-            right: 0;
-            padding: var(--safe-margin);
-            overflow-y: hidden;
-            background-color: var(--bg);
-        }
+        if (isFullscreen) {
+            injectCSS();
+            const previousBodyOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            
+            // Detect Android device
+            const isAndroid = /android/i.test(navigator.userAgent || navigator.vendor || window.opera);
 
-        .view-section.active {
-            display: block;
-        }
+            const adWrapper = document.createElement('div');
+            adWrapper.innerHTML = `
+                <div class="cloudads-fs-wrapper">
+                    ${isAndroid ? '<div id="cloudads-btn-cross" style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); color:white; border:2px solid white; display:flex; align-items:center; justify-content:center; font-size:24px; font-family:sans-serif; font-weight:bold; cursor:pointer; z-index:999999;">&times;</div>' : ''}
+                    <div class="cloudads-header">Advertisement</div>
+                    <button id="cloudads-ad-body" class="cloudads-body">
+                        <img src="${selectedAd.imageUrl}" class="cloudads-img" alt="Ad">
+                    </button>
+                    <div class="cloudads-footer">
+                        <div id="cloudads-btn-close" class="cloudads-lsk">Close</div>
+                        <div id="cloudads-btn-open" class="cloudads-rsk">Open</div>
+                    </div>
+                </div>`;
+            document.body.appendChild(adWrapper);
 
-        /* --- LIST ITEMS --- */
-        .list-item {
-            display: flex;
-            align-items: center;
-            padding: var(--list-p);
-            border-bottom: 1px solid var(--divider);
-            color: var(--text);
-            font-size: var(--font-base);
-            cursor: pointer;
-            /* Added for touch testing */
-        }
-
-        .list-item.focused,
-        .list-item:active {
-            background-color: var(--focus);
-            font-weight: bold;
-        }
-
-        /* Thumbnail */
-        .channel-logo {
-            width: calc(var(--header-h) * 0.8);
-            height: calc(var(--header-h) * 0.8);
-            margin-right: var(--safe-margin);
-            background: #fff;
-            border-radius: 2px;
-            object-fit: contain;
-        }
-
-        /* Truncate & Marquee */
-        .text-container {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            pointer-events: none;
-        }
-
-        .truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .group-title {
-            font-size: var(--font-sm);
-            color: #ccc;
-        }
-
-        .ad-container {
-            padding: var(--list-p);
-            border-bottom: 1px solid var(--divider);
-            background: rgba(255, 255, 255, 0.04);
-            color: #ccc;
-            font-size: var(--font-sm);
-            text-align: center;
-            display: block;
-            pointer-events: auto;
-        }
-
-        .list-item.focused .marquee-text {
-            display: inline-block;
-            animation: marquee 3s linear infinite;
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(0%);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        /* --- INPUTS --- */
-        .input-box {
-            width: 100%;
-            padding: var(--list-p);
-            background: var(--bg-black);
-            border: 2px solid var(--divider);
-            color: var(--text);
-            font-size: var(--font-base);
-            margin-bottom: 10px;
-            outline: none;
-            cursor: pointer;
-            /* Added for touch */
-        }
-
-        .input-box.focused,
-        .input-box:focus {
-            border-color: var(--focus);
-            background: #111;
-        }
-
-        /* --- VIDEO PLAYER --- */
-        #player-view {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: var(--footer-h);
-            background: var(--bg-black);
-            z-index: 100;
-            display: none;
-            cursor: pointer;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            background: black;
-            pointer-events: none;
-        }
-
-        /* --- MODAL ALERT --- */
-        #modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: var(--safe-margin);
-        }
-
-        .modal-box {
-            background: var(--bg);
-            border: 2px solid var(--brand);
-            width: 100%;
-            text-align: center;
-            padding: 15px 10px;
-            cursor: pointer;
-        }
-
-        .modal-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: var(--font-base);
-            pointer-events: none;
-        }
-
-        .modal-msg {
-            font-size: var(--font-sm);
-            pointer-events: none;
-        }
-
-        /* --- SOFTKEYS (FOOTER) --- */
-        #softkeys {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: var(--footer-h);
-            background-color: #1E1E1E;
-            ;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: var(--font-sm);
-            font-weight: bold;
-            z-index: 200;
-        }
-
-        .sk-btn {
-            flex: 1;
-            padding: 0 var(--safe-margin);
-            height: 100%;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .sk-btn:active {
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .sk-left {
-            justify-content: flex-start;
-        }
-
-        .sk-center {
-            justify-content: center;
-            font-size: calc(var(--font-sm) + 2px);
-        }
-
-        .sk-right {
-            justify-content: flex-end;
-        }
-
-        #file-upload {
-            display: none;
-        }
-
-        svg {
-            fill: white;
-            width: 18px;
-            height: 18px;
-            pointer-events: none;
-        }
-
-        /* Grid View Styles */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            padding: 2px;
-            width: 100%;
-        }
-
-        .grid-container .list-item {
-
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: 6px 8px;
-            border-bottom: 1px solid #222;
-            cursor: pointer;
-            overflow: hidden;
-
-        }
-
-        .grid-container .channel-logo {
-            width: 100%;
-            height: 100%;
-        }
-
-        .grid-container .text-container {
-            display: none;
-        }
-
-        .grid-container .ad-container {
-            grid-column: 1 / -1;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- Header -->
-    <div id="header">IPTV</div>
-
-    <!-- 1. HOME VIEW (Channel List) -->
-    <div id="home-view" class="view-section active">
-        <div id="channel-list"></div>
-        <div class="list-item focusable ad-container" style="margin-top: 10px;">Advertisement</div>
-    </div>
-
-    <!-- 2. MENU VIEW -->
-    <div id="menu-view" class="view-section">
-        <div class="list-item focusable" data-action="search">
-            <div class="text-container"><span class="truncate">Search Channel</span></div>
-        </div>
-        <div class="list-item focusable" data-action="network">
-            <div class="text-container"><span class="truncate">Network Stream</span></div>
-        </div>
-        <div class="list-item focusable" data-action="upload">
-            <div class="text-container"><span class="truncate">Load Playlist</span></div>
-        </div>
-        <div class="list-item focusable" data-action="toggle-view">
-            <div class="text-container"><span class="truncate">Toggle View (List/Grid)</span></div>
-        </div>
-        <div class="list-item focusable" data-action="reset">
-            <div class="text-container"><span class="truncate">Reset Defaults</span></div>
-        </div>
-        <div class="list-item focusable" data-action="about">
-            <div class="text-container"><span class="truncate">About</span></div>
-        </div>
-        <div class="list-item focusable ad-container">Advertisement</div>
-    </div>
-
-    <!-- 3. SEARCH VIEW -->
-    <div id="search-view" class="view-section">
-        <input type="text" id="search-input" class="input-box focusable" placeholder="Search...">
-        <div id="search-results"></div>
-    </div>
-
-    <!-- 4. NETWORK VIEW -->
-    <div id="network-view" class="view-section">
-        <div style="font-size: var(--font-sm); margin-bottom: 5px;">Enter URL (m3u8/mp4):</div>
-        <input type="text" id="net-url" class="input-box focusable" placeholder="http://...">
-        <div class="list-item focusable" id="net-play-btn" style="justify-content: center;">
-            <span class="truncate">Play Stream</span>
-        </div>
-    </div>
-
-    <!-- 5. PLAYER VIEW -->
-    <div id="player-view">
-        <video id="video-player" playsinline></video>
-    </div>
-
-    <!-- Modal Alert -->
-    <div id="modal-overlay">
-        <div class="modal-box" id="modal-box">
-            <div class="modal-title">Notice</div>
-            <div class="modal-msg" id="modal-msg"></div>
-        </div>
-    </div>
-
-    <input type="file" id="file-upload" accept=".m3u,.txt">
-
-    <!-- Softkeys -->
-    <div id="softkeys">
-        <div class="sk-btn sk-left" id="sk-lsk"><svg viewBox="0 0 24 24">
-                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-            </svg></div>
-        <div class="sk-btn sk-center" id="sk-csk"><svg viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-            </svg></div>
-        <div class="sk-btn sk-right" id="sk-rsk"><svg viewBox="0 0 24 24">
-                <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H10v2h10v14H10v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
-            </svg></div>
-    </div>
-    <script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
-
-    <script>
-        // Replace with your actual .m3u link
-        var PLAYLIST_URL = "https://raw.githubusercontent.com/sanyahmed07/playlist1/refs/heads/main/playlist.m3u";
-        // --- DATA ---
-        var DEFAULT_M3U = `
-        #EXTM3U
-#EXTINF:-1 group-title="Bangla" tvg-logo="https://upload.wikimedia.org/wikipedia/bn/thumb/f/f6/%E0%A6%B8%E0%A6%AE%E0%A6%AF%E0%A6%BC_%E0%A6%9F%E0%A6%BF%E0%A6%AD%E0%A6%BF%E0%A6%B0_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg/330px-%E0%A6%B8%E0%A6%AE%E0%A6%AF%E0%A6%BC_%E0%A6%9F%E0%A6%BF%E0%A6%AD%E0%A6%BF%E0%A6%B0_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg.png",Somoy TV
-https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8
-#EXTINF:-1 group-title="Bangla" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Jamuna_TV_logo.svg/960px-Jamuna_TV_logo.svg.png",Jamuna TV
-https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/index.m3u8
-#EXTINF:-1 group-title="Sports" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/T_Sports_logo.svg/250px-T_Sports_logo.svg.png",T Sports
-http://103.60.204.26:3255/TSportsHD/tracks-v1a1/mono.m3u8
-#EXTINF:-1 group-title="Movies" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Big.Buck.Bunny.-.Opening.Screen.png/960px-Big.Buck.Bunny.-.Opening.Screen.png",Sample Big Buck Bunny
-https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
-`;
-        const ICONS = {
-            play: `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`,
-            pause: `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`,
-            menu: `<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`,
-            search: `<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`,
-            back: `<svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>`,
-            close: `<svg viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H10v2h10v14H10v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`,
-            check: `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`
-        };
-
-        // --- APP STATE ---
-        var channels = [];
-        var filteredChannels = [];
-        var currentView = 'home';
-        var focusIndices = {
-            home: 0,
-            menu: 0,
-            search: 0,
-            network: 0
-        };
-        var focusIndex = 0;
-        var viewMode = localStorage.getItem('iptv_view_mode') || 'list';
-        var hlsInstance = null;
-        var modalCallback = null;
-
-        // --- DOM ELEMENTS ---
-        var elHeader = document.getElementById('header');
-        var views = document.querySelectorAll('.view-section');
-        var listContainer = document.getElementById('channel-list');
-        var searchResults = document.getElementById('search-results');
-        var menuList = document.getElementById('menu-view');
-        var elVideo = document.getElementById('video-player');
-
-        // Softkeys
-        var skLSK = document.getElementById('sk-lsk');
-        var skCSK = document.getElementById('sk-csk');
-        var skRSK = document.getElementById('sk-rsk');
-        var cloudAd = null;
-
-        function loadAds() {
-            var containers = document.querySelectorAll('.ad-container');
-            for (var i = 0; i < containers.length; i++) {
-                (function (container) {
-                    getCloudAd({
-                        publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-                        container: container,
-                        onerror: function (err) { console.error('CloudAd Banner Error:', err); },
-                        onready: function (ad) {
-                            cloudAd = ad;
-                            ad.call('display');
-                        },
-                    });
-                })(containers[i]);
-            }
-        }
-
-
-        window.onload = function () {
-            var savedData = localStorage.getItem('bd_iptv_playlist');
-
-            if (savedData) {
-                parseM3U(savedData);
-                renderList(channels, listContainer);
-            } else {
-                fetchRemotePlaylist();
-            }
-
-            setupTouchControls();
-            history.replaceState({ view: 'home' }, "Home", "#home");
-            updateUI('home');
-        };
-
-        function fetchRemotePlaylist() {
-            openModal("Loading Playlist...", null);
-            setSoftkeys("", "Wait", "");
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', PLAYLIST_URL, true);
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    closeModal();
-                    if (xhr.status === 200) {
-                        var data = xhr.responseText;
-                        localStorage.setItem('bd_iptv_playlist', data); // Cache it
-                        parseM3U(data);
-                        renderList(channels, listContainer); history.back();
-                    } else {
-                        openModal("Failed to load playlist.\nStatus: " + xhr.status, function () {
-                            history.back();
-                        });
-                    }
-                }
+            const handleOpen = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_blank'); };
+            
+            const handleClose = () => {
+                document.body.removeChild(adWrapper);
+                document.body.style.overflow = previousBodyOverflow;
+                document.removeEventListener('keydown', handleAdKeyDown, true);
+                document.removeEventListener('keyup', blockKeyUp, true);
+                triggerEvent('close');
             };
 
-            xhr.onerror = function () {
-                closeModal();
-                openModal("Network error occurred.", null);
+            const handleAdKeyDown = (event) => {
+                event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+                const key = event.key || event.keyIdentifier;
+                if (['Escape', 'Esc', 'Backspace', 'SoftLeft', 'BrowserBack'].includes(key)) { handleClose(); } 
+                else if (['Enter', 'SoftRight'].includes(key)) { handleOpen(); }
             };
 
-            xhr.send();
-        }
+            const blockKeyUp = (event) => { event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation(); };
 
-        window.onpopstate = function (e) {
-            if (document.getElementById('modal-overlay').style.display === 'flex') {
-                closeModal(false);
-                history.forward();
-                return;
+            document.addEventListener('keydown', handleAdKeyDown, true);
+            document.addEventListener('keyup', blockKeyUp, true);
+
+            document.getElementById('cloudads-ad-body').onclick = handleOpen;
+            document.getElementById('cloudads-btn-open').onclick = handleOpen;
+            document.getElementById('cloudads-btn-close').onclick = handleClose;
+            
+            // Attach close event to the cross button if it's an Android device
+            if (isAndroid) {
+                document.getElementById('cloudads-btn-cross').onclick = handleClose;
             }
-
-            var view = e.state ? e.state.view : 'home';
-            updateUI(view);
-        };
-
-        function navigate(viewName) {
-            if (currentView === viewName) return;
-            history.pushState({ view: viewName }, viewName, "#" + viewName);
-            updateUI(viewName);
-        }
-
-        function updateUI(viewName) {
-            if (currentView === 'player' && viewName !== 'player') {
-                elVideo.pause();
-                if (hlsInstance) hlsInstance.destroy();
-            }
-
-            for (var i = 0; i < views.length; i++) views[i].classList.remove('active');
-            document.getElementById('player-view').style.display = 'none';
-
-            currentView = viewName;
-            // Load the saved index for this view, or default to 0 if it doesn't exist
-            focusIndex = focusIndices[viewName] !== undefined ? focusIndices[viewName] : 0;
-
-
-            if (viewName === 'home') {
-                document.getElementById('home-view').classList.add('active');
-                elHeader.innerText = "IPTV";
-                setSoftkeys(ICONS.menu, ICONS.play, ICONS.close);
-                renderList(channels, listContainer);
-            }
-            else if (viewName === 'menu') {
-                menuList.classList.add('active');
-                elHeader.innerText = "Options";
-                setSoftkeys("", ICONS.check, ICONS.back);
-            }
-            else if (viewName === 'search') {
-                document.getElementById('search-view').classList.add('active');
-                elHeader.innerText = "Search";
-                setSoftkeys("", ICONS.check, ICONS.back);
-                document.getElementById('search-input').value = "";
-                searchResults.innerHTML = "";
-            }
-            else if (viewName === 'network') {
-                document.getElementById('network-view').classList.add('active');
-                elHeader.innerText = "Net Stream";
-                setSoftkeys("", ICONS.check, ICONS.back);
-                document.getElementById('net-url').value = "";
-            }
-            else if (viewName === 'player') {
-                document.getElementById('player-view').style.display = 'block';
-                elHeader.innerText = "Playing...";
-                setSoftkeys("", ICONS.pause, ICONS.back);
-            }
-
-            updateFocus();
-        }
-
-        // --- NAVIGATION & FOCUS ---
-        function getFocusableItems() {
-            if (currentView === 'home') return document.querySelectorAll('#home-view .list-item, #home-view .ad-container');
-            if (currentView === 'menu') return menuList.querySelectorAll('.list-item.focusable');
-            if (currentView === 'search') return document.querySelectorAll('#search-view .focusable, #search-results .list-item');
-            if (currentView === 'network') return document.querySelectorAll('#network-view .focusable');
-            return [];
-        }
-
-        function updateFocus() {
-            focusIndices[currentView] = focusIndex;
-
-            var items = getFocusableItems();
-            if (items.length === 0) return;
-
-            if (focusIndex < 0) focusIndex = 0;
-            if (focusIndex >= items.length) focusIndex = items.length - 1;
-
-            for (var i = 0; i < items.length; i++) {
-                items[i].classList.remove('focused');
-                var span = items[i].querySelector('.truncate');
-                if (span) span.classList.remove('marquee-text');
-            }
-
-            var target = items[focusIndex];
-            if (target) {
-                target.classList.add('focused');
-                var targetSpan = target.querySelector('.truncate');
-                if (targetSpan && targetSpan.scrollWidth > targetSpan.clientWidth) {
-                    targetSpan.classList.add('marquee-text');
-                }
-                target.scrollIntoView({ block: "center" });
-
-                if (target.tagName === 'INPUT') target.focus();
-                else if (document.activeElement.tagName === 'INPUT') document.activeElement.blur();
-            }
-        }
-
-        // --- KEY CONTROLLER ---
-        document.addEventListener('keydown', function (e) {
-            var key = e.key;
-
-            // 1. MODAL INTERCEPTION
-            if (document.getElementById('modal-overlay').style.display === 'flex') {
-                if (key === 'Escape' || key === 'SoftLeft' || key === 'F1') closeModal(true);
-                else if (key === 'Backspace' || key === 'SoftRight' || key === 'F2' || key === 'Enter' || key === 'SoftCenter') {
-                    e.preventDefault();
-                    closeModal(key === 'Enter' || key === 'SoftCenter' ? true : false);
-                }
-                return;
-            }
-
-            if (key === 'ArrowDown') {
-                e.preventDefault();
-
-                var items = getFocusableItems();
-
-                if (currentView === 'home' && viewMode === 'grid') {
-                    focusIndex += 3; // grid column = 3
-                } else {
-                    focusIndex++;
-                }
-
-                updateFocus();
-            }
-
-            else if (key === 'ArrowUp') {
-                e.preventDefault();
-
-                var items = getFocusableItems();
-
-                if (currentView === 'home' && viewMode === 'grid') {
-                    focusIndex -= 3;
-                } else {
-                    focusIndex--;
-                }
-
-                updateFocus();
-            }
-
-            else if (key === 'ArrowRight') {
-                e.preventDefault();
-
-                if (currentView === 'home' && viewMode === 'grid') {
-                    focusIndex += 1;
-                    updateFocus();
-                }
-            }
-
-            else if (key === 'ArrowLeft') {
-                e.preventDefault();
-
-                if (currentView === 'home' && viewMode === 'grid') {
-                    focusIndex -= 1;
-                    updateFocus();
-                }
-            }
-
-            // 3. ACTION / CENTER
-            else if (key === 'Enter' || key === 'SoftCenter' || key === '5') {
-                e.preventDefault();
-                handleCenter();
-            }
-
-            // 4. LSK / Escape
-            else if (key === 'Escape' || key === 'SoftLeft' || key === 'F1') {
-                e.preventDefault();
-                if (currentView === 'home') navigate('menu');
-            }
-
-            // 5. RSK / BACK
-            else if (key === 'Backspace' || key === 'SoftRight' || key === 'F2') {
-                if (document.activeElement.tagName === 'INPUT' && document.activeElement.value.length > 0) {
-                    return;
-                }
-                e.preventDefault();
-                if (currentView !== 'home') history.back();
-                else openModal("Exit app?", function (res) { if (res) window.close(); });
-            }
-        });
-
-        // --- LOGIC FUNCTIONS ---
-        function handleCenter() {
-            var items = getFocusableItems();
-            var target = items[focusIndex];
-            if (!target) return;
-
-            if (currentView === 'home') {
-                if (target.classList.contains('ad-container')) {
-                    cloudAd.call('click');
-                } else {
-                    playMedia(target.dataset.channelUrl);
-                }
-            }
-            else if (currentView === 'menu') {
-                if (target.classList.contains('ad-container')) {
-                    cloudAd.call('click');
-                }
-                var action = target.getAttribute('data-action');
-                if (action === 'search') navigate('search');
-                else if (action === 'network') navigate('network');
-                else if (action === 'upload') document.getElementById('file-upload').click();
-                else if (action === 'reset') {
-                    openModal("Refresh playlist from server?", function (res) {
-                        if (res) {
-                            localStorage.removeItem('bd_iptv_playlist');
-                            fetchRemotePlaylist();
-                        }
-                    });
-                }
-                else if (action === 'toggle-view') {
-                    viewMode = (viewMode === 'list') ? 'grid' : 'list';
-                    localStorage.setItem('iptv_view_mode', viewMode);
-                    renderList(channels, listContainer);
-                    window.location.reload();
-                }
-                else if (action === 'about') {
-                    openModal("IPTV\nCloud Phone Edition v1.0\nCode: A.I. Shifat \nPlaylist: Sany Ahmed Raj", null);
-                    setSoftkeys("", "OK", "");
-                }
-            }
-            else if (currentView === 'search') {
-                if (target.tagName === 'INPUT') return;
-                if (target.classList.contains('ad-container')) {
-                    cloudAd.call('click');
-                } else if (target.dataset.channelUrl) {
-                    playMedia(target.dataset.channelUrl);
-                }
-            }
-            else if (currentView === 'network') {
-                if (target.id === 'net-play-btn') {
-                    var url = document.getElementById('net-url').value.trim();
-                    if (url) playMedia(url);
-                    else openModal("Please enter URL", null);
-                }
-            }
-            else if (currentView === 'player') {
-                if (elVideo.paused) { elVideo.play(); setSoftkeys("", ICONS.check, ICONS.back); }
-                else { elVideo.pause(); setSoftkeys("", ICONS.play, ICONS.back); }
-            }
-        }
-
-        /* // --- MEDIA PLAYER ---
-         function playMedia(url) {
-             if (!url) return;
-             navigate('player');
-             
-             if (Hls.isSupported()) {
-                 hlsInstance = new Hls();
-                 hlsInstance.loadSource(url);
-                 hlsInstance.attachMedia(elVideo);
-                 hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() { elVideo.play(); });
-                 hlsInstance.on(Hls.Events.ERROR, function(e, data) {
-                     if(data.fatal) openModal("Stream Error", function(){ history.back(); });
-                 });
-             } else {
-                 elVideo.src = url;
-                 elVideo.play();
-             }
-         }*/
-
-        function playMedia(url) {
-            if (!url) return;
-            navigate('player');
-
-            // hls.js এর সব কোড সরিয়ে দিয়ে শুধু এই দুটি লাইন লিখুন
-            elVideo.src = url;
-            elVideo.play().catch(function (error) {
-                console.log("Playback failed:", error);
-                openModal("Stream Error: Browser doesn't support native HLS", function () { history.back(); });
-            });
-        }
-
-        // --- SEARCH / DATA LOGIC ---
-        document.getElementById('search-input').addEventListener('input', function (e) {
-            var term = e.target.value.toLowerCase();
-            filteredChannels = channels.filter(function (c) { return c.name.toLowerCase().indexOf(term) > -1; });
-            renderList(filteredChannels, searchResults);
-            focusIndex = 0;
-            updateFocus();
-        });
-
-        document.getElementById('file-upload').addEventListener('change', function (e) {
-            var file = e.target.files[0];
-            if (!file) return;
-            var r = new FileReader();
-            r.onload = function (ev) {
-                localStorage.setItem('bd_iptv_playlist', ev.target.result);
-                parseM3U(ev.target.result);
-                openModal("Playlist Loaded!", function () { history.back(); });
-            };
-            r.readAsText(file);
-        });
-
-        function parseM3U(data) {
-            var lines = data.split('\n');
-            channels = []; var item = {};
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i].trim();
-                if (line.indexOf('#EXTINF:') === 0) {
-                    var logo = line.match(/tvg-logo="([^"]*)"/); item.logo = logo ? logo[1] : '';
-                    var group = line.match(/group-title="([^"]*)"/); item.group = group ? group[1] : 'General';
-                    var parts = line.split(','); item.name = parts[parts.length - 1].trim();
-                } else if (line.length > 0 && line.indexOf('#') !== 0) {
-                    item.url = line; channels.push(item); item = {};
-                }
-            }
-        }
-
-        function renderList(data, container) {
+            
+            setTimeout(() => document.getElementById('cloudads-ad-body').focus(), 50);
+            triggerEvent('display');
+            
+        } else {
+            // Responsive / Banner Ad Logic
+            const container = config.container;
             container.innerHTML = '';
-            container.className = (viewMode === 'grid') ? 'grid-container' : '';
-            for (var i = 0; i < data.length; i++) {
-                var div = document.createElement('div');
-                div.className = 'list-item focusable';
-                div.dataset.channelUrl = data[i].url;
-                div.dataset.channelIndex = i;
-                div.innerHTML = '<img src="' + (data[i].logo || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=') + '" class="channel-logo" onerror="this.style.display=\'none\'">' +
-                    '<div class="text-container"><span class="truncate">' + data[i].name + '</span><span class="group-title truncate">' + data[i].group + '</span></div>';
+            
+            // KaiAds Style - Apply display options (tabindex, navClass, display)
+            if (displayOptions.navClass) container.classList.add(displayOptions.navClass);
+            if (displayOptions.tabindex !== undefined) container.setAttribute('tabindex', displayOptions.tabindex);
+            if (displayOptions.display) container.style.display = displayOptions.display;
 
-                (function (element) {
-                    element.onclick = function () { handleTouchSelect(element); };
-                })(div);
-
-                container.appendChild(div);
-
-                // --- FIXED AD SECTION ---
-                if ((i + 1) % 10 === 0) {
-                    var adDiv = document.createElement('div');
-                    adDiv.className = 'list-item focusable ad-container';
-                    adDiv.innerText = 'Advertisement';
-
-                    // Initialize the Ad SDK for this specific new div
-                    getCloudAd({
-                        publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-                        container: adDiv,
-                        onready: function (ad) {
-                            cloudAd = ad;
-                            ad.call('display');
-                        },
-                    });
-
-                    adDiv.onclick = function () { handleTouchSelect(adDiv); };
-                    container.appendChild(adDiv);
+            // Make banner open via Keyboard Enter (for KaiOS d-pad focus)
+            container.addEventListener('keydown', (event) => {
+                const key = event.key || event.keyIdentifier;
+                if (key === 'Enter' || key === 'SoftRight') {
+                    triggerEvent('click');
+                    if (selectedAd.clickUrl) window.open(selectedAd.clickUrl, '_self');
                 }
+            });
+
+            if (selectedAd.type === 'adsterra') {
+                const scalerWrapper = document.createElement('div');
+                scalerWrapper.style.cssText = 'width:100%; height:60px; position:relative; overflow:hidden; cursor:pointer;';
+                container.appendChild(scalerWrapper);
+
+                const innerAdDiv = document.createElement('div');
+                innerAdDiv.style.cssText = `width:${selectedAd.width}px; height:${selectedAd.height}px; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);`;
+                scalerWrapper.appendChild(innerAdDiv);
+
+                const applyScaling = () => {
+                    const containerWidth = container.offsetWidth || window.innerWidth;
+                    const scale = containerWidth < selectedAd.width ? containerWidth / selectedAd.width : 1;
+                    innerAdDiv.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                    scalerWrapper.style.height = (selectedAd.height * scale) + 'px';
+                };
+
+                applyScaling();
+                window.addEventListener('resize', applyScaling);
+
+                window.atOptions = { 'key': selectedAd.adsterraKey, 'format': 'iframe', 'height': selectedAd.height, 'width': selectedAd.width, 'params': {} };
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = selectedAd.adsterraSrc;
+                innerAdDiv.appendChild(script);
+            } else {
+                const bannerImg = document.createElement('img');
+                bannerImg.src = selectedAd.imageUrl;
+                // Width & Height parameter support based on config (KaiAds style fallback)
+                let h = config.h ? config.h + 'px' : (window.innerHeight / 8) + 'px';
+                let w = config.w ? config.w + 'px' : '100%';
+                
+                bannerImg.style.cssText = `width:${w}; height:${h}; max-height:264px; object-fit:fill; cursor:pointer;`;
+                bannerImg.onclick = () => { triggerEvent('click'); window.open(selectedAd.clickUrl, '_self'); };
+                container.appendChild(bannerImg);
             }
+            triggerEvent('display');
         }
+    }
 
-        // --- UTILS & TOUCH CONTROLS ---
-        function setSoftkeys(l, c, r) {
-            skLSK.innerHTML = l; skCSK.innerHTML = c; skRSK.innerHTML = r;
+    const processAdRequest = function (config) {
+        if (!config) return;
+        
+        // Error handling as per KaiAds doc (Error code 17)
+        if (!config.publisher) {
+            if (config.onerror) config.onerror({code: 17, error: 'Cannot fetch settings', notes: 'Please provide publisher parameter.'});
+            return;
         }
+        
+        setTimeout(() => {
+            const targetInventory = !config.container ? fullscreenAds : bannerAds;
+            const selectedAdBase = targetInventory[Math.floor(Math.random() * targetInventory.length)];
+            const selectedAd = { ...selectedAdBase };
 
-        function openModal(msg, callback) {
-            document.getElementById('modal-msg').innerText = msg;
-            document.getElementById('modal-overlay').style.display = 'flex';
-            modalCallback = callback;
-            setSoftkeys(callback ? "Yes" : "", "OK", callback ? "No" : "");
-        }
-
-        function closeModal(result) {
-            document.getElementById('modal-overlay').style.display = 'none';
-            if (currentView === 'home') setSoftkeys(ICONS.menu, ICONS.play, ICONS.close);
-            else updateUI(currentView);
-
-            if (modalCallback) {
-                var cb = modalCallback;
-                modalCallback = null;
-                cb(result);
+            if (!config.container) {
+                selectedAd.imageUrl = getRandomFullscreenImage();
+            } else if (selectedAd.type === 'custom') {
+                selectedAd.imageUrl = getRandomBannerImage();
             }
-        }
 
-        // TOUCH SUPPORT LOGIC (Simulating Hardware Keys)
-        function triggerKey(keyName) {
-            try {
-                document.dispatchEvent(new KeyboardEvent('keydown', { key: keyName }));
-            } catch (e) {
-                var event = document.createEvent('Event');
-                event.initEvent('keydown', true, true);
-                event.key = keyName;
-                document.dispatchEvent(event);
-            }
-        }
-
-        function handleTouchSelect(clickedEl) {
-            var items = getFocusableItems();
-            for (var j = 0; j < items.length; j++) {
-                if (items[j] === clickedEl) {
-                    focusIndex = j;
-                    updateFocus();
-                    if (clickedEl.tagName !== 'INPUT') {
-                        triggerKey('Enter');
+            const events = {};
+            const triggerEvent = (name) => { if (events[name]) events[name](); };
+            
+            const adInstance = {
+                on: (name, cb) => { events[name] = cb; },
+                // KaiAds supports ad.call('display', { tabindex: 0, navClass: 'items' })
+                call: (cmd, options = {}) => { 
+                    if (cmd === 'display') {
+                        displayAd(config, selectedAd, triggerEvent, options); 
+                    } else if (cmd === 'click') {
+                        triggerEvent('click'); 
+                        if (selectedAd.clickUrl) {
+                            window.open(selectedAd.clickUrl, '_self');
+                        } else {
+                             window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_self');
+                        }
                     }
-                    break;
                 }
-            }
-        }
+            };
 
-        function setupTouchControls() {
-            // Softkey Clicks
-            skLSK.onclick = function () { triggerKey('SoftLeft'); };
-            skCSK.onclick = function () { triggerKey('Enter'); };
-            skRSK.onclick = function () { triggerKey('SoftRight'); };
+            // Ad is ready
+            if (config.onready) config.onready(adInstance);
 
-            // Static List Items Clicks (Menu & Network UI)
-            var staticItems = document.querySelectorAll('.focusable');
-            for (var i = 0; i < staticItems.length; i++) {
-                staticItems[i].onclick = function () { handleTouchSelect(this); };
-            }
+        }, 300); // Simulate network latency
+    };
 
-            // Video Player Click (Play/Pause)
-            document.getElementById('player-view').onclick = function () { triggerKey('Enter'); };
+    // Make both getCloudAd and getKaiAd available globally
+    window.getCloudAd = window.getKaiAd = function (config) {
+        processAdRequest(config);
+    };
 
-            // Modal Click (Defaults to Center/OK action)
-            document.getElementById('modal-box').onclick = function () { triggerKey('Enter'); };
-        }
+    while (window.cloudAdsQueue.length > 0) {
+        const queuedConfig = window.cloudAdsQueue.shift();
+        processAdRequest(queuedConfig);
+    }
 
-        loadAds();
-        setInterval(function () {
-            loadAds();
-        }, 30000);
-
-        getCloudAd({
-            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-            onready: ad => { ad.call('display'); }
-        });
-    </script>
-</body>
-
-</html>
+})(window, document);
