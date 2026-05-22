@@ -1,191 +1,482 @@
-function nl2br(e) {
-    return "string" != typeof e ? "" : e.replace(/\n/g, "<br>")
-}
-window.NodeList && !NodeList.prototype.forEach && (NodeList.prototype.forEach = function(e, t) {
-    t = t || window;
-    for (var n = 0; n < this.length; n++) e.call(t, this[n], n, this)
-}), Object.values || (Object.values = function(e) {
-    if (null === e || "object" != typeof e) throw new TypeError("Object.values called on non-object");
-    var t = [];
-    for (var n in e) Object.prototype.hasOwnProperty.call(e, n) && t.push(e[n]);
-    return t
-}), Array.isArray || (Array.isArray = function(e) {
-    return "[object Array]" === Object.prototype.toString.call(e)
-}), Array.prototype.forEach || (Array.prototype.forEach = function(e, t) {
-    if (null == this) throw new TypeError("Array.prototype.forEach called on null or undefined");
-    for (var n = t, r = Object(this), o = r.length >>> 0, i = 0; i < o; i++) i in r && e.call(n, r[i], i, r)
-}), Array.prototype.indexOf || (Array.prototype.indexOf = function(e, t) {
-    if (null == this) throw new TypeError('"this" is null or not defined');
-    var n = Object(this),
-        r = n.length >>> 0,
-        o = +t || 0;
-    if (Math.abs(o) === 1 / 0 && (o = 0), o >= r) return -1;
-    for (var i = Math.max(o >= 0 ? o : r - Math.abs(o), 0); i < r;) {
-        if (i in n && n[i] === e) return i;
-        i++
-    }
-    return -1
-}), String.prototype.startsWith || (String.prototype.startsWith = function(e, t) {
-    return t = t || 0, this.substr(t, e.length) === e
-});
-var app = document.getElementById("app"),
-    userinput = document.getElementById("userinput"),
-    definitionDiv = document.getElementById("definition"),
-    f1 = document.getElementById("softkey-left"),
-    f3 = document.getElementById("softkey-right"),
-    loader = document.getElementById("loader"),
-    dictionary = [],
-    currentFocusInList = null,
-    xhttp = new XMLHttpRequest;
+<!DOCTYPE html>
+<html lang="en">
 
-function displayResults(e) {
-    getCloudAd({
-        publisher: "080b82ab-b33a-4763-a498-50f464567e49",
-        app: "b2b_dictionary",
-        slot: "filterlist",
-        onerror: e => {},
-        onready: e => {
-            e.call("display")
-        }
-    }), loader.style.display = "flex";
-    var t = e.toLowerCase(),
-        n = dictionary.filter((function(e) {
-            return e.word.toLowerCase().startsWith(t)
-        })),
-        r = "";
-    if (0 === n.length) r = '<div class="welcome-message">No Word Found...</div>';
-    else
-        for (var o = 0; o < Math.min(100, n.length); o++)
-            if (n[o].definition) {
-                var i = n[o].definition.replace(/"/g, "&quot;"); - 1 == i.indexOf("<a href=") && (r += `<div class="word focusable" tabindex="${o+1}" data-word="${n[o].word}" data-definition="${nl2br(i.replace(/<\/em>/gi,"</em><br>").replace(/Bengali definition/gi,""))}">\n        ${n[o].word}\n      </div>`)
-            } app.innerHTML = r, document.querySelectorAll(".word").forEach((function(e) {
-        e.addEventListener("click", showDefinition)
-    })), f1.innerHTML = "Search", f3.innerHTML = "Clear", loader.style.display = "none", document.body.removeEventListener("keydown", keydownMain), document.body.addEventListener("keydown", keydownWordList);
-    var a = document.querySelector(".focusable.word");
-    a && a.focus()
-}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangla Dictionary</title>
 
-function showDefinition(e) {
-    getCloudAd({
-        publisher: "080b82ab-b33a-4763-a498-50f464567e49",
-        app: "b2b_dictionary",
-        slot: "showdefination",
-        onerror: e => {},
-        onready: e => {
-            e.call("display")
-        }
-    });
-    var t = e.currentTarget || document.activeElement;
-    if (t.classList.contains("word")) {
-        currentFocusInList = t;
-        var n = t.getAttribute("data-word"),
-            r = t.getAttribute("data-definition");
-        definitionDiv.innerHTML = `<div class="def-word">${n}</div><div class="def-meaning">${r}</div>`, app.style.display = "none", definitionDiv.style.display = "block", f1.innerHTML = "", f3.innerHTML = "Back", document.body.removeEventListener("keydown", keydownWordList), document.body.addEventListener("keydown", keydownDefinitionView)
-    }
-}
-
-function hideDefinition() {
-    definitionDiv.style.display = "none", app.style.display = "block", f1.innerHTML = "Search", f3.innerHTML = "Clear", document.body.removeEventListener("keydown", keydownDefinitionView), document.body.addEventListener("keydown", keydownWordList), currentFocusInList && currentFocusInList.focus()
-}
-
-function resetSearch() {
-    hideDefinition(), app.innerHTML = '<div class="welcome-message">Type a word and press Enter or the OK key to search.</div>', userinput.value = "", f1.innerHTML = "About", f3.innerHTML = "Exit", document.body.removeEventListener("keydown", keydownWordList), document.body.addEventListener("keydown", keydownMain), userinput.focus()
-}
-
-function focusWord(e) {
-    var t = document.querySelectorAll(".focusable.word");
-    if (t && 0 !== t.length) {
-        var n = Array.prototype.indexOf.call(t, document.activeElement) + e;
-        n >= t.length ? n = 0 : n < 0 && (n = t.length - 1), t[n].focus()
-    }
-}
-
-function keydownMain(e) {
-    if (document.activeElement !== userinput || "Enter" !== e.key) switch (e.key) {
-        case "SoftRight":
-        case "F2":
-            window.close && window.close();
-            break;
-        case "SoftLeft":
-        case "F1":
-            alert("A Bengali Dictionary App By Shifat100");
-            break;
-        case "ArrowDown":
-            userinput.focus();
-            break;
-        case "ArrowUp":
-            userinput.focus();
-            break
-    } else "" !== userinput.value.trim() && displayResults(userinput.value.trim())
-}
-
-function keydownWordList(e) {
-    switch (e.key) {
-        case "ArrowDown":
-            focusWord(1), e.preventDefault();
-            break;
-        case "ArrowUp":
-            focusWord(-1), e.preventDefault();
-            break;
-        case "Enter":
-            showDefinition({
-                currentTarget: document.activeElement
-            });
-            break;
-        case "SoftRight":
-        case "F2":
-            resetSearch();
-            break;
-        case "SoftLeft":
-        case "F1":
-            userinput.focus();
-            break
-    }
-}
-
-function keydownDefinitionView(e) {
-    "SoftRight" === e.key || "F2" === e.key ? hideDefinition() : "ArrowUp" === e.key ? document.querySelectorAll(".content")[0].scrollBy(0, -50) : "ArrowDown" === e.key && document.querySelectorAll(".content")[0].scrollBy(0, 50)
-}
-xhttp.onreadystatechange = function() {
-    if (4 === xhttp.readyState)
-        if (200 === xhttp.status) {
-            try {
-                dictionary = JSON.parse(xhttp.responseText)
-            } catch (e) {
-                return void(app.innerHTML = '<center><br><font color="red">Error: Could not load dictionary file.</font></center>')
+    <!-- Tailwind CSS with Custom Cloud Phone Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cm-gray-020': '#202020',
+                        'cm-blue-009': '#0093E0',
+                        'cm-blue-05a': '#05AEF2',
+                        'cm-green-00a': '#00A539',
+                    },
+                    screens: {
+                        'cm-qvga': { 'min': '15rem' }, /* 240px and up */
+                        'cm-qqvga': { 'max': '8rem' }, /* 128px and down */
+                    },
+                    fontFamily: {
+                        sans: ['Roboto', 'bangla', 'sans-serif'],
+                    }
+                }
             }
-            loader.style.display = "none", f1.innerHTML = "About", f3.innerHTML = "Exit", userinput.focus(), document.body.addEventListener("keydown", keydownMain)
-        } else app.innerHTML = '<center><br><font color="red">Error: Dictionary file not found.</font></center>'
-}, xhttp.open("GET", "data.json", !0), xhttp.send(), userinput.addEventListener("change", (function() {
-    displayResults(this.value.trim())
-})), getCloudAd({
-    publisher: "080b82ab-b33a-4763-a498-50f464567e49",
-    app: "b2b_dictionary",
-    slot: "main",
-    onerror: e => {},
-    onready: e => {
-        e.call("display")
-    }
-}), setTimeout((() => {
-    getCloudAd({
-        publisher: "080b82ab-b33a-4763-a498-50f464567e49",
-        app: "b2b_dictionary",
-        slot: "inline-ad",
-        h: 50,
-        w: 240,
-        container: document.getElementById("ad-container"),
-        onerror: e => {},
-        onready: e => {
-            kaiads = e, e.call("display", {
-                tabindex: 1,
-                navClass: "ad-block",
-                display: "block"
-            })
         }
-    })
-}), 3e4);
+    </script>
 
-window.addEventListener("back", (event) => {
-  event.preventDefault();
-  simulateNaturalPress('SoftRight', 0);
-});
+    <style>
+        @font-face {
+            font-family: 'bangla';
+            src: url('font.ttf');
+        }
+
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide scrollbar for cleaner UI */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* D-Pad focus helper targeting child elements */
+        .focusable:focus .focus-text-white {
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white h-screen w-screen overflow-hidden flex flex-col">
+
+    <!-- Loader Overlay -->
+    <div id="loader" class="absolute inset-0 z-50 bg-black/90 flex items-center justify-center">
+        <div class="text-white text-[10px] cm-qvga:text-base font-bold animate-pulse">Loading Dictionary...</div>
+    </div>
+
+    <!-- Header (Sticky Top Bar) -->
+    <div
+        class="shrink-0 bg-cm-blue-009 text-white flex items-center justify-center w-full cm-qqvga:h-[20px] cm-qvga:h-[40px] shadow-md z-10">
+        <h1 class="m-0 font-bold cm-qqvga:text-[10px] cm-qvga:text-base truncate px-2">Bangla Dictionary</h1>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="shrink-0 bg-cm-gray-020 cm-qqvga:p-1 cm-qvga:p-2 border-b border-gray-700">
+        <input type="text" id="userinput"
+            class="w-full bg-black text-white border border-gray-600 rounded-sm cm-qqvga:px-1 cm-qvga:px-2 py-1 cm-qqvga:text-[10px] cm-qvga:text-sm focus:bg-cm-blue-05a focus:font-bold focus:outline-none placeholder-gray-500"
+            tabindex="0" placeholder="Search or select a letter...">
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content flex-grow overflow-y-auto relative cm-qqvga:p-[4pt] cm-qvga:p-[8pt]">
+
+        <!-- App Default View / Grid Letters & Word List -->
+        <div id="app" class="flex flex-col w-full"></div>
+
+        <!-- Definition View -->
+        <div id="definition" class="hidden flex-col gap-2 w-full"></div>
+
+    </div>
+
+    <!-- Softkey Bar -->
+    <div
+        class="shrink-0 bg-cm-gray-020 flex justify-between items-center text-white font-bold cm-qqvga:h-[20px] cm-qvga:h-[30px] px-1 cm-qvga:px-2 cm-qqvga:text-[10px] cm-qvga:text-sm border-t border-gray-700 z-10">
+        <div class="w-1/3 text-left truncate" id="softkey-left">About</div>
+        <div class="w-1/3 text-center truncate uppercase text-cm-blue-05a" id="softkey-center">OK</div>
+        <div class="w-1/3 text-right truncate" id="softkey-right">Exit</div>
+    </div>
+
+    <!-- Cloud OS Dependencies -->
+    <script src="http://shifat100.github.io/key-simulator/Keysim-min.js"></script>
+    <script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
+
+    <script>// Store the last focused element to restore it after the alert closes
+        let previousActiveElement = null;
+        let alertKeydownHandler = null;
+
+        // The custom alert function
+        function customAlert(message, title = "Alert") {
+            // Prevent multiple alerts stacking
+            if (document.getElementById("custom-alert-overlay")) {
+                closeCustomAlert();
+            }
+
+            // Save current focus
+            previousActiveElement = document.activeElement;
+
+            // Create the modal overlay
+            const overlay = document.createElement("div");
+            overlay.id = "custom-alert-overlay";
+            // Fixed positioning, high z-index, safe margins padding
+            overlay.className = "fixed inset-0 z-[9999] bg-black/90 flex flex-col items-center justify-center p-[4pt] cm-qvga:p-[8pt]";
+
+            // Injecting strictly compliant Dark Mode HTML
+            overlay.innerHTML = `
+        <div class="bg-cm-gray-020 border border-gray-600 rounded-sm w-full flex flex-col shadow-lg overflow-hidden max-h-full">
+            <div class="bg-cm-blue-009 text-white font-bold px-2 py-1 cm-qqvga:text-[10px] cm-qvga:text-sm text-center truncate shrink-0">
+                ${title}
+            </div>
+            <div class="p-2 cm-qqvga:p-1 text-center text-white cm-qqvga:text-[10px] cm-qvga:text-sm overflow-y-auto max-h-[80px] cm-qvga:max-h-[160px]">
+                ${message}
+            </div>
+            <div class="bg-cm-gray-020 border-t border-gray-700 flex justify-center items-center px-1 cm-qvga:px-2 py-1 shrink-0 h-[20px] cm-qvga:h-[30px]">
+                <div class="text-cm-blue-05a font-bold cm-qqvga:text-[10px] cm-qvga:text-sm uppercase">OK</div>
+            </div>
+        </div>
+    `;
+
+            document.body.appendChild(overlay);
+
+            // Create a capturing keydown handler to trap focus
+            alertKeydownHandler = function (e) {
+                // Stop background lists and inputs from receiving key presses
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Any standard confirm/exit key closes the alert
+                if (e.key === "Enter" || e.key === "SoftLeft" || e.key === "SoftRight" || e.key === "F1" || e.key === "F2" || e.key === "Escape") {
+                    closeCustomAlert();
+                }
+            };
+
+            // Use capturing phase (true) to intercept keys BEFORE they hit the main app listeners
+            document.addEventListener("keydown", alertKeydownHandler, true);
+        }
+
+        // Function to close and cleanup the custom alert
+        function closeCustomAlert() {
+            const overlay = document.getElementById("custom-alert-overlay");
+            if (overlay) {
+                overlay.remove();
+            }
+
+            // Remove the event trap
+            if (alertKeydownHandler) {
+                document.removeEventListener("keydown", alertKeydownHandler, true);
+                alertKeydownHandler = null;
+            }
+
+            // Restore focus to wherever the user was before the alert popped up
+            if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+                previousActiveElement.focus();
+            }
+        }
+
+        // Override the window.alert to automatically route through your custom UI
+        window.alert = function (message) {
+            customAlert(message, "App Info");
+        };
+
+
+        function nl2br(e) {
+            return "string" != typeof e ? "" : e.replace(/\n/g, "<br>")
+        }
+
+        var app = document.getElementById("app"),
+            userinput = document.getElementById("userinput"),
+            definitionDiv = document.getElementById("definition"),
+            f1 = document.getElementById("softkey-left"),
+            f3 = document.getElementById("softkey-right"),
+            loader = document.getElementById("loader"),
+            dictionary = [],
+            letterCounts = {},
+            uniqueLetters = [],
+            currentFocusInList = null,
+            xhttp = new XMLHttpRequest;
+
+        // Initialize App data
+        xhttp.onreadystatechange = function () {
+            if (4 === xhttp.readyState) {
+                if (200 === xhttp.status) {
+                    try {
+                        dictionary = JSON.parse(xhttp.responseText);
+
+                        // Extract starting letters and count words
+                        dictionary.forEach(d => {
+                            if (d.word) {
+                                let firstChar = d.word.charAt(0);
+                                letterCounts[firstChar] = (letterCounts[firstChar] || 0) + 1;
+                            }
+                        });
+                        uniqueLetters = Object.keys(letterCounts).sort();
+
+                    } catch (e) {
+                        app.innerHTML = '<div class="text-center text-red-500 py-4 font-bold">Error: Could not load dictionary file.</div>';
+                        return;
+                    }
+                    loader.style.display = "none";
+                    showLettersView();
+                    userinput.focus();
+                    document.body.addEventListener("keydown", keydownMain);
+                } else {
+                    app.innerHTML = '<div class="text-center text-red-500 py-4 font-bold">Error: Dictionary file not found.</div>';
+                }
+            }
+        };
+        xhttp.open("GET", "data.json", !0);
+        xhttp.send();
+
+        // Show Alphabetical Letter Index in GRID VIEW
+        function showLettersView() {
+            definitionDiv.style.display = "none";
+            app.style.display = "flex";
+
+            let r = '';
+
+            // Grid container: 3 cols for QQVGA, 4 cols for QVGA
+            r += '<div class="grid grid-cols-3 cm-qvga:grid-cols-4 gap-1 cm-qvga:gap-2">';
+
+            uniqueLetters.forEach((letter, index) => {
+                r += `<div class="focusable letter flex flex-col items-center justify-center border border-gray-700 rounded bg-cm-gray-020 focus:bg-cm-blue-05a focus:font-bold focus:outline-none focus:text-white" tabindex="${index + 1}" data-letter="${letter}">
+                        <span class="cm-qqvga:text-sm cm-qvga:text-lg font-bold">${letter}</span>
+                        <span class="text-gray-400 focus-text-white cm-qqvga:text-[5px] cm-qvga:text-[8px] mt-1">${letterCounts[letter]} Words</span>
+                      </div>`;
+            });
+
+            r += '</div>';
+            app.innerHTML = r;
+
+            document.querySelectorAll(".letter").forEach(el => {
+                el.addEventListener("click", function () {
+                    userinput.value = this.getAttribute("data-letter");
+                    displayResults(userinput.value);
+                });
+            });
+
+            f1.innerHTML = "About";
+            f3.innerHTML = "Exit";
+            document.body.removeEventListener("keydown", keydownDefinitionView);
+            document.body.addEventListener("keydown", keydownList);
+        }
+
+        // Display Word Results and Inject Focusable Ads
+        function displayResults(e) {
+            let val = e.trim().toLowerCase();
+            if (val === "") {
+                showLettersView();
+                return;
+            }
+
+            var n = dictionary.filter(function (item) { return item.word.toLowerCase().startsWith(val) }),
+                r = "";
+
+            if (0 === n.length) {
+                r = '<div class="text-center text-gray-400 cm-qqvga:text-[10px] cm-qvga:text-sm py-4">No Word Found...</div>';
+            } else {
+                for (var o = 0; o < Math.min(100, n.length); o++) {
+
+                    // Add Cloud Ad Container after every 10 elements. The wrapper itself is focusable for D-Pad.
+                    if (o > 0 && o % 10 === 0) {
+                        r += `<div class="focusable ad-wrapper w-full flex justify-center p-1 my-1 border border-gray-700 rounded bg-cm-gray-020 focus:bg-cm-blue-05a focus:outline-none" tabindex="${o + 1}" id="inline-ad-wrapper-${o}"></div>`;
+                    }
+
+                    if (n[o].definition) {
+                        var i = n[o].definition.replace(/"/g, "&quot;");
+                        if (-1 == i.indexOf("<a href=")) {
+                            r += `<div class="focusable word w-full border-b border-gray-700 truncate cm-qqvga:p-1 cm-qvga:p-2 cm-qqvga:text-[10px] cm-qvga:text-sm focus:bg-cm-blue-05a focus:font-bold focus:outline-none focus:text-white" tabindex="${o + 1}" data-word="${n[o].word}" data-definition="${nl2br(i.replace(/<\/em>/gi, "</em><br>").replace(/Bengali definition/gi, ""))}">
+                                    ${n[o].word}
+                                  </div>`;
+                        }
+                    }
+                }
+            }
+
+            app.innerHTML = r;
+            document.querySelectorAll(".word").forEach(function (e) { e.addEventListener("click", showDefinition) });
+
+            // Initialize Ads inside the dynamically generated focusable wrappers
+            document.querySelectorAll(".ad-wrapper").forEach((el, idx) => {
+                getCloudAd({
+                    publisher: "080b82ab-b33a-4763-a498-50f464567e49",
+                    app: "b2b_dictionary",
+                    slot: "inline-ad-" + idx,
+                    h: 50,
+                    w: 240,
+                    container: el,
+                    onerror: e => { },
+                    onready: e => {
+                        kaiads = e;
+                        e.call("display", { tabindex: -1, display: "block" });
+                    }
+                });
+            });
+
+            f1.innerHTML = "Search";
+            f3.innerHTML = "Clear";
+            document.body.removeEventListener("keydown", keydownMain);
+            document.body.addEventListener("keydown", keydownList);
+
+            var a = document.querySelector(".focusable");
+            if (a && document.activeElement !== userinput) a.focus();
+        }
+
+        function showDefinition(e) {
+            getCloudAd({
+                publisher: "080b82ab-b33a-4763-a498-50f464567e49",
+                app: "b2b_dictionary",
+                slot: "showdefination",
+                onerror: e => { },
+                onready: e => { e.call("display") }
+            });
+
+            var t = e.currentTarget || document.activeElement;
+            if (t.classList.contains("word")) {
+                currentFocusInList = t;
+                var n = t.getAttribute("data-word"),
+                    r = t.getAttribute("data-definition");
+
+                definitionDiv.innerHTML = `
+                    <div class="font-bold text-white cm-qqvga:text-sm cm-qvga:text-lg mb-1">${n}</div>
+                    <div class="text-gray-300 cm-qqvga:text-[10px] cm-qvga:text-sm leading-relaxed whitespace-pre-wrap">${r}</div>
+                `;
+
+                app.style.display = "none";
+                definitionDiv.style.display = "flex";
+                f1.innerHTML = "";
+                f3.innerHTML = "Back";
+
+                document.body.removeEventListener("keydown", keydownList);
+                document.body.addEventListener("keydown", keydownDefinitionView);
+            }
+        }
+
+        function hideDefinition() {
+            definitionDiv.style.display = "none";
+            app.style.display = "flex";
+            f1.innerHTML = "Search";
+            f3.innerHTML = "Clear";
+            document.body.removeEventListener("keydown", keydownDefinitionView);
+            document.body.addEventListener("keydown", keydownList);
+            if (currentFocusInList) {
+                currentFocusInList.focus();
+                currentFocusInList.scrollIntoView({ block: "center", behavior: "smooth" });
+            }
+        }
+
+        function resetSearch() {
+            userinput.value = "";
+            showLettersView();
+            userinput.focus();
+        }
+
+        // Smart 1D/2D D-Pad Movement
+        function focusNext(dir) {
+            var items = document.querySelectorAll(".focusable");
+            if (!items || items.length === 0) return;
+            var index = Array.prototype.indexOf.call(items, document.activeElement) + dir;
+
+            if (index >= items.length) index = items.length - 1; // Don't overflow out of grid
+            if (index < 0) index = 0;
+
+            items[index].focus();
+            items[index].scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+
+        function keydownMain(e) {
+
+
+            if (document.activeElement !== userinput) return;
+
+            switch (e.key) {
+                case "SoftRight":
+                case "F2":
+                    if (userinput.value.trim() === "") window.history.back();
+                    else resetSearch();
+                    break;
+                case "F1":
+                case "Escape":
+                    e.preventDefault();
+                    alert("A Bengali Dictionary App By Shifat100");
+                    break;
+                case "ArrowDown":
+                    var firstItem = document.querySelector(".focusable");
+                    if (firstItem) {
+                        firstItem.focus();
+                        firstItem.scrollIntoView({ block: "center", behavior: "smooth" });
+                    }
+                    e.preventDefault();
+                    break;
+            }
+        }
+
+        function keydownList(e) {
+            var items = document.querySelectorAll(".focusable");
+            var currentIndex = Array.prototype.indexOf.call(items, document.activeElement);
+
+            // Check if we are currently looking at the Grid view (letters) or List view (words/ads)
+            var isGrid = document.activeElement.classList.contains("letter");
+            var cols = isGrid ? (window.innerWidth >= 240 ? 4 : 3) : 1; // Grid column math
+
+            switch (e.key) {
+                case "ArrowDown":
+                    focusNext(cols); e.preventDefault();
+                    break;
+                case "ArrowUp":
+                    if (currentIndex < cols) {
+                        // If on the top row of grid, or top item of list, go back to Search Bar
+                        userinput.focus();
+                    } else {
+                        focusNext(-cols);
+                    }
+                    e.preventDefault();
+                    break;
+                case "ArrowRight":
+                    if (isGrid) { focusNext(1); e.preventDefault(); }
+                    break;
+                case "ArrowLeft":
+                    if (isGrid) { focusNext(-1); e.preventDefault(); }
+                    break;
+                case "Enter":
+                    if (document.activeElement.classList.contains("letter") || document.activeElement.classList.contains("word")) {
+                        document.activeElement.click();
+                    } else if (document.activeElement.classList.contains("ad-wrapper")) {
+                        // Click logic for Ad inside focusable container
+                        let adElement = document.activeElement.querySelector('a, [role="button"], [tabindex]');
+                        if (adElement) adElement.click();
+                    }
+                    break;
+                case "SoftRight":
+                case "F2":
+                    if (userinput.value === "") window.history.back();
+                    else resetSearch();
+                    break;
+                case "SoftLeft":
+                case "F1":
+                    userinput.focus();
+                    break;
+            }
+        }
+
+        function keydownDefinitionView(e) {
+            if ("SoftRight" === e.key || "F2" === e.key) {
+                hideDefinition();
+            } else if ("ArrowUp" === e.key) {
+                document.querySelector(".content").scrollBy(0, -40);
+            } else if ("ArrowDown" === e.key) {
+                document.querySelector(".content").scrollBy(0, 40);
+            }
+        }
+
+        // Live Search Trigger
+        userinput.addEventListener("change", function () {
+            displayResults(this.value);
+        });
+
+        // Hardware Back Button Mapping
+        window.addEventListener("back", (event) => {
+            event.preventDefault();
+            simulateNaturalPress('SoftRight', 0);
+        });
+    </script>
+</body>
+
+</html>
