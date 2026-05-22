@@ -463,6 +463,7 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
         var skLSK = document.getElementById('sk-lsk');
         var skCSK = document.getElementById('sk-csk');
         var skRSK = document.getElementById('sk-rsk');
+        var cloudAd = null;
 
         function loadAds() {
             var containers = document.querySelectorAll('.ad-container');
@@ -473,8 +474,7 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                         container: container,
                         onerror: function (err) { console.error('CloudAd Banner Error:', err); },
                         onready: function (ad) {
-                            // Only update the reference once the new ad is actually ready
-                            container.cloudAd = ad;
+                            cloudAd = ad;
                             ad.call('display');
                         },
                     });
@@ -482,25 +482,14 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
             }
         }
 
-        // --- INITIALIZATION ---
-        /*window.onload = function () {
-            var savedData = localStorage.getItem('bd_iptv_playlist') || DEFAULT_M3U;
-            parseM3U(savedData);
-            renderList(channels, listContainer);
-            setupTouchControls(); // Initialize Touch support
 
-            history.replaceState({ view: 'home' }, "Home", "#home");
-            updateUI('home');
-        };*/
         window.onload = function () {
             var savedData = localStorage.getItem('bd_iptv_playlist');
 
             if (savedData) {
-                // Load from cache for instant startup
                 parseM3U(savedData);
                 renderList(channels, listContainer);
             } else {
-                // No cache, fetch from URL
                 fetchRemotePlaylist();
             }
 
@@ -540,7 +529,6 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
             xhr.send();
         }
 
-        // --- ROUTER (HISTORY API) ---
         window.onpopstate = function (e) {
             if (document.getElementById('modal-overlay').style.display === 'flex') {
                 closeModal(false);
@@ -574,7 +562,7 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 
             if (viewName === 'home') {
                 document.getElementById('home-view').classList.add('active');
-                elHeader.innerText = "IPTV Pro";
+                elHeader.innerText = "IPTV";
                 setSoftkeys(ICONS.menu, ICONS.play, ICONS.close);
                 renderList(channels, listContainer);
             }
@@ -657,13 +645,50 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                 return;
             }
 
-            // 2. D-PAD NAVIGATION
             if (key === 'ArrowDown') {
                 e.preventDefault();
-                focusIndex++; updateFocus();
-            } else if (key === 'ArrowUp') {
+
+                var items = getFocusableItems();
+
+                if (currentView === 'home' && viewMode === 'grid') {
+                    focusIndex += 3; // grid column = 3
+                } else {
+                    focusIndex++;
+                }
+
+                updateFocus();
+            }
+
+            else if (key === 'ArrowUp') {
                 e.preventDefault();
-                focusIndex--; updateFocus();
+
+                var items = getFocusableItems();
+
+                if (currentView === 'home' && viewMode === 'grid') {
+                    focusIndex -= 3;
+                } else {
+                    focusIndex--;
+                }
+
+                updateFocus();
+            }
+
+            else if (key === 'ArrowRight') {
+                e.preventDefault();
+
+                if (currentView === 'home' && viewMode === 'grid') {
+                    focusIndex += 1;
+                    updateFocus();
+                }
+            }
+
+            else if (key === 'ArrowLeft') {
+                e.preventDefault();
+
+                if (currentView === 'home' && viewMode === 'grid') {
+                    focusIndex -= 1;
+                    updateFocus();
+                }
             }
 
             // 3. ACTION / CENTER
@@ -697,19 +722,14 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 
             if (currentView === 'home') {
                 if (target.classList.contains('ad-container')) {
-                    window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_blank');
+                    cloudAd.call('click');
                 } else {
                     playMedia(target.dataset.channelUrl);
                 }
             }
             else if (currentView === 'menu') {
                 if (target.classList.contains('ad-container')) {
-                    if (target.cloudAd && typeof target.cloudAd.click === 'function') {
-                        window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_blank');
-                    } else {
-                        console.log("Ad not loaded yet...");
-                        // Optional: trigger a manual reload of the ad if it's missing
-                    }
+                    cloudAd.call('click');
                 }
                 var action = target.getAttribute('data-action');
                 if (action === 'search') navigate('search');
@@ -730,16 +750,14 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                     window.location.reload();
                 }
                 else if (action === 'about') {
-                    openModal("IPTV Pro\nCloud Phone Edition v1.0\nCode: A.I. Shifat \nPlaylist: Sany Ahmed Raj", null);
+                    openModal("IPTV\nCloud Phone Edition v1.0\nCode: A.I. Shifat \nPlaylist: Sany Ahmed Raj", null);
                     setSoftkeys("", "OK", "");
                 }
             }
             else if (currentView === 'search') {
                 if (target.tagName === 'INPUT') return;
                 if (target.classList.contains('ad-container')) {
-                    if (target.cloudAd) {
-                        window.open('https://matcheshonoraryunderwater.com/h3ghsxyvp?key=331819c57a0e4e6203da3f03fe993d20', '_blank');
-                    }
+                    cloudAd.call('click');
                 } else if (target.dataset.channelUrl) {
                     playMedia(target.dataset.channelUrl);
                 }
@@ -852,7 +870,7 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                         publisher: '080b82ab-b33a-4763-a498-50f464567e49',
                         container: adDiv,
                         onready: function (ad) {
-                            adDiv.cloudAd = ad; // Attach the ad instance to the element
+                            cloudAd = ad;
                             ad.call('display');
                         },
                     });
