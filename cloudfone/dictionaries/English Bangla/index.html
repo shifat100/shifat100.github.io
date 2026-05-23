@@ -438,7 +438,8 @@
                         e.preventDefault();
 
                         if (!selScreen.classList.contains('hidden')) {
-                            window.location.href = '/index.html';
+                            //window.location.href = '/index.html';
+                            window.close();
                         }
                         else if (rskText.innerText.includes('Clear')) {
                             userinput.value = '';
