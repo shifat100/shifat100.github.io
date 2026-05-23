@@ -353,6 +353,7 @@
         // D-pad Key Navigation (Modified)
         function setupKeyNavigation() {
             window.addEventListener("back", (event) => {
+                event.preventDefault();
                 simulateNaturalPress('SoftRight', 0);
             });
             document.addEventListener('keydown', function (e) {
