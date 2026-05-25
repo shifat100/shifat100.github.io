@@ -75,6 +75,12 @@ var db = `{
     "category": "utility",
     "file": "jsonconv", 
     "description": "Convert JSON, CSV, and HTML Tables with column selection feature."
+},
+{
+    "title": "Zip Web Hoster",
+    "category": "utilities",
+    "file": "zip_web_host", 
+    "description": "A Material 3 designed sandbox tool to upload, host, and run ZIP file contents directly in your browser."
 }
 ]}`;
 
