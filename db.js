@@ -78,7 +78,7 @@ var db = `{
 },
 {
     "title": "Zip Web Hoster",
-    "category": "utilities",
+    "category": "utility",
     "file": "zip_web_host", 
     "description": "A Material 3 designed sandbox tool to upload, host, and run ZIP file contents directly in your browser."
 }
