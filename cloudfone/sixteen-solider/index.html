@@ -1105,7 +1105,7 @@ window.addEventListener('keydown', (e) => {
     }
 
     if (waitingVisible || endVisible) {
-        if (e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'F17') {
+        if (e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'Escape') {
             leaveRoom();
             e.preventDefault();
         }
@@ -1134,9 +1134,9 @@ window.addEventListener('keydown', (e) => {
         case 'Backspace':
         case 'Escape':
             triggerDeselect(); e.preventDefault(); break;
-        case 'SoftLeft': case 'F1': case 'F17':
+        case 'SoftLeft': case 'F1': case 'Escape':
             leaveRoom(); e.preventDefault(); break;
-        case 'SoftRight': case 'F2': case 'F18':
+        case 'SoftRight': case 'F2': case 'Backspace':
             if (hasCapturedThisTurn) endChainTurn();
             else if (activePieceId !== null) triggerDeselect();
             e.preventDefault();
