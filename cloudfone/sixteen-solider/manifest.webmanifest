@@ -1,0 +1,31 @@
+{
+  "lang": "en-US",
+  "name": "Sixteen Soliders",
+  "short_name": "16 Guti",
+  "id": "Sixteen Soliders",
+  "description": "Sixteen Soldiers A Multiplayer Online Game (traditionally known as Sholo Guti, 16 Guti, Bead 16 in South Asia) is a classic, two-player abstract strategy board game. Popularly compared to checkers and draft games, it is played on a distinct grid board with two triangular extensions.",
+  "start_url": "https://shifat100.github.io/cloudfone/sixteen-solider/index.html",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icons/56.png",
+      "type": "image/png",
+      "sizes": "56x56"
+    },
+    {
+      "src": "icons/112.png",
+      "type": "image/png",
+      "sizes": "112x112"
+    }
+  ],
+  "b2g_features": {
+    "version": "3.0.0",
+    "cursor": false,
+    "developer": {
+      "name": "Shifat100",
+      "url": "https://shifat100.xtgem.com"
+    }
+  }
+}
