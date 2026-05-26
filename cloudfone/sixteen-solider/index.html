@@ -4,20 +4,1016 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sixteen Soldiers</title>
+    <title>Sixteen Soldiers - Online Multiplayer</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="http://shifat100.github.io/key-simulator/Keysim-min.js"></script>
-    </script>
     <style>
-       body{ margin: 0; padding: 0; background-color: #333333; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; box-sizing: border-box; overflow: hidden; user-select: none;} .kai-header{ width: 100%; height: 20px; background-color: #873eff; color: #ffffff; display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: bold; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); z-index: 5;} #gameContainer{ position: relative; width: 100%; max-width: 320px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #222222;} canvas{ width: 100%; max-width: 100%; height: auto; aspect-ratio: 500/920; display: block; border-radius: 4px; cursor: pointer; max-height: calc(100vh - 62px); object-fit: contain; touch-action: none;} .kai-softkey{ width: 100%; height: 30px; background-color: #f1f1f1; color: #333333; display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; align-items: center; font-size: 11px; font-weight: 700; box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2); z-index: 5;} .kai-softkey div{ padding: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;} .softkey-left{ text-align: left; padding-left: 8px !important;} .softkey-center{ text-align: center;} .softkey-right{ text-align: right; padding-right: 8px !important; color: #e53935;} .hud-overlay{ position: fixed; top: 0px; left: 0px; width: 100%; display: flex; justify-content: space-between; font-size: 11px; color: #ffffff; background: rgba(0, 0, 0); padding: 4px 8px; border-radius: 4px; pointer-events: none; z-index: 9;} .hud-overlay div{ display: flex; align-items: center; gap: 4px;} .screen{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 30, 30, 0.98); color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 15px; box-sizing: border-box;} .screen h2{ font-size: 18px; margin: 0 0 8px 0; color: #ffb74d;} .screen p{ font-size: 11px; margin: 0 0 12px 0; color: #ffe0b2;} .input-box{ width: 90%; background: #444; border: 2px solid #555; color: white; padding: 8px; font-size: 13px; text-align: center; border-radius: 4px; margin-bottom: 8px; outline: none; box-sizing: border-box;} .input-box.active{ border-color: #873eff; background: #555;} .menu-list{ display: flex; flex-direction: column; gap: 6px; width: 90%;} .menu-item{ background-color: #555555; color: white; padding: 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: center;} .menu-item.active{ background-color: #873eff; outline: 2px solid #ffffff;} .room-list-title{ font-size: 11px; margin-top: 12px; width: 90%; text-align: left; color: #ccc;} .room-list-container{ width: 90%; max-height: 80px; overflow-y: auto; background: #222; border-radius: 4px; padding: 4px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px; box-sizing: border-box;} .room-item{ background: #333; padding: 6px; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; font-size: 10px;} .room-item.active{ background: #873eff; outline: 1.5px solid white;} .hidden{ display: none !important;} @media (max-width: 180px) or (max-height: 220px){ .kai-header{ height: 16px; font-size: 8px;} canvas{ max-height: calc(100vh - 34px);} .kai-softkey{ height: 18px; font-size: 8px;} .kai-softkey div{ padding: 1px;} .softkey-left{ padding-left: 4px !important;} .softkey-right{ padding-right: 4px !important;} .hud-overlay{ font-size: 8px; padding: 2px 4px;} .hud-overlay div{ gap: 2px;} .hud-overlay div span[style*="width:8px"]{ width: 5px !important; height: 5px !important;} .screen{ padding: 4px 6px;} .screen h2{ font-size: 10px; margin: 0 0 3px 0;} .screen p{ font-size: 7.5px; margin: 0 0 4px 0; line-height: 1.1;} .input-box{ padding: 3px; font-size: 9px; margin-bottom: 4px; border-width: 1px;} .menu-list{ gap: 3px;} .menu-item{ padding: 4px; font-size: 8px; border-radius: 2px;} .room-list-title{ font-size: 8px; margin-top: 4px;} .room-list-container{ max-height: 35px; gap: 2px; padding: 2px; margin-top: 2px;} .room-item{ padding: 3px; font-size: 7.5px;}}
+        body{ margin: 0; padding: 0; background-color: #333333; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; box-sizing: border-box; overflow: hidden; user-select: none;} .kai-header{ width: 100%; height: 20px; background-color: #873eff; color: #ffffff; display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: bold; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); z-index: 5;} #gameContainer{ position: relative; width: 100%; max-width: 320px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #222222;} canvas{ width: 100%; max-width: 100%; height: auto; aspect-ratio: 500/920; display: block; border-radius: 4px; cursor: pointer; max-height: calc(100vh - 62px); object-fit: contain; touch-action: none;} .kai-softkey{ width: 100%; height: 30px; background-color: #f1f1f1; color: #333333; display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; align-items: center; font-size: 11px; font-weight: 700; box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2); z-index: 5;} .kai-softkey div{ padding: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;} .softkey-left{ text-align: left; padding-left: 8px !important;} .softkey-center{ text-align: center;} .softkey-right{ text-align: right; padding-right: 8px !important; color: #e53935;} .hud-overlay{ position: fixed; top: 0px; left: 0px; width: 100%; display: flex; justify-content: space-between; font-size: 11px; color: #ffffff; background: rgba(0, 0, 0); padding: 4px 8px; border-radius: 4px; pointer-events: none; z-index: 9;} .hud-overlay div{ display: flex; align-items: center; gap: 4px;} .screen{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 30, 30, 0.98); color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 15px; box-sizing: border-box;} .screen h2{ font-size: 18px; margin: 0 0 8px 0; color: #ffb74d;} .screen p{ font-size: 11px; margin: 0 0 12px 0; color: #ffe0b2;} .input-box{ width: 90%; background: #444; border: 2px solid #555; color: white; padding: 8px; font-size: 13px; text-align: center; border-radius: 4px; margin-bottom: 8px; outline: none; box-sizing: border-box;} .input-box.active{ border-color: #873eff; background: #555;} .menu-list{ display: flex; flex-direction: column; gap: 6px; width: 90%;} .menu-item{ background-color: #555555; color: white; padding: 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: center;} .menu-item.active{ background-color: #873eff; outline: 2px solid #ffffff;} .room-list-title{ font-size: 11px; margin-top: 12px; width: 90%; text-align: left; color: #ccc;} .room-list-container{ width: 90%; max-height: 80px; overflow-y: auto; background: #222; border-radius: 4px; padding: 4px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px; box-sizing: border-box;} .room-item{ background: #333; padding: 6px; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; font-size: 10px;} .room-item.active{ background: #873eff; outline: 1.5px solid white;} .hidden{ display: none !important;} @media (max-width: 180px) or (max-height: 220px){ .kai-header{ height: 16px; font-size: 8px;} canvas{ max-height: calc(100vh - 34px);} .kai-softkey{ height: 18px; font-size: 8px;} .kai-softkey div{ padding: 1px;} .softkey-left{ padding-left: 4px !important;} .softkey-right{ padding-right: 4px !important;} .hud-overlay{ font-size: 8px; padding: 2px 4px;} .hud-overlay div{ gap: 2px;} .hud-overlay div span[style*="width:8px"]{ width: 5px !important; height: 5px !important;} .screen{ padding: 4px 6px;} .screen h2{ font-size: 10px; margin: 0 0 3px 0;} .screen p{ font-size: 7.5px; margin: 0 0 4px 0; line-height: 1.1;} .input-box{ padding: 3px; font-size: 9px; margin-bottom: 4px; border-width: 1px;} .menu-list{ gap: 3px;} .menu-item{ padding: 4px; font-size: 8px; border-radius: 2px;} .room-list-title{ font-size: 8px; margin-top: 4px;} .room-list-container{ max-height: 35px; gap: 2px; padding: 2px; margin-top: 2px;} .room-item{ padding: 3px; font-size: 7.5px;}}
     </style>
 </head>
 
 <body>
-    <div class="kai-header">16 Soldiers Online</div><div id="gameContainer"><div class="hud-overlay hidden" id="hudBar"><div><span style="display:inline-block; width:8px; height:8px; background:#d32f2f; border-radius:50%;"></span><span id="p1Label">Red: 16</span></div><div id="turnIndicator" style="color: #ffb74d;">Connecting...</div><div><span style="display:inline-block; width:8px; height:8px; background:#388e3c; border-radius:50%;"></span><span id="p2Label">Green: 16</span></div></div><canvas id="gameCanvas" class="hidden"></canvas><div id="lobbyScreen" class="screen"><h2>Online Multiplayer</h2><input type="text" id="roomCodeInput" class="input-box active" placeholder="ENTER CODE" maxlength="8"><div class="menu-list"><div class="menu-item" id="btnJoin" onclick="actionJoin()">Join Room</div><div class="menu-item" id="btnCreatePublic" onclick="actionCreate(false)">Create Public Room</div><div class="menu-item" id="btnCreatePrivate" onclick="actionCreate(true)">Create Private Room</div></div><div class="room-list-title">Active Public Waiting Rooms:</div><div id="roomListContainer" class="room-list-container"></div></div><div id="waitingScreen" class="screen hidden"><h2 id="roomTypeLabel">Waiting Room</h2><p>Waiting for another player to join...</p><div style="font-size: 20px; font-weight: bold; color: #ffb74d; margin-bottom: 20px;">Code: <span id="waitingCode"></span></div></div><div id="endScreen" class="screen hidden"><h2 id="endTitle">Game Over</h2><p id="endDetails"></p><div class="menu-list"><div class="menu-item active" onclick="leaveRoom()">Exit to Lobby</div></div></div></div><div class="kai-softkey"><div class="softkey-left" id="softLeftText"></div><div class="softkey-center" id="softCenterText">Select</div><div class="softkey-right" id="softRightText"></div></div>
+    <div class="kai-header">16 Soldiers Online</div>
+    <div id="gameContainer">
+        <div class="hud-overlay hidden" id="hudBar">
+            <div><span
+                    style="display:inline-block; width:8px; height:8px; background:#d32f2f; border-radius:50%;"></span><span
+                    id="p1Label">Red: 16</span></div>
+            <div id="turnIndicator" style="color: #ffb74d;">Connecting...</div>
+            <div><span
+                    style="display:inline-block; width:8px; height:8px; background:#388e3c; border-radius:50%;"></span><span
+                    id="p2Label">Green: 16</span></div>
+        </div><canvas id="gameCanvas" class="hidden"></canvas>
+        <div id="lobbyScreen" class="screen">
+            <h2>Online Multiplayer</h2><input type="text" id="roomCodeInput" class="input-box active"
+                placeholder="ENTER CODE" maxlength="8">
+            <div class="menu-list">
+                <div class="menu-item" id="btnJoin" onclick="actionJoin()">Join Room</div>
+                <div class="menu-item" id="btnCreatePublic" onclick="actionCreate(false)">Create Public Room</div>
+                <div class="menu-item" id="btnCreatePrivate" onclick="actionCreate(true)">Create Private Room</div>
+            </div>
+            <div class="room-list-title">Active Public Waiting Rooms:</div>
+            <div id="roomListContainer" class="room-list-container"></div>
+        </div>
+        <div id="waitingScreen" class="screen hidden">
+            <h2 id="roomTypeLabel">Waiting Room</h2>
+            <p>Waiting for another player to join...</p>
+            <div style="font-size: 20px; font-weight: bold; color: #ffb74d; margin-bottom: 20px;">Code: <span
+                    id="waitingCode"></span></div>
+        </div>
+        <div id="endScreen" class="screen hidden">
+            <h2 id="endTitle">Game Over</h2>
+            <p id="endDetails"></p>
+            <div class="menu-list">
+                <div class="menu-item active" onclick="leaveRoom()">Exit to Lobby</div>
+            </div>
+        </div>
+    </div>
+    <div class="kai-softkey">
+        <div class="softkey-left" id="softLeftText"></div>
+        <div class="softkey-center" id="softCenterText">Select</div>
+        <div class="softkey-right" id="softRightText"></div>
+    </div>
     <script>
-      const _0x4bf1=['left','CpFQB','W5tcJmkOW7Kq','ZWCnV','wmo3WOJdUSoT','rooms/','Bw92zvrV','capture','WQNcNSk6pmopjSoQWQhdUa==','DxzHr00=','azIom','zmksWOr2nWBcM8ohW63dKSko','r1Lzy1K=','q2fWDhvYzq==','w3pcNCksW4i=','CMvM','A1LAzNy=','WO3dKhldNaC=','DhvYBKLUzgLJyxrVCG==','roomItem_','l8kZcHNdTLD4WOrS','cSovW7OUWPm=','u8oXW6DWuW==','A2LUEw0=','W7Siy8kPW6nGtmo/cq==','ENjZzLG=','iZy2yMi2yq==','W78uzCkJW6y=','W4BdS2HUbxdcGdDd','ugr0EgO=','W50FzCkdW7HbtSoTcxKtt8kLhG==','fMveWOO8gmkj','yMLUza==','ywjZ','CM9VBuXPC3rdB250ywLUzxi=','f8oRWPfWnfbRWR7dHmkEDCkybq==','Enter','move','y29Kzq==','WOJcLmkjW4W=','transparent','WehMP','WPtdSL3dG8kGWQ9Udbi0n8oScmkL','WRS1rs/cVq==','txrkvve=','vSo/W6XmCG==','b8oxW4uaWRZdHmoY','DMfSDwu=','t3vWA0y=','WPpcGSkGW7BcKW==','WPddU0JdTCk/WOzQgGG=','zg93BG==','yCk8W4OcBG==','uNrnwKm=','apply','W7VcJmkLW7WlWONdPCo6W5i=','split','Ee9VEei=','W4BdJCoC','SpWDc','W60PgCoWWRbeBa==','iZaWmdaWma==','status','darfm','WPRcPdhcKwxcUmo0W4TO','Bw92zq==','A0Hnu28=','y2HPBgq=','d8k5aGNdGuW=','roomCodeInput','#2e7d32','nTrLn','y29UC3rYDwn0B3i=','DJpjD','ymoXg8odW54/W5lcMSkzWOvqphKM','rw5Kifr1CM4=','DcjpV','addColorStop','querySelectorAll','qxjYB3DsAwDODa==','find','cRKaq','W7rRW4u1WRa=','Aw5KzxHpzG==','y29UDgfPBNm=','focus','bYr4WOCN','FSoZWOpdNmoGW5NdPSoWyHvBW7JcO8oB','WPLCWPhdLmk9CCk6bmk8','WR8vW55Awq==','QlCWd','AIzaSyBsAYFWEDYpQEDhEykEWXO_FwB9dzANE3M','utSDhYeheeLpWQldQMW7WO8=','gCk2xGJcJG==','AblcTGNcHa==','W549WP5oW64I','WPFcKCk9lCouhmoOW7FcOSko','u2vSzwn0','substring','F8o5WOJdH8ovW5K=','W6GNg8obWQrvyq==','C3fYDa==','WP/dUeVdPmk1WPLGgXKLgW==','findIndex','D0hcLmksW6S=','veLnrvnuqu1q','r0fivNe=','AhjRwwe=','zM9YrwfJAa==','v8o8W7Pzw8oyW4qGWP7cL8kfBann','uzRtj','endDetails','W4tdHHaljNe=','mSAnq','W50FzCkfW7Tkv8oTh3K=','W5WiCmkRW7e=','stroke','tfjcrKm=','W7zYW7CUWPm=','WOKNkSkyuq==','iCoxWQxcUg0=','emo1W7e=','ywXWAge=','WOdcRdpcGvC=','MwpJa','forEach','iNJxq','ChvZAa==','d8klbHFdIW==','bmoMWO0=','uLDnyLe=','eJTBWP8SfmkliW==','yCo6WOJdNSoI','W4BdLmoEfMG=','cPVVw','CSkgW5VdGqdcNmko','W5CFySk1W7vdrG==','fCo2W53cVtu=','A21rreK=','Fa7cKcNcQSkOyCoM','fzuRq','rgPMwee=','createRadialGradient','EatcKa==','zCkSWPLSWP4=','iSkbFdlcGSktohPdgJe=','rrOPx','WPhdVKFdOG==','FaVDq','lheNjSkNWQ4=','ECktW73dHWa=','Amorat0=','softRightText','classList','BuDUA1y=','og82hCk6','WRGaW5vrwCktWQG=','W5ldVCowgf8=','height','W5n7W7rYWPxcN8o1','ywn0AxzL','W5SyyG==','A1zUDeC=','XoNZV','toString','ALfktu8=','ffbPE','r3jSBue=','r3jLzw4=','CmkgW4ldJa8=','BgvUz3rO','wCo1W77cRMO=','BgLUzuPVAw4=','C2v0tgLUzurHC2G=','WPC5WR5t','ANvTCa==','imkMW4PxW6FdUWVcH8oC','ITFcK','fsb6WOq1gmk2mdhcLmkg','WOddH0VdUdy=','kMEIu','tNn4uLK=','BCk0W509vJ7dUgtcIa==','test','WPpcLCk4pmoEbG==','W6mogmkyWQvI','C3rYB2TLuMvJDa==','bLZdRSo7kmoy','contains','abs','u29MDeXLzNq=','W7hcJmoGjCkpdSk8WQxcVa==','AudioContext','Dg91y2HZDgfYDa==','wLfRrfy=','rNbSte4=','W7tcI8kTW7C=','zM9YzMvPDa==','forfeit','WQHCWOBdJCkVw8kHn8k3WP5QWR7cLCoZ','key','W4NdGWKueq==','4|1|0|3|2','eUkDP','WReDamkcsW==','YzzRE','ESkOWPTEWQS=','BgzTDKe=','xJSapsuw','softLeftText','WQrpWOtdU8oR','ECiZs','uNH2y0u=','#c62828','ChjLDMvUDerLzMf1Bhq=','FbvtWPtdJq==','qmk2WP1kWQddOHRcNSkbd8khyv7cS2HOW6xcJSoUxCkCW54HaIf4W6VdLG==','W44vyq==','WGoJw','vuXKueC=','zmo4dSo1W4ewW5BcJmkd','txPqAKS=','zNjHBwu=','DmogaJ/cP8oaWPmIWQhcP8kOW7VdQrS=','mNWZFdH8nhW2Fdb8nxW3Fde=','W5ldGCogoNddQffSf8oKCmkFnCop','Dg9tDhjPBMC=','v1n2why=','AJFXA','igHHCYb3B24GDgHLigDHBwuUiejLDhrLCIbSDwnRig5LEhqGDgLTzse=','W6KkWPDTW7O=','BgvMDa==','W5FdPCo+bxu=','zMLSBfn0EwXL','B0zvAKi=','hsiyN','MzPjK','W4j7W7vXWOm=','targetY','zSoWc8ofW502W5dcJCkKWOv9nq==','bmoTW6ykWP4=','W7qwwmkCWR5KW43dGCoYW6bbjCkQWRtcN0vaWOtdGqVdP8oWW6DfW7bFqJddRCkzcSo+','gain','WQqfaSkawCkR','Fjnpy','yNzPEvK=','zkWLs','eCoTWPn4beTUWRBdVq==','down','huRdLCoSgsFcT8keBCoPW4PH','Dg91y2HLCW==','fvnwF','WR3dJw7dQqK=','z2PWt2G=','WQXBrSopW6e6WO4=','jGove','W4BdKCoqdgJdV1vNhG==','amoQWPPofe1QWR7dOW==','Aduqe','CCktWOL+','W6FdNKzrjq==','wCovW6tcHhi4','W6NcO8oii8kBW6SbW5pcUmoOp8opW7bl','W4nGW6HZWPVcMq==','W4nhW5GEcCoB','filter','wKD0yuS=','CxJcLSkZW5xdPSop','WQ9pWOxdO8oZ','EZKxlx4=','WPpcQ8kdW6NcSW==','WPlcTSkcW4JcQa==','WRizhCkC','Aw5Uzxjive1m','length','ZMHmQ','vunvAuy=','vCk0WOXoWQe=','fromId','DSoBcctcLSoxWPCdWOJcOmkRW6VdQq==','Victory!','WRXtW6TxxSkcWP0=','W4TyE0LfsfC=','W4hdRMfZoq==','exWSs','qhRcQSkCW6G=','cyhNn','E8kZWRvFWPy=','qqveH','timestamp','btnJoin','q2nhu0y=','OcHLr','q8o8W7O=','AefoD3i=','sSooWPFdO8ok','W4BdGCogkx3dOuLSomoKzSkpeCoo','FSooW4fEzW==','W5lcQCk8W7Co','z2v0rwXLBwvUDej5swq=','VSBvU','xacQz','WQOoW5vZxCkeWPK=','sSopWRxdP8oA','rdSentSh','tcyT','AMPHEvG=','clientX','W7u5o8kRWP0=','lineWidth','B3bsCKS=','zw5Krgv0ywLSCW==','W4pdS3Tcb0xcJczfy8kedbFcIW==','zMLSBa==','ee/dGSoBoYtcRSkt','W5nCW5CEhCobWPhcRG==','ksb3B24GDgHLigDHBwuU','rMneCLi=','wxP6uKu=','uCoRW60=','iZrLmdaWma==','CMvZDg9Yzq==','add','y2XHC3nmAxn0','W53dNSo2lxG=','qKxcVSkXW5i=','AhvKqMfY','D0LqA2e=','q3bguui=','CMDIysGWldaSmcWWlJq1kq==','y29SB3i=','W4ZdS2zGa1q=','5|0|7|6|1|2|3|4','wZ4PdW==','yI0Wdf4=','UQWUR','Aw5UzxjuzxH0','WRGPEqdcJW==','uM9VBsbLCNjVCJOG','W7FdHCorfg/dVv1Qha==','addEventListener','#ffd54f','WQ8Lxa==','getElementById','WQ8nW4zft8kRWPHviW==','WP7cVZtcRvm=','WQGjW79era==','m8kKFXZcOG==','xJCnpIGm','JTmdk','W5LwA2bb','y2fUy2vS','x8oBW7/cG3uWfa==','rgba(255,\x20255,\x20255,\x200.7)','fPtfO','WQm2c8k6tq==','mxW0Fdj8m3WW','WPLGW5qSWOZcG8k6WOhdJSoKl8ojW5BdLmoU','AgvPz2H0','Red','zgf0ywjHC2u=','W7RcGmk/W50UWOldRmo6W4tcIhO0W4RdJG==','C3rVCa==','Aw5PDgLHBgL6zufWCa==','AHtcLq/cTW==','currentTime','hmobW5pcUZi=','OuuiU','yu5or1u=','bSoDW4maWRhdGSo3WO0wlCovW6TEFq==','off','EWG6aM0=','UkmRN','W5z7W6HzWPhcN8oP','zw5Ku2nYzwvU','isPrivate','Fmk/W54VdulcVtFdJdPZumooeCo0WOtdTqLM','xSQKX','yMvNAw5qyxrO','sYa/hG==','trim','pwRcSCopWPm=','rIWmlcGmcwHeWRddIwaEWP8=','KIFPL','yMrWCMG=','QgYdR','CWDUWPVdUq==','ySkcW4FdIahdHCkWvmkyhCoXW4ZdVxf7jhLtF8oBybqByMFdUa==','preventDefault','W5KByCkYW6fwrG==','xSkIW4JdSbG=','W55dE2nptMZdUmkTW70+','ywrKq29SB3jtDg9W','y1bwvNC=','WRGMqZFcGq==','WQXAqSolWRq7WOy=','BfvQAMe=','W58SWOXpW7y0','BmkHW7mjqq==','WRrpWPddJ8kpw8kXj8kNWOPL','shadowBlur','y3vpA1m=','transaction','k2OZmCk6WRHZ','pc9IpJWVC3bHBJ4GphnWyw4GC3r5Bgu9iMnVBg9YoIm4nZnLzMy7iJ5kB2LUiczYyxf1BZS8l3nWyw4+','WQ0fW4m=','WQGzW6bMrq==','ovaoE','__proto__','zbqBesW=','iLGDn','y29UC29Szq==','TIMESTAMP','y8oiWPFdPmon','GUKxB','W704bCoTWRe=','z8k2W5iRvYBdTg/cIa==','ESkVWPvB','lastEndTurn','C1DQEM8=','zx3cM8kIW5m=','D2fPDgLUz1nJCMvLBG==','WRFcKCk9lCouhmoOWORdR8osha7cPq==','wmkGW73dJJ0=','Qbxzx','c1VdSW==','Ee9cqNa=','quPgwee=','W5nFW5apeSoCWQC=','W6iHb8oHWPfz','save','BSo0WOZdHmoh','GArBn','y0fyEeG=','cuVdPCo9kmovWPJcT8o5t8o6W405','wgjhEe8=','tLOKn','zNjLCxvLBMn5','y2XHC3noyw1L','PruRH','RJrKa','Bfrnveu=','W63cKmk4W7a=','A2v5','W5LoEwK=','ywrKrxzLBNrmAxn0zw5LCG==','W5zCW4SVhColWPC=','j8kuyG==','gu3dOCoOkCod','D2fPDgLUz0nVzgu=','oSkDe','rHCeL','HDqWj','r0vHtLy=','dmorW5K=','DSkxW74mvq==','WOpdOLRdRG==','arc','hidden','setValueAtTime','W6uEg8kp','FfFcMCkaW7m=','GAHVq','nWVqz','cancel','Ehziwvy=','CM9VBs1PDgvT','zxjYB3i=','zMLSDgvY','A0PyA2y=','qxjYB3DeB3DU','A2Xzt2W=','amoAW4q=','C3rYB2TLu3r5Bgu=','pvq3e8kz','hdhlK','aCo1W65Gpa==','W5f5W4b1WQi=','zK1oEKe=','WOldT3ZdLrOm','uBVOx','i2zMyJC0za==','urjmY','W5nJW688cW==','WQpcKCkKlCoiamoQ','WPBdGSour3RcVqW=','nfVdQmoOaq==','style','LLznq','WQZcKCkNlCoWhCo5WRW=','lastMove','GdMnY','y3vYCMvUDfrPBwu=','ugfJzNi=','jjayX','set','rxfoD1y=','gZkfd','D2LKDgG=','W4jGW6GUWQC=','WQLXWPpdI8oT','ALoIQ','uhjPDMf0zsbsB29TienYzwf0zwq=','wxHhDwK=','shulo-guti','W6uSo8kEWRW=','eeVdN8oiaIm=','color','CM9VBuL0zw1F','y2fWDhvYzq==','W6KuW5tcImoYamoMqCoLW4S5W7JdJmk3nG0dWQv+WRXsDY4Zgmo5h8oPacC1ASk2WR1rW6pdSCoqWOCdWQO=','yPDIo','nhWWFdf8mNWZ','thfIC1u=','Lvcwn','C3rHCNq=','Nvdwv','D2fYBG==','SeHxT','suspended','W64zfq==','wrG8ma8=','btHPWPGTmCkmnZW=','TiBGa','AxnqCML2yxrL','CHIDu','v3HXrwq=','WO4QW71rBW==','C21XBfq=','Ch3cKCkY','C2f2zq==','fCkYaGJdLMP6WPrS','D8oHhmoU','innerText','Eu9VBvm=','tgvHDMu=','C3bSAxq=','dgdcGSojWODF','trace','r8ovW7NcLfa6eCoL','Cancel','child','B25eAxnJB25Uzwn0','aSoLW7tcPaHo','yMX1CG==','tIy3f2RcN8kNuMy=','yNrUq3jLyxrLuhvIBgLJ','ArrowUp','j2VcOmofWPvim8opWQ/dQSkaWQi=','qmoMcSoJW5W=','zMLUza==','DmoLgmoYW7W=','y8k1WP5FWP/dOLZcJ8k7hSkAzW==','database','SoftRight','wmorW74=','bSoWW7ZcPbrtnq==','gSlfs','DgfYz2v0wa==','i2iWodi1nW==','W4GDC8kNWRWud8k4sZ19bSof','WOBcNvfxAczo','uK9lBe4=','F8khytlcHmoBaNPFgW==','yNrUq3jLyxrLuhjPDMf0zq==','ywrK','push','WOijW4z/Da==','rmoRW6D9wCoAW4uG','onDisconnect','C2LUzq==','RuVKx','uKPYs2e=','CMv0DxjUicHMDw5JDgLVBIGPia==','IjtGV','CSkfW5ZdLXRcMSkIqSkyg8kT','rsaThG==','C3FcI8k/W43dTW==','uffbz2K=','W58he8kEWQjVWP7dKmoUW6fhi8oLWQFcLWrDWOxdKf7dOCoXW6DBW7DFxZW=','WCmoj','q2HyzuO=','yNPsA3e=','s1DXBKK=','W5TXW6n4WP/cI8oV','W7FdNribfq==','AgLKzgvU','mSk2pd/dLG==','fill','j8o8W7Lik8kG','qMTTDu0=','fillRect','W60Dh8kgWOG=','adT6WQ4/hSkn','B1jsrwW=','rxnJyxbL','right','WPuUWPH0W7C=','WQFcLCkGhmorf8oIWRZdOSouoXlcGSk/','nSoRW7fgkCkGD8kvWQDu','prototype','u2vYDMvYvMfSDwu=','eSokWOFcUvlcVCo9WRG=','z2v0qM91BMrPBMDdBgLLBNrszwn0','nmCRc','lobbyScreen','CM91BMq=','DufXB','DhLWzq==','C3f3De4=','A3rlsNy=','rCoBW70=','lmoYW44TWQC=','W48SWPHtW7ubbSorjq==','F8kpWOfqoqm=','qKjdEeq=','type','WR5bWPhdVSkRvSk9','appendChild','log','cNFcVSo+WQe=','pgrPDIbZDhLSzt0IzM9UDc1ZAxPLoJLWEdSGy29SB3i6i2fHytSGCgfKzgLUzZOXmhb4oYi+tM8Gywn0AxzLihb1yMXPyYb3ywL0Aw5NihjVB21ZlJWVzgL2pG==','fillStyle','738532732350','vgzdtxq=','CM9VBunVzgvjBNb1Da==','Jbkwg','W74Kcmo9WQXyBG==','Exit','aSo0W7VcTbHp','Ahr0Chm6lY9ZAhvSBY1NDxrPlwrLzMf1BhqTCNrKyI5MAxjLyMfZzwLVlMnVBq==','WPJdNwZdMay=','DMfS','v3n4vM4=','DIcLl','z3DrvKK=','af3dG8oFjG==','CKf0tNC=','DhjPBq==','lWRGn','mCoOWOrAfG==','BSo9WPxdNmowW47dRq==','r0fYqM4=','qJ8BpsGwja==','BWhcMaJcPG==','IcaZw','D3neD0C=','C3rHDgu=','active','bCoSW7zlnmkMemkMWQfvsmoXW4SGamo7aIdcHa==','WOLHWQ/dP8oUqConfq==','SmKPT','tKjXDMe=','W4XtBuLstLhdUmkyW7GOtSk8vYL5','dga0jmk3WQ9wDSorDe4=','mVTHe','beginPath','nSojW4DKga==','geq0emk8','swP0r1y=','AfnWqNu=','ftGpBIXwha==','hrkYa','ebNio','z2fTzunHBNzHCW==','onclick','vBvIg','remove','lSkSW5xdJCkwW5RdRG==','vRAXm','Congratulations!\x20You\x20(','W6VcQmoyiSksW7OnW5/cUSoV','WOzYWRNdSSoxs8o0a1XlW77dOWTTcCom','cxFcLSodWPf+la==','m8o5WR/cMw8=','now','#900c0c','width','CMvTB3zL','rMXdyxG=','e8kYdWG=','q2nps2m=','Au1YwwS=','targetX','qYywd3W=','suv5sNi=','WOVdRhS=','SrtbT','WRCjWOnZW49DWPveoq==','WQe4oCkqAq==','sK1Otg4=','UNhUb','oLsOT','lf0jnmkG','EAUgj'];(function(_0x2bf993,_0x1ade2b){const _0x4bf1ac=function(_0x304695){while(--_0x304695){_0x2bf993['push'](_0x2bf993['shift']());}},_0x3c970=function(){const _0x352914={'data':{'key':'cookie','value':'timeout'},'setCookie':function(_0x3c3c5f,_0x5b69ee,_0x56b1f6,_0x68de43){_0x68de43=_0x68de43||{};let _0x3da89a=_0x5b69ee+'='+_0x56b1f6,_0x58d130=0x0;for(let _0x187ed9=0x0,_0x337e05=_0x3c3c5f['length'];_0x187ed9<_0x337e05;_0x187ed9++){const _0x545fe0=_0x3c3c5f[_0x187ed9];_0x3da89a+=';\x20'+_0x545fe0;const _0x3d4119=_0x3c3c5f[_0x545fe0];_0x3c3c5f['push'](_0x3d4119),_0x337e05=_0x3c3c5f['length'],_0x3d4119!==!![]&&(_0x3da89a+='='+_0x3d4119);}_0x68de43['cookie']=_0x3da89a;},'removeCookie':function(){return'dev';},'getCookie':function(_0x5bf9b0,_0x524dd6){_0x5bf9b0=_0x5bf9b0||function(_0x541371){return _0x541371;};const _0xb26343=_0x5bf9b0(new RegExp('(?:^|;\x20)'+_0x524dd6['replace'](/([.$?*|{}()[]\/+^])/g,'$1')+'=([^;]*)')),_0x24af78=function(_0x250dd1,_0xdcba7){_0x250dd1(++_0xdcba7);};return _0x24af78(_0x4bf1ac,_0x1ade2b),_0xb26343?decodeURIComponent(_0xb26343[0x1]):undefined;}},_0x4e232a=function(){const _0x47048e=new RegExp('\x5cw+\x20*\x5c(\x5c)\x20*{\x5cw+\x20*[\x27|\x22].+[\x27|\x22];?\x20*}');return _0x47048e['test'](_0x352914['removeCookie']['toString']());};_0x352914['updateCookie']=_0x4e232a;let _0xfa7261='';const _0x50ace4=_0x352914['updateCookie']();if(!_0x50ace4)_0x352914['setCookie'](['*'],'counter',0x1);else _0x50ace4?_0xfa7261=_0x352914['getCookie'](null,'counter'):_0x352914['removeCookie']();};_0x3c970();}(_0x4bf1,0x105));const _0x3c97=function(_0x2bf993,_0x1ade2b){_0x2bf993=_0x2bf993-0x112;let _0x4bf1ac=_0x4bf1[_0x2bf993];return _0x4bf1ac;};const _0x3046=function(_0x2bf993,_0x1ade2b){_0x2bf993=_0x2bf993-0x112;let _0x4bf1ac=_0x4bf1[_0x2bf993];if(_0x3046['luxJjy']===undefined){var _0x3c970=function(_0x352914){const _0x4e232a='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=',_0xfa7261=String(_0x352914)['replace'](/=+$/,'');let _0x50ace4='';for(let _0x3c3c5f=0x0,_0x5b69ee,_0x56b1f6,_0x68de43=0x0;_0x56b1f6=_0xfa7261['charAt'](_0x68de43++);~_0x56b1f6&&(_0x5b69ee=_0x3c3c5f%0x4?_0x5b69ee*0x40+_0x56b1f6:_0x56b1f6,_0x3c3c5f++%0x4)?_0x50ace4+=String['fromCharCode'](0xff&_0x5b69ee>>(-0x2*_0x3c3c5f&0x6)):0x0){_0x56b1f6=_0x4e232a['indexOf'](_0x56b1f6);}return _0x50ace4;};_0x3046['Oxbggo']=function(_0x3da89a){const _0x58d130=_0x3c970(_0x3da89a);let _0x187ed9=[];for(let _0x337e05=0x0,_0x545fe0=_0x58d130['length'];_0x337e05<_0x545fe0;_0x337e05++){_0x187ed9+='%'+('00'+_0x58d130['charCodeAt'](_0x337e05)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x187ed9);},_0x3046['QSuKyU']={},_0x3046['luxJjy']=!![];}const _0x304695=_0x3046['QSuKyU'][_0x2bf993];if(_0x304695===undefined){const _0x3d4119=function(_0x5bf9b0){this['UMmHCv']=_0x5bf9b0,this['vSkOCn']=[0x1,0x0,0x0],this['hAbVIT']=function(){return'newState';},this['pwpWtq']='\x5cw+\x20*\x5c(\x5c)\x20*{\x5cw+\x20*',this['AdDfnP']='[\x27|\x22].+[\x27|\x22];?\x20*}';};_0x3d4119['prototype']['jBGYbi']=function(){const _0x524dd6=new RegExp(this['pwpWtq']+this['AdDfnP']),_0xb26343=_0x524dd6['test'](this['hAbVIT']['toString']())?--this['vSkOCn'][0x1]:--this['vSkOCn'][0x0];return this['NGSwCH'](_0xb26343);},_0x3d4119['prototype']['NGSwCH']=function(_0x24af78){if(!Boolean(~_0x24af78))return _0x24af78;return this['fonRSF'](this['UMmHCv']);},_0x3d4119['prototype']['fonRSF']=function(_0x541371){for(let _0x250dd1=0x0,_0xdcba7=this['vSkOCn']['length'];_0x250dd1<_0xdcba7;_0x250dd1++){this['vSkOCn']['push'](Math['round'](Math['random']())),_0xdcba7=this['vSkOCn']['length'];}return _0x541371(this['vSkOCn'][0x0]);},new _0x3d4119(_0x3046)['jBGYbi'](),_0x4bf1ac=_0x3046['Oxbggo'](_0x4bf1ac),_0x3046['QSuKyU'][_0x2bf993]=_0x4bf1ac;}else _0x4bf1ac=_0x304695;return _0x4bf1ac;};const _0x3529=function(_0x2bf993,_0x1ade2b){_0x2bf993=_0x2bf993-0x112;let _0x4bf1ac=_0x4bf1[_0x2bf993];if(_0x3529['mzpMWX']===undefined){var _0x3c970=function(_0x4e232a){const _0xfa7261='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=',_0x50ace4=String(_0x4e232a)['replace'](/=+$/,'');let _0x3c3c5f='';for(let _0x5b69ee=0x0,_0x56b1f6,_0x68de43,_0x3da89a=0x0;_0x68de43=_0x50ace4['charAt'](_0x3da89a++);~_0x68de43&&(_0x56b1f6=_0x5b69ee%0x4?_0x56b1f6*0x40+_0x68de43:_0x68de43,_0x5b69ee++%0x4)?_0x3c3c5f+=String['fromCharCode'](0xff&_0x56b1f6>>(-0x2*_0x5b69ee&0x6)):0x0){_0x68de43=_0xfa7261['indexOf'](_0x68de43);}return _0x3c3c5f;};const _0x352914=function(_0x58d130,_0x187ed9){let _0x337e05=[],_0x545fe0=0x0,_0x3d4119,_0x5bf9b0='',_0x524dd6='';_0x58d130=_0x3c970(_0x58d130);for(let _0x24af78=0x0,_0x541371=_0x58d130['length'];_0x24af78<_0x541371;_0x24af78++){_0x524dd6+='%'+('00'+_0x58d130['charCodeAt'](_0x24af78)['toString'](0x10))['slice'](-0x2);}_0x58d130=decodeURIComponent(_0x524dd6);let _0xb26343;for(_0xb26343=0x0;_0xb26343<0x100;_0xb26343++){_0x337e05[_0xb26343]=_0xb26343;}for(_0xb26343=0x0;_0xb26343<0x100;_0xb26343++){_0x545fe0=(_0x545fe0+_0x337e05[_0xb26343]+_0x187ed9['charCodeAt'](_0xb26343%_0x187ed9['length']))%0x100,_0x3d4119=_0x337e05[_0xb26343],_0x337e05[_0xb26343]=_0x337e05[_0x545fe0],_0x337e05[_0x545fe0]=_0x3d4119;}_0xb26343=0x0,_0x545fe0=0x0;for(let _0x250dd1=0x0;_0x250dd1<_0x58d130['length'];_0x250dd1++){_0xb26343=(_0xb26343+0x1)%0x100,_0x545fe0=(_0x545fe0+_0x337e05[_0xb26343])%0x100,_0x3d4119=_0x337e05[_0xb26343],_0x337e05[_0xb26343]=_0x337e05[_0x545fe0],_0x337e05[_0x545fe0]=_0x3d4119,_0x5bf9b0+=String['fromCharCode'](_0x58d130['charCodeAt'](_0x250dd1)^_0x337e05[(_0x337e05[_0xb26343]+_0x337e05[_0x545fe0])%0x100]);}return _0x5bf9b0;};_0x3529['xcNTUh']=_0x352914,_0x3529['pdxCuu']={},_0x3529['mzpMWX']=!![];}const _0x304695=_0x3529['pdxCuu'][_0x2bf993];if(_0x304695===undefined){if(_0x3529['THjFWM']===undefined){const _0xdcba7=function(_0x47048e){this['XpRvws']=_0x47048e,this['aONDen']=[0x1,0x0,0x0],this['IUQGmS']=function(){return'newState';},this['NodtCp']='\x5cw+\x20*\x5c(\x5c)\x20*{\x5cw+\x20*',this['hBFoMi']='[\x27|\x22].+[\x27|\x22];?\x20*}';};_0xdcba7['prototype']['iMYUzP']=function(){const _0x5a9321=new RegExp(this['NodtCp']+this['hBFoMi']),_0x5e58a9=_0x5a9321['test'](this['IUQGmS']['toString']())?--this['aONDen'][0x1]:--this['aONDen'][0x0];return this['SxrLdT'](_0x5e58a9);},_0xdcba7['prototype']['SxrLdT']=function(_0x4900e8){if(!Boolean(~_0x4900e8))return _0x4900e8;return this['ozGuco'](this['XpRvws']);},_0xdcba7['prototype']['ozGuco']=function(_0x1e2e04){for(let _0x41b683=0x0,_0x230549=this['aONDen']['length'];_0x41b683<_0x230549;_0x41b683++){this['aONDen']['push'](Math['round'](Math['random']())),_0x230549=this['aONDen']['length'];}return _0x1e2e04(this['aONDen'][0x0]);},new _0xdcba7(_0x3529)['iMYUzP'](),_0x3529['THjFWM']=!![];}_0x4bf1ac=_0x3529['xcNTUh'](_0x4bf1ac,_0x1ade2b),_0x3529['pdxCuu'][_0x2bf993]=_0x4bf1ac;}else _0x4bf1ac=_0x304695;return _0x4bf1ac;};const _0x2af350=_0x3046,_0x4a4a4b=_0x3529,_0x414554=_0x3c97,_0x68de43=function(){let _0x32d121=!![];return function(_0x5801fb,_0x3276c4){const _0x1dfc05=_0x32d121?function(){const _0x3a70f0=_0x3c97;if(_0x3276c4){const _0x2424e1=_0x3276c4[_0x3a70f0(0x2fa)](_0x5801fb,arguments);return _0x3276c4=null,_0x2424e1;}}:function(){};return _0x32d121=![],_0x1dfc05;};}(),_0x56b1f6=_0x68de43(this,function(){const _0xae9695={'orzaS':'^([^\x20]+(\x20+[^\x20]+)+)+[^\x20]}','zizyw':function(_0x5d58e6){return _0x5d58e6();}},_0x17969b=function(){const _0x49dc43=_0x3c97,_0x5dc118=_0x3529,_0x37fb66=_0x17969b[_0x5dc118(0x24c,'Fr7t')]('return\x20/\x22\x20+\x20this\x20+\x20\x22/')()['constructor'](_0xae9695['orzaS']);return!_0x37fb66[_0x49dc43(0x37b)](_0x56b1f6);};return _0xae9695['zizyw'](_0x17969b);});_0x56b1f6();const _0x50ace4=function(){let _0x2a9886=!![];return function(_0x1c6679,_0x4f77b8){const _0x1390c6=_0x2a9886?function(){const _0x35622c=_0x3529;if(_0x4f77b8){const _0xc3fdf8=_0x4f77b8[_0x35622c(0x31a,'!m88')](_0x1c6679,arguments);return _0x4f77b8=null,_0xc3fdf8;}}:function(){};return _0x2a9886=![],_0x1390c6;};}(),_0xfa7261=_0x50ace4(this,function(){const _0x8999d9=_0x3529,_0x2b4a9d=_0x3c97,_0x2ee23f=_0x3046,_0x53bbc5={'nykUc':function(_0x5027ea,_0x1e75ae){return _0x5027ea(_0x1e75ae);},'xMaZI':function(_0x4f3249,_0x1c5c3d){return _0x4f3249+_0x1c5c3d;},'rrOPx':_0x2ee23f(0x24a),'DChWa':function(_0x4f42a7){return _0x4f42a7();},'qghJw':_0x2b4a9d(0x278),'hqaBw':_0x2ee23f(0x212),'hKeUu':_0x8999d9(0x388,'hVXY'),'PruRH':_0x2ee23f(0x1e0),'IgbDy':_0x2b4a9d(0x227),'UQWUR':function(_0x2045f9,_0x1482d1){return _0x2045f9<_0x1482d1;}},_0x328254=function(){const _0x380aa5=_0x8999d9,_0x4264b7=_0x2b4a9d;let _0x2bf113;try{_0x2bf113=_0x53bbc5['nykUc'](Function,_0x53bbc5['xMaZI'](_0x53bbc5[_0x4264b7(0x356)],_0x380aa5(0x3b5,'pIjZ'))+');')();}catch(_0x1e7c4f){_0x2bf113=window;}return _0x2bf113;},_0x126da7=_0x53bbc5[_0x8999d9(0x3aa,'NqxI')](_0x328254),_0x3fa786=_0x126da7[_0x2ee23f(0x1a8)]=_0x126da7[_0x2ee23f(0x1a8)]||{},_0x52cca9=[_0x53bbc5['qghJw'],_0x53bbc5['hqaBw'],_0x53bbc5[_0x8999d9(0x11b,'Fl!j')],_0x53bbc5[_0x2b4a9d(0x1c4)],'exception',_0x8999d9(0x16b,'brag'),_0x53bbc5[_0x8999d9(0x2d2,'aOQ#')]];for(let _0x32594d=0x0;_0x53bbc5[_0x2b4a9d(0x15c)](_0x32594d,_0x52cca9[_0x8999d9(0x37d,'pIjZ')]);_0x32594d++){const _0x4abaaa=_0x50ace4[_0x2ee23f(0x30c)][_0x2b4a9d(0x265)][_0x8999d9(0x357,'5fPu')](_0x50ace4),_0x4f1ae3=_0x52cca9[_0x32594d],_0x1df744=_0x3fa786[_0x4f1ae3]||_0x4abaaa;_0x4abaaa[_0x2b4a9d(0x1a5)]=_0x50ace4[_0x8999d9(0x21e,'aOQ#')](_0x50ace4),_0x4abaaa[_0x2b4a9d(0x368)]=_0x1df744[_0x2ee23f(0x3a6)][_0x2ee23f(0x2e4)](_0x1df744),_0x3fa786[_0x4f1ae3]=_0x4abaaa;}});_0xfa7261();const firebaseConfig={'apiKey':_0x414554(0x31f),'authDomain':_0x4a4a4b(0x190,'Fr7t'),'databaseURL':_0x2af350(0x283),'projectId':_0x414554(0x205),'storageBucket':'shulo-guti.firebasestorage.app','messagingSenderId':_0x414554(0x27c),'appId':_0x4a4a4b(0x20b,'G4R@')};firebase[_0x2af350(0x178)](firebaseConfig);const database=firebase[_0x2af350(0x175)](),myClientId=Math[_0x4a4a4b(0x112,'%GsG')]()[_0x4a4a4b(0x347,'!m88')](0x24)[_0x4a4a4b(0x3c4,'UVpr')](0x2,0xf);let currentRoomRef=null,roomListener=null,lastProcessedMoveTime=0x0,lastProcessedEndTurnTime=0x0;const canvas=document[_0x2af350(0x138)](_0x2af350(0x2a5)),ctx=canvas[_0x4a4a4b(0x336,'p1Jx')]('2d');canvas['width']=0x1f4,canvas[_0x2af350(0x173)]=0x398;let myRole=null,gameActive=![],publicRooms=[],activeMenuOption=0x0;const points=[{'id':0x0,'x':0x32,'y':0x28},{'id':0x1,'x':0xfa,'y':0x28},{'id':0x2,'x':0x1c2,'y':0x28},{'id':0x3,'x':0x96,'y':0x91},{'id':0x4,'x':0xfa,'y':0x91},{'id':0x5,'x':0x15e,'y':0x91},{'id':0x6,'x':0x32,'y':0xfa},{'id':0x7,'x':0x96,'y':0xfa},{'id':0x8,'x':0xfa,'y':0xfa},{'id':0x9,'x':0x15e,'y':0xfa},{'id':0xa,'x':0x1c2,'y':0xfa},{'id':0xb,'x':0x32,'y':0x163},{'id':0xc,'x':0x96,'y':0x163},{'id':0xd,'x':0xfa,'y':0x163},{'id':0xe,'x':0x15e,'y':0x163},{'id':0xf,'x':0x1c2,'y':0x163},{'id':0x10,'x':0x32,'y':0x1cc},{'id':0x11,'x':0x96,'y':0x1cc},{'id':0x12,'x':0xfa,'y':0x1cc},{'id':0x13,'x':0x15e,'y':0x1cc},{'id':0x14,'x':0x1c2,'y':0x1cc},{'id':0x15,'x':0x32,'y':0x235},{'id':0x16,'x':0x96,'y':0x235},{'id':0x17,'x':0xfa,'y':0x235},{'id':0x18,'x':0x15e,'y':0x235},{'id':0x19,'x':0x1c2,'y':0x235},{'id':0x1a,'x':0x32,'y':0x29e},{'id':0x1b,'x':0x96,'y':0x29e},{'id':0x1c,'x':0xfa,'y':0x29e},{'id':0x1d,'x':0x15e,'y':0x29e},{'id':0x1e,'x':0x1c2,'y':0x29e},{'id':0x1f,'x':0x96,'y':0x307},{'id':0x20,'x':0xfa,'y':0x307},{'id':0x21,'x':0x15e,'y':0x307},{'id':0x22,'x':0x32,'y':0x370},{'id':0x23,'x':0xfa,'y':0x370},{'id':0x24,'x':0x1c2,'y':0x370}],lines=[[0x6,0xb,0x10,0x15,0x1a],[0x7,0xc,0x11,0x16,0x1b],[0x1,0x4,0x8,0xd,0x12,0x17,0x1c,0x20,0x23],[0x9,0xe,0x13,0x18,0x1d],[0xa,0xf,0x14,0x19,0x1e],[0x0,0x1,0x2],[0x3,0x4,0x5],[0x6,0x7,0x8,0x9,0xa],[0xb,0xc,0xd,0xe,0xf],[0x10,0x11,0x12,0x13,0x14],[0x15,0x16,0x17,0x18,0x19],[0x1a,0x1b,0x1c,0x1d,0x1e],[0x1f,0x20,0x21],[0x22,0x23,0x24],[0x6,0xc,0x12,0x18,0x1e],[0xa,0xe,0x12,0x16,0x1a],[0x0,0x3,0x8,0xe,0x14],[0x2,0x5,0x8,0xc,0x10],[0x14,0x18,0x1c,0x1f,0x22],[0x10,0x16,0x1c,0x21,0x24]];let boardState=[],turn=0x1,activePieceId=null,hasCapturedThisTurn=![],visualPieces=[],dyingPieces=[],keyboardCursorIndex=0x12;function getDisplayY(_0x1af561){const _0x4f85ca=_0x414554,_0x456066={'RLSni':function(_0x3f17de,_0x252507){return _0x3f17de===_0x252507;},'zkWLs':function(_0x5886eb,_0x5875fb){return _0x5886eb-_0x5875fb;}};if(_0x456066['RLSni'](myRole,0x1))return _0x456066[_0x4f85ca(0x3ba)](0x398,_0x1af561);return _0x1af561;}let audioCtx;function playSound(_0x368f8a){const _0x1000ce=_0x2af350,_0x58becc=_0x4a4a4b,_0x51b051=_0x414554,_0x1ace50={'YzzRE':function(_0x2e86c6,_0x31e344){return _0x2e86c6===_0x31e344;},'SvLVG':_0x51b051(0x214),'dgHmH':_0x58becc(0x374,'K@58'),'Aduqe':_0x1000ce(0x247),'GrlmA':function(_0x1f14ea,_0x35d76f){return _0x1f14ea+_0x35d76f;},'lTMTE':_0x58becc(0x192,'p1Jx')};if(!audioCtx)audioCtx=new(window[(_0x51b051(0x384))]||window['webkitAudioContext'])();if(_0x1ace50[_0x1000ce(0x14b)](audioCtx[_0x1000ce(0x294)],_0x1ace50[_0x58becc(0x11a,'0D9I')]))audioCtx[_0x58becc(0x19a,'NqxI')]();try{const _0x501720=audioCtx[_0x58becc(0x2ad,'MdFE')](),_0x167ac1=audioCtx[_0x58becc(0x264,'g#K!')]();_0x501720[_0x58becc(0x363,'RXgm')](_0x167ac1),_0x167ac1['connect'](audioCtx['destination']);if(_0x1ace50['YzzRE'](_0x368f8a,_0x51b051(0x2e9))){const _0xad202f=_0x1ace50[_0x58becc(0x34d,'MI5N')]['split']('|');let _0x5164ce=0x0;while(!![]){switch(_0xad202f[_0x5164ce++]){case'0':_0x501720[_0x51b051(0x275)]=_0x1ace50[_0x51b051(0x3c6)];continue;case'1':_0x501720[_0x1000ce(0x210)]();continue;case'2':_0x501720[_0x1000ce(0x1c2)]['setValueAtTime'](0x104,audioCtx[_0x1000ce(0x1f9)]);continue;case'3':_0x501720[_0x1000ce(0x177)](_0x1ace50['GrlmA'](audioCtx[_0x51b051(0x17a)],0.1));continue;case'4':_0x167ac1['gain'][_0x51b051(0x1d8)](0.08,audioCtx['currentTime']);continue;}break;}}else _0x1ace50[_0x51b051(0x391)](_0x368f8a,_0x1ace50[_0x1000ce(0x1c6)])&&(_0x501720[_0x1000ce(0x26d)]=_0x58becc(0x245,'TjbX'),_0x501720[_0x1000ce(0x1c2)][_0x58becc(0x135,'UVpr')](0x64,audioCtx['currentTime']),_0x167ac1[_0x51b051(0x3b6)][_0x51b051(0x1d8)](0.15,audioCtx[_0x1000ce(0x1f9)]),_0x501720[_0x58becc(0x179,'21ui')](),_0x501720[_0x58becc(0x2eb,'Fl!j')](_0x1ace50[_0x1000ce(0x36b)](audioCtx['currentTime'],0.15)));}catch(_0x1a6cf){}}function connectServer(){const _0x3890b8=_0x2af350,_0x2f87f6=_0x414554,_0x4d6151=_0x4a4a4b,_0x413350={'RWMbQ':_0x4d6151(0x239,'MI5N'),'cTWdU':_0x2f87f6(0x26a),'wsDwG':_0x3890b8(0x257),'umWET':function(_0x4e5ad1){return _0x4e5ad1();},'KIFPL':_0x4d6151(0x3b1,'RXgm'),'mGnkV':_0x3890b8(0x2f3)};database['ref'](_0x413350[_0x2f87f6(0x18c)])['on'](_0x413350[_0x3890b8(0x35e)],_0x268e04=>{const _0x46c4df=_0x2f87f6,_0x83941d=_0x4d6151,_0x159f60=_0x3890b8,_0x46cd7f=[];_0x268e04[_0x159f60(0x330)](_0x4d42e7=>{const _0x5329fb=_0x159f60,_0x46e7b9=_0x3c97,_0x7049d3=_0x3529,_0xd194d4=_0x4d42e7[_0x7049d3(0x1cc,'ahmd')]();_0xd194d4[_0x46e7b9(0x302)]===_0x413350[_0x5329fb(0x346)]&&!_0xd194d4[_0x46e7b9(0x184)]&&_0xd194d4['p1']&&!_0xd194d4['p2']&&_0x46cd7f[_0x46e7b9(0x243)]({'code':_0x4d42e7[_0x5329fb(0x1c8)],'playersCount':0x1});}),publicRooms=_0x46cd7f,!gameActive&&!document['getElementById'](_0x413350[_0x83941d(0x2be,'LFRO')])[_0x159f60(0x150)][_0x46c4df(0x380)](_0x413350[_0x159f60(0x293)])&&_0x413350['umWET'](renderPublicRooms);});}function joinRoom(_0x3f2eae,_0x19c6f2){const _0x323237=_0x414554,_0x791d9f=_0x4a4a4b,_0x37e4fe=_0x2af350,_0x509a2c={'rHCeL':function(_0x159759,_0x2e58a9){return _0x159759===_0x2e58a9;},'vJGfb':'waiting','nCfVH':_0x37e4fe(0x20d),'opRrK':'playing','GUKxB':function(_0x3ddb1c,_0x282a2d){return _0x3ddb1c===_0x282a2d;},'TlzGa':function(_0x1bd8e0,_0x2d7693){return _0x1bd8e0(_0x2d7693);},'RxvcE':function(_0x165646,_0x3ef717){return _0x165646+_0x3ef717;},'DIcLl':_0x37e4fe(0x15f),'qVdJY':'Room\x20is\x20already\x20full!','IJOjS':_0x791d9f(0x39c,'K@58')},_0x1a318e=_0x3f2eae[_0x323237(0x189)]()['toUpperCase']();if(!_0x1a318e){_0x509a2c[_0x791d9f(0x1e9,'g#K!')](alert,_0x509a2c[_0x791d9f(0x1b4,'Fr7t')]);return;}const _0x13f9cf=database[_0x37e4fe(0x2d3)](_0x509a2c[_0x37e4fe(0x398)](_0x323237(0x2c9),_0x1a318e));currentRoomRef=_0x13f9cf,_0x13f9cf[_0x323237(0x19f)](_0x28c7b4=>{const _0x38c193=_0x37e4fe,_0x3a2a91=_0x791d9f,_0x4db756=_0x323237;if(_0x509a2c[_0x4db756(0x1d0)](_0x28c7b4,null))return{'p1':myClientId,'p2':null,'isPrivate':_0x19c6f2,'status':_0x509a2c['vJGfb']};else{const _0x4c811a=_0x509a2c[_0x3a2a91(0x1da,'aOQ#')][_0x3a2a91(0x1ac,'73LS')]('|');let _0x1b7d6b=0x0;while(!![]){switch(_0x4c811a[_0x1b7d6b++]){case'0':if(_0x28c7b4['p1']&&_0x28c7b4['p2'])return;continue;case'1':_0x28c7b4['p2']=myClientId;continue;case'2':_0x28c7b4[_0x3a2a91(0x1cd,'oAZk')]=_0x509a2c[_0x38c193(0x143)];continue;case'3':return _0x28c7b4;case'4':if(_0x28c7b4['p1']===myClientId||_0x509a2c[_0x4db756(0x1ab)](_0x28c7b4['p2'],myClientId))return _0x28c7b4;continue;}break;}}},(_0x5408d7,_0x5d655c,_0x381172)=>{const _0x556827=_0x37e4fe,_0x502f19=_0x323237,_0x222780=_0x791d9f;if(_0x5408d7)_0x509a2c[_0x222780(0x28d,'U3g)')](alert,_0x509a2c[_0x222780(0x256,'HE%C')](_0x509a2c[_0x502f19(0x287)],_0x5408d7[_0x222780(0x34c,'p1Jx')]));else{if(!_0x5d655c)_0x509a2c['TlzGa'](alert,_0x509a2c['qVdJY']);else{const _0x82c157=_0x381172[_0x556827(0x285)]();setupRoomRealtime(_0x1a318e,_0x82c157);}}});}function setupRoomRealtime(_0x5d5b1f,_0x2e3db7){const _0x48924a=_0x2af350,_0x595444=_0x414554,_0x137ef6=_0x4a4a4b,_0x2b9152={'iLGDn':function(_0x2ab24a,_0x504700){return _0x2ab24a===_0x504700;},'ovaoE':_0x137ef6(0x280,'73LS'),'omMMC':function(_0x3c2a45){return _0x3c2a45();},'HOwcl':function(_0x47d9b5,_0x1d8e18){return _0x47d9b5===_0x1d8e18;},'GgWNw':_0x595444(0x38a),'hdhlK':function(_0x38b251,_0x519ad2){return _0x38b251!==_0x519ad2;},'gjpOh':function(_0x3a61e6,_0x1884e6){return _0x3a61e6>_0x1884e6;},'BBCxD':function(_0x43b265,_0x2f8ba7,_0x1c4000){return _0x43b265(_0x2f8ba7,_0x1c4000);},'jYSII':function(_0x4d6f4a){return _0x4d6f4a();},'SaScq':function(_0x3909e1,_0x467ed8){return _0x3909e1===_0x467ed8;},'xOBBp':function(_0xbd0d8f,_0x29ef75){return _0xbd0d8f===_0x29ef75;},'yOomS':'waiting','ebNio':_0x48924a(0x171),'oLsOT':_0x137ef6(0x1ec,'veNR'),'oSkDe':_0x48924a(0x1ce),'Fjnpy':_0x137ef6(0x124,'Ham7'),'NhaIH':_0x48924a(0x203),'bRHvQ':_0x137ef6(0x296,'g#K!'),'bzRkq':_0x48924a(0x1b2),'kHMSo':'status','soEBt':_0x48924a(0x2f3)};if(_0x2b9152[_0x137ef6(0x33a,'T%iJ')](_0x2e3db7['p1'],myClientId))myRole=0x1;else _0x2b9152[_0x48924a(0x1b7)](_0x2e3db7['p2'],myClientId)&&(myRole=0x2);if(_0x2e3db7[_0x137ef6(0x22c,'MI5N')]===_0x2b9152[_0x48924a(0x223)]){const _0x267675=_0x2b9152[_0x595444(0x2a4)][_0x595444(0x2fc)]('|');let _0xcb6a26=0x0;while(!![]){switch(_0x267675[_0xcb6a26++]){case'0':updateSoftkeys();continue;case'1':document['getElementById'](_0x595444(0x26a))['classList'][_0x595444(0x14f)](_0x2b9152[_0x595444(0x2c1)]);continue;case'2':document['getElementById'](_0x2b9152[_0x595444(0x1cf)])[_0x48924a(0x15d)]=_0x5d5b1f;continue;case'3':document[_0x48924a(0x138)](_0x2b9152[_0x595444(0x3b8)])[_0x48924a(0x15d)]=_0x2e3db7[_0x48924a(0x219)]?_0x2b9152[_0x137ef6(0x244,'gcou')]:_0x2b9152['bRHvQ'];continue;case'4':document[_0x48924a(0x138)](_0x2b9152[_0x48924a(0x253)])[_0x595444(0x35d)]['remove'](_0x2b9152['oLsOT']);continue;}break;}}else _0x2b9152['xOBBp'](_0x2e3db7[_0x137ef6(0x359,'3Pu[')],_0x2b9152[_0x595444(0x1a4)])&&startGameLocal();currentRoomRef[_0x48924a(0x307)](_0x2b9152[_0x48924a(0x306)])['onDisconnect']()['set'](_0x48924a(0x389)),currentRoomRef[_0x48924a(0x307)](_0x2b9152[_0x137ef6(0x1d4,'#Np)')](myRole,0x1)?'p1':'p2')[_0x595444(0x246)]()[_0x137ef6(0x25a,'g#K!')]();if(roomListener)currentRoomRef[_0x595444(0x17f)]('value',roomListener);roomListener=currentRoomRef['on'](_0x2b9152['soEBt'],_0x17a8de=>{const _0x106e01=_0x137ef6,_0x27c25a=_0x595444,_0x10d0ef=_0x48924a,_0x13bae1=_0x17a8de[_0x10d0ef(0x285)]();if(!_0x13bae1)return;_0x2b9152[_0x27c25a(0x1a7)](_0x13bae1[_0x106e01(0x323,'NqxI')],_0x2b9152[_0x27c25a(0x1a4)])&&!gameActive&&_0x2b9152['omMMC'](startGameLocal),_0x2b9152['HOwcl'](_0x13bae1[_0x106e01(0x115,'K)PY')],_0x2b9152['GgWNw'])&&gameActive&&handleForfeit(),_0x13bae1[_0x106e01(0x228,'%GsG')]&&_0x2b9152[_0x27c25a(0x1e8)](_0x13bae1[_0x106e01(0x297,'MdFE')][_0x106e01(0x308,'gGVH')],myClientId)&&(_0x2b9152[_0x10d0ef(0x3c1)](_0x13bae1[_0x27c25a(0x1f7)][_0x27c25a(0x12e)],lastProcessedMoveTime)&&(lastProcessedMoveTime=_0x13bae1[_0x106e01(0x147,'j#D(')]['timestamp'],_0x2b9152[_0x10d0ef(0x274)](executeOpponentMove,_0x13bae1['lastMove'][_0x27c25a(0x123)],_0x13bae1['lastMove'][_0x10d0ef(0x305)]))),_0x13bae1[_0x27c25a(0x1af)]&&_0x13bae1['lastEndTurn'][_0x106e01(0x282,'MI5N')]!==myClientId&&(_0x2b9152[_0x106e01(0x35f,'3Pu[')](_0x13bae1[_0x27c25a(0x1af)][_0x27c25a(0x12e)],lastProcessedEndTurnTime)&&(lastProcessedEndTurnTime=_0x13bae1['lastEndTurn'][_0x106e01(0x3bb,'U3g)')],_0x2b9152[_0x106e01(0x377,'veNR')](finalizeTurnLocal)));});}function startGameLocal(){const _0x1b5c54=_0x2af350,_0x386ad5=_0x4a4a4b,_0x1a4a69=_0x414554,_0x129ec2={'CHIVN':_0x1a4a69(0x159),'MJIMH':_0x386ad5(0x32a,'5fPu'),'IcaZw':'hidden','UtNmm':_0x386ad5(0x1b3,'Fa5l')},_0x2dca2a=_0x129ec2[_0x386ad5(0x3c8,'HQ(v')][_0x386ad5(0x349,'UVpr')]('|');let _0x61a957=0x0;while(!![]){switch(_0x2dca2a[_0x61a957++]){case'0':document[_0x1a4a69(0x164)](_0x129ec2['MJIMH'])[_0x1b5c54(0x150)]['add'](_0x129ec2['IcaZw']);continue;case'1':gameActive=!![];continue;case'2':lastProcessedMoveTime=Date[_0x386ad5(0x270,'%GsG')]();continue;case'3':lastProcessedEndTurnTime=Date[_0x1a4a69(0x2b0)]();continue;case'4':initGame();continue;case'5':document['getElementById'](_0x129ec2[_0x386ad5(0x33c,'S%mV')])[_0x386ad5(0x217,'!m88')]['add'](_0x129ec2[_0x1a4a69(0x292)]);continue;case'6':canvas[_0x386ad5(0x37a,'#Np)')][_0x1a4a69(0x2a8)](_0x129ec2['IcaZw']);continue;case'7':document['getElementById'](_0x1b5c54(0x153))[_0x1b5c54(0x150)][_0x386ad5(0x327,'bE7U')](_0x129ec2['IcaZw']);continue;}break;}}function actionJoin(){const _0x23bc08=_0x2af350,_0x26b262=_0x4a4a4b,_0x12a1ee={'BrZRG':_0x26b262(0x2e7,'U3g)'),'lqnia':function(_0x2bc3de,_0x4d1cf8,_0x44f836){return _0x2bc3de(_0x4d1cf8,_0x44f836);},'CPqPN':function(_0x5d6376,_0x3393dc){return _0x5d6376(_0x3393dc);},'jrcux':_0x26b262(0x250,'pIjZ')},_0x1afe61=document['getElementById'](_0x12a1ee[_0x26b262(0x279,'dSOZ')])[_0x26b262(0x197,'*mjj')][_0x23bc08(0x28b)]();_0x1afe61?_0x12a1ee['lqnia'](joinRoom,_0x1afe61,![]):_0x12a1ee['CPqPN'](alert,_0x12a1ee[_0x26b262(0x392,'K@58')]);}function actionCreate(_0x433fa1){const _0x1deb12=_0x414554,_0xce2068=_0x2af350,_0x2c7d65={'LFwso':function(_0x2ad360,_0x519787,_0xb3fa0f){return _0x2ad360(_0x519787,_0xb3fa0f);}};let _0x339a2c=document[_0xce2068(0x138)](_0xce2068(0x27e))['value'][_0x1deb12(0x189)]();!_0x339a2c&&(_0x339a2c=Math['random']()['toString'](0x24)[_0x1deb12(0x326)](0x2,0x7)),_0x2c7d65['LFwso'](joinRoom,_0x339a2c,_0x433fa1);}function leaveRoom(){const _0x378b6d=_0x414554,_0x380a40=_0x2af350,_0x54b1b6=_0x4a4a4b,_0xf036f6={'iIutJ':'status','XoNZV':'forfeit','NjPRr':function(_0x12a62c,_0x387240){return _0x12a62c===_0x387240;},'DJpjD':function(_0x313e83,_0x1fca14){return _0x313e83===_0x1fca14;},'ChXeJ':_0x54b1b6(0x291,'21ui'),'hrkYa':'hidden','KKDlm':_0x380a40(0x1b2),'gNjmx':'lobbyScreen'};currentRoomRef&&(currentRoomRef[_0x380a40(0x307)](_0xf036f6['iIutJ'])[_0x54b1b6(0x231,'dSOZ')]()[_0x380a40(0x16c)](),currentRoomRef[_0x378b6d(0x22a)](_0xf036f6[_0x378b6d(0x30d)](myRole,0x1)?'p1':'p2')[_0x380a40(0x22b)]()[_0x378b6d(0x1dd)](),currentRoomRef[_0x54b1b6(0x2b5,'gGVH')](_0xf036f6[_0x380a40(0x252)],_0x36182a=>{const _0x5e62e0=_0x54b1b6,_0x4f8e6c=_0x378b6d,_0xf7a620=_0x380a40,_0x33bd35=_0x36182a[_0xf7a620(0x285)]();_0x33bd35&&(_0x33bd35['p1']===myClientId&&!_0x33bd35['p2']?currentRoomRef['remove']():(currentRoomRef['child'](_0xf036f6['iIutJ'])[_0x4f8e6c(0x1fc)](_0xf036f6[_0x4f8e6c(0x367)]),currentRoomRef['child'](_0xf036f6[_0x5e62e0(0x258,'gGVH')](myRole,0x1)?'p1':'p2')[_0xf7a620(0x2b3)]()));}),roomListener&&(currentRoomRef['off'](_0x54b1b6(0x33f,'DQ!3'),roomListener),roomListener=null),currentRoomRef=null),myRole=null,gameActive=![],canvas[_0x380a40(0x150)][_0x378b6d(0x14f)](_0xf036f6['hrkYa']),document['getElementById'](_0x54b1b6(0x273,'m6fU'))[_0x378b6d(0x35d)][_0x378b6d(0x14f)](_0xf036f6[_0x380a40(0x32f)]),document['getElementById'](_0xf036f6[_0x54b1b6(0x33b,'LFRO')])['classList'][_0x380a40(0x242)](_0xf036f6[_0x378b6d(0x2a3)]),document[_0x378b6d(0x164)]('endScreen')['classList'][_0x54b1b6(0x353,'21ui')](_0xf036f6[_0x54b1b6(0x166,'DQ!3')]),document[_0x54b1b6(0x320,'TBTn')](_0xf036f6[_0x54b1b6(0x2d5,'veNR')])[_0x380a40(0x150)]['remove'](_0xf036f6['hrkYa']),activeMenuOption=0x0,updateLobbyFocus(),updateSoftkeys();}function handleForfeit(){const _0x45a386=_0x2af350,_0x17d20c=_0x4a4a4b,_0x20c7b9=_0x414554,_0x4e2b49={'TfCMt':_0x20c7b9(0x38e),'ZQkDV':'endTitle','RWoPe':_0x17d20c(0x169,'TBTn'),'gwQVI':_0x17d20c(0x2ac,'UfKD'),'qqveH':'Opponent\x20disconnected.\x20You\x20won\x20by\x20forfeit!'},_0x407238=_0x4e2b49[_0x45a386(0x27d)][_0x20c7b9(0x2fc)]('|');let _0x479433=0x0;while(!![]){switch(_0x407238[_0x479433++]){case'0':document[_0x17d20c(0x2ee,'5fPu')](_0x4e2b49[_0x45a386(0x386)])[_0x45a386(0x15d)]='Opponent\x20Left';continue;case'1':document[_0x20c7b9(0x164)](_0x45a386(0x183))['classList'][_0x20c7b9(0x2a8)](_0x4e2b49['RWoPe']);continue;case'2':updateSoftkeys();continue;case'3':document['getElementById'](_0x4e2b49[_0x45a386(0x288)])[_0x45a386(0x15d)]=_0x4e2b49[_0x20c7b9(0x12d)];continue;case'4':gameActive=![];continue;}break;}}function renderPublicRooms(){const _0x304b8f=_0x414554,_0x494678=_0x4a4a4b,_0x528cae=_0x2af350,_0x280877={'darfm':_0x528cae(0x1df),'oRREl':_0x528cae(0x2e6),'aZeNq':function(_0x13cf06,_0x2818b2){return _0x13cf06===_0x2818b2;},'cAXxH':_0x528cae(0x27a),'NWOBP':function(_0x347669){return _0x347669();}},_0x4e5bc9=document['getElementById'](_0x280877[_0x528cae(0x25f)]);_0x4e5bc9[_0x528cae(0x11e)]='',_0x280877[_0x494678(0x170,'LFRO')](publicRooms[_0x304b8f(0x11f)],0x0)?_0x4e5bc9[_0x528cae(0x11e)]=_0x280877[_0x528cae(0x1be)]:publicRooms[_0x494678(0x276,'G4R@')]((_0x10d566,_0x20856f)=>{const _0x3ca793=_0x304b8f,_0x283c3d=_0x528cae,_0x5a5242=_0x494678,_0x428351=document[_0x5a5242(0x1bf,'oAZk')](_0x5a5242(0x13e,'0D9I'));_0x428351[_0x283c3d(0x1c3)]=_0x280877[_0x3ca793(0x303)],_0x428351['id']=_0x3ca793(0x2d7)+_0x20856f,_0x428351[_0x283c3d(0x11e)]=_0x5a5242(0x172,'T%iJ')+_0x10d566['code']+_0x283c3d(0x1a1),_0x428351[_0x3ca793(0x2a6)]=()=>joinRoom(_0x10d566[_0x5a5242(0x188,'0D9I')],![]),_0x4e5bc9[_0x3ca793(0x277)](_0x428351);}),_0x280877[_0x494678(0x136,'TjbX')](updateLobbyFocus);}function updateLobbyFocus(){const _0x1f0423=_0x2af350,_0x5ba3d4=_0x414554,_0x5aea05=_0x4a4a4b,_0x617e2e={'lfmvA':'roomCodeInput','cPVVw':_0x5aea05(0x334,'HE%C'),'kmMkN':_0x5ba3d4(0x12f),'QxaxR':_0x1f0423(0x22f),'bQqAK':_0x1f0423(0x241),'whPbf':_0x5aea05(0x240,'ahmd'),'wIPka':function(_0x258048,_0x344b49){return _0x258048+_0x344b49;},'LMUis':function(_0x37c065,_0xd3059d){return _0x37c065>_0xd3059d;},'Bnimy':function(_0x9bf66b,_0x535fdc){return _0x9bf66b===_0x535fdc;},'JMhLn':function(_0x1cba5e,_0x408a82){return _0x1cba5e===_0x408a82;},'hbFJU':function(_0xf3bafb,_0x333eaa){return _0xf3bafb-_0x333eaa;}};document['getElementById'](_0x617e2e[_0x5aea05(0x38d,'HE%C')])['classList']['remove'](_0x617e2e['cPVVw']),document[_0x5aea05(0x176,'hVXY')](_0x617e2e[_0x5aea05(0x2d9,'WU9q')])[_0x5ba3d4(0x35d)][_0x1f0423(0x2b3)]('active'),document[_0x5ba3d4(0x164)](_0x617e2e[_0x5aea05(0x316,'T%iJ')])[_0x1f0423(0x150)][_0x5ba3d4(0x2a8)](_0x5ba3d4(0x295)),document['getElementById'](_0x617e2e[_0x5aea05(0x1e7,'3Pu[')])[_0x5ba3d4(0x35d)][_0x5ba3d4(0x2a8)](_0x617e2e[_0x1f0423(0x196)]),document[_0x5ba3d4(0x312)](_0x617e2e['whPbf'])[_0x1f0423(0x330)](_0x259e5a=>_0x259e5a[_0x1f0423(0x150)][_0x5ba3d4(0x2a8)](_0x5aea05(0x24e,'aOQ#')));let _0x578051=_0x617e2e[_0x1f0423(0x154)](0x3,publicRooms[_0x1f0423(0x36e)]);if(_0x617e2e['LMUis'](activeMenuOption,_0x578051))activeMenuOption=_0x578051;if(activeMenuOption===0x0)document[_0x1f0423(0x138)](_0x617e2e[_0x5aea05(0x348,'bE7U')])['classList'][_0x5ba3d4(0x14f)](_0x617e2e[_0x5aea05(0x1f0,'K)PY')]),document[_0x5ba3d4(0x164)](_0x617e2e[_0x1f0423(0x393)])[_0x5ba3d4(0x319)]();else{document[_0x5aea05(0x17e,'WU9q')](_0x5ba3d4(0x309))[_0x1f0423(0x22d)]();if(_0x617e2e['Bnimy'](activeMenuOption,0x1))document[_0x5aea05(0x30e,'fGCG')](_0x5ba3d4(0x12f))[_0x5aea05(0x2f6,'5fPu')][_0x5aea05(0x33d,'MI5N')](_0x617e2e[_0x5ba3d4(0x34a)]);else{if(activeMenuOption===0x2)document['getElementById'](_0x617e2e['QxaxR'])[_0x1f0423(0x150)]['add'](_0x1f0423(0x364));else{if(_0x617e2e[_0x1f0423(0x2bf)](activeMenuOption,0x3))document[_0x5aea05(0x2e2,'p1Jx')](_0x617e2e[_0x5aea05(0x168,'ahmd')])[_0x5aea05(0x3a0,'fGCG')][_0x5aea05(0x1a2,'gcou')](_0x617e2e['cPVVw']);else{let _0x621d4=_0x617e2e[_0x5aea05(0x2f5,'Fl!j')](activeMenuOption,0x4);const _0x496183=document[_0x1f0423(0x138)](_0x1f0423(0x209)+_0x621d4);if(_0x496183)_0x496183[_0x1f0423(0x150)][_0x5ba3d4(0x14f)](_0x617e2e[_0x1f0423(0x196)]);}}}}}function handleLobbyNav(_0x18d15e){const _0x3a52b4=_0x4a4a4b,_0xc032a8=_0x414554,_0x272161=_0x2af350,_0x358347={'UQdXD':function(_0x3bdd35,_0xb23426){return _0x3bdd35+_0xb23426;},'VrIJM':function(_0xc44991,_0x4babcd){return _0xc44991===_0x4babcd;},'jGMam':function(_0x2a4dfb,_0x30ba0b){return _0x2a4dfb>_0x30ba0b;},'FErEI':function(_0x2e7262){return _0x2e7262();},'WGoJw':_0x272161(0x1e3),'gSlfs':function(_0xb0b15a,_0x378528){return _0xb0b15a<_0x378528;},'QauyK':function(_0x325070){return _0x325070();},'RJrKa':function(_0x1accc7,_0x3dfb2f){return _0x1accc7===_0x3dfb2f;},'DKVQn':_0xc032a8(0x2e8),'DufXB':'Select','iVdtn':function(_0x5a984b){return _0x5a984b();},'MwpJa':function(_0x255c0b,_0x1b21dc){return _0x255c0b===_0x1b21dc;},'gZkfd':function(_0x596994,_0x4cfc19){return _0x596994(_0x4cfc19);},'JGqTa':function(_0x2e5781,_0x511a17){return _0x2e5781===_0x511a17;},'uBVOx':function(_0x143606,_0x15132d){return _0x143606>=_0x15132d;},'bLuHD':function(_0x802981,_0x23a080){return _0x802981-_0x23a080;},'SpWDc':function(_0x5d5466,_0x59237b,_0x3a9ce0){return _0x5d5466(_0x59237b,_0x3a9ce0);}};let _0x3ceb15=_0x358347['UQdXD'](0x3,publicRooms[_0x272161(0x36e)]);if(_0x358347['VrIJM'](_0x18d15e,_0xc032a8(0x230))&&_0x358347[_0x3a52b4(0x206,'pIjZ')](activeMenuOption,0x0))activeMenuOption--,_0x358347['FErEI'](updateLobbyFocus);else{if(_0x358347['VrIJM'](_0x18d15e,_0x358347[_0xc032a8(0x39e)])&&_0x358347[_0xc032a8(0x23a)](activeMenuOption,_0x3ceb15))activeMenuOption++,_0x358347['QauyK'](updateLobbyFocus);else{if(_0x358347[_0x3a52b4(0x1a6,'TBTn')](_0x18d15e,_0x358347['DKVQn'])||_0x358347[_0xc032a8(0x1c5)](_0x18d15e,_0x358347[_0xc032a8(0x26c)])){if(_0x358347[_0x272161(0x249)](activeMenuOption,0x1))_0x358347[_0x3a52b4(0x11c,'Fl!j')](actionJoin);else{if(_0x358347[_0xc032a8(0x340)](activeMenuOption,0x2))_0x358347[_0xc032a8(0x1fe)](actionCreate,![]);else{if(_0x358347['JGqTa'](activeMenuOption,0x3))_0x358347[_0xc032a8(0x1fe)](actionCreate,!![]);else{if(_0x358347[_0xc032a8(0x1ed)](activeMenuOption,0x4)){let _0x537029=_0x358347['bLuHD'](activeMenuOption,0x4);if(publicRooms[_0x537029])_0x358347[_0xc032a8(0x2ff)](joinRoom,publicRooms[_0x537029][_0x272161(0x2ea)],![]);}}}}}}}}function initGame(){const _0x3f7d9d=_0x2af350,_0x5db215=_0x414554,_0x23c297=_0x4a4a4b,_0x558187={'novHw':function(_0xd4adaa,_0x11169c){return _0xd4adaa(_0x11169c);},'QrRsZ':function(_0x3c9492,_0x77c13d){return _0x3c9492<=_0x77c13d;},'yUWsr':function(_0x44c264,_0x354a64){return _0x44c264<=_0x354a64;},'MzPjK':function(_0x3a7ad9){return _0x3a7ad9();}};boardState=_0x558187['novHw'](Array,0x25)[_0x23c297(0x3c7,'m6fU')](null);for(let _0x1d7a02=0x0;_0x558187['QrRsZ'](_0x1d7a02,0xf);_0x1d7a02++)boardState[_0x1d7a02]=0x1;for(let _0xe4232b=0x15;_0x558187['yUWsr'](_0xe4232b,0x24);_0xe4232b++)boardState[_0xe4232b]=0x2;turn=0x1,keyboardCursorIndex=myRole===0x1?0x8:0x1c,activePieceId=null,hasCapturedThisTurn=![],visualPieces=[];for(let _0x4f7ed3=0x0;_0x4f7ed3<0x25;_0x4f7ed3++){if(boardState[_0x4f7ed3]!==null){let _0x5b7cff=getDisplayY(points[_0x4f7ed3]['y']);visualPieces[_0x5db215(0x243)]({'id':_0x4f7ed3,'type':boardState[_0x4f7ed3],'x':points[_0x4f7ed3]['x'],'y':_0x5b7cff,'targetX':points[_0x4f7ed3]['x'],'targetY':_0x5b7cff});}}dyingPieces=[],_0x558187[_0x3f7d9d(0x3a1)](updateHUD),_0x558187['MzPjK'](updateSoftkeys),_0x558187[_0x5db215(0x3b0)](ensureValidCursor);}function getValidFocusNodes(){const _0x299675=_0x414554,_0x2db873=_0x2af350,_0x16feca=_0x4a4a4b,_0x36542b={'sWjzo':function(_0x306991,_0x4e9632){return _0x306991===_0x4e9632;},'OLwoL':function(_0x51225c,_0x337140){return _0x51225c!==_0x337140;},'CcGSF':function(_0x267737,_0x442605){return _0x267737!==_0x442605;},'fMNzA':function(_0x221309,_0x475187){return _0x221309(_0x475187);},'mVTHe':function(_0x4f92d3,_0x42bfba){return _0x4f92d3<_0x42bfba;},'SeHxT':function(_0x348d91,_0x4e8330){return _0x348d91(_0x4e8330);}};let _0x3a6085=[];if(!gameActive||_0x36542b[_0x16feca(0x137,'hVXY')](turn,myRole))return[];if(hasCapturedThisTurn&&_0x36542b['CcGSF'](activePieceId,null))return _0x3a6085[_0x2db873(0x343)](activePieceId),_0x36542b[_0x2db873(0x1eb)](getValidJumps,activePieceId)[_0x16feca(0x328,'73LS')](function(_0x24fb49){const _0x3cabc3=_0x16feca;_0x3a6085[_0x3cabc3(0x221,'fGCG')](_0x24fb49['to']);}),_0x3a6085;if(_0x36542b[_0x2db873(0x130)](activePieceId,null)){_0x3a6085[_0x2db873(0x343)](activePieceId);for(let _0xcb57c9=0x0;_0x36542b[_0x299675(0x29c)](_0xcb57c9,0x25);_0xcb57c9++){if(_0x36542b[_0x2db873(0x1b0)](boardState[_0xcb57c9],myRole))_0x3a6085['push'](_0xcb57c9);}return _0x36542b[_0x299675(0x213)](getValidMoves,activePieceId)['forEach'](function(_0x47ad40){const _0x4856ce=_0x16feca;_0x3a6085[_0x4856ce(0x11d,'LFRO')](_0x47ad40['to']);}),_0x36542b['SeHxT'](getValidJumps,activePieceId)[_0x299675(0x341)](function(_0x39f4e5){const _0xd4c14f=_0x16feca;_0x3a6085[_0xd4c14f(0x1d5,'5fPu')](_0x39f4e5['to']);}),_0x3a6085[_0x2db873(0x1e1)](function(_0x10907e,_0xb3a3b3,_0x1ae0ea){const _0x428c9c=_0x2db873,_0x195aca=_0x16feca;return _0x36542b[_0x195aca(0x344,'gGVH')](_0x1ae0ea[_0x428c9c(0x317)](_0x10907e),_0xb3a3b3);});}for(let _0x5f54c9=0x0;_0x5f54c9<0x25;_0x5f54c9++){if(boardState[_0x5f54c9]===myRole)_0x3a6085[_0x16feca(0x1c7,'hVXY')](_0x5f54c9);}return _0x3a6085;}function ensureValidCursor(){const _0x367149=_0x2af350,_0x105df4={'kMEIu':function(_0x5023c5,_0x417e2b){return _0x5023c5(_0x417e2b);},'iMrYk':function(_0x1ce2cf,_0xd599a8){return _0x1ce2cf-_0xd599a8;},'hyOcn':function(_0x4b5a3e,_0x409c8a){return _0x4b5a3e+_0x409c8a;},'FplLN':function(_0x3fdbe6,_0x1dcc86){return _0x3fdbe6*_0x1dcc86;},'GZTLo':function(_0x5a794c,_0xd8be1a){return _0x5a794c<_0xd8be1a;},'LqbsU':function(_0x221980,_0x540d20){return _0x221980===_0x540d20;},'JoyWt':function(_0x57fe2e,_0x5d1874){return _0x57fe2e(_0x5d1874);}};let _0x414a89=getValidFocusNodes();if(_0x105df4[_0x367149(0x20e)](_0x414a89['length'],0x0))return;if(!_0x414a89['includes'](keyboardCursorIndex)){let _0x116b0d=points[keyboardCursorIndex]['x'],_0x4119df=_0x105df4['JoyWt'](getDisplayY,points[keyboardCursorIndex]['y']),_0x42db0b=_0x414a89[0x0],_0x55c6c6=Infinity;_0x414a89[_0x367149(0x330)](_0xfa38dd=>{const _0x4ee837=_0x3529,_0x2ef5d9=_0x367149,_0x3d9bf9=_0x3c97;let _0x1d393d=points[_0xfa38dd]['x'],_0x1538f0=_0x105df4[_0x3d9bf9(0x378)](getDisplayY,points[_0xfa38dd]['y']),_0x3d3df4=_0x1d393d-_0x116b0d,_0x33f073=_0x105df4[_0x2ef5d9(0x2b7)](_0x1538f0,_0x4119df),_0xb42427=Math[_0x4ee837(0x15a,'0D9I')](_0x105df4[_0x4ee837(0x35a,'Fr7t')](_0x105df4[_0x2ef5d9(0x387)](_0x3d3df4,_0x3d3df4),_0x33f073*_0x33f073));_0x105df4[_0x4ee837(0x2af,'S%mV')](_0xb42427,_0x55c6c6)&&(_0x55c6c6=_0xb42427,_0x42db0b=_0xfa38dd);}),keyboardCursorIndex=_0x42db0b;}}function updateHUD(){const _0x44571c=_0x414554,_0x339571=_0x2af350,_0x323266=_0x4a4a4b,_0x2416b2={'euMhP':function(_0x5e5e2c,_0x43c001){return _0x5e5e2c===_0x43c001;},'yTWpo':'Red\x20(You)','GEaNV':'Red','RtMZC':function(_0x2e98ab,_0x96ca17){return _0x2e98ab===_0x96ca17;},'NHgUD':_0x323266(0x126,'gcou'),'GAHVq':_0x339571(0x2d6),'nsjIP':'Your\x20Turn','mPFkO':_0x323266(0x324,'Fa5l'),'hsiyN':'#aaa'};let _0x1710a4=boardState['filter'](_0x180748=>_0x180748===0x1)['length'],_0x45b579=boardState[_0x44571c(0x116)](_0x24e9df=>_0x24e9df===0x2)[_0x323266(0x37d,'pIjZ')],_0x24a02d=_0x2416b2['euMhP'](myRole,0x1)?_0x2416b2['yTWpo']:_0x2416b2[_0x339571(0x1d2)],_0x1ca62b=_0x2416b2[_0x339571(0x2f9)](myRole,0x2)?'Green\x20(You)':_0x339571(0x36c);document[_0x323266(0x113,'UfKD')](_0x323266(0x2e3,'!m88'))[_0x44571c(0x222)]=_0x24a02d+':\x20'+_0x1710a4,document['getElementById'](_0x2416b2['NHgUD'])['innerText']=_0x1ca62b+':\x20'+_0x45b579,turn===myRole?(document[_0x323266(0x3a5,'UVpr')](_0x2416b2[_0x44571c(0x1db)])['innerText']=_0x2416b2['nsjIP'],document[_0x44571c(0x164)](_0x2416b2['GAHVq'])[_0x44571c(0x1f4)][_0x339571(0x157)]=_0x339571(0x1ee)):(document[_0x323266(0x263,'Fa5l')](_0x2416b2[_0x339571(0x32e)])['innerText']=_0x2416b2[_0x323266(0x17b,'MI5N')],document[_0x339571(0x138)](_0x2416b2[_0x44571c(0x1db)])[_0x323266(0x31d,'gcou')][_0x44571c(0x208)]=_0x2416b2[_0x44571c(0x3af)]);}function updateSoftkeys(){const _0x3363f2=_0x4a4a4b,_0x43c0c6=_0x414554,_0x47a392=_0x2af350,_0x133873={'ZGtaK':_0x47a392(0x1b2),'AJFXA':'hidden','cyhNn':'lobbyScreen','odvLK':_0x47a392(0x183),'eUkDP':'softCenterText','PQAgi':_0x47a392(0x325),'vnVBk':_0x43c0c6(0x35c),'hbZKz':_0x43c0c6(0x395),'HDqWj':_0x47a392(0x224),'Lvcwn':_0x43c0c6(0x281),'exWSs':_0x47a392(0x2d1),'UfYFJ':_0x47a392(0x30f),'zAROm':'Move','ULdPG':function(_0x3eb556,_0x28d253){return _0x3eb556!==_0x28d253;},'xvHYV':_0x43c0c6(0x229)};let _0x48c269=!document[_0x43c0c6(0x164)](_0x133873[_0x47a392(0x117)])[_0x47a392(0x150)]['contains'](_0x133873[_0x47a392(0x1b8)]),_0x3af3a1=!document['getElementById'](_0x133873[_0x43c0c6(0x12b)])[_0x47a392(0x150)][_0x47a392(0x318)](_0x133873[_0x43c0c6(0x3a8)]),_0x5b06c9=!document[_0x3363f2(0x145,'HQ(v')](_0x133873[_0x3363f2(0x2f8,'#Np)')])[_0x47a392(0x150)][_0x47a392(0x318)](_0x43c0c6(0x1d7));if(_0x3af3a1){document[_0x43c0c6(0x164)](_0x3363f2(0x235,'K@58'))[_0x43c0c6(0x222)]='',document['getElementById'](_0x133873['eUkDP'])[_0x43c0c6(0x222)]=_0x133873[_0x3363f2(0x152,'aOQ#')],document[_0x43c0c6(0x164)](_0x133873['vnVBk'])[_0x47a392(0x15d)]='';return;}if(_0x48c269||_0x5b06c9){document[_0x43c0c6(0x164)](_0x133873['hbZKz'])['innerText']=_0x133873[_0x43c0c6(0x1d1)],document[_0x47a392(0x138)](_0x133873[_0x43c0c6(0x38f)])['innerText']='',document[_0x43c0c6(0x164)](_0x133873[_0x3363f2(0x15e,'*mjj')])['innerText']='';return;}document[_0x47a392(0x138)](_0x133873['hbZKz'])[_0x3363f2(0x1ad,'#Np)')]=_0x133873[_0x43c0c6(0x20f)],hasCapturedThisTurn?(document[_0x43c0c6(0x164)](_0x3363f2(0x31b,'bE7U'))[_0x3363f2(0x2cc,'Fa5l')]=_0x133873[_0x43c0c6(0x129)],document['getElementById'](_0x133873[_0x3363f2(0x262,'IBU(')])[_0x3363f2(0x220,'gGVH')]=_0x133873['UfYFJ']):(document[_0x47a392(0x138)](_0x133873[_0x3363f2(0x32c,'aOQ#')])['innerText']=activePieceId!==null?_0x133873['zAROm']:_0x133873[_0x47a392(0x24f)],document[_0x47a392(0x138)]('softRightText')['innerText']=_0x133873[_0x47a392(0x39f)](activePieceId,null)?_0x133873[_0x47a392(0x1de)]:'');}function filterUnique(_0x4c8915){const _0x3b63d4=_0x4a4a4b;var _0x5981c5={};return _0x4c8915[_0x3b63d4(0x3b7,'LFRO')](function(_0x35da93){if(_0x5981c5[_0x35da93['to']])return![];return _0x5981c5[_0x35da93['to']]=!![],!![];});}function getValidMoves(_0x1e9e45){const _0x285e66=_0x2af350,_0x1d66a6={'PiiuX':function(_0x5a1fd6,_0x326f4a){return _0x5a1fd6!==_0x326f4a;},'JTmdk':function(_0x21633c,_0x423d1f){return _0x21633c>_0x423d1f;},'bdprh':function(_0x27db1b,_0x574269){return _0x27db1b===_0x574269;},'vjNwi':function(_0x3d585c,_0x5536a7){return _0x3d585c-_0x5536a7;},'UNhUb':function(_0x14e2e2,_0x310be9){return _0x14e2e2<_0x310be9;},'ERQQc':function(_0x26d855,_0x55288e){return _0x26d855-_0x55288e;},'kVntG':function(_0x34653f,_0x5de2bc){return _0x34653f===_0x5de2bc;},'FaVDq':function(_0x3f1256,_0x581754){return _0x3f1256+_0x581754;},'CcOKc':_0x285e66(0x305)};let _0x5550cc=[],_0x5bfec9=boardState[_0x1e9e45];if(!_0x5bfec9)return[];return lines['forEach'](_0x3f2f77=>{const _0x5e40cd=_0x285e66,_0x4e4871=_0x3c97;let _0x29e33b=_0x3f2f77['indexOf'](_0x1e9e45);if(_0x1d66a6['PiiuX'](_0x29e33b,-0x1)){if(_0x1d66a6[_0x4e4871(0x16a)](_0x29e33b,0x0)&&_0x1d66a6[_0x5e40cd(0x18d)](boardState[_0x3f2f77[_0x1d66a6['vjNwi'](_0x29e33b,0x1)]],null))_0x5550cc['push']({'to':_0x3f2f77[_0x29e33b-0x1],'type':_0x4e4871(0x2e9)});if(_0x1d66a6[_0x4e4871(0x2c0)](_0x29e33b,_0x1d66a6['ERQQc'](_0x3f2f77['length'],0x1))&&_0x1d66a6[_0x5e40cd(0x366)](boardState[_0x3f2f77[_0x1d66a6[_0x4e4871(0x358)](_0x29e33b,0x1)]],null))_0x5550cc[_0x5e40cd(0x343)]({'to':_0x3f2f77[_0x1d66a6[_0x4e4871(0x358)](_0x29e33b,0x1)],'type':_0x1d66a6[_0x5e40cd(0x2b6)]});}}),filterUnique(_0x5550cc);}function getValidJumps(_0xd3af24){const _0x26ff1d=_0x2af350,_0x300228=_0x4a4a4b,_0x22b333={'smqlT':function(_0x18ba49,_0x456c5a){return _0x18ba49===_0x456c5a;},'Tctck':function(_0x3ef808,_0x31a7ae){return _0x3ef808-_0x31a7ae;},'OcHLr':function(_0x36b69e,_0x1eda8e){return _0x36b69e-_0x1eda8e;},'Svhng':function(_0x444e8a,_0x5a5fd4){return _0x444e8a-_0x5a5fd4;},'gsLcE':function(_0x44ea09,_0x442468){return _0x44ea09-_0x442468;},'uvaGM':_0x300228(0x1d9,'pIjZ'),'wTxgC':function(_0x22b620,_0x53e35f){return _0x22b620-_0x53e35f;},'fIBME':function(_0x5a33c1,_0x193f17){return _0x5a33c1+_0x193f17;},'bALzi':function(_0x53ac36,_0x27f2e9){return _0x53ac36===_0x27f2e9;},'xOoxB':function(_0x312e11,_0x5ec39e){return _0x312e11+_0x5ec39e;},'sqwtN':function(_0x1f583c,_0x4cf4e7){return _0x1f583c+_0x4cf4e7;}};let _0x443863=[],_0x4cef81=boardState[_0xd3af24];if(!_0x4cef81)return[];let _0x4f20d3=_0x4cef81===0x1?0x2:0x1;return lines[_0x26ff1d(0x330)](_0x36a6d5=>{const _0x54338c=_0x300228,_0x36ca26=_0x3c97,_0x39cdcf=_0x26ff1d;let _0x2a6601=_0x36a6d5[_0x39cdcf(0x317)](_0xd3af24);_0x2a6601!==-0x1&&(_0x2a6601>0x1&&_0x22b333['smqlT'](boardState[_0x36a6d5[_0x22b333['Tctck'](_0x2a6601,0x1)]],_0x4f20d3)&&_0x22b333[_0x39cdcf(0x21d)](boardState[_0x36a6d5[_0x22b333[_0x36ca26(0x131)](_0x2a6601,0x2)]],null)&&_0x443863['push']({'to':_0x36a6d5[_0x22b333['Svhng'](_0x2a6601,0x2)],'capture':_0x36a6d5[_0x22b333[_0x54338c(0x200,'T%iJ')](_0x2a6601,0x1)],'type':_0x22b333[_0x54338c(0x354,'K@58')]}),_0x2a6601<_0x22b333['wTxgC'](_0x36a6d5[_0x54338c(0x207,'j#D(')],0x2)&&boardState[_0x36a6d5[_0x22b333['fIBME'](_0x2a6601,0x1)]]===_0x4f20d3&&_0x22b333[_0x54338c(0x3ac,'UVpr')](boardState[_0x36a6d5[_0x22b333[_0x39cdcf(0x2fd)](_0x2a6601,0x2)]],null)&&_0x443863['push']({'to':_0x36a6d5[_0x22b333[_0x54338c(0x234,'fGCG')](_0x2a6601,0x2)],'capture':_0x36a6d5[_0x22b333[_0x39cdcf(0x26e)](_0x2a6601,0x1)],'type':_0x22b333[_0x39cdcf(0x2cd)]}));}),filterUnique(_0x443863);}function handleNodeSelection(_0x14fa49){const _0x2d8136=_0x414554,_0x531ea0=_0x4a4a4b,_0x34d3da=_0x2af350,_0x5c5597={'hANwr':function(_0x1610cc,_0x42d53e){return _0x1610cc!==_0x42d53e;},'UkmRN':function(_0x48df7d,_0x45407d){return _0x48df7d(_0x45407d);},'ajAAo':function(_0x30aede,_0x2fbea6,_0x16d68f){return _0x30aede(_0x2fbea6,_0x16d68f);},'zRMTL':function(_0x314f75,_0x4afd48){return _0x314f75===_0x4afd48;},'jQJMO':function(_0x13c3e5,_0x34f065,_0x1dce04){return _0x13c3e5(_0x34f065,_0x1dce04);},'BkmuM':function(_0x5616d1,_0x464654,_0x34c1c7){return _0x5616d1(_0x464654,_0x34c1c7);},'IicaR':function(_0x538ca5){return _0x538ca5();}};if(_0x5c5597[_0x34d3da(0x133)](turn,myRole))return;let _0x114ad9=boardState[_0x14fa49];if(hasCapturedThisTurn){let _0x32554c=_0x5c5597[_0x531ea0(0x2c8,'bE7U')](getValidJumps,activePieceId),_0x5be174=_0x32554c[_0x34d3da(0x233)](_0x3e8215=>_0x3e8215['to']===_0x14fa49);if(_0x5be174)_0x5c5597['ajAAo'](executeMove,activePieceId,_0x5be174);return;}if(_0x5c5597[_0x531ea0(0x141,'pIjZ')](_0x114ad9,turn))activePieceId=_0x14fa49;else{if(_0x5c5597['hANwr'](activePieceId,null)){let _0x5b92ca=_0x5c5597[_0x2d8136(0x181)](getValidMoves,activePieceId),_0x38f1c6=_0x5c5597[_0x2d8136(0x181)](getValidJumps,activePieceId),_0x2d051d=_0x38f1c6['find'](_0x1bf511=>_0x1bf511['to']===_0x14fa49),_0x5c98e8=_0x5b92ca[_0x34d3da(0x233)](_0x3d40f0=>_0x3d40f0['to']===_0x14fa49);if(_0x2d051d)_0x5c5597[_0x34d3da(0x369)](executeMove,activePieceId,_0x2d051d);else{if(_0x5c98e8)_0x5c5597[_0x34d3da(0x25b)](executeMove,activePieceId,_0x5c98e8);}}}_0x5c5597[_0x531ea0(0x2c6,'hVXY')](ensureValidCursor);}function executeMove(_0x1ee517,_0x3ae354){const _0x4feb96=_0x2af350,_0x1e26b6=_0x414554,_0x431ebc=_0x4a4a4b,_0x3e2004={'WehMP':function(_0x5a24d4,_0x3653d6){return _0x5a24d4(_0x3653d6);},'eUQOC':function(_0x1a4ffd,_0x28a733){return _0x1a4ffd===_0x28a733;},'OupkF':function(_0x51c72e,_0x1ecff0){return _0x51c72e!==_0x1ecff0;},'sXOfr':_0x431ebc(0x300,'73LS'),'Pdtxj':function(_0x27af06,_0x34b8aa){return _0x27af06(_0x34b8aa);},'nWVqz':function(_0x462b22,_0x2a4ca3){return _0x462b22>_0x2a4ca3;},'ttClu':function(_0x1e9d93){return _0x1e9d93();},'VSBvU':function(_0x43807a){return _0x43807a();},'cRKaq':function(_0x2fa0e7){return _0x2fa0e7();},'CHIDu':_0x431ebc(0x24d,'0D9I'),'kinym':_0x1e26b6(0x1af),'WHpkf':function(_0x4ae289){return _0x4ae289();}};let _0x367730=visualPieces['find'](_0xcad77c=>_0xcad77c['id']===_0x1ee517);_0x367730&&(_0x367730['id']=_0x3ae354['to'],_0x367730[_0x1e26b6(0x2b8)]=points[_0x3ae354['to']]['x'],_0x367730[_0x1e26b6(0x3b2)]=_0x3e2004[_0x1e26b6(0x2ed)](getDisplayY,points[_0x3ae354['to']]['y']));boardState[_0x3ae354['to']]=turn,boardState[_0x1ee517]=null;currentRoomRef&&currentRoomRef['child'](_0x431ebc(0x1f6,'Fa5l'))[_0x1e26b6(0x1fc)]({'fromId':_0x1ee517,'move':_0x3ae354,'sender':myClientId,'timestamp':firebase[_0x4feb96(0x175)][_0x4feb96(0x266)][_0x431ebc(0x2bd,'IBU(')]});if(_0x3e2004[_0x431ebc(0x3b4,'WU9q')](_0x3ae354[_0x1e26b6(0x275)],_0x4feb96(0x373))){let _0x4b61dd=visualPieces[_0x431ebc(0x2fb,'hVXY')](_0x1abe3a=>_0x1abe3a['id']===_0x3ae354[_0x1e26b6(0x2cb)]);_0x3e2004[_0x4feb96(0x2f4)](_0x4b61dd,-0x1)&&(dyingPieces['push']({'x':visualPieces[_0x4b61dd]['x'],'y':visualPieces[_0x4b61dd]['y'],'type':visualPieces[_0x4b61dd][_0x431ebc(0x1c9,'brag')],'alpha':0x1,'frame':0x0}),visualPieces['splice'](_0x4b61dd,0x1));boardState[_0x3ae354['capture']]=null,_0x3e2004['WehMP'](playSound,_0x3e2004[_0x431ebc(0x2c2,'3Pu[')]),hasCapturedThisTurn=!![],activePieceId=_0x3ae354['to'];let _0x10b360=_0x3e2004[_0x4feb96(0x2e1)](getValidJumps,activePieceId);if(_0x3e2004[_0x1e26b6(0x1dc)](_0x10b360[_0x4feb96(0x36e)],0x0)){_0x3e2004['ttClu'](updateHUD),_0x3e2004[_0x1e26b6(0x139)](updateSoftkeys),_0x3e2004[_0x1e26b6(0x315)](ensureValidCursor);return;}}else _0x3e2004[_0x4feb96(0x2e1)](playSound,_0x3e2004[_0x1e26b6(0x21a)]);currentRoomRef&&currentRoomRef[_0x431ebc(0x2da,'TjbX')](_0x3e2004[_0x4feb96(0x2db)])[_0x431ebc(0x238,'%GsG')]({'sender':myClientId,'timestamp':firebase[_0x1e26b6(0x236)][_0x431ebc(0x29b,'3Pu[')][_0x1e26b6(0x1a9)]}),_0x3e2004['WHpkf'](finalizeTurnLocal);}function executeOpponentMove(_0x2a8e0f,_0x4337d4){const _0x43af3c=_0x2af350,_0x190c1e=_0x414554,_0xc6c7f8=_0x4a4a4b,_0x56ff1a={'fzuRq':function(_0xc699a9,_0x5be924){return _0xc699a9(_0x5be924);},'LLznq':function(_0x9f7a98,_0x2e6944){return _0x9f7a98===_0x2e6944;},'dhXrx':_0xc6c7f8(0x28e,'bE7U'),'xoWiO':'move'};let _0xe07f8f=visualPieces[_0x190c1e(0x314)](_0xca328c=>_0xca328c['id']===_0x2a8e0f);_0xe07f8f?(_0xe07f8f['id']=_0x4337d4['to'],_0xe07f8f[_0x43af3c(0x23b)]=points[_0x4337d4['to']]['x'],_0xe07f8f[_0xc6c7f8(0x360,'gcou')]=getDisplayY(points[_0x4337d4['to']]['y'])):visualPieces[_0x43af3c(0x343)]({'id':_0x4337d4['to'],'type':myRole===0x1?0x2:0x1,'x':points[_0x2a8e0f]['x'],'y':_0x56ff1a['fzuRq'](getDisplayY,points[_0x2a8e0f]['y']),'targetX':points[_0x4337d4['to']]['x'],'targetY':getDisplayY(points[_0x4337d4['to']]['y'])});boardState[_0x4337d4['to']]=boardState[_0x2a8e0f],boardState[_0x2a8e0f]=null;if(_0x56ff1a[_0x190c1e(0x1f5)](_0x4337d4[_0xc6c7f8(0x372,'IBU(')],_0xc6c7f8(0x1ae,'K@58'))){let _0x3c5ce9=visualPieces[_0x190c1e(0x32b)](_0x5db1f3=>_0x5db1f3['id']===_0x4337d4[_0xc6c7f8(0x1f1,'Fa5l')]);_0x3c5ce9!==-0x1&&(dyingPieces['push']({'x':visualPieces[_0x3c5ce9]['x'],'y':visualPieces[_0x3c5ce9]['y'],'type':visualPieces[_0x3c5ce9]['type'],'alpha':0x1,'frame':0x0}),visualPieces['splice'](_0x3c5ce9,0x1)),boardState[_0x4337d4[_0x43af3c(0x20a)]]=null,playSound(_0x56ff1a[_0xc6c7f8(0x167,'gcou')]);}else _0x56ff1a[_0x190c1e(0x350)](playSound,_0x56ff1a['xoWiO']);}function finalizeTurnLocal(){const _0x38698e=_0x2af350,_0x2b1ac5=_0x414554,_0x4dbbb3={'Qbxzx':function(_0x594af2,_0x10068d){return _0x594af2(_0x10068d);},'DjfXA':function(_0x21bf8c){return _0x21bf8c();},'FhEpE':function(_0x163dc8){return _0x163dc8();}};activePieceId=null,hasCapturedThisTurn=![];let _0x1af4c2=checkWin();if(_0x1af4c2){_0x4dbbb3[_0x2b1ac5(0x1b5)](announceWinner,_0x1af4c2);return;}turn=turn===0x1?0x2:0x1,_0x4dbbb3[_0x38698e(0x351)](updateHUD),_0x4dbbb3['FhEpE'](updateSoftkeys),ensureValidCursor();}function checkWin(){const _0x2f2448=_0x4a4a4b,_0x3f9c7c=_0x414554,_0x4d998e=_0x2af350,_0x1a5881={'gYdgC':function(_0x4dcf97,_0x2bd8a2){return _0x4dcf97===_0x2bd8a2;},'DcjpV':function(_0x2a9746,_0x3d3c22){return _0x2a9746<_0x3d3c22;},'ALoIQ':function(_0xbb9bf3,_0x142bcc){return _0xbb9bf3(_0x142bcc);},'lUjja':function(_0x5b4998,_0x35cc3e){return _0x5b4998>_0x35cc3e;}};let _0x5899f6=boardState[_0x4d998e(0x1e1)](_0x50aac6=>_0x50aac6===0x1)['length'],_0x4692de=boardState[_0x3f9c7c(0x116)](_0x33d850=>_0x33d850===0x2)[_0x2f2448(0x37f,'oAZk')];if(_0x5899f6===0x0)return 0x2;if(_0x1a5881[_0x2f2448(0x361,'UVpr')](_0x4692de,0x0))return 0x1;let _0x541aab=turn===0x1?0x2:0x1,_0x323f95=![];for(let _0x41b07a=0x0;_0x1a5881[_0x3f9c7c(0x310)](_0x41b07a,0x25);_0x41b07a++){if(boardState[_0x41b07a]===_0x541aab){if(_0x1a5881[_0x3f9c7c(0x202)](getValidMoves,_0x41b07a)[_0x3f9c7c(0x11f)]>0x0||_0x1a5881[_0x4d998e(0x199)](_0x1a5881[_0x3f9c7c(0x202)](getValidJumps,_0x41b07a)[_0x3f9c7c(0x11f)],0x0)){_0x323f95=!![];break;}}}if(!_0x323f95)return turn;return null;}function announceWinner(_0x5bb734){const _0x15e5eb=_0x414554,_0x5112a5=_0x2af350,_0x3636e4=_0x4a4a4b,_0x22abf5={'JBwcb':_0x3636e4(0x3c5,'U3g)'),'klYOl':_0x5112a5(0x257),'nPCna':function(_0x4d1208,_0x4d5b6a){return _0x4d1208===_0x4d5b6a;},'sqnvw':_0x15e5eb(0x174),'HKQVc':_0x3636e4(0x232,'fGCG'),'OuuiU':function(_0x26cd9b,_0x243309){return _0x26cd9b===_0x243309;},'ktKJv':'endTitle','CjNsi':_0x15e5eb(0x125),'bXOMc':_0x15e5eb(0x333),'uzRtj':_0x3636e4(0x226,'dSOZ'),'iNJxq':function(_0x306a85){return _0x306a85();}};gameActive=![],document['getElementById'](_0x22abf5['JBwcb'])[_0x15e5eb(0x35d)][_0x3636e4(0x13d,'TBTn')](_0x22abf5[_0x5112a5(0x1e4)]);let _0x344051=_0x22abf5['nPCna'](_0x5bb734,0x1)?_0x22abf5[_0x3636e4(0x390,'LFRO')]:_0x22abf5['HKQVc'];_0x22abf5[_0x15e5eb(0x17c)](_0x5bb734,myRole)?(document[_0x3636e4(0x331,'TjbX')](_0x22abf5[_0x5112a5(0x26f)])[_0x5112a5(0x15d)]=_0x22abf5['CjNsi'],document['getElementById'](_0x22abf5['bXOMc'])[_0x5112a5(0x15d)]=_0x15e5eb(0x2ab)+_0x344051+_0x5112a5(0x149)):(document[_0x15e5eb(0x164)](_0x3636e4(0x34f,'21ui'))[_0x15e5eb(0x222)]=_0x22abf5[_0x15e5eb(0x332)],document[_0x5112a5(0x138)](_0x5112a5(0x144))['innerText']=_0x344051+_0x5112a5(0x3a9)),_0x22abf5[_0x15e5eb(0x342)](updateSoftkeys);}function triggerDeselect(){if(hasCapturedThisTurn)return;activePieceId=null,updateSoftkeys(),ensureValidCursor();}window[_0x414554(0x161)]('back',_0x32656e=>{const _0x5bd842=_0x2af350,_0x125f46=_0x414554,_0x1fc554={'ySFnO':function(_0x1e5837,_0x1128b7,_0x17b970){return _0x1e5837(_0x1128b7,_0x17b970);},'cuOkS':_0x125f46(0x237)};_0x32656e['preventDefault'](),_0x1fc554['ySFnO'](simulateNaturalPress,_0x1fc554[_0x5bd842(0x19e)],0x0);}),window[_0x4a4a4b(0x29a,'brag')](_0x4a4a4b(0x255,'RXgm'),_0x22782b=>{const _0x97f29b=_0x414554,_0x5f4248=_0x4a4a4b,_0x1af6f4=_0x2af350,_0x42c21d={'XbGxO':'lobbyScreen','urjmY':'hidden','AYBUU':_0x1af6f4(0x183),'xmaoz':function(_0x4d4c8d,_0xed8807){return _0x4d4c8d(_0xed8807);},'GYYcY':function(_0x30a1e5,_0x5d5c05){return _0x30a1e5===_0x5d5c05;},'nTrLn':_0x5f4248(0x2ae,'dSOZ'),'vVJJE':_0x5f4248(0x2dc,'p1Jx'),'qyGZd':function(_0x53e0b7,_0x3065f7){return _0x53e0b7===_0x3065f7;},'UCUiF':function(_0x219dd9,_0x4bad9f){return _0x219dd9===_0x4bad9f;},'ZMHmQ':function(_0x271b71){return _0x271b71();},'LRBFC':function(_0x37e566,_0x14f6fd){return _0x37e566(_0x14f6fd);},'kJXkf':'ArrowLeft','SGayT':function(_0x44aafb,_0x3d41af){return _0x44aafb(_0x3d41af);},'MtJUQ':'right','aNNGU':_0x5f4248(0x160,'UVpr'),'ZWCnV':_0x1af6f4(0x382),'SmKPT':_0x1af6f4(0x260),'jdCCz':function(_0x36bc53){return _0x36bc53();},'JOYpP':_0x5f4248(0x2d8,'gGVH'),'rAtNw':function(_0x4a93c8){return _0x4a93c8();},'oZAPA':function(_0x17b9e5,_0x73223e){return _0x17b9e5!==_0x73223e;},'rCtiy':function(_0x302ad6){return _0x302ad6();}};let _0x9f38a7=!document['getElementById'](_0x42c21d[_0x1af6f4(0x1c0)])['classList'][_0x1af6f4(0x318)](_0x42c21d[_0x5f4248(0x2ef,'*mjj')]),_0x58f2ec=!document[_0x1af6f4(0x138)](_0x1af6f4(0x1b2))[_0x5f4248(0x165,'gcou')][_0x5f4248(0x148,'K)PY')](_0x42c21d[_0x97f29b(0x1ef)]),_0x4c8fde=!document['getElementById'](_0x42c21d['AYBUU'])[_0x97f29b(0x35d)][_0x1af6f4(0x318)](_0x97f29b(0x1d7));if(_0x9f38a7){_0x42c21d['xmaoz'](handleLobbyNav,_0x22782b[_0x97f29b(0x38c)]);if(_0x42c21d[_0x1af6f4(0x2d0)](_0x22782b['key'],_0x42c21d[_0x97f29b(0x30b)])||_0x22782b[_0x97f29b(0x38c)]===_0x42c21d['vVJJE']||_0x42c21d['qyGZd'](_0x22782b['key'],_0x5f4248(0x2df,'p1Jx')))_0x22782b[_0x97f29b(0x191)]();return;}if(_0x58f2ec||_0x4c8fde){(_0x42c21d['qyGZd'](_0x22782b[_0x97f29b(0x38c)],'SoftLeft')||_0x42c21d[_0x1af6f4(0x121)](_0x22782b[_0x97f29b(0x38c)],'F1')||_0x42c21d[_0x1af6f4(0x121)](_0x22782b['key'],_0x1af6f4(0x260)))&&(_0x42c21d[_0x97f29b(0x120)](leaveRoom),_0x22782b[_0x5f4248(0x3a3,'Ham7')]());return;}if(!gameActive)return;if(turn!==myRole)return;switch(_0x22782b['key']){case _0x42c21d[_0x5f4248(0x1aa,'bE7U')]:case'W':case'w':moveKeyboardCursor('up'),_0x22782b['preventDefault']();break;case _0x5f4248(0x31c,'G4R@'):case'S':case's':_0x42c21d['LRBFC'](moveKeyboardCursor,_0x97f29b(0x3bc)),_0x22782b[_0x97f29b(0x191)]();break;case _0x42c21d[_0x1af6f4(0x1e2)]:case'A':case'a':_0x42c21d[_0x1af6f4(0x339)](moveKeyboardCursor,_0x1af6f4(0x3ab)),_0x22782b[_0x1af6f4(0x39a)]();break;case _0x1af6f4(0x313):case'D':case'd':_0x42c21d[_0x5f4248(0x180,'0D9I')](moveKeyboardCursor,_0x42c21d[_0x1af6f4(0x2f0)]),_0x22782b[_0x1af6f4(0x39a)]();break;case _0x5f4248(0x122,'K@58'):case _0x5f4248(0x37c,'Fa5l'):_0x42c21d['SGayT'](handleNodeSelection,keyboardCursorIndex),_0x22782b['preventDefault']();break;case _0x42c21d[_0x1af6f4(0x17d)]:case _0x1af6f4(0x260):_0x42c21d[_0x97f29b(0x120)](triggerDeselect),_0x22782b[_0x97f29b(0x191)]();break;case _0x42c21d[_0x97f29b(0x2c7)]:case'F1':case _0x42c21d[_0x97f29b(0x298)]:_0x42c21d[_0x5f4248(0x289,'oAZk')](leaveRoom),_0x22782b[_0x5f4248(0x18b,'TBTn')]();break;case _0x42c21d[_0x5f4248(0x119,'MdFE')]:case'F2':if(hasCapturedThisTurn)_0x42c21d[_0x1af6f4(0x28a)](endChainTurn);else{if(_0x42c21d['oZAPA'](activePieceId,null))_0x42c21d[_0x5f4248(0x36f,'%GsG')](triggerDeselect);}_0x22782b[_0x5f4248(0x38b,'G4R@')]();break;}_0x42c21d[_0x5f4248(0x284,'veNR')](updateSoftkeys);});function moveKeyboardCursor(_0x1445fc){const _0x197974=_0x4a4a4b,_0x4bdcb4=_0x414554,_0x576443=_0x2af350,_0x2c8e0e={'czkul':function(_0x569bec,_0x357de4){return _0x569bec===_0x357de4;},'LqOXN':function(_0x104ed3,_0x370aa5){return _0x104ed3-_0x370aa5;},'yPDIo':function(_0x48f0d7,_0x5c26c1){return _0x48f0d7===_0x5c26c1;},'zrsfX':function(_0x435408,_0x58b202){return _0x435408<_0x58b202;},'pTizi':function(_0x411d56,_0x370685){return _0x411d56+_0x370685;},'WSvXv':function(_0x31c401,_0x5211e6){return _0x31c401*_0x5211e6;},'GdMnY':_0x576443(0x2f7),'CpFQB':function(_0x466f2e,_0x4f86fb){return _0x466f2e+_0x4f86fb;},'Nvdwv':function(_0x273ad4,_0x1f2b11){return _0x273ad4===_0x1f2b11;},'EqNwV':_0x4bdcb4(0x2c4),'Pacfr':function(_0x131857,_0x23444c){return _0x131857<_0x23444c;},'cPSCE':function(_0x36401b,_0x506d4e){return _0x36401b<_0x506d4e;},'WxqEd':_0x4bdcb4(0x261),'mSAnq':function(_0x1b162e,_0x2539b8){return _0x1b162e>_0x2539b8;},'azIom':function(_0x46643f,_0x1b9bb5){return _0x46643f+_0x1b9bb5;},'lWRGn':function(_0x30c94c,_0x402b5a){return _0x30c94c*_0x402b5a;},'xSQKX':function(_0x3db38d,_0x2c7522){return _0x3db38d<_0x2c7522;},'qrBtG':function(_0x193144){return _0x193144();},'GRrKi':function(_0x46e4f4,_0x3bb2d7){return _0x46e4f4!==_0x3bb2d7;}};let _0x3693ba=_0x2c8e0e[_0x197974(0x322,'21ui')](getValidFocusNodes);if(_0x2c8e0e['Nvdwv'](_0x3693ba[_0x4bdcb4(0x11f)],0x0))return;let _0x598f07=points[keyboardCursorIndex]['x'],_0x38fbc7=getDisplayY(points[keyboardCursorIndex]['y']),_0x362ac3=-0x1,_0x461457=Infinity;_0x3693ba[_0x197974(0x25e,'!m88')](_0x5bac17=>{const _0x24cc48=_0x4bdcb4,_0x345883=_0x576443,_0x30524e=_0x197974;if(_0x2c8e0e['czkul'](_0x5bac17,keyboardCursorIndex))return;let _0x38e14f=points[_0x5bac17]['x'],_0x4fffb4=getDisplayY(points[_0x5bac17]['y']),_0x3bf8a9=_0x2c8e0e[_0x30524e(0x201,'MdFE')](_0x38e14f,_0x598f07),_0x330a91=_0x4fffb4-_0x38fbc7;if(_0x2c8e0e['yPDIo'](_0x1445fc,'up')&&_0x2c8e0e[_0x345883(0x2dd)](_0x330a91,-0x5)){let _0x390230=_0x2c8e0e['pTizi'](Math['abs'](_0x330a91),_0x2c8e0e[_0x345883(0x3a7)](Math[_0x345883(0x2e5)](_0x3bf8a9),2.5));_0x2c8e0e['zrsfX'](_0x390230,_0x461457)&&(_0x461457=_0x390230,_0x362ac3=_0x5bac17);}else{if(_0x2c8e0e[_0x24cc48(0x20c)](_0x1445fc,_0x2c8e0e[_0x24cc48(0x1f8)])&&_0x330a91>0x5){let _0x4396e8=_0x2c8e0e[_0x24cc48(0x2c5)](Math[_0x24cc48(0x381)](_0x330a91),_0x2c8e0e[_0x30524e(0x3c0,'veNR')](Math[_0x30524e(0x163,'*mjj')](_0x3bf8a9),2.5));_0x2c8e0e[_0x345883(0x2dd)](_0x4396e8,_0x461457)&&(_0x461457=_0x4396e8,_0x362ac3=_0x5bac17);}else{if(_0x2c8e0e[_0x24cc48(0x211)](_0x1445fc,_0x2c8e0e[_0x345883(0x1fd)])&&_0x2c8e0e[_0x345883(0x1fa)](_0x3bf8a9,-0x5)){let _0x32927e=_0x2c8e0e[_0x345883(0x155)](Math[_0x30524e(0x1e5,'WU9q')](_0x3bf8a9),_0x2c8e0e[_0x345883(0x3a7)](Math[_0x30524e(0x365,'p1Jx')](_0x330a91),2.5));_0x2c8e0e[_0x30524e(0x29e,'g#K!')](_0x32927e,_0x461457)&&(_0x461457=_0x32927e,_0x362ac3=_0x5bac17);}else{if(_0x1445fc===_0x2c8e0e[_0x345883(0x21b)]&&_0x2c8e0e[_0x24cc48(0x335)](_0x3bf8a9,0x5)){let _0x5a1e4e=_0x2c8e0e[_0x24cc48(0x2ce)](Math[_0x345883(0x2e5)](_0x3bf8a9),_0x2c8e0e[_0x24cc48(0x28c)](Math['abs'](_0x330a91),2.5));_0x2c8e0e[_0x24cc48(0x186)](_0x5a1e4e,_0x461457)&&(_0x461457=_0x5a1e4e,_0x362ac3=_0x5bac17);}}}}});if(_0x2c8e0e[_0x197974(0x134,'bE7U')](_0x362ac3,-0x1))keyboardCursorIndex=_0x362ac3;}function updateAnimations(){const _0x33c8e2=_0x2af350,_0x51f6f2=_0x4a4a4b,_0x4efaf1={'TiBGa':function(_0x2241bb,_0x26b318){return _0x2241bb-_0x26b318;},'xacQz':function(_0x33b2a8,_0x11c783){return _0x33b2a8-_0x11c783;},'RnUJS':function(_0x4a2204,_0x5e88e0){return _0x4a2204>_0x5e88e0;},'ECiZs':function(_0x355d87,_0x2af59c){return _0x355d87>_0x2af59c;},'bviyY':function(_0xc88a81,_0x1c8a9d){return _0xc88a81*_0x1c8a9d;},'PuCIK':function(_0x1c85d1,_0x1805ef){return _0x1c85d1-_0x1805ef;},'ROKlN':function(_0x26f7de,_0x12e6b2){return _0x26f7de<=_0x12e6b2;}};visualPieces[_0x51f6f2(0x2f2,'WU9q')](_0x25fbd8=>{const _0x31228f=_0x3046,_0x317e01=_0x51f6f2,_0x3d07da=_0x3c97;let _0x753643=_0x4efaf1[_0x3d07da(0x218)](_0x25fbd8['targetX'],_0x25fbd8['x']),_0x400113=_0x4efaf1[_0x3d07da(0x13a)](_0x25fbd8[_0x317e01(0x290,'TBTn')],_0x25fbd8['y']);_0x4efaf1[_0x317e01(0x12a,'aOQ#')](Math[_0x317e01(0x345,'U3g)')](_0x753643),0.1)||_0x4efaf1[_0x3d07da(0x397)](Math[_0x317e01(0x1b6,'oAZk')](_0x400113),0.1)?(_0x25fbd8['x']+=_0x4efaf1[_0x31228f(0x3b9)](_0x753643,0.15),_0x25fbd8['y']+=_0x4efaf1[_0x317e01(0x25d,'pIjZ')](_0x400113,0.15)):(_0x25fbd8['x']=_0x25fbd8[_0x3d07da(0x2b8)],_0x25fbd8['y']=_0x25fbd8[_0x3d07da(0x3b2)]);});for(let _0x9886ee=_0x4efaf1['PuCIK'](dyingPieces[_0x33c8e2(0x36e)],0x1);_0x9886ee>=0x0;_0x9886ee--){dyingPieces[_0x9886ee][_0x33c8e2(0x3a2)]++,dyingPieces[_0x9886ee][_0x33c8e2(0x33e)]-=0.05;if(_0x4efaf1[_0x33c8e2(0x23f)](dyingPieces[_0x9886ee][_0x51f6f2(0x36d,'Fr7t')],0x0))dyingPieces['splice'](_0x9886ee,0x1);}}function drawBoard(){const _0x2defcd=_0x414554,_0x27fba1=_0x4a4a4b,_0x2d8d1c=_0x2af350,_0xfe3646={'QlCWd':function(_0x2261a4,_0x5eb52a){return _0x2261a4(_0x5eb52a);},'KWqnI':function(_0x5dec89,_0x426d26){return _0x5dec89<_0x426d26;},'GrCBW':_0x2d8d1c(0x3a4),'FQTNq':function(_0x5a054f,_0x2a1d93){return _0x5a054f*_0x2a1d93;},'EDeEr':_0x27fba1(0x1f2,'UVpr'),'GArBn':function(_0x2a2a84,_0x4ac25d){return _0x2a2a84(_0x4ac25d);},'GSPOy':function(_0xdb586a,_0x2204a1,_0x58e6f9,_0x15e2f7,_0x518edd){return _0xdb586a(_0x2204a1,_0x58e6f9,_0x15e2f7,_0x518edd);},'FlCax':function(_0x939cda,_0x5bb415){return _0x939cda+_0x5bb415;},'nmCRc':function(_0x24a1d1,_0x57abb6){return _0x24a1d1*_0x57abb6;},'QCbWO':function(_0x47f5ee,_0x279a04){return _0x47f5ee*_0x279a04;},'dxGPy':_0x2d8d1c(0x23c),'HCPUg':_0x27fba1(0x23e,'HE%C'),'RuVKx':function(_0x2a97d6,_0x262b1c){return _0x2a97d6<_0x262b1c;},'kmQDI':function(_0xb92bdf,_0x437b85){return _0xb92bdf/_0x437b85;},'QgYdR':function(_0x3c60cc,_0xb867cc){return _0x3c60cc/_0xb867cc;},'WsxVn':function(_0x3413ae,_0x19610f){return _0x3413ae/_0x19610f;},'fvnwF':function(_0x2f8179,_0x3d2c7c){return _0x2f8179/_0x3d2c7c;},'ITFcK':_0x27fba1(0x23d,'p1Jx'),'jGove':'rgba(40,20,5,0.45)','MJyhz':_0x2d8d1c(0x301),'amZiR':function(_0x4a1cbe,_0x190dbe){return _0x4a1cbe!==_0x190dbe;},'ffbPE':function(_0x488497,_0x5daeae){return _0x488497===_0x5daeae;},'Jbkwg':function(_0xa0f104,_0x172980){return _0xa0f104(_0x172980);},'byOGd':_0x27fba1(0x2a9,'bE7U'),'HuYGw':function(_0x1ea3ac,_0x59c20f){return _0x1ea3ac*_0x59c20f;}};ctx['fillStyle']=_0xfe3646[_0x27fba1(0x1a3,'gcou')],ctx[_0x2defcd(0x25c)](0x0,0x0,canvas[_0x2d8d1c(0x1ff)],canvas[_0x2defcd(0x362)]),ctx[_0x2d8d1c(0x1e6)]=_0xfe3646[_0x27fba1(0x321,'ahmd')],ctx[_0x27fba1(0x304,'DQ!3')]=1.5;for(let _0x2ea33b=0x64;_0xfe3646[_0x2defcd(0x248)](_0x2ea33b,canvas[_0x2defcd(0x362)]);_0x2ea33b+=0x64){ctx[_0x27fba1(0x2e0,'HQ(v')](),ctx['moveTo'](0x0,_0x2ea33b),ctx['lineTo'](canvas[_0x2d8d1c(0x1ff)],_0x2ea33b),ctx[_0x27fba1(0x114,'RXgm')]();}let _0xd851da=ctx['createRadialGradient'](_0xfe3646[_0x2d8d1c(0x34e)](canvas['width'],0x2),_0xfe3646[_0x2defcd(0x18e)](canvas['height'],0x2),_0xfe3646[_0x2d8d1c(0x286)](canvas[_0x27fba1(0x1b1,'aOQ#')],0x3),_0xfe3646['fvnwF'](canvas[_0x2defcd(0x2b2)],0x2),_0xfe3646[_0x2defcd(0x3bf)](canvas[_0x27fba1(0x394,'TBTn')],0x2),_0xfe3646[_0x27fba1(0x39b,'z7Jg')](canvas[_0x2defcd(0x362)],1.6));_0xd851da[_0x2d8d1c(0x195)](0x0,_0xfe3646[_0x2defcd(0x375)]),_0xd851da[_0x2d8d1c(0x195)](0x1,_0xfe3646[_0x2defcd(0x3c3)]),ctx['fillStyle']=_0xd851da,ctx[_0x27fba1(0x267,'S%mV')](0x0,0x0,canvas[_0x2d8d1c(0x1ff)],canvas['height']),ctx['strokeStyle']=_0xfe3646[_0x27fba1(0x271,'WU9q')],ctx[_0x2defcd(0x142)]=4.2,ctx['lineCap']='round',ctx[_0x2d8d1c(0x370)]=_0x2d8d1c(0x26b),lines[_0x27fba1(0x13b,'gcou')](_0x474ac5=>{const _0x2a48ac=_0x27fba1,_0x2863e4=_0x2d8d1c,_0x33437c=_0x2defcd;ctx[_0x33437c(0x29d)]();let _0x571df6=points[_0x474ac5[0x0]];ctx[_0x2863e4(0x2ca)](_0x571df6['x'],_0xfe3646['QlCWd'](getDisplayY,_0x571df6['y']));for(let _0x4086d5=0x1;_0xfe3646[_0x2863e4(0x254)](_0x4086d5,_0x474ac5[_0x33437c(0x11f)]);_0x4086d5++)ctx[_0x2a48ac(0x1ba,'73LS')](points[_0x474ac5[_0x4086d5]]['x'],_0xfe3646[_0x33437c(0x31e)](getDisplayY,points[_0x474ac5[_0x4086d5]]['y']));ctx['stroke']();});let _0x16e9db=Math[_0x27fba1(0x1d3,'WU9q')](_0xfe3646[_0x2defcd(0x1bd)](getDisplayY,0xfa),_0xfe3646[_0x2d8d1c(0x28f)](getDisplayY,0x29e));ctx[_0x2d8d1c(0x37e)](0x32,_0x16e9db,0x190,0x1a4);if(_0xfe3646[_0x27fba1(0x1ea,'RXgm')](activePieceId,null)&&_0xfe3646[_0x27fba1(0x2f1,'TjbX')](turn,myRole)){let _0x63af55=hasCapturedThisTurn?_0xfe3646[_0x2d8d1c(0x28f)](getValidJumps,activePieceId):[..._0xfe3646['Jbkwg'](getValidMoves,activePieceId),..._0xfe3646[_0x27fba1(0x15b,'0D9I')](getValidJumps,activePieceId)];_0x63af55[_0x27fba1(0x127,'brag')](_0x5623d2=>{const _0xd1442e=_0x2d8d1c,_0x286c41=_0x2defcd,_0x527f52=_0x27fba1,_0x584783=_0xfe3646['GrCBW']['split']('|');let _0x3443e3=0x0;while(!![]){switch(_0x584783[_0x3443e3++]){case'0':ctx['arc'](points[_0x5623d2['to']]['x'],_0xfe3646['QlCWd'](getDisplayY,points[_0x5623d2['to']]['y']),0x10,0x0,_0xfe3646['FQTNq'](Math['PI'],0x2));continue;case'1':ctx['restore']();continue;case'2':ctx['save']();continue;case'3':ctx[_0x527f52(0x22e,'0D9I')]='rgba(255,\x20179,\x200,\x200.4)';continue;case'4':ctx[_0x286c41(0x142)]=3.5;continue;case'5':ctx[_0x286c41(0x259)]();continue;case'6':ctx[_0xd1442e(0x187)]();continue;case'7':ctx['stroke']();continue;case'8':ctx['strokeStyle']=_0xfe3646['EDeEr'];continue;}break;}});}points[_0x27fba1(0x182,'RXgm')](_0x39b0fb=>{const _0xa0c8ad=_0x27fba1,_0x2b0f8a=_0x2defcd;ctx[_0x2b0f8a(0x27b)]=_0xa0c8ad(0x3c2,'pIjZ'),ctx['beginPath'](),ctx[_0xa0c8ad(0x2bb,'veNR')](_0x39b0fb['x'],_0xfe3646[_0xa0c8ad(0x29f,'3Pu[')](getDisplayY,_0x39b0fb['y']),6.5,0x0,Math['PI']*0x2),ctx['fill']();});if(gameActive&&_0xfe3646[_0x2defcd(0x36a)](turn,myRole)){let _0x2e4031=points[keyboardCursorIndex];ctx['save'](),ctx[_0x27fba1(0x355,'ahmd')]=_0xfe3646[_0x27fba1(0x19b,'#Np)')],ctx[_0x27fba1(0x304,'DQ!3')]=3.5,ctx[_0x2d8d1c(0x371)]([0x5,0x4]),ctx[_0x2d8d1c(0x187)](),ctx['arc'](_0x2e4031['x'],_0xfe3646[_0x2defcd(0x27f)](getDisplayY,_0x2e4031['y']),0x18,0x0,_0xfe3646[_0x27fba1(0x1f3,'j#D(')](Math['PI'],0x2)),ctx['stroke'](),ctx['restore']();}visualPieces[_0x27fba1(0x1cb,'K)PY')](_0x38b2a7=>{const _0x493cdf=_0x2defcd;drawPieceAt(_0x38b2a7['x'],_0x38b2a7['y'],_0x38b2a7[_0x493cdf(0x275)],activePieceId===_0x38b2a7['id']);}),dyingPieces[_0x2defcd(0x341)](_0x24bf48=>{const _0x8ba2b8=_0x27fba1,_0x1d602c=_0x2d8d1c,_0x4f9783=_0x2defcd;ctx[_0x4f9783(0x1bb)](),ctx['globalAlpha']=_0x24bf48[_0x1d602c(0x33e)],_0xfe3646[_0x8ba2b8(0x13c,'bE7U')](drawPieceAt,_0xfe3646[_0x1d602c(0x2b4)](_0x24bf48['x'],_0xfe3646[_0x4f9783(0x269)](Math[_0x8ba2b8(0x2fe,'UVpr')](_0xfe3646['QCbWO'](_0x24bf48[_0x8ba2b8(0x337,'p1Jx')],1.5)),0x7)),_0x24bf48['y'],_0x24bf48[_0x1d602c(0x26d)],![]),ctx['restore']();});}function drawPieceAt(_0x11b2af,_0x373c1a,_0x2fe368,_0x36f87f){const _0x15ed05=_0x4a4a4b,_0x1ed53a=_0x414554,_0x65ce5b=_0x2af350,_0x53b116={'kYZfv':_0x65ce5b(0x156),'kiMtE':function(_0x5a5ff7,_0x3cfebf){return _0x5a5ff7*_0x3cfebf;},'vBvIg':function(_0x4a3038,_0x30483c){return _0x4a3038===_0x30483c;},'fwcSD':_0x1ed53a(0x2b1),'exntR':function(_0x423693,_0x363203){return _0x423693-_0x363203;},'SrtbT':function(_0x15e4e5,_0x22c01c){return _0x15e4e5/_0x22c01c;},'oFUjB':function(_0x2313df,_0x55ca10){return _0x2313df-_0x55ca10;},'FcDrR':function(_0x422046,_0x30b5a2){return _0x422046/_0x30b5a2;},'YxGui':function(_0xed659a,_0x5a739e){return _0xed659a===_0x5a739e;},'ekaPn':_0x15ed05(0x2a2,'TBTn'),'BKZgS':_0x1ed53a(0x399),'OHzTv':_0x65ce5b(0x14d),'MfABS':_0x65ce5b(0x2de),'AOXhH':_0x1ed53a(0x30a),'NsxRY':'#0c350e','tLOKn':_0x15ed05(0x185,'#Np)'),'jjayX':function(_0x30a869,_0x571a40){return _0x30a869*_0x571a40;},'EAUgj':function(_0x5a231d,_0x46c626){return _0x5a231d/_0x46c626;},'vRAXm':_0x1ed53a(0x162),'hSpBu':function(_0x2d1707,_0x47119e){return _0x2d1707+_0x47119e;}};let _0x387d16=17.5;ctx[_0x65ce5b(0x21f)](),ctx[_0x15ed05(0x2cf,'m6fU')]=_0x53b116[_0x65ce5b(0x2d4)],ctx[_0x1ed53a(0x19d)]=0x5,ctx['shadowOffsetX']=2.5,ctx['shadowOffsetY']=0x4,ctx[_0x1ed53a(0x29d)](),ctx[_0x15ed05(0x14c,'TjbX')](_0x11b2af,_0x373c1a,_0x387d16,0x0,_0x53b116[_0x15ed05(0x12c,'K@58')](Math['PI'],0x2)),ctx[_0x65ce5b(0x3ad)]=_0x53b116[_0x1ed53a(0x2a7)](_0x2fe368,0x1)?_0x53b116['fwcSD']:_0x15ed05(0x198,'pIjZ'),ctx[_0x65ce5b(0x146)](),ctx['shadowColor']=_0x1ed53a(0x2ec);let _0x35a581=ctx[_0x1ed53a(0x352)](_0x53b116[_0x15ed05(0x128,'HQ(v')](_0x11b2af,_0x53b116[_0x1ed53a(0x2bc)](_0x387d16,0x3)),_0x53b116[_0x15ed05(0x216,'TBTn')](_0x373c1a,_0x53b116[_0x65ce5b(0x14a)](_0x387d16,0x3)),1.5,_0x11b2af,_0x373c1a,_0x387d16);_0x53b116[_0x65ce5b(0x204)](_0x2fe368,0x1)?(_0x35a581['addColorStop'](0x0,_0x53b116['ekaPn']),_0x35a581[_0x65ce5b(0x195)](0.3,_0x53b116[_0x15ed05(0x21c,'gcou')]),_0x35a581['addColorStop'](0x1,_0x53b116[_0x15ed05(0x193,'Fr7t')])):(_0x35a581[_0x15ed05(0x3bd,'j#D(')](0x0,_0x53b116['MfABS']),_0x35a581[_0x15ed05(0x3b3,'fGCG')](0.3,_0x53b116[_0x15ed05(0x396,'MdFE')]),_0x35a581[_0x1ed53a(0x311)](0x1,_0x53b116[_0x65ce5b(0x379)]));ctx[_0x15ed05(0x22e,'0D9I')]=_0x35a581,ctx['beginPath'](),ctx[_0x1ed53a(0x1d6)](_0x11b2af,_0x373c1a,_0x387d16,0x0,_0x53b116[_0x15ed05(0x2b9,'0D9I')](Math['PI'],0x2)),ctx[_0x1ed53a(0x259)](),ctx[_0x15ed05(0x376,'!m88')]=_0x53b116[_0x1ed53a(0x1c1)],ctx[_0x1ed53a(0x142)]=1.8,ctx[_0x15ed05(0x272,'NqxI')](),ctx[_0x15ed05(0x215,'pIjZ')](_0x11b2af,_0x373c1a,_0x53b116[_0x65ce5b(0x3ae)](_0x387d16,4.5),0x0,_0x53b116[_0x1ed53a(0x1fb)](Math['PI'],0x2)),ctx['stroke'](),ctx['fillStyle']=_0x1ed53a(0x16e),ctx['beginPath'](),ctx[_0x1ed53a(0x1d6)](_0x11b2af-_0x53b116[_0x65ce5b(0x14a)](_0x387d16,3.5),_0x53b116[_0x65ce5b(0x3ae)](_0x373c1a,_0x53b116[_0x1ed53a(0x2c3)](_0x387d16,3.5)),0x3,0x0,_0x53b116['jjayX'](Math['PI'],0x2)),ctx[_0x65ce5b(0x146)]();if(_0x36f87f){const _0x5a0f43=_0x15ed05(0x383,'Fa5l')[_0x65ce5b(0x225)]('|');let _0x13c4b2=0x0;while(!![]){switch(_0x5a0f43[_0x13c4b2++]){case'0':ctx[_0x1ed53a(0x338)]();continue;case'1':ctx[_0x15ed05(0x194,'brag')]=_0x53b116[_0x1ed53a(0x2aa)];continue;case'2':ctx[_0x65ce5b(0x187)]();continue;case'3':ctx[_0x1ed53a(0x1d6)](_0x11b2af,_0x373c1a,_0x53b116[_0x65ce5b(0x2a1)](_0x387d16,0x5),0x0,_0x53b116[_0x65ce5b(0x13f)](Math['PI'],0x2));continue;case'4':ctx[_0x15ed05(0x304,'DQ!3')]=3.5;continue;}break;}}ctx[_0x65ce5b(0x14e)]();}function endChainTurn(){const _0x5331c3=_0x2af350,_0x2ba391=_0x414554,_0x2a265f=_0x4a4a4b;hasCapturedThisTurn&&(currentRoomRef&&currentRoomRef[_0x2a265f(0x1bc,'bE7U')](_0x2a265f(0x19c,'G4R@'))[_0x2a265f(0x132,'TjbX')]({'sender':myClientId,'timestamp':firebase[_0x2ba391(0x236)][_0x5331c3(0x266)][_0x5331c3(0x32d)]}),finalizeTurnLocal());}function gameLoop(){const _0x2cd9c2={'oAvse':function(_0x3504e7){return _0x3504e7();}};updateAnimations();if(gameActive)_0x2cd9c2['oAvse'](drawBoard);requestAnimationFrame(gameLoop);}function handleTouchOrClick(_0x379293){const _0x425fb2=_0x414554,_0x94b8ea=_0x4a4a4b,_0x151c85=_0x2af350,_0xa94d88={'uoUcu':function(_0x228151,_0x3bc15f){return _0x228151!==_0x3bc15f;},'idSxr':function(_0xd40e76,_0x2cb075){return _0xd40e76/_0x2cb075;},'IEyJr':function(_0x132a77,_0x43dc3f){return _0x132a77*_0x43dc3f;},'fPtfO':function(_0x5d1a30,_0x39ceb3){return _0x5d1a30-_0x39ceb3;},'IjtGV':function(_0x479d0b,_0x2daf07){return _0x479d0b<_0x2daf07;},'NBqva':function(_0x29d1ff,_0x458313){return _0x29d1ff-_0x458313;},'hzDRd':function(_0x2f0e37,_0x2ef6cc){return _0x2f0e37(_0x2ef6cc);},'sfSOP':function(_0x75d230){return _0x75d230();}};if(!gameActive||_0xa94d88['uoUcu'](turn,myRole))return;const _0x5bc2cf=canvas[_0x151c85(0x268)]();let _0x1962df,_0x363e7b;_0x379293[_0x94b8ea(0x1a0,'3Pu[')]&&_0x379293[_0x151c85(0x3be)][_0x151c85(0x36e)]>0x0?(_0x1962df=_0x379293['touches'][0x0][_0x94b8ea(0x1b9,'K)PY')],_0x363e7b=_0x379293[_0x94b8ea(0x16d,'%GsG')][0x0][_0x94b8ea(0x118,'aOQ#')]):(_0x1962df=_0x379293[_0x425fb2(0x140)],_0x363e7b=_0x379293[_0x94b8ea(0x34b,'Fr7t')]);const _0x2442d9=canvas['width']/_0x5bc2cf[_0x425fb2(0x2b2)],_0x1bbfde=_0xa94d88[_0x94b8ea(0x18f,'z7Jg')](canvas[_0x94b8ea(0x158,'HQ(v')],_0x5bc2cf['height']),_0x5e6d1a=_0xa94d88['IEyJr'](_0x1962df-_0x5bc2cf[_0x94b8ea(0x35b,'Ham7')],_0x2442d9),_0x43e56b=_0xa94d88[_0x151c85(0x2ba)](_0xa94d88[_0x425fb2(0x16f)](_0x363e7b,_0x5bc2cf[_0x94b8ea(0x39d,'p1Jx')]),_0x1bbfde);let _0x2f24b5=null,_0x1b6d00=0x28;for(let _0x3c50ab=0x0;_0xa94d88[_0x151c85(0x2a0)](_0x3c50ab,0x25);_0x3c50ab++){let _0x12e315=_0x5e6d1a-points[_0x3c50ab]['x'],_0x50b4f5=_0xa94d88[_0x151c85(0x299)](_0x43e56b,_0xa94d88[_0x94b8ea(0x151,'UVpr')](getDisplayY,points[_0x3c50ab]['y'])),_0x4b060b=Math[_0x151c85(0x329)](_0x12e315*_0x12e315+_0x50b4f5*_0x50b4f5);_0xa94d88[_0x425fb2(0x24b)](_0x4b060b,_0x1b6d00)&&(_0x1b6d00=_0x4b060b,_0x2f24b5=_0x3c50ab);}_0xa94d88[_0x94b8ea(0x18a,'dSOZ')](_0x2f24b5,null)&&(keyboardCursorIndex=_0x2f24b5,handleNodeSelection(_0x2f24b5),_0xa94d88['sfSOP'](updateSoftkeys));}canvas[_0x2af350(0x1ca)]('click',_0x5ca412=>{const _0x418cdb=_0x414554,_0x55624f={'WCmoj':function(_0x23c109,_0x4c029a){return _0x23c109(_0x4c029a);}};_0x55624f[_0x418cdb(0x251)](handleTouchOrClick,_0x5ca412);}),canvas[_0x414554(0x161)](_0x2af350(0x385),_0x2061fd=>{const _0x1feeb3={'HJKwV':function(_0xc8117e,_0x27ea94){return _0xc8117e(_0x27ea94);}};_0x2061fd['preventDefault'](),_0x1feeb3['HJKwV'](handleTouchOrClick,_0x2061fd);},{'passive':![]}),connectServer(),updateLobbyFocus(),updateSoftkeys(),gameLoop();
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBsAYFWEDYpQEDhEykEWXO_FwB9dzANE3M",
+            authDomain: "shulo-guti.firebaseapp.com",
+            databaseURL: "https://shulo-guti-default-rtdb.firebaseio.com",
+            projectId: "shulo-guti",
+            storageBucket: "shulo-guti.firebasestorage.app",
+            messagingSenderId: "738532732350",
+            appId: "1:738532732350:web:4fca1f3257724584c01def"
+        };
+
+        // Firebase Initialize
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // প্রতিটি ক্লায়েন্টের জন্য একটি ইউনিক আইডি জেনারেট করা
+        const myClientId = Math.random().toString(36).substring(2, 15);
+        let currentRoomRef = null;
+        let roomListener = null;
+
+        let lastProcessedMoveTime = 0;
+        let lastProcessedEndTurnTime = 0;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 500;
+        canvas.height = 920;
+
+        let myRole = null; // 1 = Red, 2 = Green
+        let gameActive = false;
+        let publicRooms = [];
+        let activeMenuOption = 0; // Navigation states: 0 = Input, 1 = Join, 2 = Create Public, 3 = Create Private, 4+ = Public Rooms
+
+        // Node Positions
+        const points = [
+            { id: 0, x: 50, y: 40 }, { id: 1, x: 250, y: 40 }, { id: 2, x: 450, y: 40 },
+            { id: 3, x: 150, y: 145 }, { id: 4, x: 250, y: 145 }, { id: 5, x: 350, y: 145 },
+            { id: 6, x: 50, y: 250 }, { id: 7, x: 150, y: 250 }, { id: 8, x: 250, y: 250 }, { id: 9, x: 350, y: 250 }, { id: 10, x: 450, y: 250 },
+            { id: 11, x: 50, y: 355 }, { id: 12, x: 150, y: 355 }, { id: 13, x: 250, y: 355 }, { id: 14, x: 350, y: 355 }, { id: 15, x: 450, y: 355 },
+            { id: 16, x: 50, y: 460 }, { id: 17, x: 150, y: 460 }, { id: 18, x: 250, y: 460 }, { id: 19, x: 350, y: 460 }, { id: 20, x: 450, y: 460 },
+            { id: 21, x: 50, y: 565 }, { id: 22, x: 150, y: 565 }, { id: 23, x: 250, y: 565 }, { id: 24, x: 350, y: 565 }, { id: 25, x: 450, y: 565 },
+            { id: 26, x: 50, y: 670 }, { id: 27, x: 150, y: 670 }, { id: 28, x: 250, y: 670 }, { id: 29, x: 350, y: 670 }, { id: 30, x: 450, y: 670 },
+            { id: 31, x: 150, y: 775 }, { id: 32, x: 250, y: 775 }, { id: 33, x: 350, y: 775 },
+            { id: 34, x: 50, y: 880 }, { id: 35, x: 250, y: 880 }, { id: 36, x: 450, y: 880 }
+        ];
+
+        // CLASSIC BOARD SHAPE LINES
+        const lines = [
+            [6, 11, 16, 21, 26],
+            [7, 12, 17, 22, 27],
+            [1, 4, 8, 13, 18, 23, 28, 32, 35],
+            [9, 14, 19, 24, 29],
+            [10, 15, 20, 25, 30],
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8, 9, 10],
+            [11, 12, 13, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25],
+            [26, 27, 28, 29, 30],
+            [31, 32, 33],
+            [34, 35, 36],
+            [6, 12, 18, 24, 30],
+            [10, 14, 18, 22, 26],
+            [0, 3, 8, 14, 20],
+            [2, 5, 8, 12, 16],
+            [20, 24, 28, 31, 34],
+            [16, 22, 28, 33, 36]
+        ];
+
+        let boardState = [];
+        let turn = 1;
+        let activePieceId = null;
+        let hasCapturedThisTurn = false;
+        let visualPieces = [];
+        let dyingPieces = [];
+        let keyboardCursorIndex = 18;
+
+        function getDisplayY(y) {
+            if (myRole === 1) {
+                return 920 - y;
+            }
+            return y;
+        }
+
+        // --- SOUND ENGINE ---
+        let audioCtx;
+        function playSound(type) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                if (type === 'move') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(260, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'capture') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch (e) { }
+        }
+
+        // --- ONLINE CONNECTIVITY (FIREBASE) ---
+        function connectServer() {
+            // অ্যাক্টিভ পাবলিক ওয়েটিং রুমগুলো লাইভ দেখানোর লিসেনার [1]
+            database.ref('rooms').on('value', (snapshot) => {
+                const roomsList = [];
+                snapshot.forEach((childSnapshot) => {
+                    const room = childSnapshot.val();
+                    // শুধুমাত্র পাবলিক এবং যেখানে মাত্র একজন প্লেয়ার অপেক্ষা করছে [1]
+                    if (room.status === 'waiting' && !room.isPrivate && room.p1 && !room.p2) {
+                        roomsList.push({
+                            code: childSnapshot.key,
+                            playersCount: 1
+                        });
+                    }
+                });
+                publicRooms = roomsList;
+                if (!gameActive && !document.getElementById('lobbyScreen').classList.contains('hidden')) {
+                    renderPublicRooms();
+                }
+            });
+        }
+
+        function joinRoom(code, isPrivate) {
+            const roomCode = code.trim().toUpperCase();
+            if (!roomCode) {
+                alert("Please enter a code to join.");
+                return;
+            }
+
+            const roomRef = database.ref('rooms/' + roomCode);
+            currentRoomRef = roomRef;
+
+            // একই সময় দুই প্লেয়ার যেন স্লট বুক না করে, সেজন্য Transaction ব্যবহার করা হলো
+            roomRef.transaction((currentData) => {
+                if (currentData === null) {
+                    // নতুন রুম তৈরি [1]
+                    return {
+                        p1: myClientId,
+                        p2: null,
+                        isPrivate: isPrivate,
+                        status: "waiting"
+                    };
+                } else {
+                    // পুনরায় যোগদানের চেষ্টা করলে
+                    if (currentData.p1 === myClientId || currentData.p2 === myClientId) {
+                        return currentData;
+                    }
+                    // রুম ফুল থাকলে ট্রানজেকশন ক্যানসেল হবে
+                    if (currentData.p1 && currentData.p2) {
+                        return;
+                    }
+                    // ২য় প্লেয়ার হিসেবে যোগদান
+                    currentData.p2 = myClientId;
+                    currentData.status = "playing";
+                    return currentData;
+                }
+            }, (error, committed, snapshot) => {
+                if (error) {
+                    alert("Room error: " + error.message);
+                } else if (!committed) {
+                    alert("Room is already full!");
+                } else {
+                    const roomData = snapshot.val();
+                    setupRoomRealtime(roomCode, roomData);
+                }
+            });
+        }
+
+        function setupRoomRealtime(roomCode, roomData) {
+            if (roomData.p1 === myClientId) {
+                myRole = 1;
+            } else if (roomData.p2 === myClientId) {
+                myRole = 2;
+            }
+
+            if (roomData.status === 'waiting') {
+                document.getElementById('lobbyScreen').classList.add('hidden');
+                document.getElementById('waitingScreen').classList.remove('hidden');
+                document.getElementById('waitingCode').innerText = roomCode;
+                document.getElementById('roomTypeLabel').innerText = roomData.isPrivate ? "Private Room Created" : "Public Room Created";
+                updateSoftkeys();
+            } else if (roomData.status === 'playing') {
+                startGameLocal();
+            }
+
+            // প্লেয়ার ডিসকানেক্ট হয়ে গেলে গেম স্টেট Forfeit করা এবং রুমের স্লট ফাঁকা করার অন-ডিসকানেক্ট হ্যান্ডলার
+            currentRoomRef.child('status').onDisconnect().set('forfeit');
+            currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().remove();
+
+            if (roomListener) currentRoomRef.off('value', roomListener);
+
+            roomListener = currentRoomRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                // ২য় প্লেয়ার জয়েন করলে গেম শুরু
+                if (data.status === 'playing' && !gameActive) {
+                    startGameLocal();
+                }
+
+                // কোনো প্লেয়ার চলে গেলে বা ডিসকানেক্ট হলে forfeit ডিক্লেয়ার
+                if (data.status === 'forfeit' && gameActive) {
+                    handleForfeit();
+                }
+
+                // নতুন কোনো চাল বা মুভমেন্ট আসলে
+                if (data.lastMove && data.lastMove.sender !== myClientId) {
+                    if (data.lastMove.timestamp > lastProcessedMoveTime) {
+                        lastProcessedMoveTime = data.lastMove.timestamp;
+                        executeOpponentMove(data.lastMove.fromId, data.lastMove.move);
+                    }
+                }
+
+                // টার্ন শেষ হওয়ার আপডেট আসলে
+                if (data.lastEndTurn && data.lastEndTurn.sender !== myClientId) {
+                    if (data.lastEndTurn.timestamp > lastProcessedEndTurnTime) {
+                        lastProcessedEndTurnTime = data.lastEndTurn.timestamp;
+                        finalizeTurnLocal();
+                    }
+                }
+            });
+        }
+
+        function startGameLocal() {
+            document.getElementById('waitingScreen').classList.add('hidden');
+            document.getElementById('lobbyScreen').classList.add('hidden');
+            document.getElementById('hudBar').classList.remove('hidden');
+            canvas.classList.remove('hidden');
+            gameActive = true;
+            lastProcessedMoveTime = Date.now();
+            lastProcessedEndTurnTime = Date.now();
+            initGame();
+        }
+
+        function actionJoin() {
+            const val = document.getElementById('roomCodeInput').value.trim();
+            if (val) {
+                joinRoom(val, false);
+            } else {
+                alert("Please enter a code to join.");
+            }
+        }
+
+        function actionCreate(isPrivate) {
+            let val = document.getElementById('roomCodeInput').value.trim();
+            if (!val) {
+                val = Math.random().toString(36).substring(2, 7);
+            }
+            joinRoom(val, isPrivate);
+        }
+
+        function leaveRoom() {
+            if (currentRoomRef) {
+                // Disconnect হ্যান্ডলারগুলো বাতিল করা
+                currentRoomRef.child('status').onDisconnect().cancel();
+                currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().cancel();
+
+                currentRoomRef.once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        if (data.p1 === myClientId && !data.p2) {
+                            // কেউ না থাকলে ডাটাবেজ থেকে রুম সম্পূর্ণ রিমুভ করা
+                            currentRoomRef.remove();
+                        } else {
+                            currentRoomRef.child('status').set('forfeit');
+                            currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').remove();
+                        }
+                    }
+                });
+
+                if (roomListener) {
+                    currentRoomRef.off('value', roomListener);
+                    roomListener = null;
+                }
+                currentRoomRef = null;
+            }
+
+            myRole = null;
+            gameActive = false;
+            canvas.classList.add('hidden');
+            document.getElementById('hudBar').classList.add('hidden');
+            document.getElementById('waitingScreen').classList.add('hidden');
+            document.getElementById('endScreen').classList.add('hidden');
+            document.getElementById('lobbyScreen').classList.remove('hidden');
+            activeMenuOption = 0;
+            updateLobbyFocus();
+            updateSoftkeys();
+        }
+
+        function handleForfeit() {
+            gameActive = false;
+            document.getElementById('endScreen').classList.remove('hidden');
+            document.getElementById('endTitle').innerText = "Opponent Left";
+            document.getElementById('endDetails').innerText = "Opponent disconnected. You won by forfeit!";
+            updateSoftkeys();
+        }
+
+        // --- D-PAD LOBBY NAVIGATION ---
+        function renderPublicRooms() {
+            const container = document.getElementById('roomListContainer');
+            container.innerHTML = "";
+            if (publicRooms.length === 0) {
+                container.innerHTML = '<div style="font-size:9px; color:#aaa; padding:10px;">No active public waiting rooms.</div>';
+            } else {
+                publicRooms.forEach((rm, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'room-item';
+                    div.id = `roomItem_${index}`;
+                    div.innerHTML = `<span>Code: <b>${rm.code}</b></span> <span style="color:#873eff;">Join &raquo;</span>`;
+                    div.onclick = () => joinRoom(rm.code, false);
+                    container.appendChild(div);
+                });
+            }
+            updateLobbyFocus();
+        }
+
+        function updateLobbyFocus() {
+            document.getElementById('roomCodeInput').classList.remove('active');
+            document.getElementById('btnJoin').classList.remove('active');
+            document.getElementById('btnCreatePublic').classList.remove('active');
+            document.getElementById('btnCreatePrivate').classList.remove('active');
+            document.querySelectorAll('.room-item').forEach(el => el.classList.remove('active'));
+
+            let maxIndex = 3 + publicRooms.length;
+            if (activeMenuOption > maxIndex) activeMenuOption = maxIndex;
+
+            if (activeMenuOption === 0) {
+                document.getElementById('roomCodeInput').classList.add('active');
+                document.getElementById('roomCodeInput').focus();
+            } else {
+                document.getElementById('roomCodeInput').blur();
+                if (activeMenuOption === 1) {
+                    document.getElementById('btnJoin').classList.add('active');
+                } else if (activeMenuOption === 2) {
+                    document.getElementById('btnCreatePublic').classList.add('active');
+                } else if (activeMenuOption === 3) {
+                    document.getElementById('btnCreatePrivate').classList.add('active');
+                } else {
+                    let roomIndex = activeMenuOption - 4;
+                    const activeItem = document.getElementById(`roomItem_${roomIndex}`);
+                    if (activeItem) activeItem.classList.add('active');
+                }
+            }
+        }
+
+        function handleLobbyNav(key) {
+            let maxIndex = 3 + publicRooms.length;
+            if (key === 'ArrowUp' && activeMenuOption > 0) {
+                activeMenuOption--;
+                updateLobbyFocus();
+            } else if (key === 'ArrowDown' && activeMenuOption < maxIndex) {
+                activeMenuOption++;
+                updateLobbyFocus();
+            } else if (key === 'Enter' || key === 'Select') {
+                if (activeMenuOption === 1) {
+                    actionJoin();
+                } else if (activeMenuOption === 2) {
+                    actionCreate(false);
+                } else if (activeMenuOption === 3) {
+                    actionCreate(true);
+                } else if (activeMenuOption >= 4) {
+                    let roomIndex = activeMenuOption - 4;
+                    if (publicRooms[roomIndex]) joinRoom(publicRooms[roomIndex].code, false);
+                }
+            }
+        }
+
+        // --- GAME ENGINE ---
+        function initGame() {
+            boardState = Array(37).fill(null);
+            for (let i = 0; i <= 15; i++) boardState[i] = 1; // Red
+            for (let i = 21; i <= 36; i++) boardState[i] = 2; // Green
+
+            turn = 1; // Red starts
+            keyboardCursorIndex = (myRole === 1) ? 8 : 28;
+
+            activePieceId = null;
+            hasCapturedThisTurn = false;
+
+            visualPieces = [];
+            for (let i = 0; i < 37; i++) {
+                if (boardState[i] !== null) {
+                    let displayY = getDisplayY(points[i].y);
+                    visualPieces.push({
+                        id: i, type: boardState[i],
+                        x: points[i].x, y: displayY,
+                        targetX: points[i].x, targetY: displayY
+                    });
+                }
+            }
+            dyingPieces = [];
+            updateHUD();
+            updateSoftkeys();
+            ensureValidCursor();
+        }
+
+        function getValidFocusNodes() {
+            let validNodes = [];
+            if (!gameActive || turn !== myRole) return [];
+
+            if (hasCapturedThisTurn && activePieceId !== null) {
+                validNodes.push(activePieceId);
+                getValidJumps(activePieceId).forEach(function (j) { validNodes.push(j.to); });
+                return validNodes;
+            }
+
+            if (activePieceId !== null) {
+                validNodes.push(activePieceId);
+                for (let i = 0; i < 37; i++) {
+                    if (boardState[i] === myRole) validNodes.push(i);
+                }
+                getValidMoves(activePieceId).forEach(function (m) { validNodes.push(m.to); });
+                getValidJumps(activePieceId).forEach(function (j) { validNodes.push(j.to); });
+
+                return validNodes.filter(function (item, pos, self) {
+                    return self.indexOf(item) === pos;
+                });
+            }
+
+            for (let i = 0; i < 37; i++) {
+                if (boardState[i] === myRole) validNodes.push(i);
+            }
+            return validNodes;
+        }
+
+        function ensureValidCursor() {
+            let validTargets = getValidFocusNodes();
+            if (validTargets.length === 0) return;
+            if (!validTargets.includes(keyboardCursorIndex)) {
+                let curX = points[keyboardCursorIndex].x;
+                let curY = getDisplayY(points[keyboardCursorIndex].y);
+                let closestId = validTargets[0];
+                let minDistance = Infinity;
+                validTargets.forEach(id => {
+                    let pX = points[id].x;
+                    let pY = getDisplayY(points[id].y);
+                    let dx = pX - curX;
+                    let dy = pY - curY;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < minDistance) { minDistance = dist; closestId = id; }
+                });
+                keyboardCursorIndex = closestId;
+            }
+        }
+
+        function updateHUD() {
+            let p1Count = boardState.filter(s => s === 1).length;
+            let p2Count = boardState.filter(s => s === 2).length;
+
+            let redLabel = (myRole === 1) ? "Red (You)" : "Red";
+            let greenLabel = (myRole === 2) ? "Green (You)" : "Green";
+
+            document.getElementById('p1Label').innerText = `${redLabel}: ${p1Count}`;
+            document.getElementById('p2Label').innerText = `${greenLabel}: ${p2Count}`;
+
+            if (turn === myRole) {
+                document.getElementById('turnIndicator').innerText = "Your Turn";
+                document.getElementById('turnIndicator').style.color = "#ffb74d";
+            } else {
+                document.getElementById('turnIndicator').innerText = "Waiting...";
+                document.getElementById('turnIndicator').style.color = "#aaa";
+            }
+        }
+
+        function updateSoftkeys() {
+            let waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
+            let lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
+            let endVisible = !document.getElementById('endScreen').classList.contains('hidden');
+
+            if (lobbyVisible) {
+                document.getElementById('softLeftText').innerText = "";
+                document.getElementById('softCenterText').innerText = "Select";
+                document.getElementById('softRightText').innerText = "";
+                return;
+            }
+            if (waitingVisible || endVisible) {
+                document.getElementById('softLeftText').innerText = "Leave";
+                document.getElementById('softCenterText').innerText = "";
+                document.getElementById('softRightText').innerText = "";
+                return;
+            }
+
+            document.getElementById('softLeftText').innerText = "Exit";
+            if (hasCapturedThisTurn) {
+                document.getElementById('softCenterText').innerText = "Capture";
+                document.getElementById('softRightText').innerText = "End Turn";
+            } else {
+                document.getElementById('softCenterText').innerText = (activePieceId !== null) ? "Move" : "Select";
+                document.getElementById('softRightText').innerText = (activePieceId !== null) ? "Cancel" : "";
+            }
+        }
+
+        function filterUnique(arr) {
+            var seen = {};
+            return arr.filter(function (item) {
+                if (seen[item.to]) return false;
+                seen[item.to] = true;
+                return true;
+            });
+        }
+
+        function getValidMoves(fromId) {
+            let valid = [];
+            let player = boardState[fromId];
+            if (!player) return [];
+            lines.forEach(line => {
+                let idx = line.indexOf(fromId);
+                if (idx !== -1) {
+                    if (idx > 0 && boardState[line[idx - 1]] === null) valid.push({ to: line[idx - 1], type: 'move' });
+                    if (idx < line.length - 1 && boardState[line[idx + 1]] === null) valid.push({ to: line[idx + 1], type: 'move' });
+                }
+            });
+            return filterUnique(valid);
+        }
+
+        function getValidJumps(fromId) {
+            let valid = [];
+            let player = boardState[fromId];
+            if (!player) return [];
+            let opponent = (player === 1) ? 2 : 1;
+
+            lines.forEach(line => {
+                let idx = line.indexOf(fromId);
+                if (idx !== -1) {
+                    if (idx > 1 && boardState[line[idx - 1]] === opponent && boardState[line[idx - 2]] === null) {
+                        valid.push({ to: line[idx - 2], capture: line[idx - 1], type: 'jump' });
+                    }
+                    if (idx < line.length - 2 && boardState[line[idx + 1]] === opponent && boardState[line[idx + 2]] === null) {
+                        valid.push({ to: line[idx + 2], capture: line[idx + 1], type: 'jump' });
+                    }
+                }
+            });
+            return filterUnique(valid);
+        }
+
+        function handleNodeSelection(nodeId) {
+            if (turn !== myRole) return;
+            let piece = boardState[nodeId];
+
+            if (hasCapturedThisTurn) {
+                let possibleJumps = getValidJumps(activePieceId);
+                let chosenJump = possibleJumps.find(j => j.to === nodeId);
+                if (chosenJump) executeMove(activePieceId, chosenJump);
+                return;
+            }
+
+            if (piece === turn) {
+                activePieceId = nodeId;
+            } else if (activePieceId !== null) {
+                let moves = getValidMoves(activePieceId);
+                let jumps = getValidJumps(activePieceId);
+                let chosenJump = jumps.find(j => j.to === nodeId);
+                let chosenMove = moves.find(m => m.to === nodeId);
+
+                if (chosenJump) executeMove(activePieceId, chosenJump);
+                else if (chosenMove) executeMove(activePieceId, chosenMove);
+            }
+            ensureValidCursor();
+        }
+
+        function executeMove(fromId, move) {
+            let vp = visualPieces.find(p => p.id === fromId);
+            if (vp) {
+                vp.id = move.to;
+                vp.targetX = points[move.to].x;
+                vp.targetY = getDisplayY(points[move.to].y);
+            }
+
+            boardState[move.to] = turn;
+            boardState[fromId] = null;
+
+            // Firebase-এ চাল আপলোড করা
+            if (currentRoomRef) {
+                currentRoomRef.child('lastMove').set({
+                    fromId: fromId,
+                    move: move,
+                    sender: myClientId,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+
+            if (move.type === 'jump') {
+                let cvpIdx = visualPieces.findIndex(p => p.id === move.capture);
+                if (cvpIdx !== -1) {
+                    dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
+                    visualPieces.splice(cvpIdx, 1);
+                }
+                boardState[move.capture] = null;
+                playSound('capture');
+                hasCapturedThisTurn = true;
+                activePieceId = move.to;
+
+                let furtherJumps = getValidJumps(activePieceId);
+                if (furtherJumps.length > 0) {
+                    updateHUD();
+                    updateSoftkeys();
+                    ensureValidCursor();
+                    return;
+                }
+            } else {
+                playSound('move');
+            }
+
+            // Firebase-এ টার্ন শেষ ঘোষণা করা
+            if (currentRoomRef) {
+                currentRoomRef.child('lastEndTurn').set({
+                    sender: myClientId,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+            finalizeTurnLocal();
+        }
+
+        function executeOpponentMove(fromId, move) {
+            let vp = visualPieces.find(p => p.id === fromId);
+            if (vp) {
+                vp.id = move.to;
+                vp.targetX = points[move.to].x;
+                vp.targetY = getDisplayY(points[move.to].y);
+            } else {
+                visualPieces.push({
+                    id: move.to, type: (myRole === 1) ? 2 : 1,
+                    x: points[fromId].x, y: getDisplayY(points[fromId].y),
+                    targetX: points[move.to].x, targetY: getDisplayY(points[move.to].y)
+                });
+            }
+
+            boardState[move.to] = boardState[fromId];
+            boardState[fromId] = null;
+
+            if (move.type === 'jump') {
+                let cvpIdx = visualPieces.findIndex(p => p.id === move.capture);
+                if (cvpIdx !== -1) {
+                    dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
+                    visualPieces.splice(cvpIdx, 1);
+                }
+                boardState[move.capture] = null;
+                playSound('capture');
+            } else {
+                playSound('move');
+            }
+        }
+
+        function finalizeTurnLocal() {
+            activePieceId = null;
+            hasCapturedThisTurn = false;
+
+            let winner = checkWin();
+            if (winner) {
+                announceWinner(winner);
+                return;
+            }
+
+            turn = (turn === 1) ? 2 : 1;
+            updateHUD();
+            updateSoftkeys();
+            ensureValidCursor();
+        }
+
+        function checkWin() {
+            let p1Count = boardState.filter(s => s === 1).length;
+            let p2Count = boardState.filter(s => s === 2).length;
+            if (p1Count === 0) return 2;
+            if (p2Count === 0) return 1;
+
+            let nextPlayer = (turn === 1) ? 2 : 1;
+            let hasMoves = false;
+            for (let i = 0; i < 37; i++) {
+                if (boardState[i] === nextPlayer) {
+                    if (getValidMoves(i).length > 0 || getValidJumps(i).length > 0) {
+                        hasMoves = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasMoves) {
+                return turn;
+            }
+            return null;
+        }
+
+        function announceWinner(winner) {
+            gameActive = false;
+            document.getElementById('endScreen').classList.remove('hidden');
+            let winnerName = (winner === 1) ? "Red" : "Green";
+            if (winner === myRole) {
+                document.getElementById('endTitle').innerText = "Victory!";
+                document.getElementById('endDetails').innerText = `Congratulations! You (${winnerName}) won the game.`;
+            } else {
+                document.getElementById('endTitle').innerText = "Defeat";
+                document.getElementById('endDetails').innerText = `${winnerName} has won the game. Better luck next time!`;
+            }
+            updateSoftkeys();
+        }
+
+        function triggerDeselect() {
+            if (hasCapturedThisTurn) return;
+            activePieceId = null;
+            updateSoftkeys();
+            ensureValidCursor();
+        }
+
+        // --- Key Navigation System ---
+        window.addEventListener('back', (event) => {
+            event.preventDefault();
+            simulateNaturalPress('SoftRight', 0);
+        });
+
+        window.addEventListener('keydown', (e) => {
+            let lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
+            let waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
+            let endVisible = !document.getElementById('endScreen').classList.contains('hidden');
+
+            if (lobbyVisible) {
+                handleLobbyNav(e.key);
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') e.preventDefault();
+                return;
+            }
+
+            if (waitingVisible || endVisible) {
+                if (e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'Escape') {
+                    leaveRoom();
+                    e.preventDefault();
+                }
+                return;
+            }
+
+            if (!gameActive) return;
+            if (turn !== myRole) return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'W': case 'w':
+                    moveKeyboardCursor('up'); e.preventDefault(); break;
+                case 'ArrowDown':
+                case 'S': case 's':
+                    moveKeyboardCursor('down'); e.preventDefault(); break;
+                case 'ArrowLeft':
+                case 'A': case 'a':
+                    moveKeyboardCursor('left'); e.preventDefault(); break;
+                case 'ArrowRight':
+                case 'D': case 'd':
+                    moveKeyboardCursor('right'); e.preventDefault(); break;
+                case 'Enter':
+                case 'Select':
+                    handleNodeSelection(keyboardCursorIndex); e.preventDefault(); break;
+                case 'Backspace':
+                case 'Escape':
+                    triggerDeselect(); e.preventDefault(); break;
+                case 'SoftLeft': case 'F1': case 'Escape':
+                    leaveRoom(); e.preventDefault(); break;
+                case 'SoftRight': case 'F2':
+                    if (hasCapturedThisTurn) endChainTurn();
+                    else if (activePieceId !== null) triggerDeselect();
+                    e.preventDefault();
+                    break;
+            }
+            updateSoftkeys();
+        });
+
+        function moveKeyboardCursor(dir) {
+            let validTargets = getValidFocusNodes();
+            if (validTargets.length === 0) return;
+
+            let curX = points[keyboardCursorIndex].x;
+            let curY = getDisplayY(points[keyboardCursorIndex].y);
+            let bestId = -1;
+            let bestScore = Infinity;
+
+            validTargets.forEach(id => {
+                if (id === keyboardCursorIndex) return;
+                let pX = points[id].x;
+                let pY = getDisplayY(points[id].y);
+                let dx = pX - curX;
+                let dy = pY - curY;
+
+                if (dir === 'up' && dy < -5) {
+                    let score = Math.abs(dy) + Math.abs(dx) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                } else if (dir === 'down' && dy > 5) {
+                    let score = Math.abs(dy) + Math.abs(dx) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                } else if (dir === 'left' && dx < -5) {
+                    let score = Math.abs(dx) + Math.abs(dy) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                } else if (dir === 'right' && dx > 5) {
+                    let score = Math.abs(dx) + Math.abs(dy) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                }
+            });
+
+            if (bestId !== -1) keyboardCursorIndex = bestId;
+        }
+
+        // --- RENDER SYSTEM ---
+        function updateAnimations() {
+            visualPieces.forEach(vp => {
+                let dx = vp.targetX - vp.x; let dy = vp.targetY - vp.y;
+                if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+                    vp.x += dx * 0.15; vp.y += dy * 0.15;
+                } else {
+                    vp.x = vp.targetX; vp.y = vp.targetY;
+                }
+            });
+
+            for (let i = dyingPieces.length - 1; i >= 0; i--) {
+                dyingPieces[i].frame++; dyingPieces[i].alpha -= 0.05;
+                if (dyingPieces[i].alpha <= 0) dyingPieces.splice(i, 1);
+            }
+        }
+
+        function drawBoard() {
+            ctx.fillStyle = '#b08257'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#85582c'; ctx.lineWidth = 1.5;
+            for (let y = 100; y < canvas.height; y += 100) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            let vignette = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.width / 3, canvas.width / 2, canvas.height / 2, canvas.height / 1.6);
+            vignette.addColorStop(0, 'rgba(0,0,0,0)'); vignette.addColorStop(1, 'rgba(40,20,5,0.45)');
+            ctx.fillStyle = vignette; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#000000'; ctx.lineWidth = 4.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            lines.forEach(line => {
+                ctx.beginPath(); let start = points[line[0]]; ctx.moveTo(start.x, getDisplayY(start.y));
+                for (let i = 1; i < line.length; i++) ctx.lineTo(points[line[i]].x, getDisplayY(points[line[i]].y));
+                ctx.stroke();
+            });
+
+            let mainSquareTopY = Math.min(getDisplayY(250), getDisplayY(670));
+            ctx.strokeRect(50, mainSquareTopY, 400, 420);
+
+            if (activePieceId !== null && turn === myRole) {
+                let possibleMoves = hasCapturedThisTurn ? getValidJumps(activePieceId) : [...getValidMoves(activePieceId), ...getValidJumps(activePieceId)];
+                possibleMoves.forEach(mv => {
+                    ctx.save(); ctx.fillStyle = 'rgba(255, 179, 0, 0.4)'; ctx.strokeStyle = '#ff8f00'; ctx.lineWidth = 3.5;
+                    ctx.beginPath(); ctx.arc(points[mv.to].x, getDisplayY(points[mv.to].y), 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
+                });
+            }
+
+            points.forEach(p => {
+                ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(p.x, getDisplayY(p.y), 6.5, 0, Math.PI * 2); ctx.fill();
+            });
+
+            if (gameActive && turn === myRole) {
+                let kp = points[keyboardCursorIndex];
+                ctx.save(); ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 3.5; ctx.setLineDash([5, 4]);
+                ctx.beginPath(); ctx.arc(kp.x, getDisplayY(kp.y), 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+            }
+
+            visualPieces.forEach(vp => {
+                drawPieceAt(vp.x, vp.y, vp.type, (activePieceId === vp.id));
+            });
+
+            dyingPieces.forEach(dp => {
+                ctx.save(); ctx.globalAlpha = dp.alpha;
+                drawPieceAt(dp.x + Math.sin(dp.frame * 1.5) * 7, dp.y, dp.type, false);
+                ctx.restore();
+            });
+        }
+
+        function drawPieceAt(x, y, type, isSelected) {
+            let radius = 17.5; ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 5; ctx.shadowOffsetX = 2.5; ctx.shadowOffsetY = 4;
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = (type === 1) ? '#900c0c' : '#144e18'; ctx.fill(); ctx.shadowColor = 'transparent';
+
+            let pieceGrad = ctx.createRadialGradient(x - radius / 3, y - radius / 3, 1.5, x, y, radius);
+            if (type === 1) {
+                pieceGrad.addColorStop(0, '#ff4a4a'); pieceGrad.addColorStop(0.3, '#c62828'); pieceGrad.addColorStop(1, '#4e0000');
+            } else {
+                pieceGrad.addColorStop(0, '#66bb6a'); pieceGrad.addColorStop(0.3, '#2e7d32'); pieceGrad.addColorStop(1, '#0c350e');
+            }
+            ctx.fillStyle = pieceGrad; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)'; ctx.lineWidth = 1.8;
+            ctx.beginPath(); ctx.arc(x, y, radius - 4.5, 0, Math.PI * 2); ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; ctx.beginPath(); ctx.arc(x - radius / 3.5, y - radius / 3.5, 3, 0, Math.PI * 2); ctx.fill();
+
+            if (isSelected) {
+                ctx.strokeStyle = '#ffd54f'; ctx.lineWidth = 3.5;
+                ctx.beginPath(); ctx.arc(x, y, radius + 5, 0, Math.PI * 2); ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function endChainTurn() {
+            if (hasCapturedThisTurn) {
+                if (currentRoomRef) {
+                    currentRoomRef.child('lastEndTurn').set({
+                        sender: myClientId,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+                finalizeTurnLocal();
+            }
+        }
+
+        function gameLoop() {
+            updateAnimations();
+            if (gameActive) drawBoard();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function handleTouchOrClick(e) {
+            if (!gameActive || turn !== myRole) return;
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clickX = (clientX - rect.left) * scaleX;
+            const clickY = (clientY - rect.top) * scaleY;
+
+            let clickedPoint = null;
+            let bestDist = 40;
+            for (let i = 0; i < 37; i++) {
+                let dx = clickX - points[i].x;
+                let dy = clickY - getDisplayY(points[i].y);
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < bestDist) { bestDist = dist; clickedPoint = i; }
+            }
+
+            if (clickedPoint !== null) {
+                keyboardCursorIndex = clickedPoint;
+                handleNodeSelection(clickedPoint);
+                updateSoftkeys();
+            }
+        }
+
+        // canvas.addEventListener('click', (e) => {
+        //     handleTouchOrClick(e);
+        // });
+
+        // canvas.addEventListener('touchstart', (e) => {
+        //     e.preventDefault();
+        //     handleTouchOrClick(e);
+        // }, { passive: false });
+
+        connectServer();
+        updateLobbyFocus();
+        updateSoftkeys();
+        gameLoop();
     </script>
 </body>
 
