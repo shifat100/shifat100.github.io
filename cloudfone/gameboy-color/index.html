@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cloud Phone GameBoy</title>
+    <!-- Roboto Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- GameBoy Emulator Core Dependency Scripts -->
+    <script type="text/javascript" src="js/GameBoyCore.js"></script>
+    <script type="text/javascript" src="js/GameBoyIO.js"></script>
+    <script type="text/javascript" src="js/other/XAudioServer.js"></script>
+    <script type="text/javascript" src="js/other/swfobject.js"></script>
+    <script type="text/javascript" src="js/other/resampler.js"></script>
+
+    <!-- Tailwind CSS with custom responsive presets -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        'cm-gray-020': '#202020',
+                        'cm-blue-009': '#0093E0',
+                        'cm-blue-05a': '#05AEF2',
+                        'cm-green-00a': '#00A539',
+                    },
+                    screens: {
+                        'cm-qqvga': { 'max': '128px' }, // ≤ 128px (QQVGA targeting)
+                        'cm-qvga': { 'min': '240px' },   // ≥ 240px (QVGA targeting)
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        *:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="bg-[#121212] text-white font-sans flex items-center justify-center min-h-screen select-none">
+
+    <!-- Responsive Phone Frame (Strict Width/Height constraints) -->
+    <div id="phone-screen" class="relative w-[240px] h-[320px] cm-qqvga:w-[128px] cm-qqvga:h-[160px] bg-cm-gray-020 flex flex-col justify-between overflow-hidden shadow-2xl border border-neutral-800">
+
+        <!-- ================= HEADER ================= -->
+        <header id="app-header" class="bg-cm-blue-009 w-full h-[30px] cm-qqvga:h-[20px] px-2 cm-qqvga:px-1 flex items-center justify-between text-xs cm-qqvga:text-[9px] font-bold shrink-0 z-10">
+            <span class="truncate pr-1">GB Emulator</span>
+            <span id="time-display" class="opacity-90">12:00</span>
+        </header>
+
+        <!-- ================= MAIN CONTENT SCROLL AREA ================= -->
+        <main id="app-content" class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto space-y-1.5 cm-qqvga:space-y-1">
+            
+            <!-- Hidden File Input for Storage Access -->
+            <input type="file" id="importsavedata" accept=".gb,.gbc" class="hidden">
+
+            <!-- "Load from Storage" Focus Action Button -->
+            <div tabindex="0" id="action-load-file" class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+                <svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                <span class="truncate">Import ROM File</span>
+            </div>
+
+            <!-- "Configure Key Map" Action Button -->
+            <div tabindex="0" id="action-keymap" class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+                <svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                </svg>
+                <span class="truncate">Key Map Settings</span>
+            </div>
+
+            <!-- List Subheaders -->
+            <div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">Sample Games</div>
+            <div id="sample-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
+                <div tabindex="0" class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white" data-path="roms/Tetris.gb" data-name="Tetris">
+                    <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="truncate">Tetris</span>
+                </div>
+                <div tabindex="0" class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white" data-path="roms/Snake Xenzia.gb" data-name="Snake Xenzia">
+                    <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="truncate">Snake Xenzia</span>
+                </div>
+            </div>
+
+            <div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">Recent ROM History</div>
+            <div id="history-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
+                <div id="history-empty" class="text-neutral-500 text-[10px] cm-qqvga:text-[8px] italic px-1">No previous games played</div>
+            </div>
+
+        </main>
+
+        <!-- ================= HELP SCREEN MODAL ================= -->
+        <div id="helpScreen" class="hidden absolute inset-0 bg-cm-gray-020 z-20 flex flex-col justify-between">
+            <header class="bg-neutral-800 text-white font-bold text-xs cm-qqvga:text-[9px] h-[30px] cm-qqvga:h-[20px] px-2 flex items-center shrink-0">
+                Keybindings Help
+            </header>
+            <div class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto text-[11px] cm-qqvga:text-[8px] space-y-1">
+                <table class="w-full text-left text-neutral-300">
+                    <tr class="border-b border-neutral-800"><td>A Button</td><td class="text-right text-white">Enter / 5</td></tr>
+                    <tr class="border-b border-neutral-800"><td>B Button</td><td class="text-right text-white">9</td></tr>
+                    <tr class="border-b border-neutral-800"><td>SELECT</td><td class="text-right text-white">7</td></tr>
+                    <tr class="border-b border-neutral-800"><td>START</td><td class="text-right text-white">0</td></tr>
+                    <tr class="border-b border-neutral-800"><td>D-PAD</td><td class="text-right text-white">Arrows / 2,8,4,6</td></tr>
+                    <tr class="border-b border-neutral-800"><td>Speed Up</td><td class="text-right text-white">3</td></tr>
+                    <tr class="border-b border-neutral-800"><td>Speed Down</td><td class="text-right text-white">1</td></tr>
+                    <tr class="border-b border-neutral-800"><td>Save State</td><td class="text-right text-white">*</td></tr>
+                    <tr class="border-b border-neutral-800"><td>Load State</td><td class="text-right text-white">#</td></tr>
+                </table>
+            </div>
+            <footer class="bg-black text-[10px] cm-qqvga:text-[8px] px-2 h-[24px] cm-qqvga:h-[16px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
+                <span></span>
+                <span></span>
+                <span>Back</span>
+            </footer>
+        </div>
+
+        <!-- ================= KEY MAP SETTINGS MODAL ================= -->
+        <div id="keyMapScreen" class="hidden absolute inset-0 bg-cm-gray-020 z-20 flex flex-col justify-between">
+            <header class="bg-neutral-800 text-white font-bold text-xs cm-qqvga:text-[9px] h-[30px] cm-qqvga:h-[20px] px-2 flex items-center shrink-0">
+                Key Configuration
+            </header>
+            <div id="key-map-list" class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto space-y-1 text-xs cm-qqvga:text-[9px]">
+                <!-- Populated via Javascript -->
+            </div>
+            <footer class="bg-black text-[10px] cm-qqvga:text-[8px] px-2 h-[24px] cm-qqvga:h-[16px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
+                <span>Rem. All</span>
+                <span class="font-bold text-white">Set</span>
+                <span>Back</span>
+            </footer>
+        </div>
+
+        <!-- KEYMAP CAPTURE OVERLAY -->
+        <div id="setKeyModal" class="hidden absolute inset-0 bg-black/95 z-30 flex items-center justify-center p-4">
+            <div class="bg-neutral-900 border border-neutral-800 rounded p-4 text-center space-y-2 w-full max-w-[200px]">
+                <div id="set-key-name" class="font-bold text-xs text-cm-blue-05a tracking-wide">Key Name</div>
+                <div id="set-key-prompt" class="text-[10px] text-white animate-pulse">Loading...</div>
+            </div>
+        </div>
+
+        <!-- ================= RE-DESIGNED PLAY SCREEN UI ================= -->
+        <div id="blur" class="hidden absolute inset-0 bg-black z-30 flex flex-col justify-between">
+            <!-- Header (Height: 30px / 20px) -->
+            <header id="header" class="bg-neutral-900 px-2 h-[30px] cm-qqvga:h-[20px] flex items-center justify-between text-xs cm-qqvga:text-[9px] truncate font-bold text-white border-b border-neutral-800 shrink-0 select-none">
+                <span id="rom-title-header" class="truncate max-w-[150px] cm-qqvga:max-w-[70px]">ROM Name</span>
+                <span class="text-[9px] cm-qqvga:text-[7px] text-gray-500 uppercase tracking-widest">GBC</span>
+            </header>
+
+            <!-- Expanded Game View Area (Perfect 10:9 Canvas fitting) -->
+            <div class="flex-1 w-full flex items-center justify-center bg-black overflow-hidden">
+                <canvas id="mainCanvas" class="w-full max-w-full aspect-[10/9] bg-neutral-950 block object-contain"></canvas>
+            </div>
+
+            <!-- Footer Control Bar (Height: 24px / 16px) -->
+            <footer class="bg-neutral-900 text-[10px] cm-qqvga:text-[8px] h-[24px] cm-qqvga:h-[16px] flex items-center justify-between px-2 text-neutral-300 border-t border-neutral-800 shrink-0 select-none">
+                <span id="emul-f1" class="text-neutral-500 text-[9px] cm-qqvga:text-[7px]">Speed: 1/3</span>
+                <span id="emul-f2" class="text-yellow-400 font-bold bg-black/50 px-1.5 py-0.5 rounded border border-neutral-800">1.00x</span>
+                <span id="emul-f3" class="text-neutral-400">Back</span>
+            </footer>
+
+            <!-- Built-In Advertisement Wrapper Area (Height: 50px / 0px) -->
+            <div id="emul-ad-banner" class="w-full bg-neutral-950 border-t border-neutral-800 h-[50px] cm-qqvga:h-0 cm-qqvga:hidden flex items-center justify-center shrink-0">
+                <div id="ad-slot-gameplay" class="w-full h-full flex items-center justify-center text-center bg-neutral-900">
+                    <span class="text-[8px] tracking-wider uppercase font-bold text-neutral-600 animate-pulse">Sponsored Ad Banner</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= FOOTER SOFTKEY BAR ================= -->
+        <footer id="app-footer" class="bg-black border-t border-neutral-800 h-[24px] cm-qqvga:h-[16px] px-2 flex items-center justify-between text-[10px] cm-qqvga:text-[8px] text-gray-400 shrink-0 z-10">
+            <button id="lsk-label" class="focus:outline-none">Help</button>
+            <button id="csk-label" class="font-bold text-white focus:outline-none">OK</button>
+            <button id="rsk-label" class="focus:outline-none">Exit</button>
+        </footer>
+
+    </div>
+
+    <!-- Active Logic Controller -->
+    <script>
+        // Required Emulator Global Console Output Hook
+        window.cout = function(t) {
+            console.log(t);
+        };
+
+        var mainCanvas = document.getElementById("mainCanvas");
+        var appContent = document.getElementById("app-content");
+        var importBtn = document.getElementById("importsavedata");
+        var speed = 1.0;
+
+        // Key map definition keys
+        const keys = ['Right_Button', 'Left_Button', 'Up_Button', 'Down_Button', 'A_Button', 'B_Button', 'Select_Button', 'Start_Button'];
+
+        // ROM History storage model
+        var romHistory = JSON.parse(localStorage.getItem('gameboy_rom_history')) || [];
+
+        // Dynamic System Clock
+        function updateClock() {
+            const now = new Date();
+            let hh = now.getHours();
+            let mm = now.getMinutes();
+            mm = mm < 10 ? '0' + mm : mm;
+            document.getElementById('time-display').innerText = `${hh}:${mm}`;
+        }
+        setInterval(updateClock, 60000);
+        updateClock();
+
+        // Safe Base Name Grabber
+        function baseFileName(filename) {
+            var s = filename.split('/');
+            var name = s[s.length - 1];
+            return name;
+        }
+
+        // Add ROM to Local Storage History without duplicates
+        function addRomToHistory(name, dataUri, isSample = false) {
+            romHistory = romHistory.filter(item => item.name !== name);
+            romHistory.unshift({
+                name: name,
+                dataUri: dataUri,
+                isSample: isSample
+            });
+            // Keep history limited to 5 small stored paths or references
+            if (romHistory.length > 5) romHistory.pop();
+            localStorage.setItem('gameboy_rom_history', JSON.stringify(romHistory));
+            renderHistoryList();
+        }
+
+        // Render Local ROM History List
+        function renderHistoryList() {
+            const container = document.getElementById('history-rom-list');
+            const emptyNotice = document.getElementById('history-empty');
+            
+            // Clear current list items except placeholder
+            const currentItems = container.querySelectorAll('.history-item');
+            currentItems.forEach(el => el.remove());
+
+            if (romHistory.length === 0) {
+                emptyNotice.style.display = 'block';
+                return;
+            }
+
+            emptyNotice.style.display = 'none';
+
+            romHistory.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.tabIndex = 0;
+                element.className = "menu-item history-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/40 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
+                element.innerHTML = `
+                    <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="truncate">${item.name}</span>
+                `;
+                
+                element.addEventListener('click', () => {
+                    if (item.isSample) {
+                        loadRomFromUrl(item.dataUri, item.name);
+                    } else {
+                        // Restore binary representation from stored data-uri base64
+                        const binary = atob(item.dataUri.split(',')[1]);
+                        machine(item.name, binary);
+                    }
+                });
+
+                container.appendChild(element);
+            });
+            
+            // Re-assign default focus array indexes
+            setupFocusIndices();
+        }
+
+        // Utility: Fetch from path into Gameboy binary string formats
+        function loadRomFromUrl(url, name) {
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) throw new Error("ROM Resource unavailable");
+                    return res.arrayBuffer();
+                })
+                .then(buffer => {
+                    let binary = "";
+                    let bytes = new Uint8Array(buffer);
+                    let len = bytes.byteLength;
+                    for (let i = 0; i < len; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    addRomToHistory(name, url, true);
+                    machine(name, binary);
+                })
+                .catch(err => alert("Error: File path unreachable (" + err.message + ")"));
+        }
+
+        // Focus & D-Pad Navigation Management Setup
+        let currentFocusIndex = 0;
+        let focusableElements = [];
+
+        function setupFocusIndices() {
+            focusableElements = Array.from(document.querySelectorAll('.menu-item'));
+            focusableElements.forEach((el, index) => {
+                el.setAttribute('data-index', index);
+            });
+            if (focusableElements[currentFocusIndex]) {
+                focusableElements[currentFocusIndex].focus();
+            }
+        }
+
+        // Handle focus shifts
+        function navigateMenu(direction) {
+            currentFocusIndex += direction;
+            if (currentFocusIndex < 0) currentFocusIndex = focusableElements.length - 1;
+            if (currentFocusIndex >= focusableElements.length) currentFocusIndex = 0;
+            
+            const target = focusableElements[currentFocusIndex];
+            if (target) {
+                target.focus();
+                target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+
+        // Event: Keyboard List Navigation (Main UI context)
+        function keydownlistview(e) {
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'Up':
+                case '2':
+                    e.preventDefault();
+                    navigateMenu(-1);
+                    break;
+                case 'ArrowDown':
+                case 'Down':
+                case '8':
+                    e.preventDefault();
+                    navigateMenu(1);
+                    break;
+                case 'Enter':
+                case '5':
+                    e.preventDefault();
+                    if (document.activeElement) {
+                        document.activeElement.click();
+                    }
+                    break;
+                case 'SoftLeft':
+                case 'F1':
+                    e.preventDefault();
+                    openHelp();
+                    break;
+                case 'SoftRight':
+                case 'F2':
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to exit?')) { window.close(); }
+                    break;
+            }
+        }
+
+        // Trigger file selection natively
+        document.getElementById('action-load-file').addEventListener('click', () => {
+            importBtn.click();
+        });
+
+        // Trigger key map configuration screen
+        document.getElementById('action-keymap').addEventListener('click', () => {
+            openKeyMap();
+        });
+
+        // Handle File Upload Change Action
+        importBtn.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                // Convert to dataUri base64 for history caching
+                const base64Data = btoa(e.target.result);
+                const cachedDataUri = "data:application/octet-stream;base64," + base64Data;
+                
+                addRomToHistory(file.name, cachedDataUri, false);
+                machine(file.name, e.target.result);
+            };
+            reader.readAsBinaryString(file);
+        });
+
+        // Handle direct selections of explicit HTML defined samples
+        document.querySelectorAll('.sample-item').forEach(el => {
+            el.addEventListener('click', function () {
+                const path = this.getAttribute('data-path');
+                const name = this.getAttribute('data-name');
+                loadRomFromUrl(path, name);
+            });
+        });
+
+        // Emulator Machine Frame Activation
+        function machine(fileName, binaryData) {
+            document.getElementById('blur').style.display = 'flex';
+            document.getElementById('rom-title-header').innerHTML = baseFileName(fileName);
+            
+            try {
+                start(mainCanvas, binaryData);
+            } catch (error) {
+                alert("Emulator startup failed: " + error.message);
+                closeMachine();
+                return;
+            }
+
+            document.getElementById('emul-f2').innerHTML = `1.00x`;
+
+            document.body.removeEventListener('keydown', keydownlistview);
+            document.body.addEventListener('keydown', keydownmachine);
+            document.body.addEventListener('keydown', keyDown);
+            document.body.addEventListener('keyup', keyUp);
+
+            // Dynamically load bottom gameplay banners if the script is active
+            if (typeof getCloudAd === 'function') {
+                getCloudAd({
+                    publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+                    app: 'gameboy_emul',
+                    slot: 'gameplay_banner',
+                    h: 50, w: 240,
+                    container: document.getElementById('ad-slot-gameplay'),
+                    onerror: function (err) { console.error('CloudAd Banner Error:', err); },
+                    onready: function (ad) {
+                        ad.call('display', {
+                            tabindex: -1,
+                            display: 'block',
+                        });
+                    }
+                });
+            }
+        }
+
+        // Close Emulator Machine View
+        function closeMachine() {
+            document.getElementById('blur').style.display = 'none';
+            document.body.removeEventListener('keydown', keydownmachine);
+            document.body.removeEventListener('keydown', keyDown);
+            document.body.removeEventListener('keyup', keyUp);
+            document.body.addEventListener('keydown', keydownlistview);
+            
+            // Force focus reset
+            if (focusableElements[currentFocusIndex]) {
+                focusableElements[currentFocusIndex].focus();
+            }
+        }
+
+        // Machine Controller Hotkeys (* & # controls, Speeds, Extraneous Backs)
+        function keydownmachine(e) {
+            if (e.key === 'F2' || e.key === 'SoftRight' || e.key === 'Backspace') { 
+                e.preventDefault();
+                closeMachine(); 
+            }
+            if (e.key === '1') {
+                if (GameBoyEmulatorInitialized()) {
+                    speed = Math.max(0.2, speed - 0.1);
+                    gameboy.setSpeed(speed);
+                    document.getElementById('emul-f2').innerHTML = speed.toFixed(2) + 'x';
+                }
+            }
+            if (e.key === '3') {
+                if (GameBoyEmulatorInitialized()) {
+                    speed = Math.min(5.0, speed + 0.1);
+                    gameboy.setSpeed(speed);
+                    document.getElementById('emul-f2').innerHTML = speed.toFixed(2) + 'x';
+                }
+            }
+            if (e.key === '*') {
+                // Save State via LocalStorage backup
+                try {
+                    localStorage.setItem('gameboy_state_' + gameboy.name, JSON.stringify(gameboy.saveState()));
+                    alert('State Saved Successfully.');
+                } catch(e) {
+                    alert('Error saving state: Storage Full');
+                }
+            }
+            if (e.key === '#') {
+                // Load State via LocalStorage restore
+                var state = localStorage.getItem('gameboy_state_' + gameboy.name);
+                if (state) {
+                    var slotObject = null;
+                    try {
+                        slotObject = JSON.parse(state);
+                    } catch (e) {
+                        alert('Corrupt save data!');
+                    }
+                    if (slotObject) {
+                        clearLastEmulation();
+                        gameboy = new GameBoyCore(mainCanvas, '');
+                        gameboy.savedStateFileName = 'state_' + gameboy.name + '.data';
+                        gameboy.returnFromState(slotObject);
+                        run();
+                    } else {
+                        run();
+                    }
+                } else {
+                    alert('No State Saved For This ROM');
+                }
+            }
+        }
+
+        // Open Key Help Overlay Panel
+        function openHelp() {
+            const helpScreen = document.getElementById('helpScreen');
+            helpScreen.classList.remove('hidden');
+            document.body.removeEventListener('keydown', keydownlistview);
+            document.body.addEventListener('keydown', keydownhelp);
+        }
+
+        // Exit Help Overlay Panel
+        function closeHelp() {
+            const helpScreen = document.getElementById('helpScreen');
+            helpScreen.classList.add('hidden');
+            document.body.removeEventListener('keydown', keydownhelp);
+            document.body.addEventListener('keydown', keydownlistview);
+            if (focusableElements[currentFocusIndex]) {
+                focusableElements[currentFocusIndex].focus();
+            }
+        }
+
+        function keydownhelp(e) {
+            if (e.key === 'SoftRight' || e.key === 'F2' || e.key === 'Backspace' || e.key === 'Escape') {
+                e.preventDefault();
+                closeHelp();
+            }
+        }
+
+        // ================= KEY MAP METADATA AND LOGIC SYSTEM =================
+        let keymapFocusIndex = 0;
+        let keymapElements = [];
+
+        function renderKeyMapList() {
+            const container = document.getElementById('key-map-list');
+            container.innerHTML = '';
+            
+            keys.forEach((k, index) => {
+                const storedValue = localStorage.getItem(k);
+                const displayVal = storedValue ? 'Code ' + storedValue : 'Not Assigned';
+                
+                const el = document.createElement('div');
+                el.tabIndex = 0;
+                el.className = "keymap-item flex items-center justify-between p-1.5 cm-qqvga:p-1 rounded cursor-pointer bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all";
+                el.innerHTML = `
+                    <span class="truncate font-bold">${k.replace('_', ' ')}</span>
+                    <span class="text-[10px] opacity-70 font-normal truncate">> ${displayVal}</span>
+                `;
+                
+                el.addEventListener('click', function () { 
+                    setkey(k); 
+                });
+                
+                container.appendChild(el);
+            });
+            
+            setupKeymapFocusIndices();
+        }
+
+        function setupKeymapFocusIndices() {
+            keymapElements = Array.from(document.querySelectorAll('.keymap-item'));
+            keymapElements.forEach((el, index) => {
+                el.setAttribute('data-km-index', index);
+            });
+            if (keymapElements[keymapFocusIndex]) {
+                keymapElements[keymapFocusIndex].focus();
+            }
+        }
+
+        function navigateKeymap(direction) {
+            keymapFocusIndex += direction;
+            if (keymapFocusIndex < 0) keymapFocusIndex = keymapElements.length - 1;
+            if (keymapFocusIndex >= keymapElements.length) keymapFocusIndex = 0;
+            
+            const target = keymapElements[keymapFocusIndex];
+            if (target) {
+                target.focus();
+                target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+
+        function openKeyMap() {
+            const keyMapScreen = document.getElementById('keyMapScreen');
+            keyMapScreen.classList.remove('hidden');
+            document.body.removeEventListener('keydown', keydownlistview);
+            document.body.addEventListener('keydown', keydownkeymap);
+            renderKeyMapList();
+        }
+
+        function closeKeyMap() {
+            const keyMapScreen = document.getElementById('keyMapScreen');
+            keyMapScreen.classList.add('hidden');
+            document.body.removeEventListener('keydown', keydownkeymap);
+            document.body.addEventListener('keydown', keydownlistview);
+            setupFocusIndices(); // recalculate main index points
+        }
+
+        function setkey(k) {
+            document.body.removeEventListener('keydown', keydownkeymap);
+
+            const modal = document.getElementById('setKeyModal');
+            const keyNameEl = document.getElementById('set-key-name');
+            const promptEl = document.getElementById('set-key-prompt');
+            
+            keyNameEl.innerText = k.replace('_', ' ');
+            promptEl.innerText = 'Loading...';
+            modal.classList.remove('hidden');
+
+            setTimeout(function () {
+                promptEl.innerText = 'Press A Key To Setup';
+                
+                const handleCapture = (e) => {
+                    e.preventDefault();
+                    const keyVal = e.key;
+                    
+                    if (keyVal === '1' || keyVal === '3' || keyVal === '*' || keyVal === '#' || keyVal === 'SoftRight' || keyVal === 'Backspace' || keyVal === 'F2') {
+                        alert('This Key Assigned By Administrator');
+                        modal.classList.add('hidden');
+                        document.body.removeEventListener('keyup', handleCapture);
+                        document.body.addEventListener('keydown', keydownkeymap);
+                        if (keymapElements[keymapFocusIndex]) {
+                            keymapElements[keymapFocusIndex].focus();
+                        }
+                    } else {
+                        localStorage.setItem(k, e.keyCode);
+                        localStorage.setItem('userkeyzone', 'yes');
+                        
+                        // dynamic memory key map rebuild
+                        updateKeyZones();
+                        
+                        modal.classList.add('hidden');
+                        document.body.removeEventListener('keyup', handleCapture);
+                        document.body.addEventListener('keydown', keydownkeymap);
+                        
+                        renderKeyMapList();
+                    }
+                };
+                
+                document.body.addEventListener('keyup', handleCapture);
+            }, 700);
+        }
+
+        function keydownkeymap(e) {
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'Up':
+                case '2':
+                    e.preventDefault();
+                    navigateKeymap(-1);
+                    break;
+                case 'ArrowDown':
+                case 'Down':
+                case '8':
+                    e.preventDefault();
+                    navigateKeymap(1);
+                    break;
+                case 'Enter':
+                case '5':
+                    e.preventDefault();
+                    if (document.activeElement) {
+                        document.activeElement.click();
+                    }
+                    break;
+                case 'SoftLeft':
+                case 'F1':
+                    e.preventDefault();
+                    if (window.confirm('Sure To Remove All?')) { 
+                        keys.forEach(k => { localStorage.removeItem(k); }); 
+                        localStorage.removeItem('userkeyzone'); 
+                        updateKeyZones();
+                        renderKeyMapList(); 
+                    }
+                    break;
+                case 'SoftRight':
+                case 'F2':
+                case 'Backspace':
+                    e.preventDefault();
+                    closeKeyMap();
+                    break;
+            }
+        }
+
+        // Initialize lists and dynamic focus targets
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHistoryList();
+            setupFocusIndices();
+            document.body.addEventListener('keydown', keydownlistview);
+        });
+
+        // Dynamic Key Zone storage container
+        var keyZones = [];
+
+        function updateKeyZones() {
+            if (localStorage.getItem('userkeyzone') === 'yes') {
+                keyZones = [
+                    ['right', [parseInt(localStorage.getItem('Right_Button'))]],
+                    ['left', [parseInt(localStorage.getItem('Left_Button'))]],
+                    ['up', [parseInt(localStorage.getItem('Up_Button'))]],
+                    ['down', [parseInt(localStorage.getItem('Down_Button'))]],
+                    ['a', [parseInt(localStorage.getItem('A_Button'))]],
+                    ['b', [parseInt(localStorage.getItem('B_Button'))]],
+                    ['select', [parseInt(localStorage.getItem('Select_Button'))]],
+                    ['start', [parseInt(localStorage.getItem('Start_Button'))]]
+                ];
+            } else {
+                keyZones = [
+                    ['right', [39, 54]], // Right / 6
+                    ['left', [37, 52]],  // Left / 4
+                    ['up', [38, 50]],    // Up / 2
+                    ['down', [40, 56]],  // Down / 8
+                    ['a', [13, 53]],     // Enter / 5
+                    ['b', [57]],         // 9
+                    ['select', [55]],    // 7
+                    ['start', [48]]      // 0
+                ];
+            }
+        }
+        
+        // Initial build load
+        updateKeyZones();
+
+        function keyDown(event) {
+            var keyCode = event.keyCode;
+            var keyMapLength = keyZones.length;
+            for (var keyMapIndex = 0; keyMapIndex < keyMapLength; ++keyMapIndex) {
+                var keyCheck = keyZones[keyMapIndex];
+                var keysMapped = keyCheck[1];
+                var keysTotal = keysMapped.length;
+                for (var index = 0; index < keysTotal; ++index) {
+                    if (keysMapped[index] == keyCode) {
+                        GameBoyKeyDown(keyCheck[0]);
+                        try { event.preventDefault(); } catch (error) { }
+                    }
+                }
+            }
+        }
+
+        function keyUp(event) {
+            var keyCode = event.keyCode;
+            var keyMapLength = keyZones.length;
+            for (var keyMapIndex = 0; keyMapIndex < keyMapLength; ++keyMapIndex) {
+                var keyCheck = keyZones[keyMapIndex];
+                var keysMapped = keyCheck[1];
+                var keysTotal = keysMapped.length;
+                for (var index = 0; index < keysTotal; ++index) {
+                    if (keysMapped[index] == keyCode) {
+                        GameBoyKeyUp(keyCheck[0]);
+                        try { event.preventDefault(); } catch (error) { }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
