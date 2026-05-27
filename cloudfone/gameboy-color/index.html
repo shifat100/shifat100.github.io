@@ -544,6 +544,16 @@
                     }
                 });
             }
+           getCloudAd({
+            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+            app: 'gameboy_emul',
+            slot: 'gameplay',
+            onerror: function (err) { console.error('CloudAd Banner Error:', err); },
+            onready: function (ad) {
+                cloudad = ad;
+                ad.call('display');
+            }
+        }); 
         }
 
         // Close Emulator Machine View
@@ -878,7 +888,7 @@
         getCloudAd({
             publisher: '080b82ab-b33a-4763-a498-50f464567e49',
             app: 'gameboy_emul',
-            slot: 'gameplay_banner',
+            slot: 'main',
 
             onerror: function (err) { console.error('CloudAd Banner Error:', err); },
             onready: function (ad) {
