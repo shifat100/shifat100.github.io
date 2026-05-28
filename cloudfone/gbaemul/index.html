@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GBA Emulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cm-bg': '#202020',
+                        'cm-header': '#0093E0',
+                        'cm-focus': '#05AEF2',
+                        'cm-green': '#00A539',
+                    },
+                    screens: {
+                        'cm-qqvga': {'max': '128px'}, // ≤ 128px (QQVGA targeting)
+                        'cm-qvga': {'min': '200px'},   // ≥ 200px (QVGA targeting)
+                    },
+                    fontFamily: {
+                        'sans': ['Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            background-color: #000;
+            color: white;
+            overflow: hidden; 
+            user-select: none;
+        }
+
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        *:focus { outline: none; }
+        
+        canvas {
+            image-rendering: pixelated; 
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen flex flex-col items-center justify-center select-none overflow-hidden relative">
+
+    <!-- Responsive Phone Frame (Occupies full viewport and scales text/layouts dynamically for larger displays) -->
+    <div id="app-root" class="relative w-full h-full bg-cm-bg flex flex-col justify-between overflow-hidden shadow-2xl border border-neutral-800 shrink-0">
+
+        <!-- ================= EMULATOR MAIN VIEW ================= -->
+        <div id="view-emulator" class="view-section flex flex-col h-full w-full">
+            <header class="bg-cm-header w-full h-[22px] cm-qvga:h-[30px] sm:h-[45px] lg:h-[60px] cm-qqvga:h-[20px] px-2 sm:px-4 lg:px-6 cm-qqvga:px-1 flex items-center shrink-0 z-10">
+                <span id="header-title" class="text-white font-bold text-[11px] cm-qvga:text-[14px] sm:text-base lg:text-xl cm-qqvga:text-[9px] truncate">GBA Emulator</span>
+            </header>
+
+            <main class="flex-grow flex flex-col items-center justify-center bg-black relative">
+                
+                <div id="status-message" class="absolute top-2 sm:top-4 lg:top-6 w-full text-center text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] text-gray-400 z-0 pointer-events-none">
+                    Initializing...
+                </div>
+                
+                <canvas id="emulator_target" width="240" height="160" class="border-y border-gray-800 z-10 max-w-full aspect-[3/2] bg-neutral-950 block object-contain"></canvas>
+            </main>
+
+            <!-- Footer control softkeys -->
+            <footer class="bg-black h-[20px] cm-qvga:h-[28px] sm:h-[40px] lg:h-[50px] cm-qqvga:h-[16px] flex items-center justify-between px-2 sm:px-4 lg:px-6 shrink-0 border-t border-gray-800 z-10">
+                <div class="text-cm-header font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-left">Menu</div>
+                <div class="text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-center"></div>
+                <div class="text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-right">Exit</div>
+            </footer>
+        </div>
+
+        <!-- ================= MAIN SYSTEM MENU VIEW ================= -->
+        <div id="view-menu" class="view-section hidden absolute inset-0 bg-cm-bg z-50 flex flex-col">
+            <header class="bg-cm-header w-full h-[22px] cm-qvga:h-[30px] sm:h-[45px] lg:h-[60px] cm-qqvga:h-[20px] px-2 sm:px-4 lg:px-6 cm-qqvga:px-1 flex items-center shrink-0">
+                <span class="text-white font-bold text-[11px] cm-qvga:text-[14px] sm:text-base lg:text-xl cm-qqvga:text-[9px]">Menu</span>
+            </header>
+
+            <main class="flex-grow overflow-y-auto p-1 sm:p-4 lg:p-6 cm-qqvga:p-0.5 space-y-1 sm:space-y-3 lg:space-y-4 cm-qqvga:space-y-0.5">
+                <div tabindex="0" onclick="showView('roms')" class="nav-item flex items-center px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold border-b border-gray-800 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px]">Load ROM</span>
+                </div>
+                <div tabindex="0" onclick="showView('help')" class="nav-item flex items-center px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold border-b border-gray-800 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px]">Controls</span>
+                </div>
+                <div tabindex="0" onclick="showView('about')" class="nav-item flex items-center px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold border-b border-gray-800 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px]">About</span>
+                </div>
+                <div tabindex="0" onclick="location.reload()" class="nav-item flex items-center px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold text-red-400 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px] font-bold">Restart App</span>
+                </div>
+            </main>
+
+            <footer class="bg-black h-[20px] cm-qvga:h-[28px] sm:h-[40px] lg:h-[50px] cm-qqvga:h-[16px] flex items-center justify-between px-2 sm:px-4 lg:px-6 shrink-0 border-t border-gray-800">
+                <div class="text-cm-header font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3">Select</div>
+                <div class="text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-right">Back</div>
+            </footer>
+        </div>
+
+        <!-- ================= SELECT ROMS VIEW ================= -->
+        <div id="view-roms" class="view-section hidden absolute inset-0 bg-cm-bg z-50 flex flex-col">
+            <header class="bg-cm-header w-full h-[22px] cm-qvga:h-[30px] sm:h-[45px] lg:h-[60px] cm-qqvga:h-[20px] px-2 sm:px-4 lg:px-6 cm-qqvga:px-1 flex items-center shrink-0">
+                <span class="text-white font-bold text-[11px] cm-qvga:text-[14px] sm:text-base lg:text-xl cm-qqvga:text-[9px]">Select ROM</span>
+            </header>
+
+            <main class="flex-grow overflow-y-auto p-1 sm:p-4 lg:p-6 cm-qqvga:p-0.5 space-y-1 sm:space-y-3 lg:space-y-4 cm-qqvga:space-y-0.5">
+                
+                <label tabindex="0" class="nav-item flex items-center justify-between px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold border-b border-gray-700 pb-2 mb-2 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px] text-cm-green font-bold">Browse Device...</span>
+                    <input type="file" id="rom_load_from_device" class="hidden" accept=".gba,.gbc,.gb">
+                </label>
+                
+                <div id="rom-list-container" class="flex flex-col space-y-1 sm:space-y-2 lg:space-y-3">
+                    <div class="px-2 py-1 text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] text-gray-500">Loading list...</div>
+                </div>
+            </main>
+
+            <footer class="bg-black h-[20px] cm-qvga:h-[28px] sm:h-[40px] lg:h-[50px] cm-qqvga:h-[16px] flex items-center justify-between px-2 sm:px-4 lg:px-6 shrink-0 border-t border-gray-800">
+                <div class="text-cm-header font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3">Open</div>
+                <div class="text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-right">Back</div>
+            </footer>
+        </div>
+
+        <!-- ================= SYSTEM CONFIGURATION VIEW ================= -->
+        <div id="view-settings" class="view-section hidden absolute inset-0 bg-cm-bg z-50 flex flex-col">
+            <header class="bg-cm-header w-full h-[22px] cm-qvga:h-[30px] sm:h-[45px] lg:h-[60px] cm-qqvga:h-[20px] px-2 sm:px-4 lg:px-6 cm-qqvga:px-1 flex items-center shrink-0">
+                <span class="text-white font-bold text-[11px] cm-qvga:text-[14px] sm:text-base lg:text-xl cm-qqvga:text-[9px]">Settings</span>
+            </header>
+
+            <main class="flex-grow overflow-y-auto p-1 sm:p-4 lg:p-6 cm-qqvga:p-0.5 space-y-1 sm:space-y-3 lg:space-y-4 cm-qqvga:space-y-0.5">
+                
+                <div tabindex="0" class="nav-item flex items-center justify-between px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold border-b border-gray-800 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px]">Sound</span>
+                    <input type="checkbox" id="sound" checked class="accent-cm-green w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6">
+                </div>
+                <div tabindex="0" class="nav-item flex items-center justify-between px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold border-b border-gray-800 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px]">Smooth Scaling</span>
+                    <input type="checkbox" id="toggleSmoothScaling" checked class="accent-cm-green w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6">
+                </div>
+                <div tabindex="0" class="nav-item flex items-center justify-between px-2 sm:px-4 lg:px-6 py-1 sm:py-3 lg:py-4 rounded focus:bg-cm-focus focus:font-bold border-b border-gray-800 cursor-pointer">
+                    <span class="text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px]">Skip Boot</span>
+                    <input type="checkbox" id="skip_boot" class="accent-cm-green w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6">
+                </div>
+            </main>
+
+            <footer class="bg-black h-[20px] cm-qvga:h-[28px] sm:h-[40px] lg:h-[50px] cm-qqvga:h-[16px] flex items-center justify-between px-2 sm:px-4 lg:px-6 shrink-0 border-t border-gray-800">
+                <div class="text-cm-header font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3">Toggle</div>
+                <div class="text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-right">Back</div>
+            </footer>
+        </div>
+
+        <!-- ================= HELP CONTROLS VIEW ================= -->
+        <div id="view-help" class="view-section hidden absolute inset-0 bg-cm-bg z-50 flex flex-col">
+            <header class="bg-cm-header w-full h-[22px] cm-qvga:h-[30px] sm:h-[45px] lg:h-[60px] cm-qqvga:h-[20px] px-2 sm:px-4 lg:px-6 cm-qqvga:px-1 flex items-center shrink-0">
+                <span class="text-white font-bold text-[11px] cm-qvga:text-[14px] sm:text-base lg:text-xl cm-qqvga:text-[9px]">Controls</span>
+            </header>
+            <main class="flex-grow overflow-y-auto p-2 sm:p-4 lg:p-6 text-white">
+                 <table class="w-full text-[11px] cm-qvga:text-xs sm:text-sm lg:text-base cm-qqvga:text-[8px]">
+                    <tr class="border-b border-gray-800"><td class="py-1 sm:py-2.5 lg:py-4">A / B</td><td class="text-right text-cm-header py-1 sm:py-2.5 lg:py-4">9 / 7</td></tr>
+                    <tr class="border-b border-gray-800"><td class="py-1 sm:py-2.5 lg:py-4">L / R</td><td class="text-right text-cm-header py-1 sm:py-2.5 lg:py-4">1 / 3</td></tr>
+                    <tr class="border-b border-gray-800"><td class="py-1 sm:py-2.5 lg:py-4">Select</td><td class="text-right text-cm-header py-1 sm:py-2.5 lg:py-4">5</td></tr>
+                    <tr class="border-b border-gray-800"><td class="py-1 sm:py-2.5 lg:py-4">Start</td><td class="text-right text-cm-header py-1 sm:py-2.5 lg:py-4">Enter</td></tr>
+                    <tr class="border-b border-gray-800"><td class="py-1 sm:py-2.5 lg:py-4">Speed UP/DOWN</td><td class="text-right text-cm-header py-1 sm:py-2.5 lg:py-4">6 / 4</td></tr>
+                    <tr class="border-b border-gray-800"><td class="py-1 sm:py-2.5 lg:py-4">State Save/Load</td><td class="text-right text-cm-header py-1 sm:py-2.5 lg:py-4">* / #</td></tr>
+                    <tr class="border-b border-gray-800"><td class="py-1 sm:py-2.5 lg:py-4">LEFT/RIGHT<br>UP/DOWN</td><td class="text-right text-cm-header py-1 sm:py-2.5 lg:py-4">ARROW KEYS</td></tr>
+                </table>
+            </main>
+            <footer class="bg-black h-[20px] cm-qvga:h-[28px] sm:h-[40px] lg:h-[50px] cm-qqvga:h-[16px] flex items-center justify-between px-2 sm:px-4 lg:px-6 shrink-0 border-t border-gray-800">
+                <div class="text-cm-header font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3">OK</div>
+                <div class="text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-right"></div>
+            </footer>
+        </div>
+
+        <!-- ================= ABOUT AUTHORS VIEW ================= -->
+         <div id="view-about" class="view-section hidden absolute inset-0 bg-cm-bg z-50 flex flex-col">
+            <header class="bg-cm-header w-full h-[22px] cm-qvga:h-[30px] sm:h-[45px] lg:h-[60px] cm-qqvga:h-[20px] px-2 sm:px-4 lg:px-6 cm-qqvga:px-1 flex items-center shrink-0">
+                <span class="text-white font-bold text-[11px] cm-qvga:text-[14px] sm:text-base lg:text-xl cm-qqvga:text-[9px]">About</span>
+            </header>
+            <main class="flex-grow overflow-y-auto p-2 sm:p-4 lg:p-6 text-white">
+                 <div class="text-center p-2 sm:p-6 lg:p-8">
+                     <p class="text-[10px] sm:text-sm lg:text-base cm-qqvga:text-[8px] text-gray-300 mb-2 font-bold tracking-wider">AN APP BY</p>
+                     <p class="text-[14px] sm:text-2xl lg:text-4xl cm-qqvga:text-[11px] font-bold text-cm-header tracking-widest">SHIFAT100</p>
+                     <br>
+                     <p class="text-[9px] sm:text-xs lg:text-sm cm-qqvga:text-[7px] text-left leading-relaxed text-neutral-400">A Gameboy Advance Emulator For CloudMosa's Cloudphone</p>
+                 </div>
+            </main>
+            <footer class="bg-black h-[20px] cm-qvga:h-[28px] sm:h-[40px] lg:h-[50px] cm-qqvga:h-[16px] flex items-center justify-between px-2 sm:px-4 lg:px-6 shrink-0 border-t border-gray-800">
+                <div class="text-cm-header font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3">OK</div>
+                <div class="text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] uppercase w-1/3 text-right"></div>
+            </footer>
+        </div>
+
+    </div>
+
+    <!-- ================= LEGACY ELEMENTS WRAPPER ================= -->
+    <div id="legacy-hidden-elements" style="display: none;">
+        <div id="container">
+            <div id="menu">
+                <ul id="menu_top">
+                    <li id="play"></li>
+                    <li id="pause"></li>
+                    <li id="restart"></li>
+                    <li id="saves_menu"></li>
+                    <li id="fullscreen"></li>
+                    <input type="checkbox" id="toggleDynamicSpeed">
+                    <input type="checkbox" id="offthread-cpu" checked>
+                    <input type="checkbox" id="offthread-gpu" checked>
+                    <input type="range" id="volume">
+                    <input type="range" id="speedset">
+                </ul>
+            </div>
+        </div>
+        <span id="tempMessage"></span>
+        <span id="speed"></span>
+    </div>
+
+    <!-- IodineGBA dependencies -->
+    <script src="IodineGBA/includes/TypedArrayShim.js"></script>
+    <script src="IodineGBA/core/Cartridge.js"></script>
+    <script src="IodineGBA/core/DMA.js"></script>
+    <script src="IodineGBA/core/Emulator.js"></script>
+    <script src="IodineGBA/core/Graphics.js"></script>
+    <script src="IodineGBA/core/RunLoop.js"></script>
+    <script src="IodineGBA/core/Memory.js"></script>
+    <script src="IodineGBA/core/IRQ.js"></script>
+    <script src="IodineGBA/core/JoyPad.js"></script>
+    <script src="IodineGBA/core/Serial.js"></script>
+    <script src="IodineGBA/core/Sound.js"></script>
+    <script src="IodineGBA/core/Timer.js"></script>
+    <script src="IodineGBA/core/Wait.js"></script>
+    <script src="IodineGBA/core/CPU.js"></script>
+    <script src="IodineGBA/core/Saves.js"></script>
+    <script src="IodineGBA/core/sound/FIFO.js"></script>
+    <script src="IodineGBA/core/sound/Channel1.js"></script>
+    <script src="IodineGBA/core/sound/Channel2.js"></script>
+    <script src="IodineGBA/core/sound/Channel3.js"></script>
+    <script src="IodineGBA/core/sound/Channel4.js"></script>
+    <script src="IodineGBA/core/CPU/ARM.js"></script>
+    <script src="IodineGBA/core/CPU/THUMB.js"></script>
+    <script src="IodineGBA/core/CPU/CPSR.js"></script>
+    <script src="IodineGBA/core/graphics/Renderer.js"></script>
+    <script src="IodineGBA/core/graphics/RendererShim.js"></script>
+    <script src="IodineGBA/core/graphics/RendererProxy.js"></script>
+    <script src="IodineGBA/core/graphics/BGTEXT.js"></script>
+    <script src="IodineGBA/core/graphics/BG2FrameBuffer.js"></script>
+    <script src="IodineGBA/core/graphics/BGMatrix.js"></script>
+    <script src="IodineGBA/core/graphics/AffineBG.js"></script>
+    <script src="IodineGBA/core/graphics/ColorEffects.js"></script>
+    <script src="IodineGBA/core/graphics/Mosaic.js"></script>
+    <script src="IodineGBA/core/graphics/OBJ.js"></script>
+    <script src="IodineGBA/core/graphics/OBJWindow.js"></script>
+    <script src="IodineGBA/core/graphics/Window.js"></script>
+    <script src="IodineGBA/core/graphics/Compositor.js"></script>
+    <script src="IodineGBA/core/memory/DMA0.js"></script>
+    <script src="IodineGBA/core/memory/DMA1.js"></script>
+    <script src="IodineGBA/core/memory/DMA2.js"></script>
+    <script src="IodineGBA/core/memory/DMA3.js"></script>
+    <script src="IodineGBA/core/cartridge/SaveDeterminer.js"></script>
+    <script src="IodineGBA/core/cartridge/SRAM.js"></script>
+    <script src="IodineGBA/core/cartridge/FLASH.js"></script>
+    <script src="IodineGBA/core/cartridge/EEPROM.js"></script>
+    <script src="IodineGBA/core/cartridge/GPIO.js"></script>
+    
+    <script src="user_scripts/AudioGlueCode.js"></script>
+    <script src="user_scripts/base64.js"></script>
+    <script src="user_scripts/CoreGlueCode.js"></script>
+    <script src="user_scripts/GfxGlueCode.js"></script>
+    <script src="user_scripts/GUIGlueCode.js"></script>
+    <script src="user_scripts/JoyPadGlueCode.js"></script>
+    <script src="user_scripts/ROMLoadGlueCode.js"></script>
+    <script src="user_scripts/SavesGlueCode.js"></script>
+    <script src="user_scripts/WorkerGfxGlueCode.js"></script>
+    <script src="user_scripts/WorkerGlueCode.js"></script>
+    <script src="user_scripts/XAudioJS/swfobject.js"></script>
+    <script src="user_scripts/XAudioJS/resampler.js"></script>
+    <script src="user_scripts/XAudioJS/XAudioServer.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
