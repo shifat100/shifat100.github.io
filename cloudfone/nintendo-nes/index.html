@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Cloud Phone NES Emulator</title>
+	<!-- Roboto Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+	<script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
+	<script src="https://shifat100.github.io/key-simulator/Keysim-min.js"></script>
+	<!-- NES Mapper Dependency Scripts -->
+	<script type="text/javascript" src="js/Mapper/Base.js"></script>
+	<script type="text/javascript" src="js/Mapper/0.js"></script>
+	<script type="text/javascript" src="js/Mapper/1.js"></script>
+	<script type="text/javascript" src="js/Mapper/2.js"></script>
+	<script type="text/javascript" src="js/Mapper/3.js"></script>
+	<script type="text/javascript" src="js/Mapper/4.js"></script>
+	<script type="text/javascript" src="js/Mapper/5.js"></script>
+	<script type="text/javascript" src="js/Mapper/7.js"></script>
+	<script type="text/javascript" src="js/Mapper/9.js"></script>
+	<script type="text/javascript" src="js/Mapper/10.js"></script>
+	<script type="text/javascript" src="js/Mapper/16.js"></script>
+	<script type="text/javascript" src="js/Mapper/18.js"></script>
+	<script type="text/javascript" src="js/Mapper/19.js"></script>
+	<script type="text/javascript" src="js/Mapper/22.js"></script>
+	<script type="text/javascript" src="js/Mapper/23.js"></script>
+	<script type="text/javascript" src="js/Mapper/24.js"></script>
+	<script type="text/javascript" src="js/Mapper/26.js"></script>
+	<script type="text/javascript" src="js/Mapper/32.js"></script>
+	<script type="text/javascript" src="js/Mapper/33.js"></script>
+	<script type="text/javascript" src="js/Mapper/34.js"></script>
+	<script type="text/javascript" src="js/Mapper/48.js"></script>
+	<script type="text/javascript" src="js/Mapper/65.js"></script>
+	<script type="text/javascript" src="js/Mapper/66.js"></script>
+	<script type="text/javascript" src="js/Mapper/67.js"></script>
+	<script type="text/javascript" src="js/Mapper/68.js"></script>
+	<script type="text/javascript" src="js/Mapper/69.js"></script>
+	<script type="text/javascript" src="js/Mapper/70.js"></script>
+	<script type="text/javascript" src="js/Mapper/72.js"></script>
+	<script type="text/javascript" src="js/Mapper/73.js"></script>
+	<script type="text/javascript" src="js/Mapper/75.js"></script>
+	<script type="text/javascript" src="js/Mapper/76.js"></script>
+	<script type="text/javascript" src="js/Mapper/77.js"></script>
+	<script type="text/javascript" src="js/Mapper/78.js"></script>
+	<script type="text/javascript" src="js/Mapper/80.js"></script>
+	<script type="text/javascript" src="js/Mapper/82.js"></script>
+	<script type="text/javascript" src="js/Mapper/85.js"></script>
+	<script type="text/javascript" src="js/Mapper/86.js"></script>
+	<script type="text/javascript" src="js/Mapper/87.js"></script>
+	<script type="text/javascript" src="js/Mapper/88.js"></script>
+	<script type="text/javascript" src="js/Mapper/89.js"></script>
+	<script type="text/javascript" src="js/Mapper/92.js"></script>
+	<script type="text/javascript" src="js/Mapper/93.js"></script>
+	<script type="text/javascript" src="js/Mapper/94.js"></script>
+	<script type="text/javascript" src="js/Mapper/95.js"></script>
+	<script type="text/javascript" src="js/Mapper/97.js"></script>
+	<script type="text/javascript" src="js/Mapper/101.js"></script>
+	<script type="text/javascript" src="js/Mapper/118.js"></script>
+	<script type="text/javascript" src="js/Mapper/119.js"></script>
+	<script type="text/javascript" src="js/Mapper/140.js"></script>
+	<script type="text/javascript" src="js/Mapper/152.js"></script>
+	<script type="text/javascript" src="js/Mapper/180.js"></script>
+	<script type="text/javascript" src="js/Mapper/184.js"></script>
+	<script type="text/javascript" src="js/Mapper/185.js"></script>
+	<script type="text/javascript" src="js/Mapper/207.js"></script>
+	<script type="text/javascript" src="js/NES.js"></script>
+
+	<!-- Tailwind CSS with custom responsive presets -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					fontFamily: {
+						sans: ['Roboto', 'sans-serif'],
+					},
+					colors: {
+						'cm-gray-020': '#202020',
+						'cm-blue-009': '#0093E0',
+						'cm-blue-05a': '#05AEF2',
+						'cm-green-00a': '#00A539',
+					},
+					screens: {
+						'cm-qqvga': { 'max': '128px' }, // ≤ 128px (QQVGA targeting)
+						'cm-qvga': { 'min': '240px' },   // ≥ 240px (QVGA targeting)
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		::-webkit-scrollbar {
+			display: none;
+		}
+
+		*:focus {
+			outline: none;
+		}
+	</style>
+</head>
+
+<body class="bg-[#121212] text-white font-sans flex items-center justify-center min-h-screen select-none">
+
+	<!-- Responsive Phone Frame (Strict Width/Height constraints) -->
+	<div id="phone-screen"
+		class="relative w-[240px] h-[320px] cm-qqvga:w-[128px] cm-qqvga:h-[160px] bg-cm-gray-020 flex flex-col justify-between overflow-hidden shadow-2xl border border-neutral-800">
+
+		<!-- ================= HEADER ================= -->
+		<header id="app-header"
+			class="bg-cm-blue-009 w-full h-[30px] cm-qqvga:h-[20px] px-2 cm-qqvga:px-1 flex items-center justify-between text-xs cm-qqvga:text-[9px] font-bold shrink-0 z-10">
+			<span id="app-title-header" class="truncate pr-1">NES Emulator</span>
+			<span id="time-display" class="opacity-90">12:00</span>
+		</header>
+
+		<!-- ================= MAIN CONTENT SCROLL AREA ================= -->
+		<main id="app-content" class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto space-y-1.5 cm-qqvga:space-y-1">
+
+			<!-- Hidden File Input for Browser Fallback Loading -->
+			<input type="file" id="import-rom-input" accept=".nes" class="hidden">
+
+			<!-- "Load from Storage" Action Button -->
+			<div tabindex="0" id="action-load-file"
+				class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+				<svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
+					stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round"
+						d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+				</svg>
+				<span class="truncate">Import NES Rom</span>
+			</div>
+
+			<!-- "Configure Key Map" Action Button -->
+			<div tabindex="0" id="action-keymap"
+				class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+				<svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
+					stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round"
+						d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+				</svg>
+				<span class="truncate">Key Map Settings</span>
+			</div>
+
+			<!-- Sample ROMs List (Replaces Local Storage ROMs) -->
+			<div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">Sample Games</div>
+			<div id="sample-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
+				<!-- Contra -->
+				<div tabindex="0" class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white" data-path="roms/Contra.nes" data-name="Contra">
+					<svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+					</svg>
+					<span class="truncate">Contra</span>
+				</div>
+				<!-- International Cricket -->
+				<div tabindex="0" class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white" data-path="roms/International Cricket.nes" data-name="International Cricket">
+					<svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+					</svg>
+					<span class="truncate">International Cricket</span>
+				</div>
+			</div>
+
+			<div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">
+				Recent History</div>
+			<div id="history-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
+				<div id="history-empty" class="text-neutral-500 text-[10px] cm-qqvga:text-[8px] italic px-1">No previous games played</div>
+			</div>
+
+		</main>
+
+		<!-- ================= HELP SCREEN MODAL ================= -->
+		<div id="helpScreen" class="hidden absolute inset-0 bg-cm-gray-020 z-20 flex flex-col justify-between">
+			<header
+				class="bg-neutral-800 text-white font-bold text-xs cm-qqvga:text-[9px] h-[30px] cm-qqvga:h-[20px] px-2 flex items-center shrink-0">
+				Keybindings Help
+			</header>
+			<div class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto text-[11px] cm-qqvga:text-[8px] space-y-1">
+				<table class="w-full text-left text-neutral-300">
+					<tr class="border-b border-neutral-800">
+						<td>A Button</td>
+						<td class="text-right text-white">Enter / 5</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>B Button</td>
+						<td class="text-right text-white">9</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>SELECT</td>
+						<td class="text-right text-white">7</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>START</td>
+						<td class="text-right text-white">0</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>D-PAD</td>
+						<td class="text-right text-white">Arrows / 2,8,4,6</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>Speed Up</td>
+						<td class="text-right text-white">3</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>Speed Down</td>
+						<td class="text-right text-white">1</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>Save State</td>
+						<td class="text-right text-white">*</td>
+					</tr>
+					<tr class="border-b border-neutral-800">
+						<td>Load State</td>
+						<td class="text-right text-white">#</td>
+					</tr>
+				</table>
+			</div>
+			<footer
+				class="bg-black text-[10px] cm-qqvga:text-[8px] px-2 h-[24px] cm-qqvga:h-[16px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
+				<span></span>
+				<span></span>
+				<span>Back</span>
+			</footer>
+		</div>
+
+		<!-- ================= KEY MAP SETTINGS MODAL ================= -->
+		<div id="keyMapScreen" class="hidden absolute inset-0 bg-cm-gray-020 z-20 flex flex-col justify-between">
+			<header
+				class="bg-neutral-800 text-white font-bold text-xs cm-qqvga:text-[9px] h-[30px] cm-qqvga:h-[20px] px-2 flex items-center shrink-0">
+				Key Configuration
+			</header>
+			<div id="key-map-list"
+				class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto space-y-1 text-xs cm-qqvga:text-[9px]">
+				<!-- Populated via Javascript -->
+			</div>
+			<footer
+				class="bg-black text-[10px] cm-qqvga:text-[8px] px-2 h-[24px] cm-qqvga:h-[16px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
+				<span>Rem. All</span>
+				<span class="font-bold text-white">Set</span>
+				<span>Back</span>
+			</footer>
+		</div>
+
+		<!-- KEYMAP CAPTURE OVERLAY -->
+		<div id="setKeyModal" class="hidden absolute inset-0 bg-black/95 z-30 flex items-center justify-center p-4">
+			<div
+				class="bg-neutral-900 border border-neutral-800 rounded p-4 text-center space-y-2 w-full max-w-[200px]">
+				<div id="set-key-name" class="font-bold text-xs text-cm-blue-05a tracking-wide">Key Name</div>
+				<div id="set-key-prompt" class="text-[10px] text-white animate-pulse">Loading...</div>
+			</div>
+		</div>
+
+		<!-- ================= PLAY SCREEN UI ================= -->
+		<div id="blur" class="hidden absolute inset-0 bg-black z-30 flex flex-col justify-between">
+			<!-- Header (Height: 30px / 20px) -->
+			<header id="header"
+				class="bg-neutral-900 px-2 h-[30px] cm-qqvga:h-[20px] flex items-center justify-between text-xs cm-qqvga:text-[9px] truncate font-bold text-white border-b border-neutral-800 shrink-0 select-none">
+				<span id="rom-title-header" class="truncate max-w-[150px] cm-qqvga:max-w-[70px]">ROM Name</span>
+				<span class="text-[9px] cm-qqvga:text-[7px] text-gray-500 uppercase tracking-widest">NES</span>
+			</header>
+
+			<!-- Expanded Game View Area -->
+			<div class="flex-1 w-full flex items-center justify-center bg-black overflow-hidden">
+				<canvas id="mainCanvas" width="256" height="224"
+					class="w-full max-w-full aspect-[8/7] bg-neutral-950 block object-contain"></canvas>
+			</div>
+
+			<!-- Footer Control Bar -->
+			<footer
+				class="bg-neutral-900 text-[10px] cm-qqvga:text-[8px] h-[24px] cm-qqvga:h-[16px] flex items-center justify-between px-2 text-neutral-300 border-t border-neutral-800 shrink-0 select-none">
+				<span id="emul-f1" class="text-neutral-500 text-[9px] cm-qqvga:text-[7px]">Ad</span>
+				<span id="emul-f2"
+					class="text-yellow-400 font-bold bg-black/50 px-1.5 py-0.5 rounded border border-neutral-800">1.00x</span>
+				<span id="emul-f3" class="text-neutral-400">Back</span>
+			</footer>
+
+			<!-- Advertisement Banner Wrapper Area -->
+			<div id="emul-ad-banner"
+				class="w-full bg-neutral-950 border-t border-neutral-800 h-[50px] cm-qqvga:h-0 cm-qqvga:hidden flex items-center justify-center shrink-0">
+				<div id="ad-slot-gameplay"
+					class="w-full h-full flex items-center justify-center text-center bg-neutral-900">
+					<span class="text-[8px] tracking-wider uppercase font-bold text-neutral-600 animate-pulse">Sponsored
+						Ad Banner</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- ================= FOOTER SOFTKEY BAR ================= -->
+		<footer id="app-footer"
+			class="bg-black border-t border-neutral-800 h-[24px] cm-qqvga:h-[16px] px-2 flex items-center justify-between text-[10px] cm-qqvga:text-[8px] text-gray-400 shrink-0 z-10">
+			<button id="lsk-label" class="focus:outline-none">Help</button>
+			<button id="csk-label" class="font-bold text-white focus:outline-none">OK</button>
+			<button id="rsk-label" class="focus:outline-none">Exit</button>
+		</footer>
+
+	</div>
+
+	<!-- Active Logic Controller -->
+	<script>
+		// Core Emulator Variables
+		var mainCanvas = document.getElementById("mainCanvas");
+		var appContent = document.getElementById("app-content");
+		var speed = 1.0;
+		var romname = '';
+		var nesInstance = null;
+		var cloudad = null;
+
+		// Key map target settings
+		const keys = ['Right_Button', 'Left_Button', 'Up_Button', 'Down_Button', 'A_Button', 'B_Button', 'Select_Button', 'Start_Button'];
+		var keyZones = [];
+
+		// ROM History model load
+		var romHistory = JSON.parse(localStorage.getItem('nes_rom_history')) || [];
+
+		// Clock handler
+		function updateClock() {
+			const now = new Date();
+			let hh = now.getHours();
+			let mm = now.getMinutes();
+			mm = mm < 10 ? '0' + mm : mm;
+			document.getElementById('time-display').innerText = `${hh}:${mm}`;
+		}
+		setInterval(updateClock, 60000);
+		updateClock();
+
+		// Safe Base Name Parser
+		function baseFileName(filename) {
+			var s = filename.split('/');
+			return s[s.length - 1];
+		}
+
+		// URL থেকে সরাসরি .nes ফাইল ডাউনলোড ও প্লে করার ফাংশন
+		function loadRomFromUrl(url, name) {
+			fetch(url)
+				.then(res => {
+					if (!res.ok) throw new Error("ROM Resource unavailable");
+					return res.arrayBuffer();
+				})
+				.then(buffer => {
+					// ArrayBuffer-কে Blob ফাইলে কনভার্ট করা (ইঞ্জিনের জন্য)
+					const blob = new Blob([buffer], { type: "application/octet-stream" });
+					blob.name = name + ".nes";
+
+					// ROM হিস্ট্রিতে ক্যাশ করার উদ্দেশ্যে Base64 ফরম্যাটে রূপান্তর
+					let binary = "";
+					const bytes = new Uint8Array(buffer);
+					const len = bytes.byteLength;
+					for (let i = 0; i < len; i++) {
+						binary += String.fromCharCode(bytes[i]);
+					}
+					const cachedDataUri = "data:application/octet-stream;base64," + btoa(binary);
+					addRomToHistory(name, cachedDataUri);
+
+					// এmuলেটর চালু
+					machine(blob);
+				})
+				.catch(err => alert("Error loading sample ROM: " + err.message));
+		}
+
+		// Add ROM to Local History Caching
+		function addRomToHistory(name, dataUri) {
+			romHistory = romHistory.filter(item => item.name !== name);
+			romHistory.unshift({ name: name, dataUri: dataUri });
+			if (romHistory.length > 5) romHistory.pop();
+			localStorage.setItem('nes_rom_history', JSON.stringify(romHistory));
+			renderHistoryList();
+		}
+
+		// Render Recent History items with Ad Container spacing
+		function renderHistoryList() {
+			const container = document.getElementById('history-rom-list');
+			const emptyNotice = document.getElementById('history-empty');
+
+			const currentItems = container.querySelectorAll('.history-item, .history-ad-item');
+			currentItems.forEach(el => el.remove());
+
+			if (romHistory.length === 0) {
+				emptyNotice.style.display = 'block';
+				return;
+			}
+
+			emptyNotice.style.display = 'none';
+
+			romHistory.forEach((item, index) => {
+				const element = document.createElement('div');
+				element.tabIndex = 0;
+				element.className = "menu-item history-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/40 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
+				element.innerHTML = `
+                    <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="truncate">${item.name}</span>
+                `;
+
+				element.addEventListener('click', () => {
+					// Restore binary arraybuffer representation via stored data URI
+					const binaryString = atob(item.dataUri.split(',')[1]);
+					const len = binaryString.length;
+					const bytes = new Uint8Array(len);
+					for (let i = 0; i < len; i++) {
+						bytes[i] = binaryString.charCodeAt(i);
+					}
+					// Emulate binary payload using Blob format mimic
+					const blob = new Blob([bytes], { type: "application/octet-stream" });
+					blob.name = item.name + ".nes";
+					machine(blob);
+				});
+
+				container.appendChild(element);
+
+				// Insert Ad Container after 10 elements
+				if ((index + 1) % 10 === 0) {
+					const adElement = document.createElement('div');
+					adElement.tabIndex = 0;
+					adElement.className = "menu-item history-ad-item flex items-center justify-center p-1.5 rounded cursor-pointer text-xs bg-neutral-900 border border-neutral-800 text-neutral-500 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
+					adElement.innerHTML = `
+                        <span class="text-[9px] tracking-wider uppercase font-bold text-neutral-400">Sponsored Ad</span>
+                    `;
+
+					adElement.addEventListener('click', () => {
+						if (cloudad && typeof cloudad.call === 'function') {
+							cloudad.call('click');
+						}
+					});
+
+					container.appendChild(adElement);
+
+					// Initialize advertisement banner
+					if (typeof getCloudAd !== 'undefined') {
+						getCloudAd({
+							publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+							app: 'nes_emul',
+							slot: 'history_banner',
+							onerror: console.error,
+							onready: function (ad) {
+								cloudad = ad;
+								ad.call('display', {
+									tabindex: -1,
+									display: 'block',
+									container: adElement
+								});
+							}
+						});
+					}
+				}
+			});
+
+			setupFocusIndices();
+		}
+
+		// Focus & D-Pad navigation management setup
+		let currentFocusIndex = 0;
+		let focusableElements = [];
+
+		function setupFocusIndices() {
+			focusableElements = Array.from(document.querySelectorAll('.menu-item'));
+			focusableElements.forEach((el, index) => {
+				el.setAttribute('data-index', index);
+			});
+			if (focusableElements[currentFocusIndex]) {
+				focusableElements[currentFocusIndex].focus();
+			}
+		}
+
+		function navigateMenu(direction) {
+			currentFocusIndex += direction;
+			if (currentFocusIndex < 0) currentFocusIndex = focusableElements.length - 1;
+			if (currentFocusIndex >= focusableElements.length) currentFocusIndex = 0;
+
+			const target = focusableElements[currentFocusIndex];
+			if (target) {
+				target.focus();
+				target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+			}
+		}
+
+		// Main List view key events 
+		function keydownlistview(e) {
+			switch (e.key) {
+				case 'ArrowUp':
+				case 'Up':
+				case '2':
+					e.preventDefault();
+					navigateMenu(-1);
+					break;
+				case 'ArrowDown':
+				case 'Down':
+				case '8':
+					e.preventDefault();
+					navigateMenu(1);
+					break;
+				case 'Enter':
+				case '5':
+					e.preventDefault();
+					if (document.activeElement) {
+						document.activeElement.click();
+					}
+					break;
+				case 'SoftLeft':
+				case 'Escape':
+				case 'F1':
+					e.preventDefault();
+					openHelp();
+					break;
+				case 'SoftRight':
+				case 'F2':
+					e.preventDefault();
+					if (confirm('Are you sure you want to exit?')) { window.close(); }
+					break;
+			}
+		}
+
+		// Import file action hooks
+		document.getElementById('action-load-file').addEventListener('click', () => {
+			document.getElementById('import-rom-input').click();
+		});
+
+		document.getElementById('import-rom-input').addEventListener('change', function () {
+			const file = this.files[0];
+			if (!file) return;
+
+			const reader = new FileReader();
+			reader.onload = function (e) {
+				const base64Data = btoa(e.target.result);
+				const cachedDataUri = "data:application/octet-stream;base64," + base64Data;
+				addRomToHistory(file.name.replace(/\.nes$/i, ''), cachedDataUri);
+
+				// Emulate binary blob launch
+				machine(file);
+			};
+			reader.readAsBinaryString(file);
+		});
+
+		// Bind events for sample rom items
+		document.querySelectorAll('.sample-item').forEach(el => {
+			el.addEventListener('click', function () {
+				const path = this.getAttribute('data-path');
+				const name = this.getAttribute('data-name');
+				loadRomFromUrl(path, name);
+			});
+		});
+
+		document.getElementById('action-keymap').addEventListener('click', () => {
+			openKeyMap();
+		});
+
+		// Initialize Emulator Engine Instance
+		function machine(file) {
+			document.getElementById('blur').style.display = 'flex';
+			romname = file.name.split('/').pop().replace(/\.nes$/i, '');
+			document.getElementById('rom-title-header').innerHTML = romname;
+
+			// Set Left Softkey label to 'Ad' during gameplay screen
+			document.getElementById('emul-f1').innerHTML = 'Ad';
+
+			const canvas = document.getElementById('mainCanvas');
+			nesInstance = new NES(canvas);
+			nesInstance.initCanvas();
+
+			// Bind events through keyboard mapper translate pipeline
+			window.onkeydown = e => {
+				const translated = translateKeyEvent(e);
+				nesInstance.handleKeyDown(translated);
+			};
+			window.onkeyup = e => {
+				const translated = translateKeyEvent(e);
+				nesInstance.handleKeyUp(translated);
+			};
+
+			document.body.removeEventListener('keydown', keydownlistview);
+			document.body.addEventListener('keydown', keydownmachine);
+
+			const reader = new FileReader();
+			reader.onload = e => {
+				nesInstance.Pause();
+				if (!nesInstance.SetRom(e.target.result)) {
+					alert('Invalid ROM file payload!');
+					closeMachine();
+					return;
+				}
+				if (nesInstance.Init()) nesInstance.Start();
+			};
+			reader.readAsArrayBuffer(file);
+
+			// Fetch active game slot banner Ads
+			if (typeof getCloudAd !== 'undefined') {
+				getCloudAd({
+					publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+					app: 'nes_emul',
+					slot: 'nes_emul',
+					onerror: console.error,
+					onready: function (ad) {
+						cloudad = ad;
+						ad.call('display', {
+							tabindex: -1,
+							display: 'block',
+							container: document.getElementById('ad-slot-gameplay')
+						});
+					}
+				});
+			}
+		}
+
+		// Close Active Machine View
+		function closeMachine() {
+			if (nesInstance) {
+				try { nesInstance.Pause(); } catch (e) { }
+			}
+			document.getElementById('blur').style.display = 'none';
+			document.body.removeEventListener('keydown', keydownmachine);
+			document.body.addEventListener('keydown', keydownlistview);
+
+			window.onkeydown = null;
+			window.onkeyup = null;
+
+			if (focusableElements[currentFocusIndex]) {
+				focusableElements[currentFocusIndex].focus();
+			}
+		}
+
+		// Machine active hotkeys state
+		async function keydownmachine(e) {
+			if (e.key === 'SoftLeft' || e.key === 'Escape' || e.key === 'F1') {
+				e.preventDefault();
+				const adContainer = document.getElementById('ad-slot-gameplay');
+				if (adContainer) {
+					adContainer.click();
+				}
+			}
+
+			if (e.key === 'F2' || e.key === 'SoftRight' || e.key === 'Backspace') {
+				e.preventDefault();
+				closeMachine();
+			}
+
+			if (e.key === '3' || e.key === '1') {
+				e.preventDefault();
+				e.key === '3' ? nesInstance.speedUp() : nesInstance.speedDown();
+				speed += e.key === '3' ? 0.1 : -0.1;
+				document.getElementById('emul-f2').innerHTML = speed.toFixed(2) + 'x';
+			}
+
+			// State Save (ব্রাউজারের localStorage-এ স্টোর করার জন্য আপডেট করা হয়েছে)
+			if (e.key === '*') {
+				e.preventDefault();
+				try {
+					localStorage.setItem('nes_state_' + romname, JSON.stringify(nesInstance.saveState()));
+					alert('State Saved Successfully.');
+				} catch (err) {
+					alert('Save Failed: LocalStorage is full.');
+				}
+			}
+
+			// State Restore (ব্রাউজারের localStorage থেকে রিকভার করার জন্য আপডেট করা হয়েছে)
+			if (e.key === '#') {
+				e.preventDefault();
+				try {
+					const stateData = localStorage.getItem('nes_state_' + romname);
+					if (stateData) {
+						nesInstance.loadState(JSON.parse(stateData));
+						alert('State Restored.');
+					} else {
+						alert('No State Found For This ROM');
+					}
+				} catch (err) {
+					alert('Load Failed: Corrupt State Data.');
+				}
+			}
+		}
+
+		// Help Overlays logic
+		function openHelp() {
+			document.getElementById('helpScreen').classList.remove('hidden');
+			document.body.removeEventListener('keydown', keydownlistview);
+			document.body.addEventListener('keydown', keydownhelp);
+		}
+
+		function closeHelp() {
+			document.getElementById('helpScreen').classList.add('hidden');
+			document.body.removeEventListener('keydown', keydownhelp);
+			document.body.addEventListener('keydown', keydownlistview);
+			if (focusableElements[currentFocusIndex]) {
+				focusableElements[currentFocusIndex].focus();
+			}
+		}
+
+		function keydownhelp(e) {
+			if (['SoftRight', 'Backspace', 'F2', 'Escape'].includes(e.key)) {
+				e.preventDefault();
+				closeHelp();
+			}
+		}
+
+		// ================= KEY MAP METADATA AND LOGIC SYSTEM =================
+		let keymapFocusIndex = 0;
+		let keymapElements = [];
+
+		function renderKeyMapList() {
+			const container = document.getElementById('key-map-list');
+			container.innerHTML = '';
+
+			keys.forEach((k, index) => {
+				const storedValue = localStorage.getItem(k);
+				const displayVal = storedValue ? 'Code ' + storedValue : 'Not Assigned';
+
+				const el = document.createElement('div');
+				el.tabIndex = 0;
+				el.className = "keymap-item flex items-center justify-between p-1.5 cm-qqvga:p-1 rounded cursor-pointer bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all";
+				el.innerHTML = `
+                    <span class="truncate font-bold">${k.replace('_', ' ')}</span>
+                    <span class="text-[10px] opacity-70 font-normal truncate">> ${displayVal}</span>
+                `;
+
+				el.addEventListener('click', function () {
+					setkey(k);
+				});
+
+				container.appendChild(el);
+			});
+
+			setupKeymapFocusIndices();
+		}
+
+		function setupKeymapFocusIndices() {
+			keymapElements = Array.from(document.querySelectorAll('.keymap-item'));
+			keymapElements.forEach((el, index) => {
+				el.setAttribute('data-km-index', index);
+			});
+			if (keymapElements[keymapFocusIndex]) {
+				keymapElements[keymapFocusIndex].focus();
+			}
+		}
+
+		function navigateKeymap(direction) {
+			keymapFocusIndex += direction;
+			if (keymapFocusIndex < 0) keymapFocusIndex = keymapElements.length - 1;
+			if (keymapFocusIndex >= keymapElements.length) keymapFocusIndex = 0;
+
+			const target = keymapElements[keymapFocusIndex];
+			if (target) {
+				target.focus();
+				target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+			}
+		}
+
+		function openKeyMap() {
+			document.getElementById('keyMapScreen').classList.remove('hidden');
+			document.body.removeEventListener('keydown', keydownlistview);
+			document.body.addEventListener('keydown', keydownkeymap);
+			renderKeyMapList();
+		}
+
+		function closeKeyMap() {
+			document.getElementById('keyMapScreen').classList.add('hidden');
+			document.body.removeEventListener('keydown', keydownkeymap);
+			document.body.addEventListener('keydown', keydownlistview);
+			setupFocusIndices();
+		}
+
+		function setkey(k) {
+			document.body.removeEventListener('keydown', keydownkeymap);
+
+			const modal = document.getElementById('setKeyModal');
+			const keyNameEl = document.getElementById('set-key-name');
+			const promptEl = document.getElementById('set-key-prompt');
+
+			keyNameEl.innerText = k.replace('_', ' ');
+			promptEl.innerText = 'Loading...';
+			modal.classList.remove('hidden');
+
+			setTimeout(function () {
+				promptEl.innerText = 'Press A Key To Setup';
+
+				const handleCapture = (e) => {
+					e.preventDefault();
+					const keyVal = e.key;
+
+					if (['1', '3', '*', '#', 'SoftRight', 'Backspace', 'F2'].includes(keyVal)) {
+						alert('This Key Assigned By Administrator');
+						modal.classList.add('hidden');
+						document.body.removeEventListener('keyup', handleCapture);
+						document.body.addEventListener('keydown', keydownkeymap);
+						if (keymapElements[keymapFocusIndex]) {
+							keymapElements[keymapFocusIndex].focus();
+						}
+					} else {
+						localStorage.setItem(k, e.keyCode);
+						localStorage.setItem('userkeyzone', 'yes');
+
+						updateKeyZones();
+
+						modal.classList.add('hidden');
+						document.body.removeEventListener('keyup', handleCapture);
+						document.body.addEventListener('keydown', keydownkeymap);
+
+						renderKeyMapList();
+					}
+				};
+				document.body.addEventListener('keyup', handleCapture);
+			}, 700);
+		}
+
+		function keydownkeymap(e) {
+			switch (e.key) {
+				case 'ArrowUp':
+				case 'Up':
+				case '2':
+					e.preventDefault();
+					navigateKeymap(-1);
+					break;
+				case 'ArrowDown':
+				case 'Down':
+				case '8':
+					e.preventDefault();
+					navigateKeymap(1);
+					break;
+				case 'Enter':
+				case '5':
+					e.preventDefault();
+					if (document.activeElement) {
+						document.activeElement.click();
+					}
+					break;
+				case 'SoftLeft':
+				case 'Escape':
+				case 'F1':
+					e.preventDefault();
+					if (window.confirm('Sure To Remove All?')) {
+						keys.forEach(k => { localStorage.removeItem(k); });
+						localStorage.removeItem('userkeyzone');
+						updateKeyZones();
+						renderKeyMapList();
+					}
+					break;
+				case 'SoftRight':
+				case 'F2':
+				case 'Backspace':
+					e.preventDefault();
+					closeKeyMap();
+					break;
+			}
+		}
+
+		// Map Key Translation for User Customized Overrides
+		function translateKeyEvent(e) {
+			if (localStorage.getItem('userkeyzone') !== 'yes') return e;
+
+			let targetKeyCode = null;
+			let targetKey = null;
+
+			const keyCode = e.keyCode;
+			if (keyCode == localStorage.getItem('Up_Button')) { targetKeyCode = 38; targetKey = "ArrowUp"; }
+			else if (keyCode == localStorage.getItem('Down_Button')) { targetKeyCode = 40; targetKey = "ArrowDown"; }
+			else if (keyCode == localStorage.getItem('Left_Button')) { targetKeyCode = 37; targetKey = "ArrowLeft"; }
+			else if (keyCode == localStorage.getItem('Right_Button')) { targetKeyCode = 39; targetKey = "ArrowRight"; }
+			else if (keyCode == localStorage.getItem('A_Button')) { targetKeyCode = 13; targetKey = "Enter"; }
+			else if (keyCode == localStorage.getItem('B_Button')) { targetKeyCode = 53; targetKey = "5"; }
+			else if (keyCode == localStorage.getItem('Select_Button')) { targetKeyCode = 50; targetKey = "2"; }
+			else if (keyCode == localStorage.getItem('Start_Button')) { targetKeyCode = 48; targetKey = "0"; }
+
+			if (targetKeyCode !== null) {
+				return {
+					keyCode: targetKeyCode,
+					key: targetKey,
+					preventDefault: () => { e.preventDefault(); }
+				};
+			}
+			return e;
+		}
+
+		function updateKeyZones() {
+			// Updated dynamically inside mapper logic
+		}
+		window.addEventListener('back', (event) => {
+			event.preventDefault();
+			simulateNaturalPress('SoftRight', 0);
+		});
+
+		// Active Load
+		window.addEventListener('DOMContentLoaded', () => {
+			renderHistoryList();
+			document.body.addEventListener('keydown', keydownlistview);
+		});
+	</script>
+</body>
+
+</html>
