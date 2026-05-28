@@ -70,7 +70,7 @@
 
             <!-- "Load from Storage" Focus Action Button -->
             <div tabindex="0" id="action-load-file"
-                class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+                class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]">
                 <svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
                     stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -81,7 +81,7 @@
 
             <!-- "Configure Key Map" Action Button -->
             <div tabindex="0" id="action-keymap"
-                class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+                class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]">
                 <svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
                     stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -95,7 +95,7 @@
                 Sample Games</div>
             <div id="sample-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
                 <div tabindex="0"
-                    class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white"
+                    class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]"
                     data-path="roms/Tetris.gb" data-name="Tetris">
                     <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none"
                         stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@
                     <span class="truncate">Tetris</span>
                 </div>
                 <div tabindex="0"
-                    class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white"
+                    class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]"
                     data-path="roms/Snake Xenzia.gb" data-name="Snake Xenzia">
                     <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none"
                         stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -118,12 +118,12 @@
                 </div>
             </div>
 
-            <div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">
-                Recent ROM History</div>
-            <div id="history-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
-                <div id="history-empty" class="text-neutral-500 text-[10px] cm-qqvga:text-[8px] italic px-1">No previous
-                    games played</div>
-            </div>
+			<div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">
+				Recent ROM History</div>
+			<div id="history-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
+				<div id="history-empty" class="text-neutral-500 text-[10px] cm-qqvga:text-[8px] italic px-1">No previous
+					games played</div>
+			</div>
 
         </main>
 
@@ -137,39 +137,39 @@
                 <table class="w-full text-left text-neutral-300">
                     <tr class="border-b border-neutral-800">
                         <td>A Button</td>
-                        <td class="text-right text-white">Enter / 5</td>
+                        <td class="text-right text-white font-bold">5 / Enter</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>B Button</td>
-                        <td class="text-right text-white">9</td>
+                        <td class="text-right text-white font-bold">9</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>SELECT</td>
-                        <td class="text-right text-white">7</td>
+                        <td class="text-right text-white font-bold">7</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>START</td>
-                        <td class="text-right text-white">0</td>
+                        <td class="text-right text-white font-bold">0</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>D-PAD</td>
-                        <td class="text-right text-white">Arrows / 2,8,4,6</td>
+                        <td class="text-right text-white font-bold">Arrows / 2,8,4,6</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>Speed Up</td>
-                        <td class="text-right text-white">3</td>
+                        <td class="text-right text-white font-bold">3</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>Speed Down</td>
-                        <td class="text-right text-white">1</td>
+                        <td class="text-right text-white font-bold">1</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>Save State</td>
-                        <td class="text-right text-white">*</td>
+                        <td class="text-right text-white font-bold">*</td>
                     </tr>
                     <tr class="border-b border-neutral-800">
                         <td>Load State</td>
-                        <td class="text-right text-white">#</td>
+                        <td class="text-right text-white font-bold">#</td>
                     </tr>
                 </table>
             </div>
@@ -177,7 +177,7 @@
                 class="bg-black text-[10px] cm-qqvga:text-[8px] px-2 h-[24px] cm-qqvga:h-[16px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
                 <span></span>
                 <span></span>
-                <span>Back</span>
+                <span class="text-white font-bold">Back</span>
             </footer>
         </div>
 
@@ -238,7 +238,7 @@
                 <div id="ad-slot-gameplay"
                     class="w-full h-full flex items-center justify-center text-center bg-neutral-900">
                     <span class="text-[8px] tracking-wider uppercase font-bold text-neutral-600 animate-pulse">Sponsored
-                        Ad Banner</span>
+						Ad Banner</span>
                 </div>
             </div>
         </div>
@@ -250,6 +250,26 @@
             <button id="csk-label" class="font-bold text-white focus:outline-none">OK</button>
             <button id="rsk-label" class="focus:outline-none">Exit</button>
         </footer>
+
+        <!-- ================= CUSTOM MODAL (ALERT/CONFIRM REPLACE) ================= -->
+        <div id="customModal" class="hidden absolute inset-0 bg-black/85 z-50 flex items-center justify-center p-3 cm-qqvga:p-1 select-none">
+            <div class="bg-neutral-900 border border-neutral-800 rounded w-full max-w-[200px] cm-qqvga:max-w-[110px] flex flex-col overflow-hidden shadow-2xl">
+                <!-- Modal Header -->
+                <div id="modal-header" class="bg-neutral-950 text-white font-bold text-[10px] cm-qqvga:text-[7px] px-2 py-1 border-b border-neutral-800 text-center tracking-wider uppercase truncate">
+                    Notification
+                </div>
+                <!-- Modal Message -->
+                <div id="modal-message" class="p-3 cm-qqvga:p-1.5 text-xs cm-qqvga:text-[8px] text-neutral-200 text-center leading-relaxed max-h-[120px] cm-qqvga:max-h-[70px] overflow-y-auto break-words">
+                    Alert message...
+                </div>
+                <!-- Modal Softkeys Footer -->
+                <div id="modal-footer" class="bg-black border-t border-neutral-800 h-[24px] cm-qqvga:h-[16px] px-2 flex items-center justify-between text-[9px] cm-qqvga:text-[7px] text-neutral-400 font-bold shrink-0">
+                    <span id="modal-lsk" class="text-left w-1/3 truncate"></span>
+                    <span id="modal-csk" class="text-center w-1/3 text-white truncate">OK</span>
+                    <span id="modal-rsk" class="text-right w-1/3 truncate"></span>
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -265,11 +285,90 @@
         var importBtn = document.getElementById("importsavedata");
         var speed = 1.0;
 
+        // Custom Modal Alert State
+        var isModalActive = false;
+        var modalCallback = null;
+        var modalCancelCallback = null;
+
         // Key map definition keys
         const keys = ['Right_Button', 'Left_Button', 'Up_Button', 'Down_Button', 'A_Button', 'B_Button', 'Select_Button', 'Start_Button'];
 
         // ROM History storage model
         var romHistory = JSON.parse(localStorage.getItem('gameboy_rom_history')) || [];
+
+        // Custom Dialog Replacement Functions
+        function showAlert(message, title = "Notification", callback = null) {
+            document.getElementById('modal-header').innerText = title || "Notification";
+            document.getElementById('modal-message').innerText = message;
+            
+            document.getElementById('modal-lsk').innerText = "";
+            document.getElementById('modal-csk').innerText = "OK";
+            document.getElementById('modal-rsk').innerText = "";
+            
+            modalCallback = callback;
+            modalCancelCallback = null;
+            
+            document.getElementById('customModal').classList.remove('hidden');
+            isModalActive = true;
+        }
+
+        function showConfirm(message, onYes, onNo = null, title = "Confirm") {
+            document.getElementById('modal-header').innerText = title || "Confirm";
+            document.getElementById('modal-message').innerText = message;
+            
+            document.getElementById('modal-lsk').innerText = "Yes";
+            document.getElementById('modal-csk').innerText = "";
+            document.getElementById('modal-rsk').innerText = "No";
+            
+            modalCallback = onYes;
+            modalCancelCallback = onNo;
+            
+            document.getElementById('customModal').classList.remove('hidden');
+            isModalActive = true;
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+            isModalActive = false;
+        }
+
+        // Intercept and redirect inputs to custom modal context when open
+        function handleModalKeydown(e) {
+            if (!isModalActive) return false;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const lskVal = document.getElementById('modal-lsk').innerText;
+            const cskVal = document.getElementById('modal-csk').innerText;
+            const rskVal = document.getElementById('modal-rsk').innerText;
+
+            // Capture SoftLeft / Enter / F1
+            if (e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'q' || e.key === 'Q') {
+                if (lskVal === "Yes") {
+                    closeModal();
+                    if (modalCallback) modalCallback();
+                }
+            }
+            // Capture Center Select (OK / Enter / 5)
+            else if (e.key === 'Enter' || e.key === '5' || e.key === 'Accept') {
+                if (cskVal === "OK") {
+                    closeModal();
+                    if (modalCallback) modalCallback();
+                }
+            }
+            // Capture SoftRight / Cancel / Backspace / Escape
+            else if (e.key === 'SoftRight' || e.key === 'F2' || e.key === 'Backspace' || e.key === 'Escape') {
+                if (rskVal === "No") {
+                    closeModal();
+                    if (modalCancelCallback) modalCancelCallback();
+                } else if (cskVal === "OK") {
+                    closeModal();
+                    if (modalCallback) modalCallback();
+                }
+            }
+            return true;
+        }
 
         // Dynamic System Clock
         function updateClock() {
@@ -304,85 +403,83 @@
         }
 
         function renderHistoryList() {
-    const container = document.getElementById('history-rom-list');
-    const emptyNotice = document.getElementById('history-empty');
-    
-    // Clear current list items and ad containers
-    const currentItems = container.querySelectorAll('.history-item, .history-ad-item');
-    currentItems.forEach(el => el.remove());
-
-    if (romHistory.length === 0) {
-        emptyNotice.style.display = 'block';
-        return;
-    }
-
-    emptyNotice.style.display = 'none';
-
-    romHistory.forEach((item, index) => {
-        const element = document.createElement('div');
-        element.tabIndex = 0;
-        element.className = "menu-item history-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/40 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
-        element.innerHTML = `
-            <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="truncate">${item.name}</span>
-        `;
-        
-        element.addEventListener('click', () => {
-            if (item.isSample) {
-                loadRomFromUrl(item.dataUri, item.name);
-            } else {
-                // Restore binary representation from stored data-uri base64
-                const binary = atob(item.dataUri.split(',')[1]);
-                machine(item.name, binary);
-            }
-        });
-
-        container.appendChild(element);
-
-        // Insert Ad Container after every 5 items (index 4, 9, 14, etc.)
-        if ((index + 1) % 5 === 0) {
-            const adElement = document.createElement('div');
-            adElement.tabIndex = 0;
-            adElement.className = "menu-item history-ad-item flex items-center justify-center p-1.5 rounded cursor-pointer text-xs bg-neutral-900 border border-neutral-800 text-neutral-500 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
-            adElement.innerHTML = `
-                <span class="text-[9px] tracking-wider uppercase font-bold text-neutral-400">Sponsored Ad</span>
-            `;
+            const container = document.getElementById('history-rom-list');
+            const emptyNotice = document.getElementById('history-empty');
             
-            // Handle cloudad.call('click') event trigger on ad click
-            adElement.addEventListener('click', () => {
-                if (cloudad && typeof cloudad.call === 'function') {
-                    cloudad.call('click');
-                }
-            });
+            // Clear current list items and ad containers
+            const currentItems = container.querySelectorAll('.history-item, .history-ad-item');
+            currentItems.forEach(el => el.remove());
 
-            container.appendChild(adElement);
+            if (romHistory.length === 0) {
+                emptyNotice.style.display = 'block';
+                return;
+            }
 
-            // Fetch and display ad if getCloudAd is loaded
-            if (typeof getCloudAd === 'function') {
-                getCloudAd({
-                    publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-                    app: 'gameboy_emul',
-                    slot: 'history_banner',
-                    h: 30, w: 220,
-                    container: adElement,
-                    onerror: function (err) { console.error('CloudAd Banner Error:', err); },
-                    onready: function (ad) {
-                        cloudad = ad; // Save ad instance references
-                        ad.call('display', {
-                            tabindex: -1,
-                            display: 'block',
-                        });
+            emptyNotice.style.display = 'none';
+
+            romHistory.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.tabIndex = 0;
+                element.className = "menu-item history-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/40 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]";
+                element.innerHTML = `
+                    <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="truncate">${item.name}</span>
+                `;
+                
+                element.addEventListener('click', () => {
+                    if (item.isSample) {
+                        loadRomFromUrl(item.dataUri, item.name);
+                    } else {
+                        // Restore binary representation from stored base64 payload
+                        const binary = atob(item.dataUri.split(',')[1]);
+                        machine(item.name, binary);
                     }
                 });
-            }
+
+                container.appendChild(element);
+
+                // Insert Ad Container after every 5 items (index 4, 9, 14, etc.)
+                if ((index + 1) % 5 === 0) {
+                    const adElement = document.createElement('div');
+                    adElement.tabIndex = 0;
+                    adElement.className = "menu-item history-ad-item flex items-center justify-center p-1.5 rounded cursor-pointer text-xs bg-neutral-900 border border-neutral-800 text-neutral-500 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
+                    adElement.innerHTML = `
+                        <span class="text-[9px] tracking-wider uppercase font-bold text-neutral-400">Sponsored Ad</span>
+                    `;
+                    
+                    adElement.addEventListener('click', () => {
+                        if (cloudad && typeof cloudad.call === 'function') {
+                            cloudad.call('click');
+                        }
+                    });
+
+                    container.appendChild(adElement);
+
+                    // Fetch and display ad if getCloudAd is loaded
+                    if (typeof getCloudAd === 'function') {
+                        getCloudAd({
+                            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+                            app: 'gameboy_emul',
+                            slot: 'history_banner',
+                            h: 30, w: 220,
+                            container: adElement,
+                            onerror: function (err) { console.error('CloudAd Banner Error:', err); },
+                            onready: function (ad) {
+                                cloudad = ad; // Save ad instance references
+                                ad.call('display', {
+                                    tabindex: -1,
+                                    display: 'block',
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+            
+            setupFocusIndices();
         }
-    });
-    
-  
-    setupFocusIndices();
-}
 
         // Utility: Fetch from path into Gameboy binary string formats
         function loadRomFromUrl(url, name) {
@@ -401,7 +498,7 @@
                     addRomToHistory(name, url, true);
                     machine(name, binary);
                 })
-                .catch(err => alert("Error: File path unreachable (" + err.message + ")"));
+                .catch(err => showAlert("Error: File path unreachable (" + err.message + ")", "ROM Error"));
         }
 
         // Focus & D-Pad Navigation Management Setup
@@ -413,6 +510,9 @@
             focusableElements.forEach((el, index) => {
                 el.setAttribute('data-index', index);
             });
+            if (currentFocusIndex >= focusableElements.length) {
+                currentFocusIndex = Math.max(0, focusableElements.length - 1);
+            }
             if (focusableElements[currentFocusIndex]) {
                 focusableElements[currentFocusIndex].focus();
             }
@@ -433,6 +533,11 @@
 
         // Event: Keyboard List Navigation (Main UI context)
         function keydownlistview(e) {
+            if (isModalActive) {
+                handleModalKeydown(e);
+                return;
+			}
+
             switch (e.key) {
                 case 'ArrowUp':
                 case 'Up':
@@ -462,7 +567,7 @@
                 case 'SoftRight':
                 case 'F2':
                     e.preventDefault();
-                    if (confirm('Are you sure you want to exit?')) { window.close(); }
+                    showConfirm('Are you sure you want to exit?', () => { window.close(); }, null, 'Exit');
                     break;
             }
         }
@@ -484,7 +589,6 @@
 
             const reader = new FileReader();
             reader.onload = function (e) {
-                // Convert to dataUri base64 for history caching
                 const base64Data = btoa(e.target.result);
                 const cachedDataUri = "data:application/octet-stream;base64," + base64Data;
 
@@ -508,14 +612,14 @@
             document.getElementById('blur').style.display = 'flex';
             document.getElementById('rom-title-header').innerHTML = baseFileName(fileName);
 
-            // Set Left Softkey label to 'Ad' during gameplay screen
             document.getElementById('emul-f1').innerHTML = 'Ad';
 
             try {
                 start(mainCanvas, binaryData);
             } catch (error) {
-                alert("Emulator startup failed: " + error.message);
-                closeMachine();
+                showAlert("Emulator startup failed: " + error.message, "Engine Error", () => {
+                    closeMachine();
+                });
                 return;
             }
 
@@ -544,16 +648,18 @@
                     }
                 });
             }
-           getCloudAd({
-            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-            app: 'gameboy_emul',
-            slot: 'gameplay',
-            onerror: function (err) { console.error('CloudAd Banner Error:', err); },
-            onready: function (ad) {
-                cloudad = ad;
-                ad.call('display');
+            if (typeof getCloudAd === 'function') {
+                getCloudAd({
+                    publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+                    app: 'gameboy_emul',
+                    slot: 'gameplay',
+                    onerror: function (err) { console.error('CloudAd Banner Error:', err); },
+                    onready: function (ad) {
+                        cloudad = ad;
+                        ad.call('display');
+                    }
+                }); 
             }
-        }); 
         }
 
         // Close Emulator Machine View
@@ -564,7 +670,6 @@
             document.body.removeEventListener('keyup', keyUp);
             document.body.addEventListener('keydown', keydownlistview);
 
-            // Force focus reset
             if (focusableElements[currentFocusIndex]) {
                 focusableElements[currentFocusIndex].focus();
             }
@@ -572,10 +677,16 @@
 
         // Machine Controller Hotkeys (* & # controls, Speeds, Extraneous Backs)
         function keydownmachine(e) {
-            // Trigger Ad Click with SoftLeft (F1 / SoftLeft Key)
+            if (isModalActive) {
+                handleModalKeydown(e);
+                return;
+            }
+
             if (e.key === 'SoftLeft' || e.key === 'F1'|| e.key === 'Escape') {
                 e.preventDefault();
-                cloudad.call('click');
+                if (cloudad && typeof cloudad.call === 'function') {
+                    cloudad.call('click');
+                }
             }
             if (e.key === 'F2' || e.key === 'SoftRight' || e.key === 'Backspace') {
                 e.preventDefault();
@@ -596,23 +707,23 @@
                 }
             }
             if (e.key === '*') {
-                // Save State via LocalStorage backup
+                e.preventDefault();
                 try {
                     localStorage.setItem('gameboy_state_' + gameboy.name, JSON.stringify(gameboy.saveState()));
-                    alert('State Saved Successfully.');
+                    showAlert('State Saved Successfully.', 'Saved');
                 } catch (e) {
-                    alert('Error saving state: Storage Full');
+                    showAlert('Error saving state: Storage Full', 'Error');
                 }
             }
             if (e.key === '#') {
-                // Load State via LocalStorage restore
+                e.preventDefault();
                 var state = localStorage.getItem('gameboy_state_' + gameboy.name);
                 if (state) {
                     var slotObject = null;
                     try {
                         slotObject = JSON.parse(state);
                     } catch (e) {
-                        alert('Corrupt save data!');
+                        showAlert('Corrupt save data!', 'Error');
                     }
                     if (slotObject) {
                         clearLastEmulation();
@@ -624,7 +735,7 @@
                         run();
                     }
                 } else {
-                    alert('No State Saved For This ROM');
+                    showAlert('No State Saved For This ROM', 'Error');
                 }
             }
         }
@@ -649,6 +760,11 @@
         }
 
         function keydownhelp(e) {
+            if (isModalActive) {
+                handleModalKeydown(e);
+                return;
+            }
+
             if (e.key === 'SoftRight' || e.key === 'F2' || e.key === 'Backspace' || e.key === 'Escape') {
                 e.preventDefault();
                 closeHelp();
@@ -669,7 +785,7 @@
 
                 const el = document.createElement('div');
                 el.tabIndex = 0;
-                el.className = "keymap-item flex items-center justify-between p-1.5 cm-qqvga:p-1 rounded cursor-pointer bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all";
+                el.className = "keymap-item flex items-center justify-between p-1.5 cm-qqvga:p-1 rounded cursor-pointer bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]";
                 el.innerHTML = `
                     <span class="truncate font-bold">${k.replace('_', ' ')}</span>
                     <span class="text-[10px] opacity-70 font-normal truncate">> ${displayVal}</span>
@@ -720,7 +836,7 @@
             keyMapScreen.classList.add('hidden');
             document.body.removeEventListener('keydown', keydownkeymap);
             document.body.addEventListener('keydown', keydownlistview);
-            setupFocusIndices(); // recalculate main index points
+            setupFocusIndices();
         }
 
         function setkey(k) {
@@ -739,28 +855,31 @@
 
                 const handleCapture = (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     const keyVal = e.key;
 
-                    if (keyVal === '1' || keyVal === '3' || keyVal === '*' || keyVal === '#' || keyVal === 'SoftRight' || keyVal === 'Backspace' || keyVal === 'F2') {
-                        alert('This Key Assigned By Administrator');
-                        modal.classList.add('hidden');
+                    if (['1', '3', '*', '#', 'SoftRight', 'Backspace', 'F2'].includes(keyVal)) {
                         document.body.removeEventListener('keyup', handleCapture);
-                        document.body.addEventListener('keydown', keydownkeymap);
-                        if (keymapElements[keymapFocusIndex]) {
-                            keymapElements[keymapFocusIndex].focus();
-                        }
+                        modal.classList.add('hidden');
+                        showAlert('This key is reserved by the emulator.', 'Reserved Key', () => {
+                            document.body.addEventListener('keydown', keydownkeymap);
+                            if (keymapElements[keymapFocusIndex]) {
+                                keymapElements[keymapFocusIndex].focus();
+                            }
+                        });
                     } else {
                         localStorage.setItem(k, e.keyCode);
                         localStorage.setItem('userkeyzone', 'yes');
 
-                        // dynamic memory key map rebuild
                         updateKeyZones();
 
-                        modal.classList.add('hidden');
                         document.body.removeEventListener('keyup', handleCapture);
-                        document.body.addEventListener('keydown', keydownkeymap);
+                        modal.classList.add('hidden');
 
-                        renderKeyMapList();
+                        showAlert('Key assigned successfully.', 'Updated', () => {
+                            document.body.addEventListener('keydown', keydownkeymap);
+                            renderKeyMapList();
+                        });
                     }
                 };
 
@@ -769,6 +888,11 @@
         }
 
         function keydownkeymap(e) {
+            if (isModalActive) {
+                handleModalKeydown(e);
+                return;
+            }
+
             switch (e.key) {
                 case 'ArrowUp':
                 case 'Up':
@@ -793,12 +917,12 @@
                 case 'F1':
                 case 'Escape':
                     e.preventDefault();
-                    if (window.confirm('Sure To Remove All?')) {
+                    showConfirm('Sure to remove all custom keys?', () => {
                         keys.forEach(k => { localStorage.removeItem(k); });
                         localStorage.removeItem('userkeyzone');
                         updateKeyZones();
                         renderKeyMapList();
-                    }
+                    }, null, 'Reset All');
                     break;
                 case 'SoftRight':
                 case 'F2':
@@ -879,23 +1003,31 @@
                 }
             }
         }
+
         window.addEventListener('back', (event) => {
             event.preventDefault();
             simulateNaturalPress('SoftRight', 0);
         });
 
-
-        getCloudAd({
-            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
-            app: 'gameboy_emul',
-            slot: 'main',
-
-            onerror: function (err) { console.error('CloudAd Banner Error:', err); },
-            onready: function (ad) {
-                cloudad = ad;
-                ad.call('display');
+        // Global capture-phase listener to guarantee modal interrupts other actions
+        document.addEventListener('keydown', (e) => {
+            if (isModalActive) {
+                handleModalKeydown(e);
             }
-        });
+        }, { capture: true });
+
+        if (typeof getCloudAd === 'function') {
+            getCloudAd({
+                publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+                app: 'gameboy_emul',
+                slot: 'main',
+                onerror: function (err) { console.error('CloudAd Banner Error:', err); },
+                onready: function (ad) {
+                    cloudad = ad;
+                    ad.call('display');
+                }
+            });
+        }
     </script>
 </body>
 
