@@ -53,6 +53,7 @@
 	<script type="text/javascript" src="js/Mapper/92.js"></script>
 	<script type="text/javascript" src="js/Mapper/93.js"></script>
 	<script type="text/javascript" src="js/Mapper/94.js"></script>
+	<script type="text/javascript" src="js/Mapper/94.js"></script>
 	<script type="text/javascript" src="js/Mapper/95.js"></script>
 	<script type="text/javascript" src="js/Mapper/97.js"></script>
 	<script type="text/javascript" src="js/Mapper/101.js"></script>
@@ -100,29 +101,29 @@
 	</style>
 </head>
 
-<body class="bg-[#121212] text-white font-sans flex items-center justify-center min-h-screen select-none">
+<body class="bg-[#121212] text-white font-sans flex items-center justify-center h-screen w-screen overflow-hidden select-none">
 
-	<!-- Responsive Phone Frame (Strict Width/Height constraints) -->
+	<!-- Responsive Full Frame (Adapts fluidly across all displays, scales elements up on larger viewports) -->
 	<div id="phone-screen"
-		class="relative w-[240px] h-[320px] cm-qqvga:w-[128px] cm-qqvga:h-[160px] bg-cm-gray-020 flex flex-col justify-between overflow-hidden shadow-2xl border border-neutral-800">
+		class="relative w-full h-full bg-cm-gray-020 flex flex-col justify-between overflow-hidden shadow-2xl border border-neutral-800">
 
 		<!-- ================= HEADER ================= -->
 		<header id="app-header"
-			class="bg-cm-blue-009 w-full h-[30px] cm-qqvga:h-[20px] px-2 cm-qqvga:px-1 flex items-center justify-between text-xs cm-qqvga:text-[9px] font-bold shrink-0 z-10">
+			class="bg-cm-blue-009 w-full h-[30px] sm:h-[45px] lg:h-[60px] px-2 sm:px-4 lg:px-6 cm-qqvga:h-[20px] cm-qqvga:px-1 flex items-center justify-between text-xs sm:text-base lg:text-xl cm-qqvga:text-[9px] font-bold shrink-0 z-10">
 			<span id="app-title-header" class="truncate pr-1">NES Emulator</span>
 			<span id="time-display" class="opacity-90">12:00</span>
 		</header>
 
 		<!-- ================= MAIN CONTENT SCROLL AREA ================= -->
-		<main id="app-content" class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto space-y-1.5 cm-qqvga:space-y-1">
+		<main id="app-content" class="flex-1 p-2 sm:p-4 lg:p-6 cm-qqvga:p-1 overflow-y-auto space-y-1.5 sm:space-y-3 lg:space-y-4 cm-qqvga:space-y-1">
 
 			<!-- Hidden File Input for Browser Fallback Loading -->
 			<input type="file" id="import-rom-input" accept=".nes" class="hidden">
 
 			<!-- "Load from Storage" Action Button -->
 			<div tabindex="0" id="action-load-file"
-				class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
-				<svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
+				class="menu-item flex items-center gap-2 sm:gap-3 lg:gap-4 cm-qqvga:gap-1 p-1.5 sm:p-3 lg:p-4 cm-qqvga:p-1 rounded cursor-pointer text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+				<svg class="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
 					stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round"
 						d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -132,8 +133,8 @@
 
 			<!-- "Configure Key Map" Action Button -->
 			<div tabindex="0" id="action-keymap"
-				class="menu-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
-				<svg class="w-4 h-4 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
+				class="menu-item flex items-center gap-2 sm:gap-3 lg:gap-4 cm-qqvga:gap-1 p-1.5 sm:p-3 lg:p-4 cm-qqvga:p-1 rounded cursor-pointer text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px] bg-neutral-800 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all">
+				<svg class="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 cm-qqvga:w-3 cm-qqvga:h-3 text-cm-blue-05a shrink-0" fill="none"
 					stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round"
 						d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
@@ -141,15 +142,15 @@
 				<span class="truncate">Key Map Settings</span>
 			</div>
 
-			<!-- Sample ROMs List (Replaces Local Storage ROMs) -->
-			<div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">
+			<!-- Sample ROMs List -->
+			<div class="text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">
 				Sample Games</div>
-			<div id="sample-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
+			<div id="sample-rom-list" class="space-y-1 sm:space-y-2 lg:space-y-3 cm-qqvga:space-y-0.5">
 				<!-- Contra -->
 				<div tabindex="0"
-					class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white"
+					class="menu-item sample-item flex items-center gap-2 sm:gap-3 lg:gap-4 cm-qqvga:gap-1 p-1.5 sm:p-3 lg:p-4 cm-qqvga:p-1 rounded cursor-pointer text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white"
 					data-path="roms/Contra.nes" data-name="Contra">
-					<svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none"
+					<svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-7 lg:h-7 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none"
 						stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round"
 							d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -159,9 +160,9 @@
 				</div>
 				<!-- International Cricket -->
 				<div tabindex="0"
-					class="menu-item sample-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white"
+					class="menu-item sample-item flex items-center gap-2 sm:gap-3 lg:gap-4 cm-qqvga:gap-1 p-1.5 sm:p-3 lg:p-4 cm-qqvga:p-1 rounded cursor-pointer text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px] bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white"
 					data-path="roms/International Cricket.nes" data-name="International Cricket">
-					<svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none"
+					<svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-7 lg:h-7 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-green-00a shrink-0" fill="none"
 						stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round"
 							d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -171,10 +172,10 @@
 				</div>
 			</div>
 
-			<div class="text-[10px] cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">
+			<div class="text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[7px] text-gray-400 font-bold uppercase tracking-wider px-1 pt-1">
 				Recent History</div>
-			<div id="history-rom-list" class="space-y-1 cm-qqvga:space-y-0.5">
-				<div id="history-empty" class="text-neutral-500 text-[10px] cm-qqvga:text-[8px] italic px-1">No previous
+			<div id="history-rom-list" class="space-y-1 sm:space-y-2 lg:space-y-3 cm-qqvga:space-y-0.5">
+				<div id="history-empty" class="text-neutral-500 text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] italic px-1">No previous
 					games played</div>
 			</div>
 
@@ -183,71 +184,71 @@
 		<!-- ================= HELP SCREEN MODAL ================= -->
 		<div id="helpScreen" class="hidden absolute inset-0 bg-cm-gray-020 z-20 flex flex-col justify-between">
 			<header
-				class="bg-neutral-800 text-white font-bold text-xs cm-qqvga:text-[9px] h-[30px] cm-qqvga:h-[20px] px-2 flex items-center shrink-0">
+				class="bg-neutral-800 text-white font-bold text-xs sm:text-base lg:text-xl cm-qqvga:text-[9px] h-[30px] sm:h-[45px] lg:h-[60px] px-2 sm:px-4 lg:px-6 flex items-center shrink-0">
 				Keybindings Help
 			</header>
-			<div class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto text-[11px] cm-qqvga:text-[8px] space-y-1">
+			<div class="flex-1 p-2 sm:p-4 lg:p-6 cm-qqvga:p-1 overflow-y-auto text-[11px] sm:text-sm lg:text-base cm-qqvga:text-[8px] space-y-1 sm:space-y-2 lg:space-y-3">
 				<table class="w-full text-left text-neutral-300">
 					<tr class="border-b border-neutral-800">
-						<td>A Button</td>
-						<td class="text-right text-white font-bold">5 / Enter</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">A Button</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">5 / Enter</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>B Button</td>
-						<td class="text-right text-white font-bold">9</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">B Button</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">9</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>SELECT</td>
-						<td class="text-right text-white font-bold">7</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">SELECT</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">7</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>START</td>
-						<td class="text-right text-white font-bold">0</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">START</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">0</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>D-PAD</td>
-						<td class="text-right text-white font-bold">Arrows / 2,8,4,6</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">D-PAD</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">Arrows / 2,8,4,6</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>Fast Forward</td>
-						<td class="text-right text-white font-bold">3</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">Fast Forward</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">3</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>Slow Down</td>
-						<td class="text-right text-white font-bold">1</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">Slow Down</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">1</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>Save State</td>
-						<td class="text-right text-white font-bold">*</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">Save State</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">*</td>
 					</tr>
 					<tr class="border-b border-neutral-800">
-						<td>Load State</td>
-						<td class="text-right text-white font-bold">#</td>
+						<td class="py-1 sm:py-2.5 lg:py-4">Load State</td>
+						<td class="text-right text-white font-bold py-1 sm:py-2.5 lg:py-4">#</td>
 					</tr>
 				</table>
 			</div>
 			<footer
-				class="bg-black text-[10px] cm-qqvga:text-[8px] px-2 h-[24px] cm-qqvga:h-[16px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
+				class="bg-black text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] px-2 sm:px-4 lg:px-6 h-[24px] sm:h-[36px] lg:h-[48px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
 				<span></span>
 				<span></span>
-				<span class="text-white font-bold">Back</span>
+				<span class="text-white font-bold animate-pulse">Back</span>
 			</footer>
 		</div>
 
 		<!-- ================= KEY MAP SETTINGS MODAL ================= -->
 		<div id="keyMapScreen" class="hidden absolute inset-0 bg-cm-gray-020 z-20 flex flex-col justify-between">
 			<header
-				class="bg-neutral-800 text-white font-bold text-xs cm-qqvga:text-[9px] h-[30px] cm-qqvga:h-[20px] px-2 flex items-center shrink-0">
+				class="bg-neutral-800 text-white font-bold text-xs sm:text-base lg:text-xl cm-qqvga:text-[9px] h-[30px] sm:h-[45px] lg:h-[60px] px-2 sm:px-4 lg:px-6 flex items-center shrink-0">
 				Key Configuration
 			</header>
 			<div id="key-map-list"
-				class="flex-1 p-2 cm-qqvga:p-1 overflow-y-auto space-y-1 text-xs cm-qqvga:text-[9px]">
+				class="flex-1 p-2 sm:p-4 lg:p-6 cm-qqvga:p-1 overflow-y-auto space-y-1 sm:space-y-2 lg:space-y-3 text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px]">
 				<!-- Populated via Javascript -->
 			</div>
 			<footer
-				class="bg-black text-[10px] cm-qqvga:text-[8px] px-2 h-[24px] cm-qqvga:h-[16px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
+				class="bg-black text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] px-2 sm:px-4 lg:px-6 h-[24px] sm:h-[36px] lg:h-[48px] flex items-center justify-between border-t border-neutral-800 text-neutral-400">
 				<span>Rem. All</span>
-				<span class="font-bold text-white">Set</span>
+				<span class="font-bold text-white animate-pulse">Set</span>
 				<span>Back</span>
 			</footer>
 		</div>
@@ -255,9 +256,9 @@
 		<!-- KEYMAP CAPTURE OVERLAY -->
 		<div id="setKeyModal" class="hidden absolute inset-0 bg-black/95 z-30 flex items-center justify-center p-4">
 			<div
-				class="bg-neutral-900 border border-neutral-800 rounded p-4 text-center space-y-2 w-full max-w-[200px]">
-				<div id="set-key-name" class="font-bold text-xs text-cm-blue-05a tracking-wide">Key Name</div>
-				<div id="set-key-prompt" class="text-[10px] text-white animate-pulse">Loading...</div>
+				class="bg-neutral-900 border border-neutral-800 rounded p-4 sm:p-6 lg:p-8 text-center space-y-2 sm:space-y-4 w-full max-w-[200px] sm:max-w-[300px] lg:max-w-[400px]">
+				<div id="set-key-name" class="font-bold text-xs sm:text-sm lg:text-base text-cm-blue-05a tracking-wide">Key Name</div>
+				<div id="set-key-prompt" class="text-[10px] sm:text-xs lg:text-sm text-white animate-pulse">Loading...</div>
 			</div>
 		</div>
 
@@ -265,9 +266,9 @@
 		<div id="blur" class="hidden absolute inset-0 bg-black z-30 flex flex-col justify-between">
 			<!-- Header (Height: 30px / 20px) -->
 			<header id="header"
-				class="bg-neutral-900 px-2 h-[30px] cm-qqvga:h-[20px] flex items-center justify-between text-xs cm-qqvga:text-[9px] truncate font-bold text-white border-b border-neutral-800 shrink-0 select-none">
-				<span id="rom-title-header" class="truncate max-w-[150px] cm-qqvga:max-w-[70px]">ROM Name</span>
-				<span class="text-[9px] cm-qqvga:text-[7px] text-gray-500 uppercase tracking-widest">NES</span>
+				class="bg-neutral-900 px-2 sm:px-4 lg:px-6 h-[30px] sm:h-[45px] lg:h-[60px] flex items-center justify-between text-xs sm:text-base lg:text-xl cm-qqvga:text-[9px] truncate font-bold text-white border-b border-neutral-800 shrink-0 select-none">
+				<span id="rom-title-header" class="truncate max-w-[150px] sm:max-w-[300px] lg:max-w-[500px] cm-qqvga:max-w-[70px]">ROM Name</span>
+				<span class="text-[9px] sm:text-xs lg:text-sm cm-qqvga:text-[7px] text-gray-500 uppercase tracking-widest">NES</span>
 			</header>
 
 			<!-- Expanded Game View Area -->
@@ -278,10 +279,10 @@
 
 			<!-- Footer Control Bar -->
 			<footer
-				class="bg-neutral-900 text-[10px] cm-qqvga:text-[8px] h-[24px] cm-qqvga:h-[16px] flex items-center justify-between px-2 text-neutral-300 border-t border-neutral-800 shrink-0 select-none">
-				<span id="emul-f1" class="text-neutral-500 text-[9px] cm-qqvga:text-[7px]">Ad</span>
+				class="bg-neutral-900 text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] h-[24px] sm:h-[36px] lg:h-[48px] flex items-center justify-between px-2 sm:px-4 lg:px-6 text-neutral-300 border-t border-neutral-800 shrink-0 select-none">
+				<span id="emul-f1" class="text-neutral-500 text-[9px] sm:text-xs lg:text-sm cm-qqvga:text-[7px]">Ad</span>
 				<span id="emul-f2"
-					class="text-yellow-400 font-bold bg-black/50 px-1.5 py-0.5 rounded border border-neutral-800">1.00x</span>
+					class="text-yellow-400 font-bold bg-black/50 px-1.5 sm:px-3 lg:px-4 py-0.5 sm:py-1 rounded border border-neutral-800 text-[10px] sm:text-xs lg:text-sm">1.00x</span>
 				<span id="emul-f3" class="text-neutral-400">Back</span>
 			</footer>
 
@@ -298,7 +299,7 @@
 
 		<!-- ================= FOOTER SOFTKEY BAR ================= -->
 		<footer id="app-footer"
-			class="bg-black border-t border-neutral-800 h-[24px] cm-qqvga:h-[16px] px-2 flex items-center justify-between text-[10px] cm-qqvga:text-[8px] text-gray-400 shrink-0 z-10">
+			class="bg-black border-t border-neutral-800 h-[24px] sm:h-[36px] lg:h-[48px] cm-qqvga:h-[16px] px-2 sm:px-4 lg:px-6 flex items-center justify-between text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[8px] text-gray-400 shrink-0 z-10">
 			<button id="lsk-label" class="focus:outline-none">Help</button>
 			<button id="csk-label" class="font-bold text-white focus:outline-none">OK</button>
 			<button id="rsk-label" class="focus:outline-none">Exit</button>
@@ -306,24 +307,24 @@
 
 		<!-- ================= CUSTOM MODAL (ALERT/CONFIRM REPLACE) ================= -->
 		<div id="customModal"
-			class="hidden absolute inset-0 bg-black/85 z-50 flex items-center justify-center p-3 cm-qqvga:p-1 select-none">
+			class="hidden absolute inset-0 bg-black/85 z-50 flex items-center justify-center p-3 sm:p-6 lg:p-8 cm-qqvga:p-1 select-none">
 			<div
-				class="bg-neutral-900 border border-neutral-800 rounded w-full max-w-[200px] cm-qqvga:max-w-[110px] flex flex-col overflow-hidden shadow-2xl">
+				class="bg-neutral-900 border border-neutral-800 rounded w-full max-w-[200px] sm:max-w-[300px] lg:max-w-[400px] cm-qqvga:max-w-[110px] flex flex-col overflow-hidden shadow-2xl">
 				<!-- Modal Header -->
 				<div id="modal-header"
-					class="bg-neutral-950 text-white font-bold text-[10px] cm-qqvga:text-[7px] px-2 py-1 border-b border-neutral-800 text-center tracking-wider uppercase truncate">
+					class="bg-neutral-950 text-white font-bold text-[10px] sm:text-xs lg:text-sm cm-qqvga:text-[7px] px-2 sm:px-4 py-1 sm:py-2 border-b border-neutral-800 text-center tracking-wider uppercase truncate">
 					Notification
 				</div>
 				<!-- Modal Message -->
 				<div id="modal-message"
-					class="p-3 cm-qqvga:p-1.5 text-xs cm-qqvga:text-[8px] text-neutral-200 text-center leading-relaxed max-h-[120px] cm-qqvga:max-h-[70px] overflow-y-auto break-words">
+					class="p-3 sm:p-5 text-xs sm:text-sm lg:text-base cm-qqvga:text-[8px] text-neutral-200 text-center leading-relaxed max-h-[120px] sm:max-h-[200px] lg:max-h-[300px] overflow-y-auto break-words">
 					Alert message...
 				</div>
 				<!-- Modal Softkeys Footer -->
 				<div id="modal-footer"
-					class="bg-black border-t border-neutral-800 h-[24px] cm-qqvga:h-[16px] px-2 flex items-center justify-between text-[9px] cm-qqvga:text-[7px] text-neutral-400 font-bold shrink-0">
+					class="bg-black border-t border-neutral-800 h-[24px] sm:h-[36px] lg:h-[48px] cm-qqvga:h-[16px] px-2 sm:px-4 lg:px-6 flex items-center justify-between text-[9px] sm:text-xs lg:text-sm cm-qqvga:text-[7px] text-neutral-400 font-bold shrink-0">
 					<span id="modal-lsk" class="text-left w-1/3 truncate"></span>
-					<span id="modal-csk" class="text-center w-1/3 text-white truncate">OK</span>
+					<span id="modal-csk" class="text-center w-1/3 text-white truncate animate-pulse">OK</span>
 					<span id="modal-rsk" class="text-right w-1/3 truncate"></span>
 				</div>
 			</div>
@@ -479,7 +480,7 @@
 			renderHistoryList();
 		}
 
-		// Render Recent History items with Ad Container spacing
+		// Render Recent History items with Ad Container spacing and responsive typography
 		function renderHistoryList() {
 			const container = document.getElementById('history-rom-list');
 			const emptyNotice = document.getElementById('history-empty');
@@ -497,9 +498,9 @@
 			romHistory.forEach((item, index) => {
 				const element = document.createElement('div');
 				element.tabIndex = 0;
-				element.className = "menu-item history-item flex items-center gap-2 cm-qqvga:gap-1 p-1.5 cm-qqvga:p-1 rounded cursor-pointer text-xs cm-qqvga:text-[9px] bg-neutral-800/40 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]";
+				element.className = "menu-item history-item flex items-center gap-2 sm:gap-3 lg:gap-4 cm-qqvga:gap-1 p-1.5 sm:p-3 lg:p-4 cm-qqvga:p-1 rounded cursor-pointer text-xs sm:text-sm lg:text-base cm-qqvga:text-[9px] bg-neutral-800/40 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]";
 				element.innerHTML = `
-                    <svg class="w-3.5 h-3.5 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-7 lg:h-7 cm-qqvga:w-2.5 cm-qqvga:h-2.5 text-cm-blue-05a shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <span class="truncate">${item.name}</span>
@@ -523,9 +524,9 @@
 				if ((index + 1) % 5 === 0) {
 					const adElement = document.createElement('div');
 					adElement.tabIndex = 0;
-					adElement.className = "menu-item history-ad-item flex items-center justify-center p-1.5 rounded cursor-pointer text-xs bg-neutral-900 border border-neutral-800 text-neutral-500 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
+					adElement.className = "menu-item history-ad-item flex items-center justify-center p-1.5 sm:p-3 rounded cursor-pointer text-xs sm:text-sm bg-neutral-900 border border-neutral-800 text-neutral-500 focus:bg-cm-blue-05a focus:font-bold focus:text-white";
 					adElement.innerHTML = `
-                        <span class="text-[9px] tracking-wider uppercase font-bold text-neutral-400">Sponsored Ad</span>
+                        <span class="text-[9px] sm:text-xs lg:text-sm tracking-wider uppercase font-bold text-neutral-400">Sponsored Ad</span>
                     `;
 
 					container.appendChild(adElement);
@@ -862,10 +863,10 @@
 
 				const el = document.createElement('div');
 				el.tabIndex = 0;
-				el.className = "keymap-item flex items-center justify-between p-1.5 cm-qqvga:p-1 rounded cursor-pointer bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]";
+				el.className = "keymap-item flex items-center justify-between p-1.5 sm:p-3 lg:p-4 cm-qqvga:p-1 rounded cursor-pointer bg-neutral-800/60 focus:bg-cm-blue-05a focus:font-bold focus:text-white transition-all transform focus:scale-[1.02]";
 				el.innerHTML = `
                     <span class="truncate font-bold">${k.replace('_', ' ')}</span>
-                    <span class="text-[10px] opacity-70 font-normal truncate">> ${displayVal}</span>
+                    <span class="text-[10px] sm:text-xs lg:text-sm opacity-70 font-normal truncate">> ${displayVal}</span>
                 `;
 
 				el.addEventListener('click', function () {
@@ -907,6 +908,7 @@
 			renderKeyMapList();
 		}
 
+		// Close keymap configuration viewport
 		function closeKeyMap() {
 			document.getElementById('keyMapScreen').classList.add('hidden');
 			document.body.removeEventListener('keydown', keydownkeymap);
