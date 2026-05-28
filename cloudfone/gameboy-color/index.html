@@ -474,6 +474,19 @@
                                 });
                             }
                         });
+						setInterval(() => {
+							getCloudAd({
+								publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+								app: 'gameboy_emul',
+								slot: ' history_banner',
+								container: adElement,
+								onerror: console.error,
+								onready: function (ad) {
+									cloudad = ad;
+									ad.call('display');
+								}
+							});
+						}, 40000);
                     }
                 }
             });
@@ -647,6 +660,24 @@
                         });
                     }
                 });
+
+				setInterval(() => {
+					getCloudAd({
+						publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+						app: 'gameboy_emul',
+						slot: 'gameplay',
+						container: document.getElementById('ad-slot-gameplay'),
+						onerror: console.error,
+						onready: function (ad) {
+							cloudad = ad;
+							ad.call('display', {
+								tabindex: -1,
+								display: 'block',
+
+							});
+						}
+					});
+				}, 40000);
             }
             if (typeof getCloudAd === 'function') {
                 getCloudAd({
