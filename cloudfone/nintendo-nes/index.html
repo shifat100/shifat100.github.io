@@ -528,12 +528,6 @@
                         <span class="text-[9px] tracking-wider uppercase font-bold text-neutral-400">Sponsored Ad</span>
                     `;
 
-					adElement.addEventListener('click', () => {
-						if (cloudad && typeof cloudad.call === 'function') {
-							cloudad.call('click');
-						}
-					});
-
 					container.appendChild(adElement);
 
 					if (typeof getCloudAd !== 'undefined') {
@@ -783,10 +777,7 @@
 
 			if (e.key === 'SoftLeft' || e.key === 'Escape' || e.key === 'F1') {
 				e.preventDefault();
-				const adContainer = document.getElementById('ad-slot-gameplay');
-				if (adContainer) {
-					adContainer.click();
-				}
+				cloudad.call('click');
 			}
 
 			if (e.key === 'F2' || e.key === 'SoftRight' || e.key === 'Backspace') {
