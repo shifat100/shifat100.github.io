@@ -11,14 +11,19 @@
   "background_color": "#ffffff",
   "icons": [
     {
-      "src": "icons/56.png",
+      "src": "/cloudfone/sixteen-solider/icons/56.png",
       "type": "image/png",
       "sizes": "56x56"
     },
     {
-      "src": "icons/112.png",
+      "src": "/cloudfone/sixteen-solider/icons/112.png",
       "type": "image/png",
       "sizes": "112x112"
+    },
+    {
+      "src": "/cloudfone/sixteen-solider/icons/128.png",
+      "type": "image/png",
+      "sizes": "128x128"
     }
   ],
   "developer": {
