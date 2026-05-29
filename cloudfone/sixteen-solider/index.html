@@ -11,15 +11,8 @@
     <script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
     <script src="https://static.kaiads.com/ads-sdk/ads-sdk.v5.min.js"></script>
     <style>
-        /* গ্লোবালি স্ক্রলবার হাইড করার জন্য */
         * {
             outline: 0px;
-            box-sizing: border-box;
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-        }
-        *::-webkit-scrollbar {
-            display: none !important;
         }
 
         body {
@@ -32,13 +25,15 @@
             align-items: center;
             justify-content: space-between;
             height: 100vh;
+            box-sizing: border-box;
             overflow: hidden;
             user-select: none;
+
         }
 
         .kai-header {
             width: 100%;
-            height: 28px;
+            height: 20px;
             background-color: #873eff;
             color: #ffffff;
             display: flex;
@@ -49,21 +44,18 @@
             text-transform: uppercase;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             z-index: 5;
-            flex-shrink: 0;
         }
 
         #gameContainer {
             position: relative;
             width: 100%;
             max-width: 320px;
-            height: calc(100vh - 58px); /* Header 28px + Softkey 30px */
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             background-color: #222222;
-            overflow: hidden;
         }
 
         canvas {
@@ -74,25 +66,24 @@
             display: block;
             border-radius: 4px;
             cursor: pointer;
-            max-height: 100%;
+            max-height: calc(100vh - 62px);
             object-fit: contain;
             touch-action: none;
         }
 
         .kai-softkey {
             width: 100%;
-            height: 30px;
+            height: 22px;
             background-color: #f1f1f1;
             color: #333333;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             text-align: center;
             align-items: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
             z-index: 5;
-            flex-shrink: 0;
         }
 
         .kai-softkey div {
@@ -105,7 +96,6 @@
         .softkey-left {
             text-align: left;
             padding-left: 8px !important;
-            color: #873eff;
         }
 
         .softkey-center {
@@ -120,15 +110,16 @@
 
         .hud-overlay {
             position: fixed;
-            top: 28px;
+            top: 0px;
             left: 0px;
             width: 100%;
             display: flex;
             justify-content: space-between;
             font-size: 11px;
             color: #ffffff;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0);
             padding: 4px 8px;
+            border-radius: 4px;
             pointer-events: none;
             z-index: 9;
         }
@@ -150,16 +141,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             z-index: 10;
             text-align: center;
-            padding: 15px 15px 30px 15px;
-            overflow-y: auto;
+            padding: 5px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        #lobbyScreen {
+            justify-content: flex-start;
+            gap: 4px;
         }
 
         .screen h2 {
             font-size: 18px;
-            margin: 10px 0 8px 0;
+            margin: 0 0 8px 0;
             color: #ffb74d;
         }
 
@@ -178,7 +175,7 @@
             font-size: 13px;
             text-align: center;
             border-radius: 4px;
-            margin-bottom: 8px;
+            margin-bottom: 2px;
             outline: none;
             box-sizing: border-box;
         }
@@ -221,6 +218,9 @@
 
         .room-list-container {
             width: 90%;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
             background: #222;
             border-radius: 4px;
             padding: 4px;
@@ -252,26 +252,97 @@
 
         @media (max-width: 180px) or (max-height: 220px) {
             .kai-header {
-                height: 18px;
-                font-size: 9px;
-            }
-
-            .kai-softkey {
-                height: 18px;
+                height: 16px;
                 font-size: 8px;
             }
 
+            canvas {
+                max-height: calc(100vh - 34px);
+            }
+
+            .kai-softkey {
+                height: 10px;
+                font-size: 7px;
+            }
+
+            .kai-softkey div {
+                padding: 1px;
+            }
+
+            .softkey-left {
+                padding-left: 4px !important;
+            }
+
+            .softkey-right {
+                padding-right: 4px !important;
+            }
+
+            .hud-overlay {
+                font-size: 8px;
+                padding: 2px 4px;
+            }
+
+            .hud-overlay div {
+                gap: 2px;
+            }
+
+            .hud-overlay div span[style*="width:8px"] {
+                width: 5px !important;
+                height: 5px !important;
+            }
+
             .screen {
-                padding: 4px 6px;
+                padding: 2px;
             }
 
             .screen h2 {
-                font-size: 11px;
-                margin: 4px 0;
+                font-size: 10px;
+                margin: 0 0 3px 0;
+            }
+
+            .screen p {
+                font-size: 7.5px;
+                margin: 0 0 4px 0;
+                line-height: 1.1;
+            }
+
+            .input-box {
+                padding: 3px;
+                font-size: 9px;
+                margin-bottom: 0px;
+                border-width: 1px;
+            }
+
+            .menu-list {
+                gap: 3px;
+            }
+
+            .menu-item {
+                padding: 4px;
+                font-size: 8px;
+                border-radius: 2px;
+            }
+
+            .room-list-title {
+                font-size: 8px;
+                margin-top: 4px;
+            }
+
+            .room-list-container {
+                flex: 1;
+                min-height: 20px;
+                max-height: none;
+                gap: 2px;
+                padding: 2px;
+                margin-top: 2px;
+            }
+
+            .room-item {
+                padding: 3px;
+                font-size: 7.5px;
             }
         }
     </style>
-    <link rel="manifest" href="/manifest.webmanifest" />
 </head>
 
 <body>
@@ -287,31 +358,26 @@
                     id="p2Label">Green: 16</span></div>
         </div><canvas id="gameCanvas" class="hidden"></canvas>
         <div id="lobbyScreen" class="screen">
-            <h2>Online Multiplayer</h2><input type="text" id="roomCodeInput" class="input-box active"
-                placeholder="ENTER CODE" maxlength="8">
+            <input type="text" id="roomCodeInput" class="input-box active" placeholder="ENTER CODE" maxlength="8">
             <div class="menu-list">
                 <div class="menu-item" id="btnJoin" onclick="actionJoin()">Join Room</div>
                 <div class="menu-item" id="btnCreatePublic" onclick="actionCreate(false)">Create Public Room</div>
                 <div class="menu-item" id="btnCreatePrivate" onclick="actionCreate(true)">Create Private Room</div>
             </div>
-            <div class="room-list-title">Active Public Waiting Rooms:</div>
+
             <div id="roomListContainer" class="room-list-container"></div>
         </div>
         <div id="waitingScreen" class="screen hidden">
-            <div style="margin: auto 0;">
-                <h2 id="roomTypeLabel">Waiting Room</h2>
-                <p>Waiting for another player to join...</p>
-                <div style="font-size: 20px; font-weight: bold; color: #ffb74d; margin-bottom: 20px;">Code: <span
-                        id="waitingCode"></span></div>
-            </div>
+            <h2 id="roomTypeLabel">Waiting Room</h2>
+            <p>Waiting for another player to join...</p>
+            <div style="font-size: 20px; font-weight: bold; color: #ffb74d; margin-bottom: 20px;">Code: <span
+                    id="waitingCode"></span></div>
         </div>
         <div id="endScreen" class="screen hidden">
-            <div style="margin: auto 0;">
-                <h2 id="endTitle">Game Over</h2>
-                <p id="endDetails"></p>
-                <div class="menu-list">
-                    <div class="menu-item active" onclick="leaveRoom()">Exit to Lobby</div>
-                </div>
+            <h2 id="endTitle">Game Over</h2>
+            <p id="endDetails"></p>
+            <div class="menu-list">
+                <div class="menu-item active" onclick="leaveRoom()">Exit to Lobby</div>
             </div>
         </div>
     </div>
@@ -321,151 +387,1117 @@
         <div class="softkey-right" id="softRightText"></div>
     </div>
     <script>
-        function isKaiOS() { return /KAIOS|KaiOS/i.test(navigator.userAgent) } const firebaseConfig = { apiKey: "AIzaSyBsAYFWEDYpQEDhEykEWXO_FwB9dzANE3M", authDomain: "shulo-guti.firebaseapp.com", databaseURL: "https://shulo-guti-default-rtdb.firebaseio.com", projectId: "shulo-guti", storageBucket: "shulo-guti.firebasestorage.app", messagingSenderId: "738532732350", appId: "1:738532732350:web:4fca1f3257724584c01def" }; firebase.initializeApp(firebaseConfig); const database = firebase.database(), myClientId = Math.random().toString(36).substring(2, 15); var currentRoomRef = null, roomListener = null, lastProcessedMoveTime = 0, lastProcessedEndTurnTime = 0; const canvas = document.getElementById("gameCanvas"), ctx = canvas.getContext("2d"); canvas.width = 500, canvas.height = 920; var myRole = null, gameActive = !1, publicRooms = [], activeMenuOption = 0; const points = [{ id: 0, x: 50, y: 40 }, { id: 1, x: 250, y: 40 }, { id: 2, x: 450, y: 40 }, { id: 3, x: 150, y: 145 }, { id: 4, x: 250, y: 145 }, { id: 5, x: 350, y: 145 }, { id: 6, x: 50, y: 250 }, { id: 7, x: 150, y: 250 }, { id: 8, x: 250, y: 250 }, { id: 9, x: 350, y: 250 }, { id: 10, x: 450, y: 250 }, { id: 11, x: 50, y: 355 }, { id: 12, x: 150, y: 355 }, { id: 13, x: 250, y: 355 }, { id: 14, x: 350, y: 355 }, { id: 15, x: 450, y: 355 }, { id: 16, x: 50, y: 460 }, { id: 17, x: 150, y: 460 }, { id: 18, x: 250, y: 460 }, { id: 19, x: 350, y: 460 }, { id: 20, x: 450, y: 460 }, { id: 21, x: 50, y: 565 }, { id: 22, x: 150, y: 565 }, { id: 23, x: 250, y: 565 }, { id: 24, x: 350, y: 565 }, { id: 25, x: 450, y: 565 }, { id: 26, x: 50, y: 670 }, { id: 27, x: 150, y: 670 }, { id: 28, x: 250, y: 670 }, { id: 29, x: 350, y: 670 }, { id: 30, x: 450, y: 670 }, { id: 31, x: 150, y: 775 }, { id: 32, x: 250, y: 775 }, { id: 33, x: 350, y: 775 }, { id: 34, x: 50, y: 880 }, { id: 35, x: 250, y: 880 }, { id: 36, x: 450, y: 880 }], lines = [[6, 11, 16, 21, 26], [7, 12, 17, 22, 27], [1, 4, 8, 13, 18, 23, 28, 32, 35], [9, 14, 19, 24, 29], [10, 15, 20, 25, 30], [0, 1, 2], [3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15], [16, 17, 18, 19, 20], [21, 22, 23, 24, 25], [26, 27, 28, 29, 30], [31, 32, 33], [34, 35, 36], [6, 12, 18, 24, 30], [10, 14, 18, 22, 26], [0, 3, 8, 14, 20], [2, 5, 8, 12, 16], [20, 24, 28, 31, 34], [16, 22, 28, 33, 36]]; var audioCtx, boardState = [], turn = 1, activePieceId = null, hasCapturedThisTurn = !1, visualPieces = [], dyingPieces = [], keyboardCursorIndex = 18; function getDisplayY(e) { return 1 === myRole ? 920 - e : e } function playSound(e) { audioCtx || (audioCtx = new (window.AudioContext || window.webkitAudioContext)), "suspended" === audioCtx.state && audioCtx.resume(); try { const t = audioCtx.createOscillator(), a = audioCtx.createGain(); t.connect(a), a.connect(audioCtx.destination), "move" === e ? (t.type = "sine", t.frequency.setValueAtTime(260, audioCtx.currentTime), a.gain.setValueAtTime(.08, audioCtx.currentTime), t.start(), t.stop(audioCtx.currentTime + .1)) : "capture" === e && (t.type = "triangle", t.frequency.setValueAtTime(100, audioCtx.currentTime), a.gain.setValueAtTime(.15, audioCtx.currentTime), t.start(), t.stop(audioCtx.currentTime + .15)) } catch (e) { } } function connectServer() { database.ref("rooms").on("value", (e => { const t = []; e.forEach((e => { const a = e.val(); "waiting" !== a.status || a.isPrivate || !a.p1 || a.p2 || t.push({ code: e.key, playersCount: 1 }) })), publicRooms = t, gameActive || document.getElementById("lobbyScreen").classList.contains("hidden") || renderPublicRooms() })), isKaiOS() ? getKaiAd({ publisher: "080b82ab-b33a-4763-a498-50f464567e49", app: "sixteen-solider", slot: "main", onerror: e => { }, onready: e => { e.call("display") } }) : getCloudAd({ publisher: "1748228c05773e8ab91b3c2a48efae79", onready: e => { e.call("display") } }) } function joinRoom(e, t) { const a = e.trim().toUpperCase(); if (!a) return void alert("Please enter a code to join."); const n = database.ref("rooms/" + a); currentRoomRef = n, n.transaction((e => null === e || "forfeit" === e.status || !e.p1 && !e.p2 ? { p1: myClientId, p2: null, isPrivate: t, status: "waiting" } : e.p1 === myClientId || e.p2 === myClientId ? e : e.p1 && e.p2 ? void 0 : (e.p2 = myClientId, e.status = "playing", e)), ((e, t, n) => { if (e) alert("Room error: " + e.message); else if (t) { const e = n.val(); setupRoomRealtime(a, e) } else alert("Room is already full!") })) } function setupRoomRealtime(e, t) { t.p1 === myClientId ? myRole = 1 : t.p2 === myClientId && (myRole = 2), "waiting" === t.status ? (document.getElementById("lobbyScreen").classList.add("hidden"), document.getElementById("waitingScreen").classList.remove("hidden"), document.getElementById("waitingCode").innerText = e, document.getElementById("roomTypeLabel").innerText = t.isPrivate ? "Private Room Created" : "Public Room Created", updateSoftkeys()) : "playing" === t.status && startGameLocal(), currentRoomRef.child("status").onDisconnect().set("forfeit"), currentRoomRef.child(1 === myRole ? "p1" : "p2").onDisconnect().remove(), roomListener && currentRoomRef.off("value", roomListener), roomListener = currentRoomRef.on("value", (e => { const t = e.val(); t && ("playing" !== t.status || gameActive || startGameLocal(), "forfeit" === t.status && gameActive && handleForfeit(), t.lastMove && t.lastMove.sender !== myClientId && t.lastMove.timestamp > lastProcessedMoveTime && (lastProcessedMoveTime = t.lastMove.timestamp, executeOpponentMove(t.lastMove.fromId, t.lastMove.move)), t.lastEndTurn && t.lastEndTurn.sender !== myClientId && t.lastEndTurn.timestamp > lastProcessedEndTurnTime && (lastProcessedEndTurnTime = t.lastEndTurn.timestamp, finalizeTurnLocal())) })) } function startGameLocal() { document.getElementById("waitingScreen").classList.add("hidden"), document.getElementById("lobbyScreen").classList.add("hidden"), document.getElementById("hudBar").classList.remove("hidden"), canvas.classList.remove("hidden"), gameActive = !0, lastProcessedMoveTime = Date.now(), lastProcessedEndTurnTime = Date.now(), initGame() } function actionJoin() { const e = document.getElementById("roomCodeInput").value.trim(); e ? joinRoom(e, !1) : alert("Please enter a code to join.") } function actionCreate(e) { var t = document.getElementById("roomCodeInput").value.trim(); t || (t = Math.random().toString(36).substring(2, 7)), joinRoom(t, e) } function leaveRoom() { currentRoomRef && (currentRoomRef.child("status").onDisconnect().cancel(), currentRoomRef.child(1 === myRole ? "p1" : "p2").onDisconnect().cancel(), currentRoomRef.once("value", (e => { const t = e.val(); if (t) { (1 === myRole ? t.p2 : t.p1) ? (currentRoomRef.child("status").set("forfeit"), currentRoomRef.child(1 === myRole ? "p1" : "p2").remove()) : currentRoomRef.remove() } })), roomListener && (currentRoomRef.off("value", roomListener), roomListener = null), currentRoomRef = null), myRole = null, gameActive = !1, canvas.classList.add("hidden"), document.getElementById("hudBar").classList.add("hidden"), document.getElementById("waitingScreen").classList.add("hidden"), document.getElementById("endScreen").classList.add("hidden"), document.getElementById("lobbyScreen").classList.remove("hidden"), activeMenuOption = 0, updateLobbyFocus(), updateSoftkeys() } function handleForfeit() { gameActive = !1, document.getElementById("endScreen").classList.remove("hidden"), document.getElementById("endTitle").innerText = "Opponent Left", document.getElementById("endDetails").innerText = "Opponent disconnected. You won by forfeit!", updateSoftkeys() } function renderPublicRooms() { const e = document.getElementById("roomListContainer"); e.innerHTML = "", 0 === publicRooms.length ? e.innerHTML = '<div style="font-size:9px; color:#aaa; padding:10px;">No active public waiting rooms.</div>' : publicRooms.forEach(((t, a) => { const n = document.createElement("div"); n.className = "room-item", n.id = `roomItem_${a}`, n.innerHTML = `<span>Code: <b>${t.code}</b></span> <span style="color:#873eff;">Join &raquo;</span>`, n.onclick = () => joinRoom(t.code, !1), e.appendChild(n) })), updateLobbyFocus() } 
-        
-        function updateLobbyFocus() {
-            document.getElementById("roomCodeInput").classList.remove("active"),
-            document.getElementById("btnJoin").classList.remove("active"),
-            document.getElementById("btnCreatePublic").classList.remove("active"),
-            document.getElementById("btnCreatePrivate").classList.remove("active"),
-            document.querySelectorAll(".room-item").forEach((e => e.classList.remove("active")));
-            
-            var e = 3 + publicRooms.length;
-            if (activeMenuOption > e && (activeMenuOption = e), 0 === activeMenuOption) {
-                document.getElementById("roomCodeInput").classList.add("active");
-                document.getElementById("roomCodeInput").focus();
+        //         (async function () {
+        //     "use strict";
+
+        //     // =========================
+        //     // ALLOWED DOMAIN
+        //     // =========================
+        //     const allowedHost = "shifat100.github.io";
+
+        //     const allowedPaths = [
+        //         "/cloudfone/sixteen-solider",
+        //         "/cloudfone/sixteen-solider/",
+        //         "/cloudfone/sixteen-solider/index.html"
+        //     ];
+
+        //     // =========================
+        //     // DOMAIN VALIDATION
+        //     // =========================
+        //     function validDomain() {
+        //         return (
+        //             location.hostname === allowedHost &&
+        //             allowedPaths.includes(location.pathname)
+        //         );
+        //     }
+
+        //     // =========================
+        //     // ANTI IFRAME
+        //     // =========================
+        //     function antiIframe() {
+        //         return window.self === window.top;
+        //     }
+
+        //     // =========================
+        //     // DEVTOOLS DETECTION
+        //     // =========================
+        //     function detectDevtools() {
+        //         const threshold = 160;
+
+        //         if (
+        //             window.outerWidth - window.innerWidth > threshold ||
+        //             window.outerHeight - window.innerHeight > threshold
+        //         ) {
+        //             return true;
+        //         }
+
+        //         return false;
+        //     }
+
+        //     // =========================
+        //     // HASH VALIDATION
+        //     // =========================
+        //     async function sha256(text) {
+        //         const data = new TextEncoder().encode(text);
+
+        //         const hashBuffer =
+        //             await crypto.subtle.digest("SHA-256", data);
+
+        //         return Array.from(new Uint8Array(hashBuffer))
+        //             .map(b => b.toString(16).padStart(2, "0"))
+        //             .join("");
+        //     }
+
+        //     // =========================
+        //     // FINGERPRINT
+        //     // =========================
+        //     const secret = "SHIFAT100_SIXTEEN_SOLIDER";
+
+        //     const fingerprint =
+        //         location.hostname +
+        //         location.pathname +
+        //         navigator.userAgent +
+        //         screen.width +
+        //         screen.height +
+        //         secret;
+
+        //     const generatedHash = await sha256(fingerprint);
+
+        //     // Generate this once from original site
+        //     const originalHash =
+        //         "61e0fb9e9339d79128c4ab80d73f7a53cddf74fbcc29d8ffc4e80c328baf4315";
+
+        //     // =========================
+        //     // VALIDATION
+        //     // =========================
+        //     if (
+        //         !validDomain() ||
+        //         !antiIframe() ||
+        //         detectDevtools() ||
+        //         generatedHash !== originalHash
+        //     ) {
+
+        //         // Destroy app
+        //         document.documentElement.innerHTML = "";
+
+        //         // Kill JS
+        //         Object.keys(window).forEach(k => {
+        //             try {
+        //                 window[k] = null;
+        //             } catch (e) {}
+        //         });
+
+        //         // Freeze
+        //         while (true) {
+        //             console.clear();
+        //         }
+        //     }
+
+        // })();
+
+
+        function isKaiOS() {
+            return /KAIOS|KaiOS/i.test(navigator.userAgent);
+        }
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBsAYFWEDYpQEDhEykEWXO_FwB9dzANE3M",
+            authDomain: "shulo-guti.firebaseapp.com",
+            databaseURL: "https://shulo-guti-default-rtdb.firebaseio.com",
+            projectId: "shulo-guti",
+            storageBucket: "shulo-guti.firebasestorage.app",
+            messagingSenderId: "738532732350",
+            appId: "1:738532732350:web:4fca1f3257724584c01def"
+        };
+
+        // Firebase Initialize
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const myClientId = Math.random().toString(36).substring(2, 15);
+        var currentRoomRef = null;
+        var roomListener = null;
+
+        var lastProcessedMoveTime = 0;
+        var lastProcessedEndTurnTime = 0;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 500;
+        canvas.height = 920;
+
+        var myRole = null; // 1 = Red, 2 = Green
+        var gameActive = false;
+        var publicRooms = [];
+        var activeMenuOption = 0;
+
+        // Node Positions
+        const points = [
+            { id: 0, x: 50, y: 40 }, { id: 1, x: 250, y: 40 }, { id: 2, x: 450, y: 40 },
+            { id: 3, x: 150, y: 145 }, { id: 4, x: 250, y: 145 }, { id: 5, x: 350, y: 145 },
+            { id: 6, x: 50, y: 250 }, { id: 7, x: 150, y: 250 }, { id: 8, x: 250, y: 250 }, { id: 9, x: 350, y: 250 }, { id: 10, x: 450, y: 250 },
+            { id: 11, x: 50, y: 355 }, { id: 12, x: 150, y: 355 }, { id: 13, x: 250, y: 355 }, { id: 14, x: 350, y: 355 }, { id: 15, x: 450, y: 355 },
+            { id: 16, x: 50, y: 460 }, { id: 17, x: 150, y: 460 }, { id: 18, x: 250, y: 460 }, { id: 19, x: 350, y: 460 }, { id: 20, x: 450, y: 460 },
+            { id: 21, x: 50, y: 565 }, { id: 22, x: 150, y: 565 }, { id: 23, x: 250, y: 565 }, { id: 24, x: 350, y: 565 }, { id: 25, x: 450, y: 565 },
+            { id: 26, x: 50, y: 670 }, { id: 27, x: 150, y: 670 }, { id: 28, x: 250, y: 670 }, { id: 29, x: 350, y: 670 }, { id: 30, x: 450, y: 670 },
+            { id: 31, x: 150, y: 775 }, { id: 32, x: 250, y: 775 }, { id: 33, x: 350, y: 775 },
+            { id: 34, x: 50, y: 880 }, { id: 35, x: 250, y: 880 }, { id: 36, x: 450, y: 880 }
+        ];
+
+        // CLASSIC BOARD SHAPE LINES
+        const lines = [
+            [6, 11, 16, 21, 26],
+            [7, 12, 17, 22, 27],
+            [1, 4, 8, 13, 18, 23, 28, 32, 35],
+            [9, 14, 19, 24, 29],
+            [10, 15, 20, 25, 30],
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8, 9, 10],
+            [11, 12, 13, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25],
+            [26, 27, 28, 29, 30],
+            [31, 32, 33],
+            [34, 35, 36],
+            [6, 12, 18, 24, 30],
+            [10, 14, 18, 22, 26],
+            [0, 3, 8, 14, 20],
+            [2, 5, 8, 12, 16],
+            [20, 24, 28, 31, 34],
+            [16, 22, 28, 33, 36]
+        ];
+
+        var boardState = [];
+        var turn = 1;
+        var activePieceId = null;
+        var hasCapturedThisTurn = false;
+        var visualPieces = [];
+        var dyingPieces = [];
+        var keyboardCursorIndex = 18;
+
+        function getDisplayY(y) {
+            if (myRole === 1) {
+                return 920 - y;
+            }
+            return y;
+        }
+
+        // --- SOUND ENGINE ---
+        var audioCtx;
+        function playSound(type) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                if (type === 'move') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(260, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'capture') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch (e) { }
+        }
+
+        // --- ONLINE CONNECTIVITY (FIREBASE) ---
+        function connectServer() {
+            // অ্যাক্টিভ পাবলিক ওয়েটিং রুমগুলো লাইভ দেখানোর লিসেনার [1]
+            database.ref('rooms').on('value', (snapshot) => {
+                const roomsList = [];
+                snapshot.forEach((childSnapshot) => {
+                    const room = childSnapshot.val();
+                    // শুধুমাত্র পাবলিক এবং যেখানে মাত্র একজন প্লেয়ার অপেক্ষা করছে [1]
+                    if (room.status === 'waiting' && !room.isPrivate && room.p1 && !room.p2) {
+                        roomsList.push({
+                            code: childSnapshot.key,
+                            playersCount: 1
+                        });
+                    }
+                });
+                publicRooms = roomsList;
+                if (!gameActive && !document.getElementById('lobbyScreen').classList.contains('hidden')) {
+                    renderPublicRooms();
+                }
+            });
+
+            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'main', onerror: e => { }, onready: e => { e.call('display') } }) } else {
+                getCloudAd({
+                    publisher: '1748228c05773e8ab91b3c2a48efae79',
+                    onready: ad => { ad.call('display'); }
+                });
+            }
+        }
+
+        function joinRoom(code, isPrivate) {
+            const roomCode = code.trim().toUpperCase();
+            if (!roomCode) {
+                alert("Please enter a code to join.");
+                return;
+            }
+
+            const roomRef = database.ref('rooms/' + roomCode);
+            currentRoomRef = roomRef;
+
+            roomRef.transaction((currentData) => {
+                // যদি রুমটি একদম খালি থাকে বা অলরেডি Forfeit হয়ে থাকে, তবে এটিকে নতুন করে রিসেট করা হবে
+                if (currentData === null || currentData.status === 'forfeit' || (!currentData.p1 && !currentData.p2)) {
+                    return {
+                        p1: myClientId,
+                        p2: null,
+                        isPrivate: isPrivate,
+                        status: "waiting"
+                    };
+                } else {
+                    // যদি আপনি নিজেই অলরেডি রুমে যুক্ত থাকেন
+                    if (currentData.p1 === myClientId || currentData.p2 === myClientId) {
+                        return currentData;
+                    }
+                    // যদি রুমে অলরেডি অন্য ২ জন প্লেয়ার থাকে (রুম ফুল)
+                    if (currentData.p1 && currentData.p2) {
+                        return; // ট্রানজেকশন ক্যানসেল করবে
+                    }
+                    // ২য় প্লেয়ার হিসেবে যোগদান
+                    currentData.p2 = myClientId;
+                    currentData.status = "playing";
+                    return currentData;
+                }
+            }, (error, committed, snapshot) => {
+                if (error) {
+                    alert("Room error: " + error.message);
+                } else if (!committed) {
+                    alert("Room is already full!");
+                } else {
+                    const roomData = snapshot.val();
+                    setupRoomRealtime(roomCode, roomData);
+                }
+            });
+        }
+
+        function setupRoomRealtime(roomCode, roomData) {
+            if (roomData.p1 === myClientId) {
+                myRole = 1;
+            } else if (roomData.p2 === myClientId) {
+                myRole = 2;
+            }
+
+            if (roomData.status === 'waiting') {
+                document.getElementById('lobbyScreen').classList.add('hidden');
+                document.getElementById('waitingScreen').classList.remove('hidden');
+                document.getElementById('waitingCode').innerText = roomCode;
+                document.getElementById('roomTypeLabel').innerText = roomData.isPrivate ? "Private Room Created" : "Public Room Created";
+                updateSoftkeys();
+            } else if (roomData.status === 'playing') {
+                startGameLocal();
+            }
+
+            // প্লেয়ার ডিসকানেক্ট হয়ে গেলে গেম স্টেট Forfeit করা এবং রুমের স্লট ফাঁকা করার অন-ডিসকানেক্ট হ্যান্ডলার
+            currentRoomRef.child('status').onDisconnect().set('forfeit');
+            currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().remove();
+
+            if (roomListener) currentRoomRef.off('value', roomListener);
+
+            roomListener = currentRoomRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                // ২য় প্লেয়ার জয়েন করলে গেম শুরু
+                if (data.status === 'playing' && !gameActive) {
+                    startGameLocal();
+                }
+
+                // কোনো প্লেয়ার চলে গেলে বা ডিসকানেক্ট হলে forfeit ডিক্লেয়ার
+                if (data.status === 'forfeit' && gameActive) {
+                    handleForfeit();
+                }
+
+                // নতুন কোনো চাল বা মুভমেন্ট আসলে
+                if (data.lastMove && data.lastMove.sender !== myClientId) {
+                    if (data.lastMove.timestamp > lastProcessedMoveTime) {
+                        lastProcessedMoveTime = data.lastMove.timestamp;
+                        executeOpponentMove(data.lastMove.fromId, data.lastMove.move);
+                    }
+                }
+
+                // টার্ন শেষ হওয়ার আপডেট আসলে
+                if (data.lastEndTurn && data.lastEndTurn.sender !== myClientId) {
+                    if (data.lastEndTurn.timestamp > lastProcessedEndTurnTime) {
+                        lastProcessedEndTurnTime = data.lastEndTurn.timestamp;
+                        finalizeTurnLocal();
+                    }
+                }
+            });
+        }
+
+        function startGameLocal() {
+            document.getElementById('waitingScreen').classList.add('hidden');
+            document.getElementById('lobbyScreen').classList.add('hidden');
+            document.getElementById('hudBar').classList.remove('hidden');
+            canvas.classList.remove('hidden');
+            gameActive = true;
+            lastProcessedMoveTime = Date.now();
+            lastProcessedEndTurnTime = Date.now();
+            initGame();
+        }
+
+        function actionJoin() {
+            const val = document.getElementById('roomCodeInput').value.trim();
+            if (val) {
+                joinRoom(val, false);
             } else {
-                document.getElementById("roomCodeInput").blur();
-                if (1 === activeMenuOption) {
-                    document.getElementById("btnJoin").classList.add("active");
-                } else if (2 === activeMenuOption) {
-                    document.getElementById("btnCreatePublic").classList.add("active");
-                } else if (3 === activeMenuOption) {
-                    document.getElementById("btnCreatePrivate").classList.add("active");
-                } else {
-                    var t = activeMenuOption - 4;
-                    const e = document.getElementById(`roomItem_${t}`);
-                    e && e.classList.add("active");
-                }
+                alert("Please enter a code to join.");
             }
-
-            // ফোকাসড এলিমেন্ট সেন্টারে রাখতে
-            setTimeout(function() {
-                var activeEl = document.querySelector(".screen:not(.hidden) .active");
-                if (activeEl) {
-                    activeEl.scrollIntoView({ block: "center", behavior: "smooth" });
-                }
-            }, 50);
         }
 
-        function handleLobbyNav(e) { var t = 3 + publicRooms.length; if ("ArrowUp" === e && activeMenuOption > 0) activeMenuOption--, updateLobbyFocus(); else if ("ArrowDown" === e && activeMenuOption < t) activeMenuOption++, updateLobbyFocus(); else if ("Enter" === e || "Select" === e) if (1 === activeMenuOption) actionJoin(); else if (2 === activeMenuOption) actionCreate(!1); else if (3 === activeMenuOption) actionCreate(!0); else if (activeMenuOption >= 4) { var a = activeMenuOption - 4; publicRooms[a] && joinRoom(publicRooms[a].code, !1) } } function initGame() { boardState = Array(37).fill(null); for (var e = 0; e <= 15; e++)boardState[e] = 1; for (e = 21; e <= 36; e++)boardState[e] = 2; turn = 1, keyboardCursorIndex = 1 === myRole ? 8 : 28, activePieceId = null, hasCapturedThisTurn = !1, visualPieces = []; for (e = 0; e < 37; e++)if (null !== boardState[e]) { var t = getDisplayY(points[e].y); visualPieces.push({ id: e, type: boardState[e], x: points[e].x, y: t, targetX: points[e].x, targetY: t }) } dyingPieces = [], updateHUD(), updateSoftkeys(), ensureValidCursor() } function getValidFocusNodes() { var e = []; if (!gameActive || turn !== myRole) return []; if (hasCapturedThisTurn && null !== activePieceId) return e.push(activePieceId), getValidJumps(activePieceId).forEach((function (t) { e.push(t.to) })), e; if (null !== activePieceId) { e.push(activePieceId); for (var t = 0; t < 37; t++)boardState[t] === myRole && e.push(t); return getValidMoves(activePieceId).forEach((function (t) { e.push(t.to) })), getValidJumps(activePieceId).forEach((function (t) { e.push(t.to) })), e.filter((function (e, t, a) { return a.indexOf(e) === t })) } for (t = 0; t < 37; t++)boardState[t] === myRole && e.push(t); return e } function ensureValidCursor() { var e = getValidFocusNodes(); if (0 !== e.length && !e.includes(keyboardCursorIndex)) { var t = points[keyboardCursorIndex].x, a = getDisplayY(points[keyboardCursorIndex].y), n = e[0], i = 1 / 0; e.forEach((e => { var o = points[e].x, r = getDisplayY(points[e].y), s = o - t, c = r - a, d = Math.sqrt(s * s + c * c); d < i && (i = d, n = e) })), keyboardCursorIndex = n } } function updateHUD() { var e = boardState.filter((e => 1 === e)).length, t = boardState.filter((e => 2 === e)).length, a = 1 === myRole ? "Red (You)" : "Red", n = 2 === myRole ? "Green (You)" : "Green"; document.getElementById("p1Label").innerText = `${a}: ${e}`, document.getElementById("p2Label").innerText = `${n}: ${t}`, turn === myRole ? (document.getElementById("turnIndicator").innerText = "Your Turn", document.getElementById("turnIndicator").style.color = "#ffb74d") : (document.getElementById("turnIndicator").innerText = "Waiting...", document.getElementById("turnIndicator").style.color = "#aaa") } 
-        
+        function actionCreate(isPrivate) {
+            var val = document.getElementById('roomCodeInput').value.trim();
+            if (!val) {
+                val = Math.random().toString(36).substring(2, 7);
+            }
+            joinRoom(val, isPrivate);
+        }
+
+        function leaveRoom() {
+            if (currentRoomRef) {
+                // Disconnect হ্যান্ডলারগুলো বাতিল করা
+                currentRoomRef.child('status').onDisconnect().cancel();
+                currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().cancel();
+
+                currentRoomRef.once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const opponentId = (myRole === 1) ? data.p2 : data.p1;
+
+                        // যদি রুমে অন্য কোনো প্লেয়ার না থাকে, তবে পুরো রুমটি ডিলিট করে দেওয়া হবে
+                        if (!opponentId) {
+                            currentRoomRef.remove();
+                        } else {
+                            // আর যদি প্রতিপক্ষ এখনো রুমে থাকে, তবে তাকে Forfeit দেখিয়ে নিজে লিভ নেওয়া হবে
+                            currentRoomRef.child('status').set('forfeit');
+                            currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').remove();
+                        }
+                    }
+                });
+
+                if (roomListener) {
+                    currentRoomRef.off('value', roomListener);
+                    roomListener = null;
+                }
+                currentRoomRef = null;
+            }
+
+            myRole = null;
+            gameActive = false;
+            canvas.classList.add('hidden');
+            document.getElementById('hudBar').classList.add('hidden');
+            document.getElementById('waitingScreen').classList.add('hidden');
+            document.getElementById('endScreen').classList.add('hidden');
+            document.getElementById('lobbyScreen').classList.remove('hidden');
+            activeMenuOption = 0;
+            updateLobbyFocus();
+            updateSoftkeys();
+        }
+
+        function handleForfeit() {
+            gameActive = false;
+            document.getElementById('endScreen').classList.remove('hidden');
+            document.getElementById('endTitle').innerText = "Opponent Left";
+            document.getElementById('endDetails').innerText = "Opponent disconnected. You won by forfeit!";
+            updateSoftkeys();
+        }
+
+        // --- D-PAD LOBBY NAVIGATION ---
+        function renderPublicRooms() {
+            const container = document.getElementById('roomListContainer');
+            container.innerHTML = "";
+            if (publicRooms.length === 0) {
+                container.innerHTML = '<div style="font-size:9px; color:#aaa; padding:10px;">No active public waiting rooms.</div>';
+            } else {
+                publicRooms.forEach((rm, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'room-item';
+                    div.id = `roomItem_${index}`;
+                    div.innerHTML = `<span>Code: <b>${rm.code}</b></span> <span style="color:#873eff;">Join &raquo;</span>`;
+                    div.onclick = () => joinRoom(rm.code, false);
+                    container.appendChild(div);
+                });
+            }
+            updateLobbyFocus();
+        }
+
+        function updateLobbyFocus() {
+            document.getElementById('roomCodeInput').classList.remove('active');
+            document.getElementById('btnJoin').classList.remove('active');
+            document.getElementById('btnCreatePublic').classList.remove('active');
+            document.getElementById('btnCreatePrivate').classList.remove('active');
+
+            // ES5 compliant NodeList iteration
+            var roomItems = document.querySelectorAll('.room-item');
+            for (var i = 0; i < roomItems.length; i++) {
+                roomItems[i].classList.remove('active');
+            }
+
+            var maxIndex = 3 + publicRooms.length;
+            if (activeMenuOption > maxIndex) activeMenuOption = maxIndex;
+
+            if (activeMenuOption === 0) {
+                document.getElementById('roomCodeInput').classList.add('active');
+                document.getElementById('roomCodeInput').focus();
+            } else {
+                document.getElementById('roomCodeInput').blur();
+                if (activeMenuOption === 1) {
+                    document.getElementById('btnJoin').classList.add('active');
+                } else if (activeMenuOption === 2) {
+                    document.getElementById('btnCreatePublic').classList.add('active');
+                } else if (activeMenuOption === 3) {
+                    document.getElementById('btnCreatePrivate').classList.add('active');
+                } else {
+                    var roomIndex = activeMenuOption - 4;
+                    // ES5 style string concatenation
+                    var activeItem = document.getElementById('roomItem_' + roomIndex);
+                    if (activeItem) {
+                        activeItem.classList.add('active');
+
+                        // ES5 compliant safe scroll calculation
+                        var container = document.getElementById('roomListContainer');
+                        if (container) {
+                            var containerRect = container.getBoundingClientRect();
+                            var itemRect = activeItem.getBoundingClientRect();
+
+                            if (itemRect.top < containerRect.top) {
+                                // Scroll Up
+                                container.scrollTop -= (containerRect.top - itemRect.top);
+                            } else if (itemRect.bottom > containerRect.bottom) {
+                                // Scroll Down
+                                container.scrollTop += (itemRect.bottom - containerRect.bottom);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function handleLobbyNav(key) {
+            var maxIndex = 3 + publicRooms.length;
+            if (key === 'ArrowUp' && activeMenuOption > 0) {
+                activeMenuOption--;
+                updateLobbyFocus();
+            } else if (key === 'ArrowDown' && activeMenuOption < maxIndex) {
+                activeMenuOption++;
+                updateLobbyFocus();
+            } else if (key === 'SoftRight' || key === 'Backspace') {
+                if (confirm('Are you sure you want to exit the game?')) {
+                    window.close();
+                }
+            } else if (key === 'Enter' || key === 'Select') {
+                if (activeMenuOption === 1) {
+                    actionJoin();
+                } else if (activeMenuOption === 2) {
+                    actionCreate(false);
+                } else if (activeMenuOption === 3) {
+                    actionCreate(true);
+                } else if (activeMenuOption >= 4) {
+                    var roomIndex = activeMenuOption - 4;
+                    if (publicRooms[roomIndex]) joinRoom(publicRooms[roomIndex].code, false);
+                }
+            }
+        }
+
+        // --- GAME ENGINE ---
+        function initGame() {
+            boardState = Array(37).fill(null);
+            for (var i = 0; i <= 15; i++) boardState[i] = 1; // Red
+            for (var i = 21; i <= 36; i++) boardState[i] = 2; // Green
+
+            turn = 1; // Red starts
+            keyboardCursorIndex = (myRole === 1) ? 8 : 28;
+
+            activePieceId = null;
+            hasCapturedThisTurn = false;
+
+            visualPieces = [];
+            for (var i = 0; i < 37; i++) {
+                if (boardState[i] !== null) {
+                    var displayY = getDisplayY(points[i].y);
+                    visualPieces.push({
+                        id: i, type: boardState[i],
+                        x: points[i].x, y: displayY,
+                        targetX: points[i].x, targetY: displayY
+                    });
+                }
+            }
+            dyingPieces = [];
+            updateHUD();
+            updateSoftkeys();
+            ensureValidCursor();
+        }
+
+        function getValidFocusNodes() {
+            var validNodes = [];
+            if (!gameActive || turn !== myRole) return [];
+
+            if (hasCapturedThisTurn && activePieceId !== null) {
+                validNodes.push(activePieceId);
+                getValidJumps(activePieceId).forEach(function (j) { validNodes.push(j.to); });
+                return validNodes;
+            }
+
+            if (activePieceId !== null) {
+                validNodes.push(activePieceId);
+                for (var i = 0; i < 37; i++) {
+                    if (boardState[i] === myRole) validNodes.push(i);
+                }
+                getValidMoves(activePieceId).forEach(function (m) { validNodes.push(m.to); });
+                getValidJumps(activePieceId).forEach(function (j) { validNodes.push(j.to); });
+
+                return validNodes.filter(function (item, pos, self) {
+                    return self.indexOf(item) === pos;
+                });
+            }
+
+            for (var i = 0; i < 37; i++) {
+                if (boardState[i] === myRole) validNodes.push(i);
+            }
+            return validNodes;
+        }
+
+        function ensureValidCursor() {
+            var validTargets = getValidFocusNodes();
+            if (validTargets.length === 0) return;
+            if (!validTargets.includes(keyboardCursorIndex)) {
+                var curX = points[keyboardCursorIndex].x;
+                var curY = getDisplayY(points[keyboardCursorIndex].y);
+                var closestId = validTargets[0];
+                var minDistance = Infinity;
+                validTargets.forEach(id => {
+                    var pX = points[id].x;
+                    var pY = getDisplayY(points[id].y);
+                    var dx = pX - curX;
+                    var dy = pY - curY;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < minDistance) { minDistance = dist; closestId = id; }
+                });
+                keyboardCursorIndex = closestId;
+            }
+        }
+
+        function updateHUD() {
+            var p1Count = boardState.filter(s => s === 1).length;
+            var p2Count = boardState.filter(s => s === 2).length;
+
+            var redLabel = (myRole === 1) ? "Red (You)" : "Red";
+            var greenLabel = (myRole === 2) ? "Green (You)" : "Green";
+
+            document.getElementById('p1Label').innerText = `${redLabel}: ${p1Count}`;
+            document.getElementById('p2Label').innerText = `${greenLabel}: ${p2Count}`;
+
+            if (turn === myRole) {
+                document.getElementById('turnIndicator').innerText = "Your Turn";
+                document.getElementById('turnIndicator').style.color = "#ffb74d";
+            } else {
+                document.getElementById('turnIndicator').innerText = "Waiting...";
+                document.getElementById('turnIndicator').style.color = "#aaa";
+            }
+        }
+
         function updateSoftkeys() {
-            var isWaiting = !document.getElementById("waitingScreen").classList.contains("hidden");
-            var isLobby = !document.getElementById("lobbyScreen").classList.contains("hidden");
-            var isEnd = !document.getElementById("endScreen").classList.contains("hidden");
+            var waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
+            var lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
+            var endVisible = !document.getElementById('endScreen').classList.contains('hidden');
 
-            if (isLobby) {
-                document.getElementById("softLeftText").innerText = "";
-                document.getElementById("softCenterText").innerText = "Select";
-                document.getElementById("softRightText").innerText = "";
-            } else if (isWaiting || isEnd) {
-                document.getElementById("softLeftText").innerText = "";
-                document.getElementById("softCenterText").innerText = "";
-                document.getElementById("softRightText").innerText = "Leave";
-            } else { // Gameplay
-                // Left Softkey: End Turn / Cancel
-                if (hasCapturedThisTurn) {
-                    document.getElementById("softLeftText").innerText = "End Turn";
-                } else if (null !== activePieceId) {
-                    document.getElementById("softLeftText").innerText = "Cancel";
-                } else {
-                    document.getElementById("softLeftText").innerText = "";
-                }
+            if (lobbyVisible) {
+                document.getElementById('softLeftText').innerText = "";
+                document.getElementById('softCenterText').innerText = "Select";
+                document.getElementById('softRightText').innerText = "";
+                return;
+            }
+            if (waitingVisible || endVisible) {
+                document.getElementById('softLeftText').innerText = "Leave";
+                document.getElementById('softCenterText').innerText = "";
+                document.getElementById('softRightText').innerText = "";
+                return;
+            }
 
-                // Center Softkey: Move / Capture / Select
-                if (hasCapturedThisTurn) {
-                    document.getElementById("softCenterText").innerText = "Capture";
-                } else {
-                    document.getElementById("softCenterText").innerText = (null !== activePieceId) ? "Move" : "Select";
-                }
-
-                // Right Softkey: Exit
-                document.getElementById("softRightText").innerText = "Exit";
+            document.getElementById('softLeftText').innerText = "Exit";
+            if (hasCapturedThisTurn) {
+                document.getElementById('softCenterText').innerText = "Capture";
+                document.getElementById('softRightText').innerText = "End Turn";
+            } else {
+                document.getElementById('softCenterText').innerText = (activePieceId !== null) ? "Move" : "Select";
+                document.getElementById('softRightText').innerText = (activePieceId !== null) ? "Cancel" : "";
             }
         }
 
-        function filterUnique(e) { var t = {}; return e.filter((function (e) { return !t[e.to] && (t[e.to] = !0, !0) })) } function getValidMoves(e) { var t = []; return boardState[e] ? (lines.forEach((a => { var n = a.indexOf(e); -1 !== n && (n > 0 && null === boardState[a[n - 1]] && t.push({ to: a[n - 1], type: "move" }), n < a.length - 1 && null === boardState[a[n + 1]] && t.push({ to: a[n + 1], type: "move" })) })), filterUnique(t)) : [] } function getValidJumps(e) { var t = [], a = boardState[e]; if (!a) return []; var n = 1 === a ? 2 : 1; return lines.forEach((a => { var i = a.indexOf(e); -1 !== i && (i > 1 && boardState[a[i - 1]] === n && null === boardState[a[i - 2]] && t.push({ to: a[i - 2], capture: a[i - 1], type: "jump" }), i < a.length - 2 && boardState[a[i + 1]] === n && null === boardState[a[i + 2]] && t.push({ to: a[i + 2], capture: a[i + 1], type: "jump" })) })), filterUnique(t) } function handleNodeSelection(e) { if (turn === myRole) { var t = boardState[e]; if (hasCapturedThisTurn) { (n = getValidJumps(activePieceId).find((t => t.to === e))) && executeMove(activePieceId, n) } else { if (t === turn) activePieceId = e; else if (null !== activePieceId) { var a = getValidMoves(activePieceId), n = getValidJumps(activePieceId).find((t => t.to === e)), i = a.find((t => t.to === e)); n ? executeMove(activePieceId, n) : i && executeMove(activePieceId, i) } ensureValidCursor() } } } function executeMove(e, t) { var a = visualPieces.find((t => t.id === e)); if (a && (a.id = t.to, a.targetX = points[t.to].x, a.targetY = getDisplayY(points[t.to].y)), boardState[t.to] = turn, boardState[e] = null, currentRoomRef && currentRoomRef.child("lastMove").set({ fromId: e, move: t, sender: myClientId, timestamp: firebase.database.ServerValue.TIMESTAMP }), "jump" === t.type) { var n = visualPieces.findIndex((e => e.id === t.capture)); if (-1 !== n && (dyingPieces.push({ x: visualPieces[n].x, y: visualPieces[n].y, type: visualPieces[n].type, alpha: 1, frame: 0 }), visualPieces.splice(n, 1)), boardState[t.capture] = null, playSound("capture"), hasCapturedThisTurn = !0, getValidJumps(activePieceId = t.to).length > 0) return updateHUD(), updateSoftkeys(), void ensureValidCursor() } else playSound("move"); currentRoomRef && currentRoomRef.child("lastEndTurn").set({ sender: myClientId, timestamp: firebase.database.ServerValue.TIMESTAMP }), finalizeTurnLocal() } function executeOpponentMove(e, t) { var a = visualPieces.find((t => t.id === e)); if (a ? (a.id = t.to, a.targetX = points[t.to].x, a.targetY = getDisplayY(points[t.to].y)) : visualPieces.push({ id: t.to, type: 1 === myRole ? 2 : 1, x: points[e].x, y: getDisplayY(points[e].y), targetX: points[t.to].x, targetY: getDisplayY(points[t.to].y) }), boardState[t.to] = boardState[e], boardState[e] = null, "jump" === t.type) { var n = visualPieces.findIndex((e => e.id === t.capture)); -1 !== n && (dyingPieces.push({ x: visualPieces[n].x, y: visualPieces[n].y, type: visualPieces[n].type, alpha: 1, frame: 0 }), visualPieces.splice(n, 1)), boardState[t.capture] = null, playSound("capture") } else playSound("move") } function finalizeTurnLocal() { activePieceId = null, hasCapturedThisTurn = !1; var e = checkWin(); e ? announceWinner(e) : (turn = 1 === turn ? 2 : 1, updateHUD(), updateSoftkeys(), ensureValidCursor()) } function checkWin() { var e = boardState.filter((e => 1 === e)).length, t = boardState.filter((e => 2 === e)).length; if (0 === e) return 2; if (0 === t) return 1; for (var a = 1 === turn ? 2 : 1, n = !1, i = 0; i < 37; i++)if (boardState[i] === a && (getValidMoves(i).length > 0 || getValidJumps(i).length > 0)) { n = !0; break } return n ? null : turn } function announceWinner(e) { gameActive = !1, document.getElementById("endScreen").classList.remove("hidden"); var t = 1 === e ? "Red" : "Green"; e === myRole ? (document.getElementById("endTitle").innerText = "Victory!", document.getElementById("endDetails").innerText = `Congratulations! You (${t}) won the game.`) : (document.getElementById("endTitle").innerText = "Defeat", document.getElementById("endDetails").innerText = `${t} has won the game. Better luck next time!`), updateSoftkeys(), isKaiOS() ? getKaiAd({ publisher: "080b82ab-b33a-4763-a498-50f464567e49", app: "sixteen-solider", slot: "result", onerror: e => { }, onready: e => { e.call("display") } }) : getCloudAd({ publisher: "1748228c05773e8ab91b3c2a48efae79", onready: e => { e.call("display") } }) } function triggerDeselect() { hasCapturedThisTurn || (activePieceId = null, updateSoftkeys(), ensureValidCursor()) } function moveKeyboardCursor(e) { var t = getValidFocusNodes(); if (0 !== t.length) { var a = points[keyboardCursorIndex].x, n = getDisplayY(points[keyboardCursorIndex].y), i = -1, o = 1 / 0; t.forEach((t => { if (t !== keyboardCursorIndex) { var r = points[t].x, s = getDisplayY(points[t].y), c = r - a, d = s - n; if ("up" === e && d < -5)(l = Math.abs(d) + 2.5 * Math.abs(c)) < o && (o = l, i = t); else if ("down" === e && d > 5) { (l = Math.abs(d) + 2.5 * Math.abs(c)) < o && (o = l, i = t) } else if ("left" === e && c < -5) { (l = Math.abs(c) + 2.5 * Math.abs(d)) < o && (o = l, i = t) } else if ("right" === e && c > 5) { var l; (l = Math.abs(c) + 2.5 * Math.abs(d)) < o && (o = l, i = t) } } })), -1 !== i && (keyboardCursorIndex = i) } } function updateAnimations() { visualPieces.forEach((e => { var t = e.targetX - e.x, a = e.targetY - e.y; Math.abs(t) > .1 || Math.abs(a) > .1 ? (e.x += .15 * t, e.y += .15 * a) : (e.x = e.targetX, e.y = e.targetY) })); for (var e = dyingPieces.length - 1; e >= 0; e--)dyingPieces[e].frame++, dyingPieces[e].alpha -= .05, dyingPieces[e].alpha <= 0 && dyingPieces.splice(e, 1) } function drawBoard() { ctx.fillStyle = "#b08257", ctx.fillRect(0, 0, canvas.width, canvas.height), ctx.strokeStyle = "#85582c", ctx.lineWidth = 1.5; for (var e = 100; e < canvas.height; e += 100)ctx.beginPath(), ctx.moveTo(0, e), ctx.lineTo(canvas.width, e), ctx.stroke(); var t = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.width / 3, canvas.width / 2, canvas.height / 2, canvas.height / 1.6); t.addColorStop(0, "rgba(0,0,0,0)"), t.addColorStop(1, "rgba(40,20,5,0.45)"), ctx.fillStyle = t, ctx.fillRect(0, 0, canvas.width, canvas.height), ctx.strokeStyle = "#000000", ctx.lineWidth = 4.2, ctx.lineCap = "round", ctx.lineJoin = "round", lines.forEach((e => { ctx.beginPath(); var t = points[e[0]]; ctx.moveTo(t.x, getDisplayY(t.y)); for (var a = 1; a < e.length; a++)ctx.lineTo(points[e[a]].x, getDisplayY(points[e[a]].y)); ctx.stroke() })); var a = Math.min(getDisplayY(250), getDisplayY(670)); (ctx.strokeRect(50, a, 400, 420), null !== activePieceId && turn === myRole) && (hasCapturedThisTurn ? getValidJumps(activePieceId) : [...getValidMoves(activePieceId), ...getValidJumps(activePieceId)]).forEach((e => { ctx.save(), ctx.fillStyle = "rgba(255, 179, 0, 0.4)", ctx.strokeStyle = "#ff8f00", ctx.lineWidth = 3.5, ctx.beginPath(), ctx.arc(points[e.to].x, getDisplayY(points[e.to].y), 16, 0, 2 * Math.PI), ctx.fill(), ctx.stroke(), ctx.restore() })); if (points.forEach((e => { ctx.fillStyle = "#000000", ctx.beginPath(), ctx.arc(e.x, getDisplayY(e.y), 6.5, 0, 2 * Math.PI), ctx.fill() })), gameActive && turn === myRole) { var n = points[keyboardCursorIndex]; ctx.save(), ctx.strokeStyle = "#00e5ff", ctx.lineWidth = 3.5, ctx.setLineDash([5, 4]), ctx.beginPath(), ctx.arc(n.x, getDisplayY(n.y), 24, 0, 2 * Math.PI), ctx.stroke(), ctx.restore() } visualPieces.forEach((e => { drawPieceAt(e.x, e.y, e.type, activePieceId === e.id) })), dyingPieces.forEach((e => { ctx.save(), ctx.globalAlpha = e.alpha, drawPieceAt(e.x + 7 * Math.sin(1.5 * e.frame), e.y, e.type, !1), ctx.restore() })) } function drawPieceAt(e, t, a, n) { var i = 17.5; ctx.save(), ctx.shadowColor = "rgba(0,0,0,0.45)", ctx.shadowBlur = 5, ctx.shadowOffsetX = 2.5, ctx.shadowOffsetY = 4, ctx.beginPath(), ctx.arc(e, t, i, 0, 2 * Math.PI), ctx.fillStyle = 1 === a ? "#900c0c" : "#144e18", ctx.fill(), ctx.shadowColor = "transparent"; var o = ctx.createRadialGradient(e - i / 3, t - i / 3, 1.5, e, t, i); 1 === a ? (o.addColorStop(0, "#ff4a4a"), o.addColorStop(.3, "#c62828"), o.addColorStop(1, "#4e0000")) : (o.addColorStop(0, "#66bb6a"), o.addColorStop(.3, "#2e7d32"), o.addColorStop(1, "#0c350e")), ctx.fillStyle = o, ctx.beginPath(), ctx.arc(e, t, i, 0, 2 * Math.PI), ctx.fill(), ctx.strokeStyle = "rgba(0, 0, 0, 0.35)", ctx.lineWidth = 1.8, ctx.beginPath(), ctx.arc(e, t, 13, 0, 2 * Math.PI), ctx.stroke(), ctx.fillStyle = "rgba(255, 255, 255, 0.7)", ctx.beginPath(), ctx.arc(e - 5, t - 5, 3, 0, 2 * Math.PI), ctx.fill(), n && (ctx.strokeStyle = "#ffd54f", ctx.lineWidth = 3.5, ctx.beginPath(), ctx.arc(e, t, 22.5, 0, 2 * Math.PI), ctx.stroke()), ctx.restore() } function endChainTurn() { hasCapturedThisTurn && (currentRoomRef && currentRoomRef.child("lastEndTurn").set({ sender: myClientId, timestamp: firebase.database.ServerValue.TIMESTAMP }), finalizeTurnLocal()) } function gameLoop() { updateAnimations(), gameActive && drawBoard(), requestAnimationFrame(gameLoop) } function handleTouchOrClick(e) { if (!gameActive || turn !== myRole) return; const t = canvas.getBoundingClientRect(); var a, n; e.touches && e.touches.length > 0 ? (a = e.touches[0].clientX, n = e.touches[0].clientY) : (a = e.clientX, n = e.clientY); const i = canvas.width / t.width, o = canvas.height / t.height, r = (a - t.left) * i, s = (n - t.top) * o; for (var c = null, d = 40, l = 0; l < 37; l++) { var u = r - points[l].x, m = s - getDisplayY(points[l].y), p = Math.sqrt(u * u + m * m); p < d && (d = p, c = l) } null !== c && (keyboardCursorIndex = c, handleNodeSelection(c), updateSoftkeys()) } 
-        
-        window.addEventListener("back", (e => { e.preventDefault(), simulateNaturalPress("Enter", 13) })), 
-        
-        window.addEventListener("keydown", (e => { 
-            var isLobby = !document.getElementById("lobbyScreen").classList.contains("hidden");
-            var isWaiting = !document.getElementById("waitingScreen").classList.contains("hidden");
-            var isEnd = !document.getElementById("endScreen").classList.contains("hidden");
+        function filterUnique(arr) {
+            var seen = {};
+            return arr.filter(function (item) {
+                if (seen[item.to]) return false;
+                seen[item.to] = true;
+                return true;
+            });
+        }
 
-            if (isLobby) {
-                return handleLobbyNav(e.key), void ("ArrowUp" !== e.key && "ArrowDown" !== e.key && "Enter" !== e.key || e.preventDefault());
+        function getValidMoves(fromId) {
+            var valid = [];
+            var player = boardState[fromId];
+            if (!player) return [];
+            lines.forEach(line => {
+                var idx = line.indexOf(fromId);
+                if (idx !== -1) {
+                    if (idx > 0 && boardState[line[idx - 1]] === null) valid.push({ to: line[idx - 1], type: 'move' });
+                    if (idx < line.length - 1 && boardState[line[idx + 1]] === null) valid.push({ to: line[idx + 1], type: 'move' });
+                }
+            });
+            return filterUnique(valid);
+        }
+
+        function getValidJumps(fromId) {
+            var valid = [];
+            var player = boardState[fromId];
+            if (!player) return [];
+            var opponent = (player === 1) ? 2 : 1;
+
+            lines.forEach(line => {
+                var idx = line.indexOf(fromId);
+                if (idx !== -1) {
+                    if (idx > 1 && boardState[line[idx - 1]] === opponent && boardState[line[idx - 2]] === null) {
+                        valid.push({ to: line[idx - 2], capture: line[idx - 1], type: 'jump' });
+                    }
+                    if (idx < line.length - 2 && boardState[line[idx + 1]] === opponent && boardState[line[idx + 2]] === null) {
+                        valid.push({ to: line[idx + 2], capture: line[idx + 1], type: 'jump' });
+                    }
+                }
+            });
+            return filterUnique(valid);
+        }
+
+        function handleNodeSelection(nodeId) {
+            if (turn !== myRole) return;
+            var piece = boardState[nodeId];
+
+            if (hasCapturedThisTurn) {
+                var possibleJumps = getValidJumps(activePieceId);
+                var chosenJump = possibleJumps.find(j => j.to === nodeId);
+                if (chosenJump) executeMove(activePieceId, chosenJump);
+                return;
             }
 
-            // Waiting বা End স্ক্রিনে ব্যাকস্পেস, এস্কেপ অথবা সফট রাইট (F2) কি চাপলে লবিতে ফিরে যাবে
-            if (isWaiting || isEnd) {
-                if (e.key === "SoftRight" || e.key === "F2" || e.key === "Backspace" || e.key === "Escape") {
+            if (piece === turn) {
+                activePieceId = nodeId;
+            } else if (activePieceId !== null) {
+                var moves = getValidMoves(activePieceId);
+                var jumps = getValidJumps(activePieceId);
+                var chosenJump = jumps.find(j => j.to === nodeId);
+                var chosenMove = moves.find(m => m.to === nodeId);
+
+                if (chosenJump) executeMove(activePieceId, chosenJump);
+                else if (chosenMove) executeMove(activePieceId, chosenMove);
+            }
+            ensureValidCursor();
+        }
+
+        function executeMove(fromId, move) {
+            var vp = visualPieces.find(p => p.id === fromId);
+            if (vp) {
+                vp.id = move.to;
+                vp.targetX = points[move.to].x;
+                vp.targetY = getDisplayY(points[move.to].y);
+            }
+
+            boardState[move.to] = turn;
+            boardState[fromId] = null;
+
+            // Firebase-এ চাল আপলোড করা
+            if (currentRoomRef) {
+                currentRoomRef.child('lastMove').set({
+                    fromId: fromId,
+                    move: move,
+                    sender: myClientId,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+
+            if (move.type === 'jump') {
+                var cvpIdx = visualPieces.findIndex(p => p.id === move.capture);
+                if (cvpIdx !== -1) {
+                    dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
+                    visualPieces.splice(cvpIdx, 1);
+                }
+                boardState[move.capture] = null;
+                playSound('capture');
+                hasCapturedThisTurn = true;
+                activePieceId = move.to;
+
+                var furtherJumps = getValidJumps(activePieceId);
+                if (furtherJumps.length > 0) {
+                    updateHUD();
+                    updateSoftkeys();
+                    ensureValidCursor();
+                    return;
+                }
+            } else {
+                playSound('move');
+            }
+
+            // Firebase-এ টার্ন শেষ ঘোষণা করা
+            if (currentRoomRef) {
+                currentRoomRef.child('lastEndTurn').set({
+                    sender: myClientId,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+            finalizeTurnLocal();
+        }
+
+        function executeOpponentMove(fromId, move) {
+            var vp = visualPieces.find(p => p.id === fromId);
+            if (vp) {
+                vp.id = move.to;
+                vp.targetX = points[move.to].x;
+                vp.targetY = getDisplayY(points[move.to].y);
+            } else {
+                visualPieces.push({
+                    id: move.to, type: (myRole === 1) ? 2 : 1,
+                    x: points[fromId].x, y: getDisplayY(points[fromId].y),
+                    targetX: points[move.to].x, targetY: getDisplayY(points[move.to].y)
+                });
+            }
+
+            boardState[move.to] = boardState[fromId];
+            boardState[fromId] = null;
+
+            if (move.type === 'jump') {
+                var cvpIdx = visualPieces.findIndex(p => p.id === move.capture);
+                if (cvpIdx !== -1) {
+                    dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
+                    visualPieces.splice(cvpIdx, 1);
+                }
+                boardState[move.capture] = null;
+                playSound('capture');
+            } else {
+                playSound('move');
+            }
+        }
+
+        function finalizeTurnLocal() {
+            activePieceId = null;
+            hasCapturedThisTurn = false;
+
+            var winner = checkWin();
+            if (winner) {
+                announceWinner(winner);
+                return;
+            }
+
+            turn = (turn === 1) ? 2 : 1;
+            updateHUD();
+            updateSoftkeys();
+            ensureValidCursor();
+        }
+
+        function checkWin() {
+            var p1Count = boardState.filter(s => s === 1).length;
+            var p2Count = boardState.filter(s => s === 2).length;
+            if (p1Count === 0) return 2;
+            if (p2Count === 0) return 1;
+
+            var nextPlayer = (turn === 1) ? 2 : 1;
+            var hasMoves = false;
+            for (var i = 0; i < 37; i++) {
+                if (boardState[i] === nextPlayer) {
+                    if (getValidMoves(i).length > 0 || getValidJumps(i).length > 0) {
+                        hasMoves = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasMoves) {
+                return turn;
+            }
+            return null;
+        }
+
+        function announceWinner(winner) {
+            gameActive = false;
+            document.getElementById('endScreen').classList.remove('hidden');
+            var winnerName = (winner === 1) ? "Red" : "Green";
+            if (winner === myRole) {
+                document.getElementById('endTitle').innerText = "Victory!";
+                document.getElementById('endDetails').innerText = `Congratulations! You (${winnerName}) won the game.`;
+            } else {
+                document.getElementById('endTitle').innerText = "Defeat";
+                document.getElementById('endDetails').innerText = `${winnerName} has won the game. Better luck next time!`;
+            }
+            updateSoftkeys();
+            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'result', onerror: e => { }, onready: e => { e.call('display') } }) } else {
+                getCloudAd({
+                    publisher: '1748228c05773e8ab91b3c2a48efae79',
+                    onready: ad => { ad.call('display'); }
+                });
+            }
+        }
+
+        function triggerDeselect() {
+            if (hasCapturedThisTurn) return;
+            activePieceId = null;
+            updateSoftkeys();
+            ensureValidCursor();
+        }
+
+        window.addEventListener('back', (event) => {
+            event.preventDefault();
+            simulateNaturalPress('Enter', 13);
+        });
+
+        // --- Key Navigation System ---
+        window.addEventListener('keydown', (e) => {
+            var lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
+            var waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
+            var endVisible = !document.getElementById('endScreen').classList.contains('hidden');
+
+            if (lobbyVisible) {
+                handleLobbyNav(e.key);
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') e.preventDefault();
+                return;
+            }
+
+            if (waitingVisible || endVisible) {
+                if (e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'Escape') {
                     leaveRoom();
                     e.preventDefault();
                 }
                 return;
             }
 
-            if (gameActive) {
-                if (turn === myRole) {
-                    switch (e.key) { 
-                        case "ArrowUp": case "W": case "w": 
-                            moveKeyboardCursor("up"), e.preventDefault(); 
-                            break; 
-                        case "ArrowDown": case "S": case "s": 
-                            moveKeyboardCursor("down"), e.preventDefault(); 
-                            break; 
-                        case "ArrowLeft": case "A": case "a": 
-                            moveKeyboardCursor("left"), e.preventDefault(); 
-                            break; 
-                        case "ArrowRight": case "D": case "d": 
-                            moveKeyboardCursor("right"), e.preventDefault(); 
-                            break; 
-                        case "Enter": case "Select": 
-                            handleNodeSelection(keyboardCursorIndex), e.preventDefault(); 
-                            break; 
-                        case "Backspace": case "Escape": 
-                            if (null !== activePieceId && !hasCapturedThisTurn) {
-                                triggerDeselect();
-                            } else {
-                                leaveRoom();
-                            }
-                            e.preventDefault(); 
-                            break; 
-                        case "SoftLeft": case "F1": 
-                            if (hasCapturedThisTurn) {
-                                endChainTurn();
-                            } else if (null !== activePieceId) {
-                                triggerDeselect();
-                            }
-                            e.preventDefault(); 
-                            break; 
-                        case "SoftRight": case "F2": 
-                            leaveRoom();
-                            e.preventDefault(); 
-                            break; 
-                    }
-                    updateSoftkeys();
-                } else {
-                    // নিজের চাল না থাকা সত্ত্বেও সফট রাইট বা ব্যাক বাটন চেপে বের হওয়া যাবে
-                    if (e.key === "SoftRight" || e.key === "F2" || e.key === "Backspace" || e.key === "Escape") {
-                        leaveRoom();
-                        e.preventDefault();
-                    }
-                }
+            if (!gameActive) return;
+            if (turn !== myRole) return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'W': case 'w':
+                    moveKeyboardCursor('up'); e.preventDefault(); break;
+                case 'ArrowDown':
+                case 'S': case 's':
+                    moveKeyboardCursor('down'); e.preventDefault(); break;
+                case 'ArrowLeft':
+                case 'A': case 'a':
+                    moveKeyboardCursor('left'); e.preventDefault(); break;
+                case 'ArrowRight':
+                case 'D': case 'd':
+                    moveKeyboardCursor('right'); e.preventDefault(); break;
+                case 'Enter':
+                case 'Select':
+                    handleNodeSelection(keyboardCursorIndex); e.preventDefault(); break;
+                case 'Backspace':
+                case 'Escape':
+                    triggerDeselect(); e.preventDefault(); break;
+                case 'SoftLeft': case 'F1': case 'Escape':
+                    leaveRoom(); e.preventDefault(); break;
+                case 'SoftRight': case 'F2': case 'Backspace':
+                    if (hasCapturedThisTurn) endChainTurn();
+                    else if (activePieceId !== null) triggerDeselect();
+                    e.preventDefault();
+                    break;
             }
-        })), canvas.addEventListener("click", (e => { handleTouchOrClick(e) })), canvas.addEventListener("touchstart", (e => { e.preventDefault(), handleTouchOrClick(e) }), { passive: !1 }), connectServer(), updateLobbyFocus(), updateSoftkeys(), gameLoop();  
+            updateSoftkeys();
+        });
+
+        function moveKeyboardCursor(dir) {
+            var validTargets = getValidFocusNodes();
+            if (validTargets.length === 0) return;
+
+            var curX = points[keyboardCursorIndex].x;
+            var curY = getDisplayY(points[keyboardCursorIndex].y);
+            var bestId = -1;
+            var bestScore = Infinity;
+
+            validTargets.forEach(id => {
+                if (id === keyboardCursorIndex) return;
+                var pX = points[id].x;
+                var pY = getDisplayY(points[id].y);
+                var dx = pX - curX;
+                var dy = pY - curY;
+
+                if (dir === 'up' && dy < -5) {
+                    var score = Math.abs(dy) + Math.abs(dx) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                } else if (dir === 'down' && dy > 5) {
+                    var score = Math.abs(dy) + Math.abs(dx) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                } else if (dir === 'left' && dx < -5) {
+                    var score = Math.abs(dx) + Math.abs(dy) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                } else if (dir === 'right' && dx > 5) {
+                    var score = Math.abs(dx) + Math.abs(dy) * 2.5;
+                    if (score < bestScore) { bestScore = score; bestId = id; }
+                }
+            });
+
+            if (bestId !== -1) keyboardCursorIndex = bestId;
+        }
+
+        // --- RENDER SYSTEM ---
+        function updateAnimations() {
+            visualPieces.forEach(vp => {
+                var dx = vp.targetX - vp.x; var dy = vp.targetY - vp.y;
+                if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+                    vp.x += dx * 0.15; vp.y += dy * 0.15;
+                } else {
+                    vp.x = vp.targetX; vp.y = vp.targetY;
+                }
+            });
+
+            for (var i = dyingPieces.length - 1; i >= 0; i--) {
+                dyingPieces[i].frame++; dyingPieces[i].alpha -= 0.05;
+                if (dyingPieces[i].alpha <= 0) dyingPieces.splice(i, 1);
+            }
+        }
+
+        function drawBoard() {
+            ctx.fillStyle = '#b08257'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#85582c'; ctx.lineWidth = 1.5;
+            for (var y = 100; y < canvas.height; y += 100) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            var vignette = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.width / 3, canvas.width / 2, canvas.height / 2, canvas.height / 1.6);
+            vignette.addColorStop(0, 'rgba(0,0,0,0)'); vignette.addColorStop(1, 'rgba(40,20,5,0.45)');
+            ctx.fillStyle = vignette; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#000000'; ctx.lineWidth = 4.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            lines.forEach(line => {
+                ctx.beginPath(); var start = points[line[0]]; ctx.moveTo(start.x, getDisplayY(start.y));
+                for (var i = 1; i < line.length; i++) ctx.lineTo(points[line[i]].x, getDisplayY(points[line[i]].y));
+                ctx.stroke();
+            });
+
+            var mainSquareTopY = Math.min(getDisplayY(250), getDisplayY(670));
+            ctx.strokeRect(50, mainSquareTopY, 400, 420);
+
+            if (activePieceId !== null && turn === myRole) {
+                var possibleMoves = hasCapturedThisTurn ? getValidJumps(activePieceId) : [...getValidMoves(activePieceId), ...getValidJumps(activePieceId)];
+                possibleMoves.forEach(mv => {
+                    ctx.save(); ctx.fillStyle = 'rgba(255, 179, 0, 0.4)'; ctx.strokeStyle = '#ff8f00'; ctx.lineWidth = 3.5;
+                    ctx.beginPath(); ctx.arc(points[mv.to].x, getDisplayY(points[mv.to].y), 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
+                });
+            }
+
+            points.forEach(p => {
+                ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(p.x, getDisplayY(p.y), 6.5, 0, Math.PI * 2); ctx.fill();
+            });
+
+            if (gameActive && turn === myRole) {
+                var kp = points[keyboardCursorIndex];
+                ctx.save(); ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 3.5; ctx.setLineDash([5, 4]);
+                ctx.beginPath(); ctx.arc(kp.x, getDisplayY(kp.y), 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+            }
+
+            visualPieces.forEach(vp => {
+                drawPieceAt(vp.x, vp.y, vp.type, (activePieceId === vp.id));
+            });
+
+            dyingPieces.forEach(dp => {
+                ctx.save(); ctx.globalAlpha = dp.alpha;
+                drawPieceAt(dp.x + Math.sin(dp.frame * 1.5) * 7, dp.y, dp.type, false);
+                ctx.restore();
+            });
+        }
+
+        function drawPieceAt(x, y, type, isSelected) {
+            var radius = 17.5; ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 5; ctx.shadowOffsetX = 2.5; ctx.shadowOffsetY = 4;
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = (type === 1) ? '#900c0c' : '#144e18'; ctx.fill(); ctx.shadowColor = 'transparent';
+
+            var pieceGrad = ctx.createRadialGradient(x - radius / 3, y - radius / 3, 1.5, x, y, radius);
+            if (type === 1) {
+                pieceGrad.addColorStop(0, '#ff4a4a'); pieceGrad.addColorStop(0.3, '#c62828'); pieceGrad.addColorStop(1, '#4e0000');
+            } else {
+                pieceGrad.addColorStop(0, '#66bb6a'); pieceGrad.addColorStop(0.3, '#2e7d32'); pieceGrad.addColorStop(1, '#0c350e');
+            }
+            ctx.fillStyle = pieceGrad; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)'; ctx.lineWidth = 1.8;
+            ctx.beginPath(); ctx.arc(x, y, radius - 4.5, 0, Math.PI * 2); ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; ctx.beginPath(); ctx.arc(x - radius / 3.5, y - radius / 3.5, 3, 0, Math.PI * 2); ctx.fill();
+
+            if (isSelected) {
+                ctx.strokeStyle = '#ffd54f'; ctx.lineWidth = 3.5;
+                ctx.beginPath(); ctx.arc(x, y, radius + 5, 0, Math.PI * 2); ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function endChainTurn() {
+            if (hasCapturedThisTurn) {
+                if (currentRoomRef) {
+                    currentRoomRef.child('lastEndTurn').set({
+                        sender: myClientId,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+                finalizeTurnLocal();
+            }
+        }
+
+        function gameLoop() {
+            updateAnimations();
+            if (gameActive) drawBoard();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function handleTouchOrClick(e) {
+            if (!gameActive || turn !== myRole) return;
+            const rect = canvas.getBoundingClientRect();
+            var clientX, clientY;
+
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clickX = (clientX - rect.left) * scaleX;
+            const clickY = (clientY - rect.top) * scaleY;
+
+            var clickedPoint = null;
+            var bestDist = 40;
+            for (var i = 0; i < 37; i++) {
+                var dx = clickX - points[i].x;
+                var dy = clickY - getDisplayY(points[i].y);
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < bestDist) { bestDist = dist; clickedPoint = i; }
+            }
+
+            if (clickedPoint !== null) {
+                keyboardCursorIndex = clickedPoint;
+                handleNodeSelection(clickedPoint);
+                updateSoftkeys();
+            }
+        }
+
+        canvas.addEventListener('click', (e) => {
+            handleTouchOrClick(e);
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleTouchOrClick(e);
+        }, { passive: false });
+
+        connectServer();
+        updateLobbyFocus();
+        updateSoftkeys();
+        gameLoop();
     </script>
 </body>
 
