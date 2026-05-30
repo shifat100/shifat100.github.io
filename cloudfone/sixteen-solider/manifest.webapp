@@ -3,9 +3,9 @@
   "description": "Sixteen Soldiers A Multiplayer Online Game (traditionally known as Sholo Guti, 16 Guti, Bead 16 in South Asia) is a classic, two-player abstract strategy board game. Popularly compared to checkers and draft games, it is played on a distinct grid board with two triangular extensions.",
   "version": "1.0.0",
   "type": "web",
-  "launch_path": "index.html",
+  "launch_path": "/cloudfone/sixteen-solider/index.html",
   "icons": {
-    "56": "icons/56.png",
+    "56": "/cloudfone/sixteen-solider/icons/112.png",
     "112": "icons/112.png"
   },
   "developer": {
