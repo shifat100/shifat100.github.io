@@ -25,15 +25,23 @@
         style.innerHTML = `
             .cloudads-fs-wrapper { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; min-height: 100vh; background-color: #000000; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Roboto', Arial, sans-serif; color: #FFFFFF; z-index: 999999; overflow: hidden; }
             .cloudads-header { width: 100%; flex: 0 0 auto; background-color: #0093E0; display: none; align-items: center; justify-content: center; font-weight: bold; height: 20px; font-size: 10px; }
-            .cloudads-body { width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; background-color: #202020; border: none; cursor: pointer; padding: 0; min-height: 0; overflow: hidden; outline: none; }
+            .cloudads-body { width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; background-color: #202020; border: none; cursor: pointer; padding: 0; min-height: 0; overflow: hidden; outline: none; position: relative; }
             .cloudads-body:focus { background-color: #05AEF2; }
             .cloudads-footer { width: 100%; flex: 0 0 auto; background-color: #202020; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #4a4a4a; height: 20px; padding: 0 4px; font-size: 10px; position: relative; }
             .cloudads-lsk, .cloudads-rsk { color: #FFFFFF; cursor: pointer; font-weight: bold; }
             .cloudads-lsk { color: #00A539; }
             .cloudads-rsk { position: absolute; left: 50%; transform: translateX(-50%); }
+            .cloudads-hidden { display: none !important; }
+            .cloudads-loader { font-size: 12px; color: #888888; text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: Arial, sans-serif; }
             @media (min-width: 240px) { .cloudads-header { height: 35px; font-size: 14px; } .cloudads-footer { height: 35px; font-size: 14px; } }
             @media (max-width: 320px) { .cloudads-header { height: 25px; font-size: 11px; } .cloudads-footer { height: 25px; font-size: 11px; } }
             @media (max-width: 480px) { .cloudads-fs-wrapper { font-size: 12px; } }
+            /* 128x160 স্ক্রিনের জন্য বিশেষ স্টাইল */
+            @media (max-width: 160px) { 
+                .cloudads-footer { height: 18px; font-size: 8px; } 
+                #cloudads-btn-cross { width: 18px !important; height: 18px !important; font-size: 14px !important; top: 5px !important; right: 5px !important; } 
+                .cloudads-loader { font-size: 10px; }
+            }
         `;
         document.head.appendChild(style);
     };
@@ -52,27 +60,93 @@
             const adWrapper = document.createElement('div');
             adWrapper.innerHTML = `
                 <div class="cloudads-fs-wrapper">
-                    ${showCloseButton ? '<div id="cloudads-btn-cross" style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); color:white; border:2px solid white; display:flex; align-items:center; justify-content:center; font-size:24px; font-family:sans-serif; font-weight:bold; cursor:pointer; z-index:999999;">&times;</div>' : ''}
+                    ${showCloseButton ? '<div id="cloudads-btn-cross" style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); color:white; border:2px solid white; display:none; align-items:center; justify-content:center; font-size:24px; font-family:sans-serif; font-weight:bold; cursor:pointer; z-index:999999;">&times;</div>' : ''}
                     <div class="cloudads-header">Advertisement</div>
                     <div id="cloudads-ad-body" class="cloudads-body" tabindex="0">
-                        <div id="container-9339b2c09966f86f2eae179f6cc60b81" style="width:100%; display:flex; justify-content:center; align-items:center;"></div>
+                        <div id="cloudads-ad-loader" class="cloudads-loader">Loading...</div>
+                        <div id="cloudads-scale-wrapper" style="width:100%; display:flex; justify-content:center; align-items:center; overflow:visible;">
+                            <div id="container-9339b2c09966f86f2eae179f6cc60b81" style="width:100%; max-width:320px;"></div>
+                        </div>
                     </div>
-                    <div class="cloudads-footer">
+                    <div class="cloudads-footer cloudads-hidden">
                         <div id="cloudads-btn-close" class="cloudads-lsk">Close</div>
                         <div id="cloudads-btn-open" class="cloudads-rsk">Open</div>
                     </div>
                 </div>`;
             document.body.appendChild(adWrapper);
 
-            // Dynamically load the Adsterra Native script inside the container
+            // ডায়নামিক ফুলস্ক্রিন স্কেলিং লজিক (১২৮x১৬০ স্ক্রিনে চমৎকার দেখানোর জন্য)
+            const applyFullscreenScaling = () => {
+                const scaleWrapper = document.getElementById('cloudads-scale-wrapper');
+                const adBody = document.getElementById('cloudads-ad-body');
+                if (!scaleWrapper || !adBody) return;
+                
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                
+                // স্ক্রিনের অব্যবহৃত উচ্চতা হিসাব (ফুটার বাদে)
+                const availableHeight = screenHeight - (screenWidth <= 160 ? 18 : 25);
+                const availableWidth = screenWidth;
+                
+                // স্ট্যান্ডার্ড রেফারেন্স সাইজ যা অ্যাড কনটেন্ট এর জন্য আদর্শ
+                const refWidth = 300;
+                const refHeight = 250;
+                
+                const scaleX = availableWidth / refWidth;
+                const scaleY = availableHeight / refHeight;
+                // স্ক্রিনের সাইজ অনুযায়ী সঠিকভাবে স্কেল ডাউন করা হবে
+                const scale = Math.min(scaleX, scaleY, 1); 
+                
+                scaleWrapper.style.transform = `scale(${scale})`;
+                scaleWrapper.style.transformOrigin = 'center center';
+            };
+
+            applyFullscreenScaling();
+            window.addEventListener('resize', applyFullscreenScaling);
+
+            // বাটন ও ফুটার শো করার মেকানিজম
+            let revealed = false;
+            const revealControls = () => {
+                if (revealed) return;
+                revealed = true;
+                
+                // লোডার মুছে ফেলা
+                const loader = document.getElementById('cloudads-ad-loader');
+                if (loader) loader.style.display = 'none';
+                
+                // ফুটার প্রদর্শন করা
+                const footer = adWrapper.querySelector('.cloudads-footer');
+                if (footer) footer.classList.remove('cloudads-hidden');
+                
+                // ক্রস বাটন প্রদর্শন করা (যদি এন্ড্রয়েড বা টাচ ডিভাইস হয়)
+                const crossBtn = document.getElementById('cloudads-btn-cross');
+                if (crossBtn) crossBtn.style.display = 'flex';
+                
+                applyFullscreenScaling();
+            };
+
+            // স্ক্রিপ্ট রান করানো
             const containerNode = adWrapper.querySelector('#container-9339b2c09966f86f2eae179f6cc60b81');
             if (containerNode) {
                 const script = document.createElement('script');
                 script.async = true;
                 script.setAttribute('data-cfasync', 'false');
                 script.src = 'https://matcheshonoraryunderwater.com/9339b2c09966f86f2eae179f6cc60b81/invoke.js';
+                
+                // স্ক্রিপ্ট সম্পূর্ণ লোড হলে বাটন দেখানোর চেষ্টা করা
+                script.onload = revealControls;
                 containerNode.appendChild(script);
+
+                // কনটেন্ট যুক্ত হওয়া পর্যবেক্ষণ করতে MutationObserver ব্যবহার
+                const observer = new MutationObserver((mutations, obs) => {
+                    revealControls();
+                    obs.disconnect();
+                });
+                observer.observe(containerNode, { childList: true, subtree: true });
             }
+
+            // সেফটি ফলব্যাক টাইমার (৪ সেকেন্ডের মধ্যে অ্যাড কোনো কারণে লোড না হলেও বাটন প্রদর্শিত হবে)
+            setTimeout(revealControls, 4000);
 
             const handleOpen = () => { 
                 triggerEvent('click'); 
@@ -91,6 +165,7 @@
                 document.body.style.overflow = previousBodyOverflow;
                 document.removeEventListener('keydown', handleAdKeyDown, true);
                 document.removeEventListener('keyup', blockKeyUp, true);
+                window.removeEventListener('resize', applyFullscreenScaling);
                 triggerEvent('close');
             };
 
