@@ -12,7 +12,7 @@
         { 
             type: 'popunder', 
             scriptUrl: 'https://matcheshonoraryunderwater.com/f8/49/29/f8492924da30520cabdbb409c9928dec.js' 
-        },
+        }/*,
         { 
             type: 'custom', 
             imageUrl: 'https://shifat100.github.io/cloudfone/cloud-adsimages/banner/' + (Math.floor(Math.random() * 9) + 1) + '.png', 
@@ -24,7 +24,7 @@
             adsterraSrc: 'https://matcheshonoraryunderwater.com/3768c5dda0b47669346bd50d7189ab3b/invoke.js', 
             width: 468, 
             height: 60 
-        }
+        }*/
     ];
 
     const fullscreenAds =[
