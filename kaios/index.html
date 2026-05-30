@@ -183,33 +183,42 @@ input[type="text"], select {
     // NATIVE INSTALL FUNCTION
     function triggerNativeInstall(appName, manifestUrl) {
         if (isKaiOS2) {
-            // KaiOS 2.5 Logic
+            // KaiOS 2.5 Logic - "open-page" দিয়ে স্টোর সরাসরি ওপেন করার চেষ্টা করবে
             var activity = new MozActivity({
-                name: "open-app",
-                data: { url: manifestUrl, type: "url", appName: appName }
+                name: "open-page",
+                data: { 
+                    type: "url", 
+                    url: manifestUrl, 
+                    appName: appName 
+                }
             });
             activity.onerror = function() {
-                // Fallback to open-page if open-app fails
+                // যদি ব্যর্থ হয়, তবে ব্যাকআপ হিসেবে "open-app" রান করবে
                 new MozActivity({
-                    name: "open-page",
-                    data: { url: manifestUrl, type: "url", appName: appName }
+                    name: "open-app",
+                    data: { 
+                        type: "url", 
+                        url: manifestUrl, 
+                        appName: appName 
+                    }
                 });
             };
         } else if (isKaiOS3) {
-            // KaiOS 3.0 Logic
-            var activity = new WebActivity("open-app", {
-                url: manifestUrl,
+            // KaiOS 3.0 Logic - Promise ভিত্তিক .start() এপিআই ব্যবহার করবে
+            var activity = new WebActivity("open-page", {
                 type: "url",
+                url: manifestUrl,
                 appName: appName
             });
-            activity.onerror = function() {
-                // Fallback to open-page if open-app fails
-                new WebActivity("open-page", {
-                    url: manifestUrl,
+            activity.start().catch(function() {
+                // যদি ব্যর্থ হয়, তবে ব্যাকআপ হিসেবে "open-app" রান করবে
+                var fallbackActivity = new WebActivity("open-app", {
                     type: "url",
+                    url: manifestUrl,
                     appName: appName
                 });
-            };
+                fallbackActivity.start();
+            });
         } else {
             // Non-KaiOS devices (Android/PC) simply open the manifest URL
             window.location.href = manifestUrl;
