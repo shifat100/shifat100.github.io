@@ -2329,5 +2329,80 @@
     "product_id": "",
     "release_date": 1744541500000,
     "ad": true
-  }
+  },{
+  "id": "vtNY3n4jkFmoO2uYVHOQ",
+  "name": "Love Story",
+  "summary": "Awesome Bangla Love Stories",
+  "description": "Love Stories Series in Bangla Language For KaiOS Devices, Read Offline, Easy Access. Read Awesome Love Stories And Get Enjoy",
+  "version": "1.0.2",
+  "bundle_id": "kaios.app.lovestoriespart1",
+  "developer": "Triple Three",
+  "developer_url": "",
+  "manifest_url": "https://api.kaiostech.com/apps/manifest/vtNY3n4jkFmoO2uYVHOQ",
+  "thumbnail_url": "https://storage.kaiostech.com/v3.0/files/app/8/XXyqDZAF2ZXVp23vV54vxhw7XB97JZ6Lq9ig0t/ICON_IMAGE.png",
+  "background_url": "",
+  "screenshots": [],
+  "theme": "#ff0000",
+  "category": "Entertainment",
+  "category_list": [
+    20,
+    400
+  ],
+  "type": "web",
+  "size": 3708950,
+  "paid": false,
+  "product_id": "",
+  "release_date": 1710685112554,
+  "ad": false
+},{
+  "id": "aIzkrpRTM4XtqlWJj3jS",
+  "name": "বাবা",
+  "summary": "বাবা আমার জান",
+  "description": "বাবা তোমাকে খুব ভালোবাসি",
+  "version": "1.0.0",
+  "bundle_id": "kaios.app.father",
+  "developer": "Tripple Three",
+  "developer_url": "",
+  "manifest_url": "https://api.kaiostech.com/apps/manifest/aIzkrpRTM4XtqlWJj3jS",
+  "thumbnail_url": "https://storage.kaiostech.com/v3.0/files/app/B/UQZd1kNVIQKorLohJjzU96NTJVQl1Bb4hrwP1T/ICON_IMAGE.png",
+  "background_url": "",
+  "screenshots": [],
+  "theme": "#ffffff",
+  "category": "Lifestyle",
+  "category_list": [
+    70,
+    400
+  ],
+  "type": "web",
+  "size": 1452983,
+  "paid": false,
+  "product_id": "",
+  "release_date": 1711175863452,
+  "ad": false
+},{
+  "id": "9HuWV8UVS9n-aDd-Vxom",
+  "name": "Shortcut Manager",
+  "summary": "Internet Shortcut Manager",
+  "description": "Shortcut Manager Is A PowerFull  App For Kaios To Create And Manage Internet Shortcut File.",
+  "version": "1.0.2",
+  "bundle_id": "xyz.softertool.shortcutmanager",
+  "developer": "Tripple Three",
+  "developer_url": "http://KaiQij.softertool.xyz",
+  "manifest_url": "https://api.kaiostech.com/apps/manifest/9HuWV8UVS9n-aDd-Vxom",
+  "thumbnail_url": "https://storage.kaiostech.com/v3.0/files/app/G/kIkG9thPxCAiXtW1cIjxlHxuKZMhOk9N9tUNUD/ICON_IMAGE.png",
+  "background_url": "",
+  "screenshots": [],
+  "theme": "#ffffff",
+  "category": "Utilities",
+  "category_list": [
+    60,
+    400
+  ],
+  "type": "privileged",
+  "size": 667423,
+  "paid": false,
+  "product_id": "",
+  "release_date": 1717484816329,
+  "ad": false
+}
 ]
