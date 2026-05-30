@@ -1,308 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- Ultra-optimized for QVGA (240x320) and QQVGA (128x160) -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KaiOS App Hub</title>
-    <style>
-        /* OLD BROWSER COMPATIBLE CSS */
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            font-size: 12px;
-        }
+<meta charset="UTF-8">
+<!-- Ultra-optimized for QVGA (240x320) and QQVGA (128x160) -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KaiOS App Hub</title>
+<style>
+/* OLD BROWSER COMPATIBLE CSS */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
 
-        header {
-            background-color: #6f02b5; 
-            color: #ffffff;
-            padding: 15px 5px;
-            text-align: center;
-            border-bottom: 4px solid #4a0084;
-        }
+header {
+    background-color: #6f02b5; 
+    color: #ffffff;
+    padding: 15px 5px;
+    text-align: center;
+    border-bottom: 4px solid #4a0084;
+}
 
-        .logo {
-            font-size: 18px;
-            font-weight: bold;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+.logo {
+    font-size: 18px;
+    font-weight: bold;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-        .controls {
-            background-color: #ffffff;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
+.controls {
+    background-color: #ffffff;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
 
-        .search-box, .sort-box {
-            width: 100%;
-            margin-bottom: 8px;
-        }
+.search-box, .sort-box {
+    width: 100%;
+    margin-bottom: 8px;
+}
 
-        input[type="text"], select {
-            width: 94%;
-            padding: 8px;
-            font-size: 13px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: #fafafa;
-        }
+input[type="text"], select {
+    width: 94%;
+    padding: 8px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #fafafa;
+}
 
-        .main-content {
-            padding: 8px;
-        }
+.main-content {
+    padding: 8px;
+}
 
-        .app-card {
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            padding: 12px;
-            overflow: hidden; 
-            display: block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+.app-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    padding: 12px;
+    overflow: hidden; 
+    display: block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
-        .app-icon {
-            width: 54px;
-            height: 54px;
-            float: left;
-            margin-right: 12px;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            background: skyblue;
-        }
+.app-icon {
+    width: 54px;
+    height: 54px;
+    float: left;
+    margin-right: 12px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: skyblue;
+}
 
-        .app-info {
-            float: left;
-            width: calc(100% - 72px); 
-            overflow: hidden;
-        }
+.app-info {
+    float: left;
+    width: calc(100% - 72px); 
+    overflow: hidden;
+}
 
-        .app-name {
-            font-weight: bold;
-            font-size: 14px;
-            display: block;
-            color: #6f02b5;
-            margin-bottom: 2px;
-        }
+.app-name {
+    font-weight: bold;
+    font-size: 14px;
+    display: block;
+    color: #6f02b5;
+    margin-bottom: 2px;
+}
 
-        .app-subtitle {
-            font-size: 11px;
-            color: #888;
-            display: block;
-            margin-bottom: 5px;
-            font-style: italic;
-        }
+.app-subtitle {
+    font-size: 11px;
+    color: #888;
+    display: block;
+    margin-bottom: 5px;
+    font-style: italic;
+}
 
-        .app-description {
-            font-size: 11px;
-            color: #666;
-            display: block;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
+.app-description {
+    font-size: 11px;
+    color: #666;
+    display: block;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
 
-        /* Professional Native Button */
-        .install-btn {
-            background: linear-gradient(to bottom, #851dd6, #4a0084);
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 6px 15px;
-            border-radius: 5px;
-            display: inline-block;
-            text-align: center;
-            border: 1px solid #4a0084;
-            cursor: pointer;
-        }
+/* Professional Native Button */
+.install-btn {
+    background: linear-gradient(to bottom, #851dd6, #4a0084);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px 15px;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+    border: 1px solid #4a0084;
+    cursor: pointer;
+}
 
-        .install-btn:active {
-            background: #4a0084;
-        }
+.install-btn:active {
+    background: #4a0084;
+}
 
-        .status-msg {
-            text-align: center;
-            padding: 40px 10px;
-            color: #999;
-            font-size: 14px;
-        }
+.status-msg {
+    text-align: center;
+    padding: 40px 10px;
+    color: #999;
+    font-size: 14px;
+}
 
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
-        }
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
 
-        @media screen and (max-width: 140px) {
-            .app-icon { width: 38px; height: 38px; }
-            .app-info { width: calc(100% - 55px); }
-            .logo { font-size: 14px; }
-            body { font-size: 11px; }
-            .app-name { font-size: 12px; }
-        }
-    </style>
+@media screen and (max-width: 140px) {
+    .app-icon { width: 38px; height: 38px; }
+    .app-info { width: calc(100% - 55px); }
+    .logo { font-size: 14px; }
+    body { font-size: 11px; }
+    .app-name { font-size: 12px; }
+}
+</style>
 </head>
 <body>
 
-    <header>
-        <span class="logo">KaiOS App Store</span>
-    </header>
+<header>
+    <span class="logo">KaiOS App Store</span>
+</header>
 
-    <div class="controls">
-        <div class="search-box">
-            <input type="text" id="searchBar" placeholder="Search apps..." onkeyup="handleUpdate()">
-        </div>
-        <div class="sort-box">
-            <select id="sortSelect" onchange="handleUpdate()">
-                <option value="name-asc">A-Z</option>
-                <option value="name-desc">Z-A</option>
-                <option value="size-asc">Smallest</option>
-                <option value="size-desc">Largest</option>
-                <option value="date-desc">Newest</option>
-            </select>
-        </div>
+<div class="controls">
+    <div class="search-box">
+        <input type="text" id="searchBar" placeholder="Search apps..." onkeyup="handleUpdate()">
     </div>
-
-    <div class="main-content" id="app-container">
-        <div class="status-msg">Loading professional catalog...</div>
+    <div class="sort-box">
+        <select id="sortSelect" onchange="handleUpdate()">
+            <option value="name-asc">A-Z</option>
+            <option value="name-desc">Z-A</option>
+            <option value="size-asc">Smallest</option>
+            <option value="size-desc">Largest</option>
+            <option value="date-desc">Newest</option>
+        </select>
     </div>
+</div>
 
-    <script>
-        var allApps = [];
-        
-        // DETECTION: Check KaiOS version based on the script you provided
-        var isKaiOS2 = ("object" == typeof window && "MozActivity" in window);
-        var isKaiOS3 = ("object" == typeof window && !isKaiOS2 && "WebActivity" in window);
+<div class="main-content" id="app-container">
+    <div class="status-msg">Loading professional catalog...</div>
+</div>
 
-        // NATIVE INSTALL FUNCTION
-        function triggerNativeInstall(appName, manifestUrl) {
-            if (isKaiOS2) {
-                // KaiOS 2.5 Logic
-                var activity = new MozActivity({
-                    name: "open-app",
+<script>
+    var allApps = [];
+    
+    // DETECTION: Check KaiOS version
+    var isKaiOS2 = ("object" == typeof window && "MozActivity" in window);
+    var isKaiOS3 = ("object" == typeof window && !isKaiOS2 && "WebActivity" in window);
+
+    // NATIVE INSTALL FUNCTION
+    function triggerNativeInstall(appName, manifestUrl) {
+        if (isKaiOS2) {
+            // KaiOS 2.5 Logic
+            var activity = new MozActivity({
+                name: "open-app",
+                data: { url: manifestUrl, type: "url", appName: appName }
+            });
+            activity.onerror = function() {
+                // Fallback to open-page if open-app fails
+                new MozActivity({
+                    name: "open-page",
                     data: { url: manifestUrl, type: "url", appName: appName }
                 });
-                activity.onerror = function() {
-                    // Fallback to open-page if open-app fails
-                    new MozActivity({
-                        name: "open-page",
-                        data: { url: manifestUrl, type: "url", appName: appName }
-                    });
-                };
-            } else if (isKaiOS3) {
-                // KaiOS 3.0 Logic
-                var activity = new WebActivity("open-app", {
+            };
+        } else if (isKaiOS3) {
+            // KaiOS 3.0 Logic
+            var activity = new WebActivity("open-app", {
+                url: manifestUrl,
+                type: "url",
+                appName: appName
+            });
+            activity.onerror = function() {
+                // Fallback to open-page if open-app fails
+                new WebActivity("open-page", {
                     url: manifestUrl,
                     type: "url",
                     appName: appName
                 });
-                activity.onerror = function() {
-                    // Fallback to open-page if open-app fails
-                    new WebActivity("open-page", {
-                        url: manifestUrl,
-                        type: "url",
-                        appName: appName
-                    });
-                };
-            } else {
-                // Non-KaiOS devices (Android/PC) simply open the manifest URL
-                window.location.href = manifestUrl;
-            }
-        }
-
-        function fetchApps() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'app_list.txt', true);
-
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    try {
-                        var response = JSON.parse(xhr.responseText);
-                        allApps = response.data;
-                        handleUpdate();
-                    } catch (e) {
-                        showStatus("Error loading JSON data.");
-                    }
-                } else {
-                    showStatus("Application list not found.");
-                }
             };
-
-            xhr.onerror = function() { showStatus("Network connection error."); };
-            xhr.send();
+        } else {
+            // Non-KaiOS devices (Android/PC) simply open the manifest URL
+            window.location.href = manifestUrl;
         }
+    }
 
-        function handleUpdate() {
-            var apps = allApps.slice();
+    function fetchApps() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'app_list.txt', true);
 
-            var searchTerm = document.getElementById('searchBar').value.toLowerCase();
-            apps = apps.filter(function(app) {
-                var name = app.name.toLowerCase();
-                var summary = (app.summary || "").toLowerCase();
-                return name.indexOf(searchTerm) !== -1 || summary.indexOf(searchTerm) !== -1;
-            });
-
-            var sortVal = document.getElementById('sortSelect').value;
-            apps.sort(function(a, b) {
-                if (sortVal === 'name-asc') return a.name.localeCompare(b.name);
-                if (sortVal === 'name-desc') return b.name.localeCompare(a.name);
-                if (sortVal === 'size-asc') return a.size - b.size;
-                if (sortVal === 'size-desc') return b.size - a.size;
-                if (sortVal === 'date-desc') return b.release_date - a.release_date;
-                return 0;
-            });
-
-            render(apps);
-        }
-
-        function render(apps) {
-            var container = document.getElementById('app-container');
-            container.innerHTML = '';
-
-            if (apps.length === 0) {
-                showStatus("No apps match your search.");
-                return;
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    // Standardizes response whether it is a raw Array or wrapped inside {"data": [...]}
+                    allApps = Array.isArray(response) ? response : (response.data || []);
+                    handleUpdate();
+                } catch (e) {
+                    showStatus("Error loading JSON data.");
+                }
+            } else {
+                showStatus("Application list not found.");
             }
+        };
 
-            for (var i = 0; i < apps.length; i++) {
-                var app = apps[i];
-                var card = document.createElement('div');
-                card.className = 'app-card clearfix';
+        xhr.onerror = function() { showStatus("Network connection error."); };
+        xhr.send();
+    }
 
-                // Create a button that calls the Native JS function
-                var btn = document.createElement('a');
-                btn.className = 'install-btn';
-                btn.innerHTML = 'Install';
-                btn.href = 'javascript:void(0)'; // Prevent page jump
-                
-                // Attach the native install logic
-                btn.onclick = function() {
-                    triggerNativeInstall(app.name, app.manifest_url);
+    function handleUpdate() {
+        var apps = allApps.slice();
+
+        var searchTerm = document.getElementById('searchBar').value.toLowerCase();
+        apps = apps.filter(function(app) {
+            var name = app.name.toLowerCase();
+            var summary = (app.summary || "").toLowerCase();
+            return name.indexOf(searchTerm) !== -1 || summary.indexOf(searchTerm) !== -1;
+        });
+
+        var sortVal = document.getElementById('sortSelect').value;
+        apps.sort(function(a, b) {
+            if (sortVal === 'name-asc') return a.name.localeCompare(b.name);
+            if (sortVal === 'name-desc') return b.name.localeCompare(a.name);
+            if (sortVal === 'size-asc') return a.size - b.size;
+            if (sortVal === 'size-desc') return b.size - a.size;
+            if (sortVal === 'date-desc') return b.release_date - a.release_date;
+            return 0;
+        });
+
+        render(apps);
+    }
+
+    function render(apps) {
+        var container = document.getElementById('app-container');
+        container.innerHTML = '';
+
+        if (apps.length === 0) {
+            showStatus("No apps match your search.");
+            return;
+        }
+
+        for (var i = 0; i < apps.length; i++) {
+            var app = apps[i];
+            var card = document.createElement('div');
+            card.className = 'app-card clearfix';
+
+            // Create a button that calls the Native JS function
+            var btn = document.createElement('a');
+            btn.className = 'install-btn';
+            btn.innerHTML = 'Install';
+            btn.href = 'javascript:void(0)'; // Prevent page jump
+            
+            // IIFE closure wrapper ensures correct click parameters are preserved per-item
+            btn.onclick = (function(name, url) {
+                return function() {
+                    triggerNativeInstall(name, url);
                 };
+            })(app.name, app.manifest_url);
 
-                card.innerHTML = 
-                    '<img src="' + app.thumbnail_url + '" class="app-icon">' +
-                    '<div class="app-info">' +
-                        '<span class="app-name">' + app.name + '</span>' +
-                        '<span class="app-subtitle">' + (app.summary || 'Application') + '</span>' +
-                        '<span class="app-description">' + app.description + '</span>';
-                
-                card.appendChild(btn);
-                container.appendChild(card);
-            }
+            card.innerHTML = 
+                '<img src="' + app.thumbnail_url + '" class="app-icon">' +
+                '<div class="app-info">' +
+                    '<span class="app-name">' + app.name + '</span>' +
+                    '<span class="app-subtitle">' + (app.summary || 'Application') + '</span>' +
+                    '<span class="app-description">' + app.description + '</span>' +
+                '</div>';
+            
+            card.appendChild(btn);
+            container.appendChild(card);
         }
+    }
 
-        function showStatus(msg) {
-            document.getElementById('app-container').innerHTML = '<div class="status-msg">' + msg + '</div>';
-        }
+    function showStatus(msg) {
+        document.getElementById('app-container').innerHTML = '<div class="status-msg">' + msg + '</div>';
+    }
 
-        window.onload = fetchApps;
-    </script>
+    window.onload = fetchApps;
+</script>
 </body>
 </html>
