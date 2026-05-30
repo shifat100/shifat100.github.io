@@ -1292,9 +1292,6 @@
                 case 'Enter':
                 case 'Select':
                     handleNodeSelection(keyboardCursorIndex); e.preventDefault(); break;
-                case 'Backspace':
-                case 'Escape':
-                    triggerDeselect(); e.preventDefault(); break;
                 case 'SoftLeft': case 'F1': case 'Escape':
                     leaveRoom(); e.preventDefault(); break;
                 case 'SoftRight': case 'F2': case 'Backspace':
