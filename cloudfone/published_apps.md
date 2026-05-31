@@ -1,10 +1,8 @@
 # Published Apps
 
-A collection of applications developed and published by Shifat100.
+A collection of Cloudmosa's Cloudphone applications developed and published by Shifat100.
 
 ---
-
-## Dictionaries
 
 * **B2B Dictionary**
   Business and commercial terminology reference.
@@ -18,19 +16,11 @@ A collection of applications developed and published by Shifat100.
 * **Hindi Dictionary**
   Hindi language dictionary and translation tool.
 
----
-
-## Utilities
-
 * **KeyCode**
   Key code identification and reference utility.
 
 * **MobiMoon**
   Mobile utility application.
-
----
-
-## Entertainment
 
 * **IPTV**
   Internet Protocol Television streaming application.
