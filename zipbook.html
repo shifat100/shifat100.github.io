@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zip Host - Material 3 Sandbox</title>
+    <!-- Tailwind CSS (for styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- JSZip Library (for reading zip files) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Google Fonts & Material Symbols for Android-like Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FEF7FF; /* M3 Light Surface Background */
+            color: #1D1B20; /* M3 On-Surface */
+        }
+        .m3-card {
+            border-radius: 28px; /* Standard M3 Extra Large Rounded */
+            background-color: #F7F2FA; /* M3 Surface Container Low */
+            transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+        }
+        .m3-card-active {
+            background-color: #F3EDF7; /* M3 Surface Container High */
+            border: 2px dashed #6750A4;
+        }
+        .m3-btn-filled {
+            background-color: #6750A4; /* M3 Primary */
+            color: #FFFFFF;
+            border-radius: 100px;
+        }
+        .m3-btn-filled:hover {
+            background-color: #533C8A;
+        }
+        .m3-btn-tonal {
+            background-color: #EADDFF; /* M3 Primary Container */
+            color: #21005D; /* M3 On-Primary Container */
+            border-radius: 100px;
+        }
+        .m3-btn-tonal:hover {
+            background-color: #D3C2F0;
+        }
+        .m3-input-field {
+            border-radius: 4px 4px 0 0;
+            background-color: #ECE6F0;
+            border-bottom: 2px solid #49454F;
+        }
+        /* Custom Scrollbar for list */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E7E0EC;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top AppBar (M3 Style) -->
+    <header class="bg-[#F3EDF7] px-6 py-4 flex items-center justify-between border-b border-[#E7E0EC] sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-[#6750A4] text-3xl">cloud_done</span>
+            <div>
+                <h1 class="text-xl font-medium tracking-tight text-[#1D1B20]">Zip Web Host</h1>
+                <p class="text-xs text-[#49454F]">Material 3 Memory Sandbox</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="sw-status" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 transition-all">
+                <span class="material-symbols-outlined text-sm">wifi_off</span> Service Worker: Inactive
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Sidebar (Upload & History Panel) -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- Upload Area Card -->
+            <section class="m3-card p-6 shadow-sm border border-[#E7E0EC] relative">
+                <h2 class="text-sm font-medium text-[#49454F] mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">upload</span> Add New ZIP File
+                </h2>
+                
+                <div id="drop-zone" class="border-2 border-dashed border-[#CAC4D0] rounded-2xl p-6 text-center cursor-pointer hover:bg-[#ECE6F0] transition-colors">
+                    <input type="file" id="zip-input" accept=".zip" class="hidden">
+                    <span class="material-symbols-outlined text-4xl text-[#6750A4] mb-2">folder_zip</span>
+                    <p class="text-sm font-medium text-[#1D1B20]">Drag and drop your file here</p>
+                    <p class="text-xs text-[#49454F] mt-1">or select from your local device</p>
+                    <button class="m3-btn-tonal px-4 py-2 mt-4 text-xs font-medium inline-flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">open_in_browser</span> Choose File
+                    </button>
+                </div>
+
+                <!-- Caching Progress Bar -->
+                <div id="status-container" class="hidden mt-4 space-y-2">
+                    <div class="flex justify-between text-xs font-medium text-[#49454F]">
+                        <span id="status-text" class="truncate pr-2">Processing...</span>
+                        <span id="status-percentage">0%</span>
+                    </div>
+                    <div class="w-full bg-[#E7E0EC] rounded-full h-1">
+                        <div id="status-bar" class="bg-[#6750A4] h-1 rounded-full transition-all duration-150" style="width: 0%"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IndexedDB History Card -->
+            <section class="m3-card p-6 shadow-sm border border-[#E7E0EC] flex-grow flex flex-col min-h-[300px] max-h-[450px]">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm font-medium text-[#49454F] flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">history</span> Saved History (IndexedDB)
+                    </h2>
+                    <span id="file-count" class="text-xs bg-[#EADDFF] text-[#21005D] px-2 py-0.5 rounded-full font-medium">0 ZIPs</span>
+                </div>
+                
+                <!-- History Items List -->
+                <div id="history-list" class="flex-grow overflow-y-auto space-y-3 pr-1">
+                    <div class="text-center py-10 text-slate-400">
+                        <span class="material-symbols-outlined text-4xl mb-2">database</span>
+                        <p class="text-xs">No ZIP files found in history</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Right Side (Virtual Sandbox Hosting View) -->
+        <div class="lg:col-span-8 m3-card border border-[#E7E0EC] overflow-hidden flex flex-col shadow-sm">
+            
+            <!-- Android Chrome Browser Styled Bar -->
+            <div class="bg-[#F3EDF7] px-4 py-3 border-b border-[#E7E0EC] flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center gap-2 flex-grow max-w-lg">
+                    <!-- Browser controls mimicking Android -->
+                    <button id="reload-iframe-btn" class="p-2 hover:bg-[#E7E0EC] rounded-full text-[#49454F] flex items-center" title="Reload">
+                        <span class="material-symbols-outlined text-xl">refresh</span>
+                    </button>
+                    <!-- Address Bar -->
+                    <div class="bg-[#ECE6F0] rounded-full px-4 py-1.5 flex items-center gap-2 flex-grow text-xs text-[#1D1B20] border border-transparent focus-within:border-[#6750A4] select-all truncate">
+                        <span class="material-symbols-outlined text-sm text-[#49454F]">lock</span>
+                        <span id="preview-url" class="truncate font-mono">Virtual Host: Offline</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="open-tab-btn" class="hidden m3-btn-filled px-4 py-2 text-xs font-medium inline-flex items-center gap-1.5 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">open_in_new</span> Open in New Tab
+                    </button>
+                </div>
+            </div>
+
+            <!-- Virtual Web Frame Sandbox -->
+            <div class="flex-grow bg-[#ECE6F0] relative min-h-[500px] flex items-center justify-center">
+                <!-- Sandbox Empty Indicator -->
+                <div id="placeholder-text" class="text-center text-[#49454F] p-8 z-10 max-w-sm">
+                    <span class="material-symbols-outlined text-5xl text-[#6750A4] mb-3">android</span>
+                    <p class="text-sm font-semibold">Web Sandbox Ready</p>
+                    <p class="text-xs text-slate-500 mt-1">Once you upload a ZIP file or select a site from the history, it will be displayed live here inside this Android app preview panel.</p>
+                </div>
+                <iframe id="preview-iframe" class="absolute inset-0 w-full h-full border-none hidden bg-white"></iframe>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- M3 Styled Snackbar Alert -->
+    <div id="snackbar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-[#313033] text-[#F4EFF4] text-xs py-3 px-5 rounded-xl shadow-lg flex items-center gap-3 opacity-0 pointer-events-none transition-all duration-300 z-50">
+        <span id="snackbar-msg"></span>
+    </div>
+
+    <script>
+        var SCOPE = '/virtual-host/';
+        var CACHE_NAME = 'zip-cache';
+
+        // IndexedDB configuration
+        var DB_NAME = 'M3ZipHostDB';
+        var STORE_NAME = 'zip_files';
+        var DB_VERSION = 1;
+
+        var zipInput = document.getElementById('zip-input');
+        var dropZone = document.getElementById('drop-zone');
+        var swStatus = document.getElementById('sw-status');
+        var statusContainer = document.getElementById('status-container');
+        var statusText = document.getElementById('status-text');
+        var statusPercentage = document.getElementById('status-percentage');
+        var statusBar = document.getElementById('status-bar');
+        var fileCount = document.getElementById('file-count');
+        var fileList = document.getElementById('history-list');
+        var previewUrlEl = document.getElementById('preview-url');
+        var previewIframe = document.getElementById('preview-iframe');
+        var placeholderText = document.getElementById('placeholder-text');
+        var openTabBtn = document.getElementById('open-tab-btn');
+        var reloadIframeBtn = document.getElementById('reload-iframe-btn');
+
+        var entryFileName = 'index.html';
+
+        // M3 Toast Snackbar Helper
+        function showSnackbar(msg) {
+            var snack = document.getElementById('snackbar');
+            document.getElementById('snackbar-msg').textContent = msg;
+            snack.classList.remove('opacity-0', 'pointer-events-none');
+            snack.classList.add('opacity-100');
+            setTimeout(function() {
+                snack.classList.remove('opacity-100');
+                snack.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // Register Service Worker
+        function registerSW() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(reg) {
+                        swStatus.innerHTML = '<span class="material-symbols-outlined text-sm">wifi</span> Service Worker: Active';
+                        swStatus.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
+                        return navigator.serviceWorker.ready;
+                    })
+                    .catch(function(err) {
+                        console.error('Service Worker registration failed:', err);
+                        swStatus.innerHTML = '<span class="material-symbols-outlined text-sm">wifi_off</span> Service Worker: Refresh Required';
+                    });
+            } else {
+                swStatus.textContent = 'Service Worker: Unsupported';
+            }
+        }
+        registerSW();
+
+        // ------------------ IndexedDB Logic ------------------
+        function openDB() {
+            return new Promise(function(resolve, reject) {
+                var request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = function() { reject(request.error); };
+                request.onsuccess = function() { resolve(request.result); };
+                request.onupgradeneeded = function(e) {
+                    var db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+            });
+        }
+
+        function saveZipToDB(file) {
+            return openDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var transaction = db.transaction(STORE_NAME, 'readwrite');
+                    var store = transaction.objectStore(STORE_NAME);
+                    var data = {
+                        name: file.name,
+                        size: file.size,
+                        blob: file, // Store the zip file blob directly
+                        timestamp: Date.now()
+                    };
+                    var request = store.add(data);
+                    request.onsuccess = function() { resolve(request.result); };
+                    request.onerror = function() { reject(request.error); };
+                });
+            });
+        }
+
+        function getAllZips() {
+            return openDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var transaction = db.transaction(STORE_NAME, 'readonly');
+                    var store = transaction.objectStore(STORE_NAME);
+                    var request = store.getAll();
+                    request.onsuccess = function() { resolve(request.result); };
+                    request.onerror = function() { reject(request.error); };
+                });
+            });
+        }
+
+        function getZipById(id) {
+            return openDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var transaction = db.transaction(STORE_NAME, 'readonly');
+                    var store = transaction.objectStore(STORE_NAME);
+                    var request = store.get(id);
+                    request.onsuccess = function() { resolve(request.result); };
+                    request.onerror = function() { reject(request.error); };
+                });
+            });
+        }
+
+        function deleteZipFromDB(id) {
+            return openDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var transaction = db.transaction(STORE_NAME, 'readwrite');
+                    var store = transaction.objectStore(STORE_NAME);
+                    var request = store.delete(id);
+                    request.onsuccess = function() { resolve(); };
+                    request.onerror = function() { reject(request.error); };
+                });
+            });
+        }
+
+        // Formatting Utils
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            var k = 1024;
+            var sizes = ['Bytes', 'KB', 'MB'];
+            var i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDate(timestamp) {
+            var date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            var div = document.createElement('div');
+            div.innerText = text;
+            return div.innerHTML;
+        }
+
+        // Render History List
+        function loadHistory() {
+            return getAllZips().then(function(zips) {
+                fileCount.textContent = zips.length + ' ZIP(s)';
+                
+                if (zips.length === 0) {
+                    fileList.innerHTML = 
+                        '<div class="text-center py-10 text-slate-400">' +
+                            '<span class="material-symbols-outlined text-4xl mb-2">database</span>' +
+                            '<p class="text-xs">No files saved in history</p>' +
+                        '</div>';
+                    return;
+                }
+
+                // Sort by latest first
+                zips.sort(function(a, b) {
+                    return b.timestamp - a.timestamp;
+                });
+
+                var html = '';
+                for (var i = 0; i < zips.length; i++) {
+                    var zip = zips[i];
+                    html += 
+                        '<div class="flex items-center justify-between p-3 rounded-2xl bg-[#ECE6F0] hover:bg-[#EADDFF] transition-all cursor-pointer group" onclick="loadFromHistory(' + zip.id + ')">' +
+                            '<div class="flex items-center gap-3 min-w-0 flex-1">' +
+                                '<span class="material-symbols-outlined text-[#6750A4] p-2 bg-white rounded-full">folder_zip</span>' +
+                                '<div class="min-w-0">' +
+                                    '<p class="text-xs font-semibold text-[#1D1B20] truncate pr-2">' + escapeHtml(zip.name) + '</p>' +
+                                    '<p class="text-[10px] text-slate-500">' + formatBytes(zip.size) + ' • ' + formatDate(zip.timestamp) + '</p>' +
+                                '</div>' +
+                            '</div>' +
+                            '<button onclick="event.stopPropagation(); deleteHistoryItem(' + zip.id + ')" class="p-1.5 rounded-full text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100" title="Delete from history">' +
+                                '<span class="material-symbols-outlined text-lg">delete</span>' +
+                            '</button>' +
+                        '</div>';
+                }
+                fileList.innerHTML = html;
+            }).catch(function(err) {
+                console.error("Error loading history:", err);
+            });
+        }
+        
+        // Initial load of history on start
+        loadHistory();
+
+        // ------------------ Drag and Drop events ------------------
+        dropZone.addEventListener('click', function() { zipInput.click(); });
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('bg-[#ECE6F0]');
+        });
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('bg-[#ECE6F0]');
+        });
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('bg-[#ECE6F0]');
+            if (e.dataTransfer.files.length > 0) {
+                handleZipUpload(e.dataTransfer.files[0]);
+            }
+        });
+        zipInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                handleZipUpload(e.target.files[0]);
+            }
+        });
+
+        // Handle user uploaded zip (Save then Cache)
+        function handleZipUpload(file) {
+            updateStatus('Saving to database...', 10);
+            statusContainer.classList.remove('hidden');
+            
+            return saveZipToDB(file)
+                .then(function() {
+                    return loadHistory();
+                })
+                .then(function() {
+                    showSnackbar('The ZIP file has been saved to the local database');
+                    return handleZipExtract(file);
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    showSnackbar('Failed to save: ' + err.message);
+                });
+        }
+
+        // Load Zip from Database item
+        function loadFromHistory(id) {
+            updateStatus('Loading from history...', 10);
+            statusContainer.classList.remove('hidden');
+            
+            return getZipById(id)
+                .then(function(item) {
+                    if (item && item.blob) {
+                        return handleZipExtract(item.blob).then(function() {
+                            showSnackbar('ZIP file loaded from history');
+                        });
+                    } else {
+                        throw new Error('File not found in the database!');
+                    }
+                })
+                .catch(function(err) {
+                    showSnackbar('Failed to load: ' + err.message);
+                });
+        }
+
+        // Delete from Database
+        function deleteHistoryItem(id) {
+            return deleteZipFromDB(id)
+                .then(function() {
+                    return loadHistory();
+                })
+                .then(function() {
+                    showSnackbar('File deleted from history');
+                })
+                .catch(function(err) {
+                    showSnackbar('Failed to delete file!');
+                });
+        }
+
+        // MIME Type Mapping
+        var mimeTypes = {
+            'html': 'text/html', 'htm': 'text/html', 'css': 'text/css',
+            'js': 'application/javascript', 'mjs': 'application/javascript',
+            'json': 'application/json', 'png': 'image/png', 'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg', 'gif': 'image/gif', 'svg': 'image/svg+xml',
+            'webp': 'image/webp', 'ico': 'image/x-icon', 'txt': 'text/plain',
+            'woff': 'font/woff', 'woff2': 'font/woff2', 'ttf': 'font/ttf'
+        };
+
+        function getMimeType(filename) {
+            var ext = filename.split('.').pop().toLowerCase();
+            return mimeTypes[ext] || 'application/octet-stream';
+        }
+
+        // Caching & Extracting Logic (JSZip)
+        function handleZipExtract(blob) {
+            var zip = new JSZip();
+            var contents;
+            var fileNames;
+            var cache;
+            var totalFiles = 0;
+            var processedCount = 0;
+            var detectedHtmlFiles = [];
+
+            return zip.loadAsync(blob)
+                .then(function(loadedZip) {
+                    contents = loadedZip;
+                    fileNames = Object.keys(contents.files);
+                    updateStatus('Clearing cache memory...', 25);
+                    return caches.open(CACHE_NAME);
+                })
+                .then(function(openedCache) {
+                    cache = openedCache;
+                    return cache.keys();
+                })
+                .then(function(cachedRequests) {
+                    var deletePromises = [];
+                    for (var i = 0; i < cachedRequests.length; i++) {
+                        deletePromises.push(cache.delete(cachedRequests[i]));
+                    }
+                    return Promise.all(deletePromises);
+                })
+                .then(function() {
+                    for (var i = 0; i < fileNames.length; i++) {
+                        if (!contents.files[fileNames[i]].dir) {
+                            totalFiles++;
+                        }
+                    }
+                    
+                    if (totalFiles === 0) {
+                        throw new Error('No valid files found in ZIP!');
+                    }
+
+                    updateStatus('Storing virtual files in cache...', 45);
+
+                    // Sequence file insertions sequentially for smoother progress animations
+                    var sequence = Promise.resolve();
+
+                    fileNames.forEach(function(filename) {
+                        var zipFile = contents.files[filename];
+                        if (zipFile.dir) return;
+
+                        sequence = sequence.then(function() {
+                            return zipFile.async('blob').then(function(fileBlob) {
+                                var fileUrl = window.location.origin + SCOPE + filename;
+                                var mimeType = getMimeType(filename);
+                                var response = new Response(fileBlob, {
+                                    headers: {
+                                        'Content-Type': mimeType,
+                                        'Access-Control-Allow-Origin': '*'
+                                    }
+                                });
+
+                                return cache.put(fileUrl, response).then(function() {
+                                    var ext = filename.split('.').pop().toLowerCase();
+                                    if (ext === 'html' || ext === 'htm') {
+                                        detectedHtmlFiles.push(filename);
+                                    }
+
+                                    processedCount++;
+                                    var percent = Math.min(45 + Math.floor((processedCount / totalFiles) * 45), 90);
+                                    updateStatus('Caching: ' + filename.split('/').pop(), percent);
+                                });
+                            });
+                        });
+                    });
+
+                    return sequence;
+                })
+                .then(function() {
+                    // Find entry file
+                    if (fileNames.indexOf('index.html') !== -1) {
+                        entryFileName = 'index.html';
+                    } else if (detectedHtmlFiles.length > 0) {
+                        detectedHtmlFiles.sort(function(a, b) {
+                            return a.split('/').length - b.split('/').length;
+                        });
+                        entryFileName = detectedHtmlFiles[0];
+                    } else {
+                        entryFileName = '';
+                    }
+
+                    if (!entryFileName) {
+                        throw new Error('No HTML file found in ZIP!');
+                    }
+
+                    updateStatus('Launching sandbox...', 95);
+                    setTimeout(function() {
+                        updateStatus('Completed!', 100);
+                        launchSandbox();
+                        setTimeout(function() {
+                            statusContainer.classList.add('hidden');
+                        }, 2000);
+                    }, 500);
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    alert('Error: ' + err.message);
+                    statusText.textContent = 'Failed';
+                    statusBar.style.width = '0%';
+                });
+        }
+
+        function updateStatus(text, percentage) {
+            statusText.textContent = text;
+            statusPercentage.textContent = percentage + '%';
+            statusBar.style.width = percentage + '%';
+        }
+
+        // Launch Preview
+        function launchSandbox() {
+            var virtualUrl = window.location.origin + SCOPE + entryFileName;
+            previewUrlEl.textContent = virtualUrl;
+            
+            placeholderText.classList.add('hidden');
+            previewIframe.classList.remove('hidden');
+            
+            previewIframe.src = virtualUrl;
+
+            openTabBtn.classList.remove('hidden');
+        }
+
+        // Toolbar Action Control
+        openTabBtn.addEventListener('click', function() {
+            var virtualUrl = window.location.origin + SCOPE + entryFileName;
+            window.open(virtualUrl, '_blank');
+        });
+
+        reloadIframeBtn.addEventListener('click', function() {
+            if (previewIframe.src) {
+                previewIframe.src = previewIframe.src;
+                showSnackbar('Iframe reloaded');
+            }
+        });
+    </script>
+</body>
+</html>
