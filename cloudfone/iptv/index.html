@@ -330,6 +330,20 @@
         .grid-container .ad-container {
             grid-column: 1 / -1;
         }
+        /* Browse Device focus handling */
+        #browse-device-btn {
+            color: var(--positive);
+            font-weight: bold;
+        }
+        #browse-device-btn.focused {
+            color: var(--text) !important;
+        }
+        #browse-device-btn svg {
+            fill: currentColor; /* এর ফলে ফোকাস কালারের সাথে আইকনের কালারও পরিবর্তন হবে */
+            margin-right: var(--safe-margin);
+            width: 18px;
+            height: 18px;
+        }
     </style>
 </head>
 
@@ -369,7 +383,11 @@
 
     <!-- 6. SELECT PLAYLIST VIEW -->
     <div id="playlist-view" class="view-section">
-        <div class="list-item focusable" data-action="browse" style="color: var(--positive); font-weight: bold;">
+        <div class="list-item focusable" data-action="browse" id="browse-device-btn">
+            <!-- ফোল্ডার আইকন -->
+            <svg viewBox="0 0 24 24">
+                <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+            </svg>
             <div class="text-container"><span class="truncate">Browse Device...</span></div>
         </div>
         <div class="list-item focusable" data-action="load-url" data-url="https://raw.githubusercontent.com/sanyahmed07/playlist1/refs/heads/main/playlist.m3u">
@@ -378,7 +396,6 @@
         <div class="list-item focusable" data-action="load-default">
             <div class="text-container"><span class="truncate">Demo Backup Playlist</span></div>
         </div>
-        <!-- প্রয়োজনে এখানে আরও ডিরেক্ট প্লেলিস্ট লিংক যুক্ত করতে পারেন -->
     </div>
     
     <!-- 3. SEARCH VIEW -->
