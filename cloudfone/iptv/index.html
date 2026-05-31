@@ -367,6 +367,20 @@
         <div class="list-item focusable ad-container">Advertisement</div>
     </div>
 
+    <!-- 6. SELECT PLAYLIST VIEW -->
+    <div id="playlist-view" class="view-section">
+        <div class="list-item focusable" data-action="browse" style="color: var(--positive); font-weight: bold;">
+            <div class="text-container"><span class="truncate">Browse Device...</span></div>
+        </div>
+        <div class="list-item focusable" data-action="load-url" data-url="https://raw.githubusercontent.com/sanyahmed07/playlist1/refs/heads/main/playlist.m3u">
+            <div class="text-container"><span class="truncate">Sany Ahmed Raj Playlist (Default)</span></div>
+        </div>
+        <div class="list-item focusable" data-action="load-default">
+            <div class="text-container"><span class="truncate">Demo Backup Playlist</span></div>
+        </div>
+        <!-- প্রয়োজনে এখানে আরও ডিরেক্ট প্লেলিস্ট লিংক যুক্ত করতে পারেন -->
+    </div>
+    
     <!-- 3. SEARCH VIEW -->
     <div id="search-view" class="view-section">
         <input type="text" id="search-input" class="input-box focusable" placeholder="Search...">
@@ -444,7 +458,8 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
             home: 0,
             menu: 0,
             search: 0,
-            network: 0
+            network: 0,
+            playlist: 0 // এটি যোগ করুন
         };
         var focusIndex = 0;
         var viewMode = localStorage.getItem('iptv_view_mode') || 'list';
@@ -556,9 +571,7 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
             document.getElementById('player-view').style.display = 'none';
 
             currentView = viewName;
-            // Load the saved index for this view, or default to 0 if it doesn't exist
             focusIndex = focusIndices[viewName] !== undefined ? focusIndices[viewName] : 0;
-
 
             if (viewName === 'home') {
                 document.getElementById('home-view').classList.add('active');
@@ -584,6 +597,11 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                 setSoftkeys("", ICONS.check, ICONS.back);
                 document.getElementById('net-url').value = "";
             }
+            else if (viewName === 'playlist') { // নতুন অংশ
+                document.getElementById('playlist-view').classList.add('active');
+                elHeader.innerText = "Select Playlist";
+                setSoftkeys("", ICONS.check, ICONS.back);
+            }
             else if (viewName === 'player') {
                 document.getElementById('player-view').style.display = 'block';
                 elHeader.innerText = "Playing...";
@@ -592,13 +610,13 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 
             updateFocus();
         }
-
         // --- NAVIGATION & FOCUS ---
         function getFocusableItems() {
             if (currentView === 'home') return document.querySelectorAll('#home-view .list-item, #home-view .ad-container');
             if (currentView === 'menu') return menuList.querySelectorAll('.list-item.focusable');
             if (currentView === 'search') return document.querySelectorAll('#search-view .focusable, #search-results .list-item');
             if (currentView === 'network') return document.querySelectorAll('#network-view .focusable');
+            if (currentView === 'playlist') return document.querySelectorAll('#playlist-view .focusable'); // এটি যোগ করুন
             return [];
         }
 
@@ -734,7 +752,7 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                 var action = target.getAttribute('data-action');
                 if (action === 'search') navigate('search');
                 else if (action === 'network') navigate('network');
-                else if (action === 'upload') document.getElementById('file-upload').click();
+                else if (action === 'upload') navigate('playlist'); // সরাসরি ফাইলের পরিবর্তে প্লেলিস্ট ভিউতে পাঠাবে
                 else if (action === 'reset') {
                     openModal("Refresh playlist from server?", function (res) {
                         if (res) {
@@ -752,6 +770,17 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                 else if (action === 'about') {
                     openModal("IPTV\nCloud Phone Edition v1.0\nCode: A.I. Shifat \nPlaylist: Sany Ahmed Raj", null);
                     setSoftkeys("", "OK", "");
+                }
+            }
+            else if (currentView === 'playlist') { // নতুন অংশ
+                var action = target.getAttribute('data-action');
+                if (action === 'browse') {
+                    document.getElementById('file-upload').click();
+                } else if (action === 'load-url') {
+                    var url = target.getAttribute('data-url');
+                    loadPlaylistFromUrl(url);
+                } else if (action === 'load-default') {
+                    loadDefaultPlaylist();
                 }
             }
             else if (currentView === 'search') {
@@ -773,8 +802,50 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
                 if (elVideo.paused) { elVideo.play(); setSoftkeys("", ICONS.check, ICONS.back); }
                 else { elVideo.pause(); setSoftkeys("", ICONS.play, ICONS.back); }
             }
+                              }
+
+        
+        function loadPlaylistFromUrl(url) {
+            openModal("Loading Playlist...", null);
+            setSoftkeys("", "Wait", "");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    closeModal();
+                    if (xhr.status === 200) {
+                        var data = xhr.responseText;
+                        localStorage.setItem('bd_iptv_playlist', data);
+                        parseM3U(data);
+                        renderList(channels, listContainer);
+                        openModal("Playlist Loaded Successfully!", function () {
+                            navigate('home');
+                        });
+                    } else {
+                        openModal("Failed to load playlist.\nStatus: " + xhr.status, null);
+                    }
+                }
+            };
+
+            xhr.onerror = function () {
+                closeModal();
+                openModal("Network error occurred.", null);
+            };
+
+            xhr.send();
         }
 
+        function loadDefaultPlaylist() {
+            localStorage.setItem('bd_iptv_playlist', DEFAULT_M3U);
+            parseM3U(DEFAULT_M3U);
+            renderList(channels, listContainer);
+            openModal("Default Playlist Loaded!", function () {
+                navigate('home');
+            });
+        }
+        
         /* // --- MEDIA PLAYER ---
          function playMedia(url) {
              if (!url) return;
