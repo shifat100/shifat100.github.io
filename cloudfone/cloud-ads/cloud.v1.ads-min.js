@@ -204,8 +204,7 @@
         }, 300); // Simulate network latency
     };
 
-    // Make both getCloudAd and getKaiAd available globally
-    window.getCloudAd = window.getKaiAd = function (config) {
+    window.getCloudAd =  function (config) {
         processAdRequest(config);
     };
 
