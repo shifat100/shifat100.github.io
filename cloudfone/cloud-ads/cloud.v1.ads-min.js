@@ -29,7 +29,7 @@
             .cloudads-body { width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; background-color: #202020; border: none; cursor: pointer; padding: 0; min-height: 0; overflow: hidden; outline: none; }
             .cloudads-body:focus { background-color: #05AEF2; }
             .cloudads-img { width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
-            .cloudads-footer { width: 100%; flex: 0 0 auto; background-color: #202020; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #4a4a4a; height: 20px; padding: 0 4px; font-size: 10px; position: relative; }
+            .cloudads-footer { width: 100%; flex: 0 0 auto; background-color: #202020; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #4a4a4a; height: 14px; padding: 0 4px; font-size: 8px; position: relative; }
             .cloudads-lsk, .cloudads-rsk { color: #FFFFFF; cursor: pointer; font-weight: bold; }
             .cloudads-lsk { color: #00A539; }
             .cloudads-rsk { position: absolute; left: 50%; transform: translateX(-50%); }
