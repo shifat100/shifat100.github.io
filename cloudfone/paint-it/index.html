@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+    <title>Paint IT</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Fira Sans', sans-serif;
+            background-color: #333;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #4a4a4a;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .screen-content {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h2 {
+            background-color: #00b7ff;
+            color: white;
+            text-align: center;
+            margin: 0;
+        }
+
+        #softkey-bar {
+            width: 100%;
+            background-color: #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            padding: 0 5px;
+            position: fixed;
+            bottom: 0;
+            z-index: 200;
+        }
+
+        #softkey-center {
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .kai-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .kai-list li {
+            border-bottom: 1px solid #555;
+        }
+
+        .kai-list li:focus {
+            background-color: #00a8e0;
+            color: white;
+            outline: none;
+        }
+
+        #main-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: white;
+        }
+
+        #drawing-cursor {
+            position: absolute;
+            width: 9px;
+            height: 9px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #drawing-cursor::before,
+        #drawing-cursor::after {
+            content: '';
+            position: absolute;
+            background-color: red;
+        }
+
+        #drawing-cursor::before {
+            top: 4px;
+            left: 0;
+            width: 10px;
+            height: 2px;
+        }
+
+        #drawing-cursor::after {
+            left: 4px;
+            top: 0;
+            width: 2px;
+            height: 10px;
+        }
+
+        #toolbar {
+            position: absolute;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            z-index: 5;
+        }
+
+        #toolbar-color {
+            border: 1px solid white;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #camera-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Custom Modal Overlay Styles */
+        .custom-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            background-color: rgba(40, 40, 40, 0.96);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+        }
+
+        .custom-modal.active {
+            display: flex;
+        }
+
+        .custom-modal h3 {
+            background-color: #00b7ff;
+            color: white;
+            margin: 0;
+            text-align: center;
+        }
+
+        .custom-modal .modal-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+
+        .custom-modal .kai-list li {
+            color: white;
+        }
+
+        .custom-modal .kai-list li:focus {
+            background-color: #00a8e0;
+            outline: none;
+        }
+
+        #modal-text-input {
+            width: 100%;
+            border: 1px solid #00b7ff;
+            background-color: #222;
+            color: white;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        /* Designable Help & About Styles */
+        .help-container, .about-container {
+            padding: 8px;
+            font-size: 11px;
+            height: calc(100vh - 44px);
+            overflow-y: auto;
+            background-color: #2b2b2b;
+            color: #eee;
+            scrollbar-width: none;
+        }
+
+        .help-container::-webkit-scrollbar, .about-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .card {
+            background-color: #3a3a3a;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: #00b7ff;
+            margin-bottom: 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .key-badge {
+            background-color: #222;
+            color: #00b7ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Sans', monospace;
+            font-weight: 700;
+            text-align: center;
+            border: 1px solid #444;
+            border-bottom: 2px solid #111;
+            font-size: 10px;
+            display: inline-block;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .about-logo {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .about-logo h1 {
+            color: #00b7ff;
+            font-size: 24px;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .about-logo p {
+            font-size: 11px;
+            color: #aaa;
+            margin: 4px 0 0 0;
+            line-height: 1.3;
+        }
+
+        .about-info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .about-info-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #444;
+            font-size: 11px;
+        }
+
+        .about-info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .about-info-list li span:first-child {
+            color: #aaa;
+        }
+
+        .about-info-list li span:last-child {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* Default Layout: Optimized for 240x320 portrait screens */
+        h1 {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        h2 {
+            font-size: 14px;
+            padding: 4px;
+        }
+
+        #softkey-bar {
+            height: 24px;
+            font-size: 11px;
+        }
+
+        #toolbar {
+            font-size: 10px;
+            padding: 2px 4px;
+            bottom: 24px;
+        }
+
+        #toolbar-color {
+            width: 10px;
+            height: 10px;
+            margin-right: 3px;
+        }
+
+        .kai-list li {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .custom-modal {
+            height: calc(100vh - 24px);
+        }
+
+        .custom-modal h3 {
+            font-size: 13px;
+            padding: 5px;
+        }
+
+        #modal-text-input-container {
+            padding: 12px;
+        }
+
+        #modal-text-input {
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        #modal-message {
+            font-size: 11px;
+            padding: 10px;
+            text-align: center;
+            color: #eee;
+        }
+
+        /* Media Query: Optimized for minuscule 128x160 screens */
+        @media (max-width: 130px) {
+            h1 {
+                font-size: 12px;
+                margin: 2px 0;
+            }
+
+            h2 {
+                font-size: 9px;
+                padding: 1px;
+            }
+
+            #softkey-bar {
+                height: 16px;
+                font-size: 8px;
+                padding: 0 2px;
+            }
+
+            #toolbar {
+                font-size: 8px;
+                padding: 1px 2px;
+                bottom: 16px;
+            }
+
+            #toolbar-color {
+                width: 7px;
+                height: 7px;
+                margin-right: 1px;
+            }
+
+            .kai-list li {
+                padding: 4px 6px;
+                font-size: 9px;
+            }
+
+            .help-container, .about-container {
+                padding: 4px;
+                font-size: 8px;
+                height: calc(100vh - 28px);
+            }
+
+            .card {
+                padding: 5px;
+                margin-bottom: 5px;
+                border-radius: 3px;
+            }
+
+            .card-title {
+                font-size: 9px;
+                margin-bottom: 3px;
+            }
+
+            .shortcut-grid {
+                gap: 4px;
+            }
+
+            .key-badge {
+                padding: 1px 3px;
+                min-width: 12px;
+                font-size: 7px;
+            }
+
+            .about-logo h1 {
+                font-size: 14px;
+            }
+
+            .about-logo p {
+                font-size: 8px;
+            }
+
+            .about-info-list li {
+                padding: 3px 0;
+                font-size: 8px;
+            }
+
+            .custom-modal {
+                height: calc(100vh - 16px);
+            }
+
+            .custom-modal h3 {
+                font-size: 9px;
+                padding: 2px;
+            }
+
+            #modal-text-input-container {
+                padding: 6px;
+            }
+
+            #modal-text-input {
+                padding: 4px;
+                font-size: 9px;
+            }
+
+            #modal-message {
+                font-size: 8px;
+                padding: 5px;
+            }
+        }
+
+        /* Media Query: Scaled up for higher resolutions (landscape or 320x240+) */
+        @media (min-width: 241px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 16px;
+                padding: 6px;
+            }
+
+            #softkey-bar {
+                height: 30px;
+                font-size: 13px;
+            }
+
+            #toolbar {
+                font-size: 12px;
+                padding: 4px 8px;
+                bottom: 30px;
+            }
+
+            #toolbar-color {
+                width: 14px;
+                height: 14px;
+                margin-right: 5px;
+            }
+
+            .kai-list li {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .help-container, .about-container {
+                padding: 10px;
+                font-size: 13px;
+                height: calc(100vh - 58px);
+            }
+
+            .card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .card-title {
+                font-size: 14px;
+            }
+
+            .key-badge {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+
+            .about-logo h1 {
+                font-size: 28px;
+            }
+
+            .about-logo p {
+                font-size: 13px;
+            }
+
+            .about-info-list li {
+                font-size: 12px;
+                padding: 8px 0;
+            }
+
+            .custom-modal {
+                height: calc(100vh - 30px);
+            }
+
+            .custom-modal h3 {
+                font-size: 15px;
+                padding: 8px;
+            }
+
+            #modal-text-input-container {
+                padding: 15px;
+            }
+
+            #modal-text-input {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            #modal-message {
+                font-size: 13px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <section id="splash-screen" class="screen active">
+            <div class="screen-content"
+                style="display: flex; align-items: center; justify-content: center; text-align: center;">
+                <div>
+                    <h1>Paint IT</h1>
+                    <p data-l10n-id="loading">Loading...</p>
+                </div>
+            </div>
+        </section>
+        <section id="language-screen" class="screen">
+            <h2 data-l10n-id="language">Language</h2>
+            <div class="screen-content">
+                <ul class="kai-list" id="language-list">
+                    <li tabindex="0" data-lang="en">English</li>
+                    <li tabindex="0" data-lang="zh">中文 (Chinese)</li>
+                    <li tabindex="0" data-lang="pt">Português</li>
+                    <li tabindex="0" data-lang="it">Italiano</li>
+                    <li tabindex="0" data-lang="nl">Nederlands</li>
+                    <li tabindex="0" data-lang="sl">Slovenščina</li>
+                    <li tabindex="0" data-lang="bn">বাংলা (Bengali)</li>
+                </ul>
+            </div>
+        </section>
+        <section id="drawing-screen" class="screen">
+            <div class="screen-content">
+                <canvas id="main-canvas"></canvas>
+                <div id="drawing-cursor"></div>
+            </div>
+            <div id="toolbar">
+                <span id="toolbar-tool">Tool: Line</span>
+                <span>
+                    <span data-l10n-id="color">Color</span>: <span id="toolbar-color"></span>
+                </span>
+                <span id="toolbar-width">Width: 3</span>
+            </div>
+        </section>
+        <section id="camera-screen" class="screen">
+            <div class="screen-content"><video id="camera-preview" autoplay></video></div>
+        </section>
+        <section id="help-screen" class="screen">
+            <h2 data-l10n-id="help">Help</h2>
+            <div class="screen-content help-container">
+                <div class="card">
+                    <div class="card-title" data-l10n-id="quickStart">Quick Start</div>
+                    <p data-l10n-id="helpQuickStart" style="margin:0; line-height:1.4;"></p>
+                </div>
+                <div class="card">
+                    <div class="card-title" data-l10n-id="shortcuts">Shortcuts</div>
+                    <div class="shortcut-grid">
+                        <span class="key-badge">1</span>
+                        <span data-l10n-id="helpKey1">Switch Tool</span>
+
+                        <span class="key-badge">2</span>
+                        <span data-l10n-id="helpKey2">Change Color</span>
+
+                        <span class="key-badge">3</span>
+                        <span data-l10n-id="helpKey3">Change Size</span>
+
+                        <span class="key-badge">4</span>
+                        <span data-l10n-id="helpKey4">Undo</span>
+
+                        <span class="key-badge">5 / OK</span>
+                        <span data-l10n-id="helpKey5">Draw Action</span>
+
+                        <span class="key-badge">6</span>
+                        <span data-l10n-id="helpKey6">Redo</span>
+
+                        <span class="key-badge">7 / 9 / * / #</span>
+                        <span data-l10n-id="helpKeyDiag">Diagonal Move</span>
+
+                        <span class="key-badge">D-Pad</span>
+                        <span data-l10n-id="helpKeyDpad">Move Brush</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="about-screen" class="screen">
+            <h2 data-l10n-id="about">About</h2>
+            <div class="screen-content about-container">
+                <div class="about-logo">
+                    <h1>Paint IT</h1>
+                    <p data-l10n-id="appDescription"></p>
+                </div>
+                <div class="card">
+                    <ul class="about-info-list">
+                        <li>
+                            <span data-l10n-id="version">Version</span>
+                            <span>1.0.0</span>
+                        </li>
+                        <li>
+                            <span data-l10n-id="author">Author</span>
+                            <span>A.I. SHIFAT</span>
+                        </li>
+                        <li>
+                            <span data-l10n-id="license">License</span>
+                            <span>MIT</span>
+                        </li>
+                    </ul>
+                </div>
+             
+            </div>
+        </section>
+    </div>
+
+    <!-- Custom Modal Overlay -->
+    <div id="custom-modal" class="custom-modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Menu</h3>
+            <ul class="kai-list" id="modal-list" style="display: none;"></ul>
+            <div id="modal-text-input-container" style="display: none;">
+                <input type="text" id="modal-text-input" />
+            </div>
+            <div id="modal-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div id="softkey-bar">
+        <span id="softkey-left"></span>
+        <span id="softkey-center"></span>
+        <span id="softkey-right"></span>
+    </div>
+
+    <script src="https://shifat100.github.io/cloudfone/cloud-ads/cloud.v1.ads-min.js"></script>
+    <script src="https://shifat100.github.io/key-simulator/Keysim-min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var currentScreen = 'splash-screen';
+            var settings = {
+                language: 'en',
+                fromEmail: '',
+                firstRun: true
+            };
+
+            function safeKaiAd(slot) {
+                if (typeof getKaiAd === 'function') {
+                    getKaiAd({
+                        publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+                        app: 'paintit',
+                        slot: slot || 'main',
+                        onerror: function(err) { console.error('KaiAd integration caught error:', err); },
+                        onready: function(ad) { ad.call('display'); }
+                    });
+                } else {
+                    console.warn('Ad library blocked or unavailable.');
+                }
+            }
+
+            var App = {
+                init: function () {
+                    Storage.loadSettings();
+                    I18n.setLanguage(settings.language);
+                    Drawing.load();
+                    window.addEventListener('keydown', App.handleKeyEvent);
+                    setTimeout(function () {
+                        if (settings.firstRun) {
+                            UI.showScreen('language-screen');
+                        } else {
+                            UI.showScreen('drawing-screen');
+                        }
+                    }, 1000);
+
+                    safeKaiAd('main');
+                },
+
+                handleKeyEvent: function (e) {
+                    if (Modal.active) {
+                        if (Modal.handleKeyEvent(e)) return;
+                    }
+
+                    var handled = false;
+                    switch (e.key) {
+                        case 'SoftLeft': case 'Escape':
+                            UI.handleSoftKey('left');
+                            handled = true;
+                            break;
+                        case 'SoftRight': case 'F2':
+                            UI.handleSoftKey('right');
+                            handled = true;
+                            break;
+                        case 'Enter':
+                            UI.handleSoftKey('center');
+                            handled = true;
+                            break;
+                    }
+                    if (handled) { e.preventDefault(); return; }
+
+                    switch (currentScreen) {
+                        case 'language-screen':
+                            Navigation.handleListNav(e, '#language-list');
+                            break;
+                        case 'drawing-screen':
+                            Drawing.handleKeyEvent(e);
+                            break;
+                        case 'help-screen':
+                            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                                var container = document.querySelector('#help-screen .help-container');
+                                if (container) {
+                                    container.scrollTop += (e.key === 'ArrowDown' ? 30 : -30);
+                                }
+                            }
+                            break;
+                        case 'about-screen':
+                            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                                var container = document.querySelector('#about-screen .about-container');
+                                if (container) {
+                                    container.scrollTop += (e.key === 'ArrowDown' ? 30 : -30);
+                                }
+                            }
+                            break;
+                    }
+                }
+            };
+
+            var Modal = {
+                active: false,
+                type: '', 
+                onConfirm: null,
+                onCancel: null,
+                options: [],
+
+                showMenu: function (title, options) {
+                    Modal.active = true;
+                    Modal.type = 'menu';
+                    Modal.options = options;
+
+                    document.getElementById('modal-title').textContent = title;
+                    var list = document.getElementById('modal-list');
+                    list.innerHTML = '';
+                    list.style.display = 'block';
+                    document.getElementById('modal-text-input-container').style.display = 'none';
+                    document.getElementById('modal-message').style.display = 'none';
+
+                    options.forEach(function (opt, index) {
+                        var li = document.createElement('li');
+                        li.tabIndex = 0;
+                        li.textContent = opt.label;
+                        li.dataset.index = index;
+                        list.appendChild(li);
+                    });
+
+                    document.getElementById('custom-modal').classList.add('active');
+                    Modal.updateSoftkeys();
+                    Modal.setFocus();
+                },
+
+                showConfirm: function (title, message, onYes, onNo) {
+                    Modal.active = true;
+                    Modal.type = 'confirm';
+                    Modal.onConfirm = onYes;
+                    Modal.onCancel = onNo;
+
+                    document.getElementById('modal-title').textContent = title;
+                    document.getElementById('modal-list').style.display = 'none';
+                    document.getElementById('modal-text-input-container').style.display = 'none';
+
+                    var msgEl = document.getElementById('modal-message');
+                    msgEl.textContent = message;
+                    msgEl.style.display = 'block';
+
+                    document.getElementById('custom-modal').classList.add('active');
+                    Modal.updateSoftkeys();
+                },
+
+                showPrompt: function (title, placeholder, defaultValue, onOk, onCancel) {
+                    Modal.active = true;
+                    Modal.type = 'prompt';
+                    Modal.onConfirm = onOk;
+                    Modal.onCancel = onCancel;
+
+                    document.getElementById('modal-title').textContent = title;
+                    document.getElementById('modal-list').style.display = 'none';
+                    document.getElementById('modal-message').style.display = 'none';
+
+                    var container = document.getElementById('modal-text-input-container');
+                    container.style.display = 'block';
+                    var input = document.getElementById('modal-text-input');
+                    input.value = defaultValue || '';
+                    input.placeholder = placeholder || '';
+
+                    document.getElementById('custom-modal').classList.add('active');
+                    Modal.updateSoftkeys();
+                    setTimeout(function () {
+                        input.focus();
+                    }, 100);
+                },
+
+                close: function () {
+                    Modal.active = false;
+                    Modal.type = '';
+                    Modal.onConfirm = null;
+                    Modal.onCancel = null;
+                    Modal.options = [];
+                    document.getElementById('custom-modal').classList.remove('active');
+                    UI.updateSoftkeys();
+                    UI.setFocus();
+                },
+
+                updateSoftkeys: function () {
+                    var keys = { left: '', center: '', right: '' };
+                    if (Modal.type === 'menu') {
+                        keys = { left: _('back'), center: _('select'), right: '' };
+                    } else if (Modal.type === 'confirm') {
+                        if (!Modal.onConfirm && !Modal.onCancel) {
+                            keys = { left: '', center: '', right: _('ok') };
+                        } else {
+                            keys = { left: _('no'), center: '', right: _('yes') };
+                        }
+                    } else if (Modal.type === 'prompt') {
+                        keys = { left: _('back'), center: '', right: _('ok') };
+                    }
+                    document.getElementById('softkey-left').textContent = keys.left;
+                    document.getElementById('softkey-center').textContent = keys.center;
+                    document.getElementById('softkey-right').textContent = keys.right;
+                },
+
+                handleKeyEvent: function (e) {
+                    var handled = false;
+                    switch (e.key) {
+                        case 'SoftLeft': case 'Escape':
+                            Modal.handleSoftKey('left');
+                            handled = true;
+                            break;
+                        case 'SoftRight': case 'F2':
+                            Modal.handleSoftKey('right');
+                            handled = true;
+                            break;
+                        case 'Enter':
+                            Modal.handleSoftKey('center');
+                            handled = true;
+                            break;
+                    }
+                    if (handled) { e.preventDefault(); return true; }
+
+                    if (Modal.type === 'menu') {
+                        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                            Navigation.handleListNav(e, '#modal-list');
+                            e.preventDefault();
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+
+                handleSoftKey: function (key) {
+                    if (Modal.type === 'menu') {
+                        if (key === 'left') {
+                            Modal.close();
+                        } else if (key === 'center') {
+                            var activeOpt = document.activeElement;
+                            if (activeOpt && activeOpt.dataset.index !== undefined) {
+                                var opt = Modal.options[parseInt(activeOpt.dataset.index)];
+                                Modal.close();
+                                if (opt && opt.action) opt.action();
+                            }
+                        }
+                    } else if (Modal.type === 'confirm') {
+                        if (key === 'left') {
+                            var cancelCb = Modal.onCancel;
+                            Modal.close();
+                            if (cancelCb) cancelCb();
+                        } else if (key === 'right') {
+                            var confirmCb = Modal.onConfirm;
+                            Modal.close();
+                            if (confirmCb) confirmCb();
+                        }
+                    } else if (Modal.type === 'prompt') {
+                        if (key === 'left') {
+                            var cancelCb = Modal.onCancel;
+                            Modal.close();
+                            if (cancelCb) cancelCb();
+                        } else if (key === 'right') {
+                            var val = document.getElementById('modal-text-input').value;
+                            var confirmCb = Modal.onConfirm;
+                            Modal.close();
+                            if (confirmCb) confirmCb(val);
+                        }
+                    }
+                },
+
+                setFocus: function () {
+                    setTimeout(function () {
+                        if (Modal.type === 'menu') {
+                            var li = document.querySelector('#modal-list li');
+                            if (li) li.focus();
+                        } else if (Modal.type === 'prompt') {
+                            document.getElementById('modal-text-input').focus();
+                        }
+                    }, 100);
+                }
+            };
+
+            var UI = {
+                showScreen: function (screenId) {
+                    currentScreen = screenId;
+                    var screens = document.querySelectorAll('.screen');
+                    for (var i = 0; i < screens.length; i++) {
+                        screens[i].classList.remove('active');
+                    }
+                    document.getElementById(screenId).classList.add('active');
+                    if (screenId === 'drawing-screen') Drawing.init();
+                    UI.updateSoftkeys();
+                    UI.setFocus();
+                },
+
+                updateSoftkeys: function () {
+                    var keys = { left: '', center: '', right: '' };
+                    switch (currentScreen) {
+                        case 'language-screen':
+                            keys = { center: _('select'), right: settings.firstRun ? '' : _('back') };
+                            break;
+                        case 'drawing-screen':
+                            var centerKey = _('draw');
+                            if (Drawing.state.currentTool === 'text') {
+                                centerKey = (Drawing.state.drawingMode === 'moving') ? _('ok') : _('addText');
+                            }
+                            keys = { left: _('menu'), center: centerKey, right: _('exit') };
+                            break;
+                        case 'camera-screen':
+                            keys = { left: '', center: _('snap'), right: _('back') };
+                            break;
+                        case 'help-screen':
+                        case 'about-screen':
+                            keys = { left: '', center: '', right: _('back') };
+                            break;
+                    }
+                    document.getElementById('softkey-left').textContent = keys.left;
+                    document.getElementById('softkey-center').textContent = keys.center;
+                    document.getElementById('softkey-right').textContent = keys.right;
+                },
+
+                handleSoftKey: function (key) {
+                    switch (currentScreen) {
+                        case 'language-screen':
+                            if (key === 'center') {
+                                var selectedLang = document.activeElement ? document.activeElement.dataset.lang : null;
+                                if (selectedLang) {
+                                    settings.language = selectedLang;
+                                    settings.firstRun = false;
+                                    Storage.saveSettings();
+                                    I18n.setLanguage(selectedLang);
+                                    UI.showScreen('drawing-screen');
+                                }
+                            }
+                            if (key === 'right' && !settings.firstRun) {
+                                UI.showScreen('drawing-screen');
+                            }
+                            break;
+                        case 'drawing-screen':
+                            if (key === 'left') { UI.showMenu(); }
+                            if (key === 'center') { Drawing.handleDrawAction(); }
+                            if (key === 'right') {
+                                Modal.showConfirm(_('exit'), _('confirmExit'), function () {
+                                    window.close();
+                                });
+                            }
+                            break;
+                        case 'camera-screen':
+                            if (key === 'center') { Camera.snap(); }
+                            if (key === 'right') { Camera.stop(); UI.showScreen('drawing-screen'); }
+                            break;
+                        case 'help-screen':
+                        case 'about-screen':
+                            if (key === 'right') { UI.showScreen('drawing-screen'); }
+                            break;
+                    }
+                },
+
+                showMenu: function () {
+                    var options = [
+                        {
+                            label: _('snapPhoto'),
+                            action: function () { Camera.start(); }
+                        },
+                        {
+                            label: _('save'),
+                            action: function () { Drawing.downloadImage(); }
+                        },
+                        {
+                            label: _('clearDrawing'),
+                            action: function () {
+                                Modal.showConfirm(_('clearDrawing'), _('confirmClear'), function () {
+                                    Drawing.clear();
+                                });
+                            }
+                        },
+                        {
+                            label: _('storeInMemory'),
+                            action: function () {
+                                Drawing.saveToSlotPrompt();
+                            }
+                        },
+                        {
+                            label: _('loadFromMemory'),
+                            action: function () {
+                                Drawing.loadFromSlotPrompt();
+                            }
+                        },
+                        {
+                            label: _('language'),
+                            action: function () { UI.showScreen('language-screen'); }
+                        },
+                        {
+                            label: _('help'),
+                            action: function () { UI.showScreen('help-screen'); }
+                        },
+                        {
+                            label: _('about'),
+                            action: function () { UI.showScreen('about-screen'); }
+                        }
+                    ];
+                    Modal.showMenu(_('menu'), options);
+                },
+
+                setFocus: function () {
+                    setTimeout(function () {
+                        var focusable;
+                        if (currentScreen === 'language-screen') {
+                            focusable = document.querySelector('#language-list li');
+                        }
+                        if (focusable) focusable.focus();
+                    }, 100);
+                }
+            };
+
+            var Navigation = {
+                handleListNav: function (e, listSelector) {
+                    var items = document.querySelectorAll(listSelector + ' li');
+                    var currentIndex = Array.prototype.indexOf.call(items, document.activeElement);
+                    if (currentIndex === -1) currentIndex = 0;
+                    if (e.key === 'ArrowUp') {
+                        currentIndex = (currentIndex > 0) ? currentIndex - 1 : items.length - 1;
+                    } else if (e.key === 'ArrowDown') {
+                        currentIndex = (currentIndex < items.length - 1) ? currentIndex + 1 : 0;
+                    }
+                    if (items[currentIndex]) {
+                        items[currentIndex].focus();
+                        items[currentIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    }
+                }
+            };
+
+            var I18n = {
+                locales: {
+                    en: { loading: "Loading...", language: "Language", select: "Select", menu: "Menu", draw: "Draw", addText: "Text", save: "Save", back: "Back", snap: "Snap", help: "Help", about: "About", snapPhoto: "Snap Photo", clearDrawing: "Clear Drawing", storeInMemory: "Store in Memory", loadFromMemory: "Load from Memory", color: "Color", confirmExit: "Exit Application?", confirmClear: "Are you sure you want to clear the drawing?", confirmOverwrite: "This slot already has data. Overwrite?", pictureStored: "Drawing stored in app memory!", pictureLoaded: "Drawing loaded from memory!", noSavedData: "No drawing stored in this slot.", slot: "Slot", empty: "Empty", saved: "Saved", imageSaved: "Image saved to Downloads!", saveError: "Could not save image.", quickStart: "Quick Start", shortcuts: "Shortcuts", helpQuickStart: "Use the D-Pad or Arrow keys to move the brush. Press 5 or Enter to toggle drawing actions, select placements, or confirm text input.", helpKey1: "Switch Tool (Line, Rect, Circle, Fill, Text)", helpKey2: "Cycle Color Palettes", helpKey3: "Cycle Line / Font Size", helpKey4: "Undo Last Action", helpKey5: "Start/End Draw & Place Text", helpKey6: "Redo Last Action", helpKeyDiag: "Diagonal Cursor Movement", helpKeyDpad: "Up, Down, Left, Right Cursor", appDescription: "A retro pixel painting tool for your mobile device.", version: "Version", author: "Author", license: "License", toolLine: "Tool: Line", toolRect: "Tool: Rectangle", toolCircle: "Tool: Circle", toolFillRect: "Tool: Fill Rect", toolFillCircle: "Tool: Fill Circle", toolText: "Tool: Text", enterTextPrompt: "Enter text:", exit: "Exit", yes: "Yes", no: "No", ok: "OK" },
+                    zh: { loading: "加载中...", language: "语言", select: "选择", menu: "菜单", draw: "绘画", addText: "文本", save: "保存", back: "返回", snap: "拍照", help: "帮助", about: "关于", snapPhoto: "拍照", clearDrawing: "清除画布", storeInMemory: "存入内存", loadFromMemory: "从内存加载", color: "颜色", confirmExit: "退出应用？", confirmClear: "确定要清除绘图吗？", confirmOverwrite: "此插槽已含有数据。要覆盖吗？", pictureStored: "绘图已存入应用内存！", pictureLoaded: "绘图已自内存加载！", noSavedData: "该插槽中没有存储绘图。", slot: "插槽", empty: "空", saved: "已保存", imageSaved: "图片已保存到下载！", saveError: "无法保存图片。", quickStart: "快速开始", shortcuts: "快捷键", helpQuickStart: "使用方向键移动画笔。按5或回车键切换绘图操作、选择位置或确认文本输入。", helpKey1: "切换工具（线条、矩形、圆形、填充、文本）", helpKey2: "循环颜色调色板", helpKey3: "循环线条/字体大小", helpKey4: "撤销上一步操作", helpKey5: "开始/结束绘制和放置文本", helpKey6: "重做上一步操作", helpKeyDiag: "对角线光标移动", helpKeyDpad: "上、下、左、右移动光标", appDescription: "适用于您移动设备的复古像素绘图工具。", version: "版本", author: "作者", license: "许可", toolLine: "工具: 线条", toolRect: "工具: 矩形", toolCircle: "工具: 圆形", toolFillRect: "工具: 填充矩形", toolFillCircle: "工具: 填充圆形", toolText: "工具: 文本", enterTextPrompt: "输入文字：", exit: "退出", yes: "是", no: "否", ok: "确定" },
+                    pt: { loading: "Carregando...", language: "Idioma", select: "Selecionar", menu: "Menu", draw: "Desenhar", addText: "Texto", save: "Salvar", back: "Voltar", snap: "Capturar", help: "Ajuda", about: "Sobre", snapPhoto: "Tirar Foto", clearDrawing: "Limpar Desenho", storeInMemory: "Guardar na Memória", loadFromMemory: "Carregar da Memória", color: "Cor", confirmExit: "Sair da aplicação?", confirmClear: "Tem certeza que deseja limpar o desenho?", confirmOverwrite: "Este slot já tem dados. Sobregravar?", pictureStored: "Desenho guardado na memória da aplicação!", pictureLoaded: "Desenho carregado da memória!", noSavedData: "Nenhum desenho guardado neste slot.", slot: "Slot", empty: "Vazio", saved: "Salvo", imageSaved: "Imagem salva em Downloads!", saveError: "Não foi possível salvar a imagem.", quickStart: "Início Rápido", shortcuts: "Atalhos", helpQuickStart: "Use o D-Pad ou as teclas de seta para mover o pincel. Pressione 5 ou Enter para alternar as ações de desenho, selecionar posicionamentos ou confirmar a entrada de texto.", helpKey1: "Mudar ferramenta (Linha, Retângulo, Círculo, Preencher, Texto)", helpKey2: "Alternar paleta de cores", helpKey3: "Alternar largura da linha / tamanho da fonte", helpKey4: "Desfazer última ação", helpKey5: "Iniciar/Terminar desenho e colocar texto", helpKey6: "Refazer última ação", helpKeyDiag: "Movimento diagonal do cursor", helpKeyDpad: "Cursor para cima, baixo, esquerda, direita", appDescription: "Uma ferramenta de pintura de pixel retro para o seu dispositivo móvel.", version: "Versão", author: "Autor", license: "Licença", toolLine: "Ferramenta: Linha", toolRect: "Ferramenta: Retângulo", toolCircle: "Ferramenta: Círculo", toolFillRect: "Ferramenta: Preencher Ret.", toolFillCircle: "Ferramenta: Preencher Cír.", toolText: "Ferramenta: Texto", enterTextPrompt: "Digite o texto:", exit: "Sair", yes: "Sim", no: "Não", ok: "OK" },
+                    it: { loading: "Caricamento...", language: "Lingua", select: "Seleziona", menu: "Menu", draw: "Disegna", addText: "Testo", save: "Salva", back: "Indietro", snap: "Scatta", help: "Aiuto", about: "Informazioni", snapPhoto: "Scatta Foto", clearDrawing: "Cancella Disegno", storeInMemory: "Salva in Memoria", loadFromMemory: "Carica da Memoria", color: "Colore", confirmExit: "Uscire dall'applicazione?", confirmClear: "Sei sicuro di voler cancellare il disegno?", confirmOverwrite: "Questo slot contiene già dei dati. Sovrascrivere?", pictureStored: "Disegno salvato nella memoria dell'app!", pictureLoaded: "Disegno caricato dalla memoria!", noSavedData: "Nessun disegno salvato in questo slot.", slot: "Slot", empty: "Vuoto", saved: "Salvato", imageSaved: "Immagine salvata in Download!", saveError: "Impossibile salvare l'immagine.", quickStart: "Avvio Rapido", shortcuts: "Scorciatoie", helpQuickStart: "Usa il D-Pad o i tasti freccia per spostare il pennello. Premi 5 o Invio per attivare/disattivare le azioni di disegno, selezionare i posizionamenti o confermare l'inserimento del testo.", helpKey1: "Cambia strumento (Linea, Rettangolo, Cerchio, Riempimento, Testo)", helpKey2: "Cambia tavolozza colori", helpKey3: "Cambia larghezza linea / dimensione carattere", helpKey4: "Annulla l'ultima azione", helpKey5: "Inizia/Termina disegno e inserisci testo", helpKey6: "Ripristina l'ultima azione", helpKeyDiag: "Movimento diagonale del cursore", helpKeyDpad: "Sposta cursore su, giù, sinistra, destra", appDescription: "Uno strumento di pittura pixel retrò per il tuo dispositivo mobile.", version: "Versione", author: "Autore", license: "Licenza", toolLine: "Strumento: Linea", toolRect: "Strumento: Rettangolo", toolCircle: "Strumento: Cerchio", toolFillRect: "Strumento: Riemp. Rett.", toolFillCircle: "Strumento: Riemp. Cerchio", toolText: "Strumento: Testo", enterTextPrompt: "Inserisci testo:", exit: "Esci", yes: "Sì", no: "No", ok: "OK" },
+                    nl: { loading: "Laden...", language: "Taal", select: "Selecteer", menu: "Menu", draw: "Tekenen", addText: "Tekst", save: "Opslaan", back: "Terug", snap: "Foto", help: "Help", about: "Over", snapPhoto: "Maak Foto", clearDrawing: "Tekening Wissen", storeInMemory: "In Geheugen Opslaan", loadFromMemory: "Laden uit Geheugen", color: "Kleur", confirmExit: "Applicatie afsluiten?", confirmClear: "Weet u zeker dat u de tekening wilt wissen?", confirmOverwrite: "Dit slot bevat al gegevens. Overschrijven?", pictureStored: "Tekening opgeslagen in app-geheugen!", pictureLoaded: "Tekening geladen uit geheugen!", noSavedData: "Geen tekening opgeslagen in dit slot.", slot: "Slot", empty: "Leeg", saved: "Opgeslagen", imageSaved: "Afbeelding opgeslagen in Downloads!", saveError: "Kon afbeelding niet opslaan.", quickStart: "Snelle Start", shortcuts: "Sneltoetsen", helpQuickStart: "Gebruik de D-pad of pijltjestoetsen om het penseel te verplaatsen. Druk op 5 of Enter om tekenacties te schakelen, plaatsingen te selecteren of tekstinvoer te bevestigen.", helpKey1: "Wissel van gereedschap (Lijn, Rechthoek, Cirkel, Vulling, Tekst)", helpKey2: "Wissel van kleurpalet", helpKey3: "Wissel van lijndikte / lettergrootte", helpKey4: "Laatste actie ongedaan maken", helpKey5: "Start/Einde tekening & tekst plaatsen", helpKey6: "Laatste actie opnieuw uitvoeren", helpKeyDiag: "Diagonale cursorbeweging", helpKeyDpad: "Cursor omhoog, omlaag, links, rechts", appDescription: "Een retro pixel-tekengereedschap voor uw mobiele apparaat.", version: "Versie", author: "Auteur", license: "Licentie", toolLine: "Tool: Lijn", toolRect: "Tool: Rechthoek", toolCircle: "Tool: Cirkel", toolFillRect: "Tool: Vul Rechthoek", toolFillCircle: "Tool: Vul Cirkel", toolText: "Tool: Tekst", enterTextPrompt: "Voer tekst in:", exit: "Afsluiten", yes: "Ja", no: "Nee", ok: "OK" },
+                    sl: { loading: "Nalaganje...", language: "Jezik", select: "Izberi", menu: "Meni", draw: "Risanje", addText: "Besedilo", save: "Shrani", back: "Nazaj", snap: "Slikaj", help: "Pomoč", about: "O programu", snapPhoto: "Slikaj", clearDrawing: "Počisti Risbo", storeInMemory: "Shrani v Pomnilnik", loadFromMemory: "Naloži iz Pomnilnika", color: "Barva", confirmExit: "Zapusti aplikaciju?", confirmClear: "Ste prepričani, da želite počistiti risbo?", confirmOverwrite: "To mesto že vsebuje podatke. Prepišem?", pictureStored: "Risba shranjena v pomnilnik aplikacije!", pictureLoaded: "Risba naložena iz pomnilnika!", noSavedData: "V tem mestu ni shranjene risbe.", slot: "Mesto", empty: "Prazno", saved: "Shranjeno", imageSaved: "Slika shranjena v Prenose!", saveError: "Slike ni bilo mogoče shraniti.", quickStart: "Hitri začetek", shortcuts: "Bližnjice", helpQuickStart: "Uporabite D-Pad ali smerne tipke za premikanje čopiča. Pritisnite 5 ali Enter za preklop risalnih dejanj, izbiro položajev ali potrditev vnosa besedila.", helpKey1: "Preklopi orodje (Črta, Pravokotnik, Krog, Polnilo, Besedilo)", helpKey2: "Kroženje barvnih palet", helpKey3: "Kroženje debeline črte / velikosti pisave", helpKey4: "Razveljavi zadnje dejanje", helpKey5: "Začetek/Konec risanja in postavitev besedila", helpKey6: "Uveljavi zadnje dejanje", helpKeyDiag: "Diagonalno premikanje kurzorja", helpKeyDpad: "Kurzor gor, dol, levo, desno", appDescription: "Retro orodje za slikanje slikovnih pik za vašo mobilno napravo.", version: "Različica", author: "Avtor", license: "Licenca", toolLine: "Orodje: Črta", toolRect: "Orodje: Pravokotnik", toolCircle: "Orodje: Krog", toolFillRect: "Orodje: Poln Pravok.", toolFillCircle: "Orodje: Poln Krog", toolText: "Orodje: Besedilo", enterTextPrompt: "Vnesite besedilo:", exit: "Izhod", yes: "Da", no: "Ne", ok: "V redu" },
+                    bn: { loading: "লোড হচ্ছে...", language: "ভাষা", select: "বাছাই করুন", menu: "মেনু", draw: "আঁকুন", addText: "টেক্সট", save: "সংরক্ষণ", back: "ফিরে যান", snap: "ছবি তুলুন", help: "সাহায্য", about: "সম্পর্কে", snapPhoto: "ছবি তুলুন", clearDrawing: "অঙ্কন মুছুন", storeInMemory: "মেমরিতে রাখুন", loadFromMemory: "মেমরি থেকে লোড করুন", color: "রঙ", confirmExit: "অ্যাপ্লিকেশন থেকে প্রস্থান করবেন?", confirmClear: "আপনি কি অঙ্কনটি মুছে ফেলতে চান?", confirmOverwrite: "এই স্লটে ইতিমধ্যে ডেটা আছে। ওভাররাইট করবেন?", pictureStored: "অঙ্কন অ্যাপ মেমরিতে রাখা হয়েছে!", pictureLoaded: "অঙ্কন মেমরি থেকে লোড করা হয়েছে!", noSavedData: "এই স্লটে কোন অঙ্কন সংরক্ষিত নেই।", slot: "স্লট", empty: "খালি", saved: "সংরক্ষিত", imageSaved: "ছবি ডাউনলোড ফোল্ডারে সেভ হয়েছে!", saveError: "ছবি সংরক্ষণ করা যায়নি।", quickStart: "কুইক স্টার্ট", shortcuts: "শর্টকাট", helpQuickStart: "ব্রাশ সরাতে ডি-প্যাড বা তীর কীগুলি ব্যবহার করুন। অঙ্কন ক্রিয়াকলাপ টগল করতে, প্লেসমেন্ট নির্বাচন করতে বা পাঠ্য ইনপুট নিশ্চিত করতে ৫ বা এন্টার টিপুন।", helpKey1: "টুল পরিবর্তন করুন (লাইন, আয়তক্ষেত্র, বৃত্ত, ভরাট, পাঠ্য)", helpKey2: "রঙের প্যালেট পরিবর্তন করুন", helpKey3: "লাইন / ফন্টের আকার পরিবর্তন করুন", helpKey4: "শেষ কাজটি পূর্বাবস্থায় ফেরান", helpKey5: "আঁকা শুরু/শেষ করুন এবং পাঠ্য স্থাপন করুন", helpKey6: "শেষ কাজটি পুনরায় করুন", helpKeyDiag: "ডায়াগোনাল কার্সার মুভমেন্ট", helpKeyDpad: "উপরে, নিচে, বামে, ডানে কার্সার", appDescription: "আপনার মোবাইল ডিভাইসের জন্য একটি রেট্রো পিক্সেল পেইন্টিং টুল।", version: "ভার্সন", author: "লেখক", license: "লাইসেন্স", toolLine: "টুল: লাইন", toolRect: "টুল: আয়তক্ষেত্র", toolCircle: "টুল: বৃত্ত", toolFillRect: "টুল: ভরাট আয়তক্ষেত্র", toolFillCircle: "টুল: ভরাট বৃত্ত", toolText: "টুল: টেক্সট", enterTextPrompt: "টেক্সট লিখুন:", exit: "প্রস্থান", yes: "হ্যাঁ", no: "না", ok: "ঠিক আছে" }
+                },
+
+                setLanguage: function (lang) {
+                    settings.language = lang;
+                    I18n.apply();
+                },
+
+                apply: function () {
+                    var elements = document.querySelectorAll('[data-l10n-id]');
+                    for (var i = 0; i < elements.length; i++) {
+                        var el = elements[i];
+                        var key = el.dataset.l10nId;
+                        el.textContent = _(key);
+                    }
+                    UI.updateSoftkeys();
+                }
+            };
+
+            var _ = function (key) {
+                return (I18n.locales[settings.language] && I18n.locales[settings.language][key]) || I18n.locales['en'][key] || key;
+            };
+
+            var Storage = {
+                saveSettings: function () {
+                    localStorage.setItem('snap_settings', JSON.stringify(settings));
+                },
+                loadSettings: function () {
+                    var saved = localStorage.getItem('snap_settings');
+                    if (saved) {
+                        var loadedSettings = JSON.parse(saved);
+                        for (var key in loadedSettings) {
+                            if (Object.prototype.hasOwnProperty.call(loadedSettings, key)) {
+                                settings[key] = loadedSettings[key];
+                            }
+                        }
+                    }
+                },
+                saveDrawingData: function (data, slot) {
+                    var targetSlot = slot || 1;
+                    localStorage.setItem('snap_drawing_' + targetSlot, JSON.stringify(data));
+                },
+                loadDrawingData: function (slot) {
+                    var targetSlot = slot || 1;
+                    var data = localStorage.getItem('snap_drawing_' + targetSlot);
+                    return data ? JSON.parse(data) : null;
+                },
+                hasData: function (slot) {
+                    return localStorage.getItem('snap_drawing_' + slot) !== null;
+                },
+                saveToDevice: function (blob, filename) {
+                    try {
+                        var canvas = document.getElementById('main-canvas');
+                        var url = blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/png');
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename || 'paintit_' + new Date().getTime().toString() + '.png';
+                        a.style.display = 'none';
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(function () {
+                            document.body.removeChild(a);
+                            if (blob) {
+                                URL.revokeObjectURL(url);
+                            }
+                        }, 100);
+                        Modal.showConfirm(_('save'), _('imageSaved'), null, null);
+                    } catch (e) {
+                        Modal.showConfirm(_('save'), _('saveError'), null, null);
+                        console.error(e);
+                    }
+                }
+            };
+
+            var Drawing = {
+                canvas: null, ctx: null, cursorEl: null,
+                bgImageCache: null, bgImageSrc: null, 
+
+                state: { drawingMode: 'idle', history: [], redoStack: [], background: null, cursorPos: { x: 50, y: 50 }, startPos: { x: 0, y: 0 }, endPos: { x: 0, y: 0 }, currentTool: 'line', currentColorIndex: 0, currentWidthIndex: 2, textToPlace: null },
+                colors: ['#000000', '#FFFFFF', '#C0C0C0', '#FF0000', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#FF00FF', '#FF8080', '#00FF80', '#80FFFF', '#8080FF', '#FF0080', '#FF8040', '#804000'],
+                widths: [1, 2, 3, 4, 5, 6, 7],
+
+                tools: ['line', 'rect', 'circle', 'fillRect', 'fillCircle', 'text'],
+
+                init: function () {
+                    if (!Drawing.canvas) {
+                        Drawing.canvas = document.getElementById('main-canvas');
+                        Drawing.cursorEl = document.getElementById('drawing-cursor');
+                    }
+                    if (!Drawing.canvas.width || Drawing.canvas.width === 0 || !Drawing.ctx) {
+                        var content = document.querySelector('#drawing-screen .screen-content');
+                        var w = content.clientWidth || window.innerWidth || 240;
+                        var h = content.clientHeight || (window.innerHeight - 50) || 320;
+                        Drawing.canvas.width = w;
+                        Drawing.canvas.height = h;
+                        Drawing.ctx = Drawing.canvas.getContext('2d');
+                    }
+                    Drawing.redrawAll();
+                    Drawing.updateCursor();
+                    Drawing.updateToolbar();
+                },
+                load: function () {
+                    var data = Storage.loadDrawingData(1);
+                    if (!data) data = Storage.loadDrawingData(2);
+                    if (!data) data = Storage.loadDrawingData(3);
+                    if (data) {
+                        Drawing.state.history = data.history;
+                        Drawing.state.background = data.background;
+                    }
+                },
+                save: function (slot) {
+                    Storage.saveDrawingData({ background: Drawing.state.background, history: Drawing.state.history }, slot || 1);
+                },
+                saveToSlotPrompt: function () {
+                    var slotOptions = [
+                        {
+                            label: _('slot') + " 1" + (Storage.hasData(1) ? " (" + _('saved') + ")" : " (" + _('empty') + ")"),
+                            action: function () { Drawing.checkAndSaveToSlot(1); }
+                        },
+                        {
+                            label: _('slot') + " 2" + (Storage.hasData(2) ? " (" + _('saved') + ")" : " (" + _('empty') + ")"),
+                            action: function () { Drawing.checkAndSaveToSlot(2); }
+                        },
+                        {
+                            label: _('slot') + " 3" + (Storage.hasData(3) ? " (" + _('saved') + ")" : " (" + _('empty') + ")"),
+                            action: function () { Drawing.checkAndSaveToSlot(3); }
+                        }
+                    ];
+                    Modal.showMenu(_('storeInMemory'), slotOptions);
+                },
+                checkAndSaveToSlot: function (slot) {
+                    if (Storage.hasData(slot)) {
+                        Modal.showConfirm(_('storeInMemory'), _('confirmOverwrite'), function () {
+                            Drawing.saveToSlot(slot);
+                        }, function () {
+                            Drawing.saveToSlotPrompt();
+                        });
+                    } else {
+                        Drawing.saveToSlot(slot);
+                    }
+                },
+                saveToSlot: function (slot) {
+                    Drawing.save(slot);
+                    Modal.showConfirm(_('storeInMemory'), _('pictureStored') + " (" + _('slot') + " " + slot + ")", null, null);
+                },
+                loadFromSlotPrompt: function () {
+                    var slotOptions = [
+                        {
+                            label: _('slot') + " 1" + (Storage.hasData(1) ? " (" + _('saved') + ")" : " (" + _('empty') + ")"),
+                            action: function () { Drawing.loadFromSlot(1); }
+                        },
+                        {
+                            label: _('slot') + " 2" + (Storage.hasData(2) ? " (" + _('saved') + ")" : " (" + _('empty') + ")"),
+                            action: function () { Drawing.loadFromSlot(2); }
+                        },
+                        {
+                            label: _('slot') + " 3" + (Storage.hasData(3) ? " (" + _('saved') + ")" : " (" + _('empty') + ")"),
+                            action: function () { Drawing.loadFromSlot(3); }
+                        }
+                    ];
+                    Modal.showMenu(_('loadFromMemory'), slotOptions);
+                },
+                loadFromSlot: function (slot) {
+                    var data = Storage.loadDrawingData(slot);
+                    if (data) {
+                        Drawing.state.history = data.history;
+                        Drawing.state.background = data.background;
+                        Drawing.state.redoStack = [];
+                        Drawing.bgImageCache = null;
+                        Drawing.bgImageSrc = null;
+                        Drawing.redrawAll();
+                        Modal.showConfirm(_('loadFromMemory'), _('pictureLoaded') + " (" + _('slot') + " " + slot + ")", null, null);
+                    } else {
+                        Modal.showConfirm(_('loadFromMemory'), _('noSavedData') + " (" + _('slot') + " " + slot + ")", null, null);
+                    }
+                    safeKaiAd('loadimage');
+                },
+                downloadImage: function () {
+                    var filename = 'paintit_' + Date.now() + '.png';
+                    Drawing.cursorEl.style.display = 'none';
+                    Drawing.redrawAll();
+                    Drawing.canvas.toBlob(function (blob) {
+                        Storage.saveToDevice(blob, filename);
+                        Drawing.cursorEl.style.display = 'block';
+                    }, 'image/png');
+                    safeKaiAd('dlimage');
+                },
+                redrawAll: function () {
+                    if (!Drawing.ctx) return;
+                    var _drawContent = function () {
+                        Drawing.state.history.forEach(function (obj) { Drawing.drawObject(obj); });
+
+                        if (Drawing.state.drawingMode === 'defining' || Drawing.state.drawingMode === 'moving') {
+                            var previewObject = {
+                                tool: Drawing.state.currentTool,
+                                color: Drawing.colors[Drawing.state.currentColorIndex],
+                                width: Drawing.widths[Drawing.state.currentWidthIndex],
+                                start: Drawing.state.startPos,
+                                end: Drawing.state.endPos,
+                                text: Drawing.state.textToPlace
+                            };
+                            Drawing.drawObject(previewObject);
+                        }
+                    };
+                    Drawing.ctx.clearRect(0, 0, Drawing.canvas.width, Drawing.canvas.height);
+
+                    if (Drawing.state.background) {
+                        if (Drawing.bgImageCache && Drawing.bgImageSrc === Drawing.state.background) {
+                            Drawing.ctx.drawImage(Drawing.bgImageCache, 0, 0, Drawing.canvas.width, Drawing.canvas.height);
+                            _drawContent();
+                        } else {
+                            var img = new Image();
+                            img.onload = function () {
+                                Drawing.bgImageCache = img;
+                                Drawing.bgImageSrc = Drawing.state.background;
+                                Drawing.ctx.drawImage(img, 0, 0, Drawing.canvas.width, Drawing.canvas.height);
+                                _drawContent();
+                            };
+                            img.onerror = function () {
+                                Drawing.bgImageCache = null;
+                                Drawing.bgImageSrc = null;
+                                Drawing.ctx.fillStyle = 'white';
+                                Drawing.ctx.fillRect(0, 0, Drawing.canvas.width, Drawing.canvas.height);
+                                _drawContent();
+                            }
+                            img.src = Drawing.state.background;
+                        }
+                    } else {
+                        Drawing.bgImageCache = null;
+                        Drawing.bgImageSrc = null;
+                        Drawing.ctx.fillStyle = 'white';
+                        Drawing.ctx.fillRect(0, 0, Drawing.canvas.width, Drawing.canvas.height);
+                        _drawContent();
+                    }
+                },
+
+                drawObject: function (obj) {
+                    var tool = obj.tool, color = obj.color, width = obj.width, start = obj.start, end = obj.end;
+                    Drawing.ctx.strokeStyle = color;
+                    Drawing.ctx.fillStyle = color;
+                    Drawing.ctx.lineWidth = width;
+                    Drawing.ctx.beginPath();
+
+                    switch (tool) {
+                        case 'line':
+                            Drawing.ctx.moveTo(start.x, start.y);
+                            Drawing.ctx.lineTo(end.x, end.y);
+                            Drawing.ctx.stroke();
+                            break;
+                        case 'rect':
+                        case 'circle':
+                        case 'fillRect':
+                        case 'fillCircle':
+                            var x = Math.min(start.x, end.x), y = Math.min(start.y, end.y), w = Math.abs(start.x - end.x), h = Math.abs(start.y - end.y);
+                            if (tool === 'rect') {
+                                Drawing.ctx.strokeRect(x, y, w, h);
+                            } else if (tool === 'circle') {
+                                Drawing.ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, 2 * Math.PI);
+                                Drawing.ctx.stroke();
+                            } else if (tool === 'fillRect') {
+                                Drawing.ctx.fillRect(x, y, w, h);
+                            } else if (tool === 'fillCircle') {
+                                Drawing.ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, 2 * Math.PI);
+                                Drawing.ctx.fill();
+                            }
+                            break;
+                        case 'text':
+                            var fontSize = (width * 4) + 8;
+                            Drawing.ctx.font = fontSize + "px 'Fira Sans'";
+                            Drawing.ctx.textAlign = 'left';
+                            Drawing.ctx.textBaseline = 'top';
+                            Drawing.ctx.fillText(obj.text, start.x, start.y);
+                            break;
+                    }
+                },
+                updateCursor: function () {
+                    Drawing.cursorEl.style.left = (Drawing.state.cursorPos.x - 4) + 'px';
+                    Drawing.cursorEl.style.top = (Drawing.state.cursorPos.y - 4) + 'px';
+                },
+                updateToolbar: function () {
+                    document.getElementById('toolbar-color').style.backgroundColor = Drawing.colors[Drawing.state.currentColorIndex];
+                    var widthLabel = (Drawing.state.currentTool === 'text') ? 'Size: ' : 'Width: ';
+                    document.getElementById('toolbar-width').textContent = widthLabel + Drawing.widths[Drawing.state.currentWidthIndex];
+                    var toolKey = 'tool' + Drawing.state.currentTool.charAt(0).toUpperCase() + Drawing.state.currentTool.slice(1);
+                    document.getElementById('toolbar-tool').textContent = _(toolKey);
+                    UI.updateSoftkeys();
+                },
+                handleKeyEvent: function (e) {
+                    var step = (e.getModifierState && e.getModifierState("Fn")) ? 10 : 5;
+                    var oldCursorPos = { x: Drawing.state.cursorPos.x, y: Drawing.state.cursorPos.y };
+                    var isArrowKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '7', '9', '*', '#'].includes(e.key);
+
+                    switch (e.key) {
+                        case 'ArrowUp': Drawing.state.cursorPos.y -= step; break;
+                        case 'ArrowDown': Drawing.state.cursorPos.y += step; break;
+                        case 'ArrowLeft': Drawing.state.cursorPos.x -= step; break;
+                        case 'ArrowRight': Drawing.state.cursorPos.x += step; break;
+                        case '7': Drawing.state.cursorPos.y -= step; Drawing.state.cursorPos.x -= step; break;
+                        case '9': Drawing.state.cursorPos.y -= step; Drawing.state.cursorPos.x += step; break;
+                        case '*': Drawing.state.cursorPos.y += step; Drawing.state.cursorPos.x -= step; break;
+                        case '#': Drawing.state.cursorPos.y += step; Drawing.state.cursorPos.x += step; break;
+                        case '2': Drawing.state.currentColorIndex = (Drawing.state.currentColorIndex + 1) % Drawing.colors.length; break;
+                        case '3': Drawing.state.currentWidthIndex = (Drawing.state.currentWidthIndex + 1) % Drawing.widths.length; break;
+                        case '1': var currentToolIndex = Drawing.tools.indexOf(Drawing.state.currentTool); Drawing.state.currentTool = Drawing.tools[(currentToolIndex + 1) % Drawing.tools.length]; break;
+                        case '4': Drawing.undo(); break;
+                        case '5': Drawing.handleDrawAction(); break;
+                        case '6': Drawing.redo(); break;
+                        default: return;
+                    }
+                    Drawing.state.cursorPos.x = Math.max(0, Math.min(Drawing.canvas.width, Drawing.state.cursorPos.x));
+                    Drawing.state.cursorPos.y = Math.max(0, Math.min(Drawing.canvas.height, Drawing.state.cursorPos.y));
+
+                    if (isArrowKey) {
+                        if (Drawing.state.drawingMode === 'defining') {
+                            Drawing.state.endPos = { x: Drawing.state.cursorPos.x, y: Drawing.state.cursorPos.y };
+                        } else if (Drawing.state.drawingMode === 'moving') {
+                            if (Drawing.state.currentTool === 'text') {
+                                Drawing.state.startPos = { x: Drawing.state.cursorPos.x, y: Drawing.state.cursorPos.y };
+                            } else {
+                                var dx = Drawing.state.cursorPos.x - oldCursorPos.x;
+                                var dy = Drawing.state.cursorPos.y - oldCursorPos.y;
+                                Drawing.state.startPos.x += dx;
+                                Drawing.state.startPos.y += dy;
+                                Drawing.state.endPos.x += dx;
+                                Drawing.state.endPos.y += dy;
+                            }
+                        }
+                    }
+
+                    Drawing.updateCursor();
+                    Drawing.updateToolbar();
+                    if (Drawing.state.drawingMode !== 'idle') { Drawing.redrawAll(); }
+                    e.preventDefault();
+                },
+
+                handleDrawAction: function () {
+                    if (Drawing.state.currentTool === 'text') {
+                        if (Drawing.state.drawingMode === 'idle') {
+                            Modal.showPrompt(_('toolText'), _('enterTextPrompt'), '', function (text) {
+                                if (text && text.trim() !== '') {
+                                    Drawing.state.drawingMode = 'moving';
+                                    Drawing.state.textToPlace = text;
+                                    Drawing.state.startPos = { x: Drawing.state.cursorPos.x, y: Drawing.state.cursorPos.y };
+                                    Drawing.redrawAll();
+                                    UI.updateSoftkeys();
+                                }
+                            });
+                        } else if (Drawing.state.drawingMode === 'moving') {
+                            Drawing.state.drawingMode = 'idle';
+                            var newObject = { tool: 'text', color: Drawing.colors[Drawing.state.currentColorIndex], width: Drawing.widths[Drawing.state.currentWidthIndex], start: Drawing.state.startPos, text: Drawing.state.textToPlace, end: null };
+                            Drawing.state.history.push(newObject);
+                            Drawing.state.redoStack = [];
+                            Drawing.state.textToPlace = null;
+                            Drawing.redrawAll();
+                            UI.updateSoftkeys();
+                        }
+                        return;
+                    }
+
+                    switch (Drawing.state.drawingMode) {
+                        case 'idle':
+                            Drawing.state.drawingMode = 'defining';
+                            Drawing.state.startPos = { x: Drawing.state.cursorPos.x, y: Drawing.state.cursorPos.y };
+                            Drawing.state.endPos = { x: Drawing.state.cursorPos.x, y: Drawing.state.cursorPos.y };
+                            Drawing.redrawAll();
+                            break;
+                        case 'defining':
+                            Drawing.state.drawingMode = 'moving';
+                            Drawing.redrawAll();
+                            break;
+                        case 'moving':
+                            Drawing.state.drawingMode = 'idle';
+                            var newObject = { tool: Drawing.state.currentTool, color: Drawing.colors[Drawing.state.currentColorIndex], width: Drawing.widths[Drawing.state.currentWidthIndex], start: Drawing.state.startPos, end: Drawing.state.endPos };
+                            Drawing.state.history.push(newObject);
+                            Drawing.state.redoStack = [];
+                            Drawing.redrawAll();
+                            break;
+                    }
+                },
+                undo: function () {
+                    if (Drawing.state.history.length > 0) {
+                        Drawing.state.redoStack.push(Drawing.state.history.pop());
+                        Drawing.redrawAll();
+                    }
+                },
+                redo: function () {
+                    if (Drawing.state.redoStack.length > 0) {
+                        Drawing.state.history.push(Drawing.state.redoStack.pop());
+                        Drawing.redrawAll();
+                    }
+                },
+                clear: function () {
+                    Drawing.state.history = [];
+                    Drawing.state.redoStack = [];
+                    Drawing.state.background = null;
+                    Drawing.bgImageCache = null;
+                    Drawing.bgImageSrc = null;
+                    Drawing.redrawAll();
+                }
+            };
+
+            var Camera = {
+                stream: null, videoEl: null,
+                start: function () {
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        Modal.showConfirm("Camera", "Camera not supported on this device.", null, null);
+                        return;
+                    }
+
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                        .then(function (stream) {
+                            Camera.videoEl = document.getElementById('camera-preview');
+                            Camera.stream = stream;
+                            Camera.videoEl.srcObject = Camera.stream;
+                            UI.showScreen('camera-screen');
+                        })
+                        .catch(function (err) {
+                            Modal.showConfirm("Camera", "This Feature is not available right now.", null, null);
+                            console.error(err);
+                        });
+                },
+                stop: function () {
+                    if (Camera.stream) {
+                        Camera.stream.getTracks().forEach(function (track) { track.stop(); });
+                        Camera.stream = null;
+                    }
+                },
+                snap: function () {
+                    var tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = Camera.videoEl.videoWidth || 640;
+                    tempCanvas.height = Camera.videoEl.videoHeight || 480;
+                    var tempCtx = tempCanvas.getContext('2d');
+                    tempCtx.drawImage(Camera.videoEl, 0, 0, tempCanvas.width, tempCanvas.height);
+                    Drawing.state.background = tempCanvas.toDataURL('image/jpeg');
+                    Camera.stop();
+                    UI.showScreen('drawing-screen');
+                }
+            };
+
+            App.init();
+        });
+    </script>
+</body>
+
+</html>
