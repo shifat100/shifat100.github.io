@@ -24,19 +24,130 @@
         const style = document.createElement('style');
         style.id = 'cloudads-sdk-styles';
         style.innerHTML = `
-            .cloudads-fs-wrapper { position: fixed; inset: 0; width: 100%; height: 100%; min-height: 100vh; background-color: #000000; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Roboto', Arial, sans-serif; color: #FFFFFF; z-index: 999999; overflow: hidden; }
-            .cloudads-header { width: 100%; flex: 0 0 auto; background-color: #0093E0; display: none; align-items: center; justify-content: center; font-weight: bold; height: 20px; font-size: 10px; }
-            .cloudads-body { width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; background-color: #202020; border: none; cursor: pointer; padding: 0; min-height: 0; overflow: hidden; outline: none; }
-            .cloudads-body:focus { background-color: #05AEF2; }
-            .cloudads-img { width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
-            .cloudads-footer { width: 100%; flex: 0 0 auto; background-color: #202020; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #4a4a4a; height: 14px; padding: 0 4px; font-size: 8px; position: relative; }
-            .cloudads-lsk, .cloudads-rsk { color: #FFFFFF; cursor: pointer; font-weight: bold; }
-            .cloudads-lsk { color: #00A539; }
-            .cloudads-rsk { position: absolute; left: 50%; transform: translateX(-50%); }
-            @media (min-width: 240px) { .cloudads-header { height: 35px; font-size: 14px; } .cloudads-footer { height: 35px; font-size: 14px; } }
-            @media (max-width: 320px) { .cloudads-header { height: 25px; font-size: 11px; } .cloudads-footer { height: 25px; font-size: 11px; } }
-            @media (max-width: 480px) { .cloudads-fs-wrapper { font-size: 12px; } }
-        `;
+.cloudads-fs-wrapper { 
+    position: fixed; 
+    inset: 0; 
+    width: 100%; 
+    height: 100%; 
+    min-height: 100vh; 
+    background-color: #000000; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    font-family: 'Roboto', Arial, sans-serif; 
+    color: #FFFFFF; 
+    z-index: 999999; 
+    overflow: hidden; 
+    font-size: 8px;
+}
+.cloudads-header { 
+    width: 100%; 
+    flex: 0 0 auto; 
+    background-color: #0093E0; 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: bold; 
+    height: 16px; 
+    font-size: 8px; 
+}
+.cloudads-body { 
+    width: 100%; 
+    flex: 1 1 auto; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background-color: #202020; 
+    border: none; 
+    cursor: pointer; 
+    padding: 0; 
+    min-height: 0; 
+    overflow: hidden; 
+    outline: none; 
+}
+.cloudads-body:focus { 
+    background-color: #05AEF2; 
+}
+.cloudads-img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: fill; 
+    pointer-events: none; 
+}
+.cloudads-footer { 
+    width: 100%; 
+    flex: 0 0 auto; 
+    background-color: #202020; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-top: 1px solid #4a4a4a; 
+    height: 12px;
+    padding: 0 2px; 
+    font-size: 7px; 
+    position: relative; 
+}
+.cloudads-lsk, .cloudads-rsk { 
+    color: #FFFFFF; 
+    cursor: pointer; 
+    font-weight: bold; 
+}
+.cloudads-lsk { 
+    color: #00A539; 
+}
+.cloudads-rsk { 
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%); 
+}
+
+@media (min-width: 129px) and (max-width: 239px) {
+    .cloudads-header { 
+        height: 20px; 
+        font-size: 10px; 
+    }
+    .cloudads-footer { 
+        height: 14px; 
+        font-size: 8px; 
+        padding: 0 4px;
+    }
+    .cloudads-fs-wrapper { 
+        font-size: 10px; 
+    }
+}
+
+@media (min-width: 240px) and (max-width: 320px) { 
+    .cloudads-header { 
+        height: 25px; 
+        font-size: 11px; 
+    } 
+    .cloudads-footer { 
+        height: 25px; 
+        font-size: 11px; 
+        padding: 0 4px;
+    } 
+    .cloudads-fs-wrapper { 
+        font-size: 12px; 
+    }
+}
+
+@media (min-width: 321px) { 
+    .cloudads-header { 
+        height: 35px; 
+        font-size: 14px; 
+    } 
+    .cloudads-footer { 
+        height: 35px; 
+        font-size: 14px; 
+        padding: 0 4px;
+    } 
+}
+@media (min-width: 240px) and (max-width: 480px) { 
+    .cloudads-fs-wrapper { 
+        font-size: 12px; 
+    } 
+}
+`;
         document.head.appendChild(style);
     };
 
