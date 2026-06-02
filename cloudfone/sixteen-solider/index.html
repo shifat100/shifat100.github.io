@@ -387,1012 +387,1178 @@
         <div class="softkey-right" id="softRightText"></div>
     </div>
     <script>
+function isKaiOS() {
+    return /KAIOS|KaiOS/i.test(navigator.userAgent);
+}
+// --- FIREBASE CONFIGURATION ---
+var firebaseConfig = {
+    apiKey: "AIzaSyBsAYFWEDYpQEDhEykEWXO_FwB9dzANE3M",
+    authDomain: "shulo-guti.firebaseapp.com",
+    databaseURL: "https://shulo-guti-default-rtdb.firebaseio.com",
+    projectId: "shulo-guti",
+    storageBucket: "shulo-guti.firebasestorage.app",
+    messagingSenderId: "738532732350",
+    appId: "1:738532732350:web:4fca1f3257724584c01def"
+};
 
-  function isKaiOS() {
-            return /KAIOS|KaiOS/i.test(navigator.userAgent);
+// Firebase Initialize
+firebase.initializeApp(firebaseConfig);
+var database = firebase.database();
+
+var myClientId = Math.random().toString(36).substring(2, 15);
+var currentRoomRef = null;
+var roomListener = null;
+
+var lastProcessedMoveTime = 0;
+var lastProcessedEndTurnTime = 0;
+
+var canvas = document.getElementById('gameCanvas');
+var ctx = canvas.getContext('2d');
+canvas.width = 500;
+canvas.height = 920;
+
+var myRole = null; // 1 = Red, 2 = Green
+var gameActive = false;
+var publicRooms = [];
+var activeMenuOption = 0;
+
+// Node Positions
+var points = [
+    { id: 0, x: 50, y: 40 }, { id: 1, x: 250, y: 40 }, { id: 2, x: 450, y: 40 },
+    { id: 3, x: 150, y: 145 }, { id: 4, x: 250, y: 145 }, { id: 5, x: 350, y: 145 },
+    { id: 6, x: 50, y: 250 }, { id: 7, x: 150, y: 250 }, { id: 8, x: 250, y: 250 }, { id: 9, x: 350, y: 250 }, { id: 10, x: 450, y: 250 },
+    { id: 11, x: 50, y: 355 }, { id: 12, x: 150, y: 355 }, { id: 13, x: 250, y: 355 }, { id: 14, x: 350, y: 355 }, { id: 15, x: 450, y: 355 },
+    { id: 16, x: 50, y: 460 }, { id: 17, x: 150, y: 460 }, { id: 18, x: 250, y: 460 }, { id: 19, x: 350, y: 460 }, { id: 20, x: 450, y: 460 },
+    { id: 21, x: 50, y: 565 }, { id: 22, x: 150, y: 565 }, { id: 23, x: 250, y: 565 }, { id: 24, x: 350, y: 565 }, { id: 25, x: 450, y: 565 },
+    { id: 26, x: 50, y: 670 }, { id: 27, x: 150, y: 670 }, { id: 28, x: 250, y: 670 }, { id: 29, x: 350, y: 670 }, { id: 30, x: 450, y: 670 },
+    { id: 31, x: 150, y: 775 }, { id: 32, x: 250, y: 775 }, { id: 33, x: 350, y: 775 },
+    { id: 34, x: 50, y: 880 }, { id: 35, x: 250, y: 880 }, { id: 36, x: 450, y: 880 }
+];
+
+// CLASSIC BOARD SHAPE LINES
+var lines = [
+    [6, 11, 16, 21, 26],
+    [7, 12, 17, 22, 27],
+    [1, 4, 8, 13, 18, 23, 28, 32, 35],
+    [9, 14, 19, 24, 29],
+    [10, 15, 20, 25, 30],
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8, 9, 10],
+    [11, 12, 13, 14, 15],
+    [16, 17, 18, 19, 20],
+    [21, 22, 23, 24, 25],
+    [26, 27, 28, 29, 30],
+    [31, 32, 33],
+    [34, 35, 36],
+    [6, 12, 18, 24, 30],
+    [10, 14, 18, 22, 26],
+    [0, 3, 8, 14, 20],
+    [2, 5, 8, 12, 16],
+    [20, 24, 28, 31, 34],
+    [16, 22, 28, 33, 36]
+];
+
+var boardState = [];
+var turn = 1;
+var activePieceId = null;
+var hasCapturedThisTurn = false;
+var visualPieces = [];
+var dyingPieces = [];
+var keyboardCursorIndex = 18;
+
+function getDisplayY(y) {
+    if (myRole === 1) {
+        return 920 - y;
+    }
+    return y;
+}
+
+// --- SOUND ENGINE ---
+var audioCtx;
+function playSound(type) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    try {
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        if (type === 'move') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(260, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        } else if (type === 'capture') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
         }
-        // --- FIREBASE CONFIGURATION ---
-        var firebaseConfig = {
-            apiKey: "AIzaSyBsAYFWEDYpQEDhEykEWXO_FwB9dzANE3M",
-            authDomain: "shulo-guti.firebaseapp.com",
-            databaseURL: "https://shulo-guti-default-rtdb.firebaseio.com",
-            projectId: "shulo-guti",
-            storageBucket: "shulo-guti.firebasestorage.app",
-            messagingSenderId: "738532732350",
-            appId: "1:738532732350:web:4fca1f3257724584c01def"
-        };
+    } catch (e) { }
+}
 
-        // Firebase Initialize
-        firebase.initializeApp(firebaseConfig);
-        var database = firebase.database();
-
-        var myClientId = Math.random().toString(36).substring(2, 15);
-        var currentRoomRef = null;
-        var roomListener = null;
-
-        var lastProcessedMoveTime = 0;
-        var lastProcessedEndTurnTime = 0;
-
-        var canvas = document.getElementById('gameCanvas');
-        var ctx = canvas.getContext('2d');
-        canvas.width = 500;
-        canvas.height = 920;
-
-        var myRole = null; // 1 = Red, 2 = Green
-        var gameActive = false;
-        var publicRooms = [];
-        var activeMenuOption = 0;
-
-        // Node Positions
-        var points = [
-            { id: 0, x: 50, y: 40 }, { id: 1, x: 250, y: 40 }, { id: 2, x: 450, y: 40 },
-            { id: 3, x: 150, y: 145 }, { id: 4, x: 250, y: 145 }, { id: 5, x: 350, y: 145 },
-            { id: 6, x: 50, y: 250 }, { id: 7, x: 150, y: 250 }, { id: 8, x: 250, y: 250 }, { id: 9, x: 350, y: 250 }, { id: 10, x: 450, y: 250 },
-            { id: 11, x: 50, y: 355 }, { id: 12, x: 150, y: 355 }, { id: 13, x: 250, y: 355 }, { id: 14, x: 350, y: 355 }, { id: 15, x: 450, y: 355 },
-            { id: 16, x: 50, y: 460 }, { id: 17, x: 150, y: 460 }, { id: 18, x: 250, y: 460 }, { id: 19, x: 350, y: 460 }, { id: 20, x: 450, y: 460 },
-            { id: 21, x: 50, y: 565 }, { id: 22, x: 150, y: 565 }, { id: 23, x: 250, y: 565 }, { id: 24, x: 350, y: 565 }, { id: 25, x: 450, y: 565 },
-            { id: 26, x: 50, y: 670 }, { id: 27, x: 150, y: 670 }, { id: 28, x: 250, y: 670 }, { id: 29, x: 350, y: 670 }, { id: 30, x: 450, y: 670 },
-            { id: 31, x: 150, y: 775 }, { id: 32, x: 250, y: 775 }, { id: 33, x: 350, y: 775 },
-            { id: 34, x: 50, y: 880 }, { id: 35, x: 250, y: 880 }, { id: 36, x: 450, y: 880 }
-        ];
-
-        // CLASSIC BOARD SHAPE LINES
-        var lines = [
-            [6, 11, 16, 21, 26],
-            [7, 12, 17, 22, 27],
-            [1, 4, 8, 13, 18, 23, 28, 32, 35],
-            [9, 14, 19, 24, 29],
-            [10, 15, 20, 25, 30],
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8, 9, 10],
-            [11, 12, 13, 14, 15],
-            [16, 17, 18, 19, 20],
-            [21, 22, 23, 24, 25],
-            [26, 27, 28, 29, 30],
-            [31, 32, 33],
-            [34, 35, 36],
-            [6, 12, 18, 24, 30],
-            [10, 14, 18, 22, 26],
-            [0, 3, 8, 14, 20],
-            [2, 5, 8, 12, 16],
-            [20, 24, 28, 31, 34],
-            [16, 22, 28, 33, 36]
-        ];
-
-        var boardState = [];
-        var turn = 1;
-        var activePieceId = null;
-        var hasCapturedThisTurn = false;
-        var visualPieces = [];
-        var dyingPieces = [];
-        var keyboardCursorIndex = 18;
-
-        function getDisplayY(y) {
-            if (myRole === 1) {
-                return 920 - y;
-            }
-            return y;
-        }
-
-        // --- SOUND ENGINE ---
-        var audioCtx;
-        function playSound(type) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            try {
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                if (type === 'move') {
-                    osc.type = 'sine'; osc.frequency.setValueAtTime(260, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-                } else if (type === 'capture') {
-                    osc.type = 'triangle'; osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-                }
-            } catch (e) { }
-        }
-
-        // --- ONLINE CONNECTIVITY (FIREBASE) ---
-        function connectServer() {
-            // অ্যাক্টিভ পাবলিক ওয়েটিং রুমগুলো লাইভ দেখানোর লিসেনার [1]
-            database.ref('rooms').on('value', function (snapshot) {
-                var roomsList = [];
-                snapshot.forEach(function (childSnapshot) {
-                    var room = childSnapshot.val();
-                    // শুধুমাত্র পাবলিক এবং যেখানে মাত্র একজন প্লেয়ার অপেক্ষা করছে [1]
-                    if (room.status === 'waiting' && !room.isPrivate && room.p1 && !room.p2) {
-                        roomsList.push({
-                            code: childSnapshot.key,
-                            playersCount: 1
-                        });
-                    }
-                });
-                publicRooms = roomsList;
-                if (!gameActive && !document.getElementById('lobbyScreen').classList.contains('hidden')) {
-                    renderPublicRooms();
-                }
-            });
-
-            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'main', onerror: function (e) { }, onready: function (e) { e.call('display') } }) } else {
-                getCloudAd({
-                    publisher: '1748228c05773e8ab91b3c2a48efae79',
-                    onready: function (ad) { ad.call('display'); }
+// --- ONLINE CONNECTIVITY (FIREBASE) ---
+function connectServer() {
+    // অ্যাক্টিভ পাবলিক ওয়েটিং রুমগুলো লাইভ দেখানোর লিসেনার
+    database.ref('rooms').on('value', function (snapshot) {
+        var roomsList = [];
+        snapshot.forEach(function (childSnapshot) {
+            var room = childSnapshot.val();
+            // শুধুমাত্র পাবলিক এবং যেখানে মাত্র একজন প্লেয়ার অপেক্ষা করছে
+            if (room.status === 'waiting' && !room.isPrivate && room.p1 && !room.p2) {
+                roomsList.push({
+                    code: childSnapshot.key,
+                    playersCount: 1
                 });
             }
-        }
-
-        function joinRoom(code, isPrivate) {
-            var roomCode = code.trim().toUpperCase();
-            if (!roomCode) {
-                alert("Please enter a code to join.");
-                return;
-            }
-
-            var roomRef = database.ref('rooms/' + roomCode);
-            currentRoomRef = roomRef;
-
-            roomRef.transaction(function (currentData) {
-                // যদি রুমটি একদম খালি থাকে বা অলরেডি Forfeit হয়ে থাকে, তবে এটিকে নতুন করে রিসেট করা হবে
-                if (currentData === null || currentData.status === 'forfeit' || (!currentData.p1 && !currentData.p2)) {
-                    return {
-                        p1: myClientId,
-                        p2: null,
-                        isPrivate: isPrivate,
-                        status: "waiting"
-                    };
-                } else {
-                    // যদি আপনি নিজেই অলরেডি রুমে যুক্ত থাকেন
-                    if (currentData.p1 === myClientId || currentData.p2 === myClientId) {
-                        return currentData;
-                    }
-                    // যদি রুমে অলরেডি অন্য ২ জন প্লেয়ার থাকে (রুম ফুল)
-                    if (currentData.p1 && currentData.p2) {
-                        return; // ট্রানজেকশন ক্যানসেল করবে
-                    }
-                    // ২য় প্লেয়ার হিসেবে যোগদান
-                    currentData.p2 = myClientId;
-                    currentData.status = "playing";
-                    return currentData;
-                }
-            }, function (error, committed, snapshot) {
-                if (error) {
-                    alert("Room error: " + error.message);
-                } else if (!committed) {
-                    alert("Room is already full!");
-                } else {
-                    var roomData = snapshot.val();
-                    setupRoomRealtime(roomCode, roomData);
-                }
-            });
-        }
-
-        function setupRoomRealtime(roomCode, roomData) {
-            if (roomData.p1 === myClientId) {
-                myRole = 1;
-            } else if (roomData.p2 === myClientId) {
-                myRole = 2;
-            }
-
-            if (roomData.status === 'waiting') {
-                document.getElementById('lobbyScreen').classList.add('hidden');
-                document.getElementById('waitingScreen').classList.remove('hidden');
-                document.getElementById('waitingCode').innerText = roomCode;
-                document.getElementById('roomTypeLabel').innerText = roomData.isPrivate ? "Private Room Created" : "Public Room Created";
-                updateSoftkeys();
-            } else if (roomData.status === 'playing') {
-                startGameLocal();
-            }
-
-            // প্লেয়ার ডিসকানেক্ট হয়ে গেলে গেম স্টেট Forfeit করা এবং রুমের স্লট ফাঁকা করার অন-ডিসকানেক্ট হ্যান্ডলার
-            currentRoomRef.child('status').onDisconnect().set('forfeit');
-            currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().remove();
-
-            if (roomListener) currentRoomRef.off('value', roomListener);
-
-            roomListener = currentRoomRef.on('value', function (snapshot) {
-                var data = snapshot.val();
-                if (!data) return;
-
-                // ২য় প্লেয়ার জয়েন করলে গেম শুরু
-                if (data.status === 'playing' && !gameActive) {
-                    startGameLocal();
-                }
-
-                // কোনো প্লেয়ার চলে গেলে বা ডিসকানেক্ট হলে forfeit ডিক্লেয়ার
-                if (data.status === 'forfeit' && gameActive) {
-                    handleForfeit();
-                }
-
-                // নতুন কোনো চাল বা মুভমেন্ট আসলে
-                if (data.lastMove && data.lastMove.sender !== myClientId) {
-                    if (data.lastMove.timestamp > lastProcessedMoveTime) {
-                        lastProcessedMoveTime = data.lastMove.timestamp;
-                        executeOpponentMove(data.lastMove.fromId, data.lastMove.move);
-                    }
-                }
-
-                // টার্ন শেষ হওয়ার আপডেট আসলে
-                if (data.lastEndTurn && data.lastEndTurn.sender !== myClientId) {
-                    if (data.lastEndTurn.timestamp > lastProcessedEndTurnTime) {
-                        lastProcessedEndTurnTime = data.lastEndTurn.timestamp;
-                        finalizeTurnLocal();
-                    }
-                }
-            });
-        }
-
-        function startGameLocal() {
-            document.getElementById('waitingScreen').classList.add('hidden');
-            document.getElementById('lobbyScreen').classList.add('hidden');
-            document.getElementById('hudBar').classList.remove('hidden');
-            canvas.classList.remove('hidden');
-            gameActive = true;
-            lastProcessedMoveTime = Date.now();
-            lastProcessedEndTurnTime = Date.now();
-            initGame();
-        }
-
-        function actionJoin() {
-            var val = document.getElementById('roomCodeInput').value.trim();
-            if (val) {
-                joinRoom(val, false);
-            } else {
-                alert("Please enter a code to join.");
-            }
-        }
-
-        function actionCreate(isPrivate) {
-            var val = document.getElementById('roomCodeInput').value.trim();
-            if (!val) {
-                val = Math.random().toString(36).substring(2, 7);
-            }
-            joinRoom(val, isPrivate);
-        }
-
-        function leaveRoom() {
-            if (currentRoomRef) {
-                // Disconnect হ্যান্ডলারগুলো বাতিল করা
-                currentRoomRef.child('status').onDisconnect().cancel();
-                currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().cancel();
-
-                currentRoomRef.once('value', function (snapshot) {
-                    var data = snapshot.val();
-                    if (data) {
-                        var opponentId = (myRole === 1) ? data.p2 : data.p1;
-
-                        // যদি রুমে অন্য কোনো প্লেয়ার না থাকে, তবে পুরো রুমটি ডিলিট করে দেওয়া হবে
-                        if (!opponentId) {
-                            currentRoomRef.remove();
-                        } else {
-                            // আর যদি প্রতিপক্ষ এখনো রুমে থাকে, তবে তাকে Forfeit দেখিয়ে নিজে লিভ নেওয়া হবে
-                            currentRoomRef.child('status').set('forfeit');
-                            currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').remove();
-                        }
-                    }
-                });
-
-                if (roomListener) {
-                    currentRoomRef.off('value', roomListener);
-                    roomListener = null;
-                }
-                currentRoomRef = null;
-            }
-
-            myRole = null;
-            gameActive = false;
-            canvas.classList.add('hidden');
-            document.getElementById('hudBar').classList.add('hidden');
-            document.getElementById('waitingScreen').classList.add('hidden');
-            document.getElementById('endScreen').classList.add('hidden');
-            document.getElementById('lobbyScreen').classList.remove('hidden');
-            activeMenuOption = 0;
-            updateLobbyFocus();
-            updateSoftkeys();
-        }
-
-        function handleForfeit() {
-            gameActive = false;
-            document.getElementById('endScreen').classList.remove('hidden');
-            document.getElementById('endTitle').innerText = "Opponent Left";
-            document.getElementById('endDetails').innerText = "Opponent disconnected. You won by forfeit!";
-            updateSoftkeys();
-        }
-
-        // --- D-PAD LOBBY NAVIGATION ---
-        function renderPublicRooms() {
-            var container = document.getElementById('roomListContainer');
-            container.innerHTML = "";
-            if (publicRooms.length === 0) {
-                container.innerHTML = '<div style="font-size:9px; color:#aaa; padding:10px;">No active public waiting rooms.</div>';
-            } else {
-                publicRooms.forEach(function (rm, index) {
-                    var div = document.createElement('div');
-                    div.className = 'room-item';
-                    div.id = 'roomItem_' + index;
-                    div.innerHTML = '<span>Code: <b>' + rm.code + '</b></span> <span style="color:#873eff;">Join &raquo;</span>';
-                    div.onclick = function () { joinRoom(rm.code, false); };
-                    container.appendChild(div);
-                });
-            }
-            updateLobbyFocus();
-        }
-
-        function updateLobbyFocus() {
-            document.getElementById('roomCodeInput').classList.remove('active');
-            document.getElementById('btnJoin').classList.remove('active');
-            document.getElementById('btnCreatePublic').classList.remove('active');
-            document.getElementById('btnCreatePrivate').classList.remove('active');
-
-            // ES5 compliant NodeList iteration
-            var roomItems = document.querySelectorAll('.room-item');
-            for (var i = 0; i < roomItems.length; i++) {
-                roomItems[i].classList.remove('active');
-            }
-
-            var maxIndex = 3 + publicRooms.length;
-            if (activeMenuOption > maxIndex) activeMenuOption = maxIndex;
-
-            if (activeMenuOption === 0) {
-                document.getElementById('roomCodeInput').classList.add('active');
-                document.getElementById('roomCodeInput').focus();
-            } else {
-                document.getElementById('roomCodeInput').blur();
-                if (activeMenuOption === 1) {
-                    document.getElementById('btnJoin').classList.add('active');
-                } else if (activeMenuOption === 2) {
-                    document.getElementById('btnCreatePublic').classList.add('active');
-                } else if (activeMenuOption === 3) {
-                    document.getElementById('btnCreatePrivate').classList.add('active');
-                } else {
-                    var roomIndex = activeMenuOption - 4;
-                    // ES5 style string concatenation
-                    var activeItem = document.getElementById('roomItem_' + roomIndex);
-                    if (activeItem) {
-                        activeItem.classList.add('active');
-
-                        // ES5 compliant safe scroll calculation
-                        var container = document.getElementById('roomListContainer');
-                        if (container) {
-                            var containerRect = container.getBoundingClientRect();
-                            var itemRect = activeItem.getBoundingClientRect();
-
-                            if (itemRect.top < containerRect.top) {
-                                // Scroll Up
-                                container.scrollTop -= (containerRect.top - itemRect.top);
-                            } else if (itemRect.bottom > containerRect.bottom) {
-                                // Scroll Down
-                                container.scrollTop += (itemRect.bottom - containerRect.bottom);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        function handleLobbyNav(key) {
-            var maxIndex = 3 + publicRooms.length;
-            if (key === 'ArrowUp' && activeMenuOption > 0) {
-                activeMenuOption--;
-                updateLobbyFocus();
-            } else if (key === 'ArrowDown' && activeMenuOption < maxIndex) {
-                activeMenuOption++;
-                updateLobbyFocus();
-            } else if (key === 'SoftRight' || key === 'Backspace') {
-                if (confirm('Are you sure you want to exit the game?')) {
-                    window.close();
-                }
-            } else if (key === 'Enter' || key === 'Select') {
-                if (activeMenuOption === 1) {
-                    actionJoin();
-                } else if (activeMenuOption === 2) {
-                    actionCreate(false);
-                } else if (activeMenuOption === 3) {
-                    actionCreate(true);
-                } else if (activeMenuOption >= 4) {
-                    var roomIndex = activeMenuOption - 4;
-                    if (publicRooms[roomIndex]) joinRoom(publicRooms[roomIndex].code, false);
-                }
-            }
-        }
-
-        // --- GAME ENGINE ---
-        function initGame() {
-            boardState = Array(37).fill(null);
-            for (var i = 0; i <= 15; i++) boardState[i] = 1; // Red
-            for (var i = 21; i <= 36; i++) boardState[i] = 2; // Green
-
-            turn = 1; // Red starts
-            keyboardCursorIndex = (myRole === 1) ? 8 : 28;
-
-            activePieceId = null;
-            hasCapturedThisTurn = false;
-
-            visualPieces = [];
-            for (var i = 0; i < 37; i++) {
-                if (boardState[i] !== null) {
-                    var displayY = getDisplayY(points[i].y);
-                    visualPieces.push({
-                        id: i, type: boardState[i],
-                        x: points[i].x, y: displayY,
-                        targetX: points[i].x, targetY: displayY
-                    });
-                }
-            }
-            dyingPieces = [];
-            updateHUD();
-            updateSoftkeys();
-            ensureValidCursor();
-        }
-
-        function getValidFocusNodes() {
-            var validNodes = [];
-            if (!gameActive || turn !== myRole) return [];
-
-            if (hasCapturedThisTurn && activePieceId !== null) {
-                validNodes.push(activePieceId);
-                getValidJumps(activePieceId).forEach(function (j) { validNodes.push(j.to); });
-                return validNodes;
-            }
-
-            if (activePieceId !== null) {
-                validNodes.push(activePieceId);
-                for (var i = 0; i < 37; i++) {
-                    if (boardState[i] === myRole) validNodes.push(i);
-                }
-                getValidMoves(activePieceId).forEach(function (m) { validNodes.push(m.to); });
-                getValidJumps(activePieceId).forEach(function (j) { validNodes.push(j.to); });
-
-                return validNodes.filter(function (item, pos, self) {
-                    return self.indexOf(item) === pos;
-                });
-            }
-
-            for (var i = 0; i < 37; i++) {
-                if (boardState[i] === myRole) validNodes.push(i);
-            }
-            return validNodes;
-        }
-
-        function ensureValidCursor() {
-            var validTargets = getValidFocusNodes();
-            if (validTargets.length === 0) return;
-            if (!validTargets.includes(keyboardCursorIndex)) {
-                var curX = points[keyboardCursorIndex].x;
-                var curY = getDisplayY(points[keyboardCursorIndex].y);
-                var closestId = validTargets[0];
-                var minDistance = Infinity;
-                validTargets.forEach(function (id) {
-                    var pX = points[id].x;
-                    var pY = getDisplayY(points[id].y);
-                    var dx = pX - curX;
-                    var dy = pY - curY;
-                    var dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < minDistance) { minDistance = dist; closestId = id; }
-                });
-                keyboardCursorIndex = closestId;
-            }
-        }
-
-        function updateHUD() {
-            var p1Count = boardState.filter(function (s) { return s === 1; }).length;
-            var p2Count = boardState.filter(function (s) { return s === 2; }).length;
-
-            var redLabel = (myRole === 1) ? "Red (You)" : "Red";
-            var greenLabel = (myRole === 2) ? "Green (You)" : "Green";
-
-            document.getElementById('p1Label').innerText = redLabel + ": " + p1Count;
-            document.getElementById('p2Label').innerText = greenLabel + ": " + p2Count;
-
-            if (turn === myRole) {
-                document.getElementById('turnIndicator').innerText = "Your Turn";
-                document.getElementById('turnIndicator').style.color = "#ffb74d";
-            } else {
-                document.getElementById('turnIndicator').innerText = "Waiting...";
-                document.getElementById('turnIndicator').style.color = "#aaa";
-            }
-        }
-
-        function updateSoftkeys() {
-            var waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
-            var lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
-            var endVisible = !document.getElementById('endScreen').classList.contains('hidden');
-
-            if (lobbyVisible) {
-                document.getElementById('softLeftText').innerText = "";
-                document.getElementById('softCenterText').innerText = "Select";
-                document.getElementById('softRightText').innerText = "";
-                return;
-            }
-            if (waitingVisible || endVisible) {
-                document.getElementById('softLeftText').innerText = "Leave";
-                document.getElementById('softCenterText').innerText = "";
-                document.getElementById('softRightText').innerText = "";
-                return;
-            }
-
-            document.getElementById('softLeftText').innerText = "Exit";
-            if (hasCapturedThisTurn) {
-                document.getElementById('softCenterText').innerText = "Capture";
-                document.getElementById('softRightText').innerText = "End Turn";
-            } else {
-                document.getElementById('softCenterText').innerText = (activePieceId !== null) ? "Move" : "Select";
-                document.getElementById('softRightText').innerText = (activePieceId !== null) ? "Cancel" : "";
-            }
-        }
-
-        function filterUnique(arr) {
-            var seen = {};
-            return arr.filter(function (item) {
-                if (seen[item.to]) return false;
-                seen[item.to] = true;
-                return true;
-            });
-        }
-
-        function getValidMoves(fromId) {
-            var valid = [];
-            var player = boardState[fromId];
-            if (!player) return [];
-            lines.forEach(function (line) {
-                var idx = line.indexOf(fromId);
-                if (idx !== -1) {
-                    if (idx > 0 && boardState[line[idx - 1]] === null) valid.push({ to: line[idx - 1], type: 'move' });
-                    if (idx < line.length - 1 && boardState[line[idx + 1]] === null) valid.push({ to: line[idx + 1], type: 'move' });
-                }
-            });
-            return filterUnique(valid);
-        }
-
-        function getValidJumps(fromId) {
-            var valid = [];
-            var player = boardState[fromId];
-            if (!player) return [];
-            var opponent = (player === 1) ? 2 : 1;
-
-            lines.forEach(function (line) {
-                var idx = line.indexOf(fromId);
-                if (idx !== -1) {
-                    if (idx > 1 && boardState[line[idx - 1]] === opponent && boardState[line[idx - 2]] === null) {
-                        valid.push({ to: line[idx - 2], capture: line[idx - 1], type: 'jump' });
-                    }
-                    if (idx < line.length - 2 && boardState[line[idx + 1]] === opponent && boardState[line[idx + 2]] === null) {
-                        valid.push({ to: line[idx + 2], capture: line[idx + 1], type: 'jump' });
-                    }
-                }
-            });
-            return filterUnique(valid);
-        }
-
-        function handleNodeSelection(nodeId) {
-            if (turn !== myRole) return;
-            var piece = boardState[nodeId];
-
-            if (hasCapturedThisTurn) {
-                var possibleJumps = getValidJumps(activePieceId);
-                var chosenJump = possibleJumps.find(function (j) { return j.to === nodeId; });
-                if (chosenJump) executeMove(activePieceId, chosenJump);
-                return;
-            }
-
-            if (piece === turn) {
-                activePieceId = nodeId;
-            } else if (activePieceId !== null) {
-                var moves = getValidMoves(activePieceId);
-                var jumps = getValidJumps(activePieceId);
-                var chosenJump = jumps.find(function (j) { return j.to === nodeId; });
-                var chosenMove = moves.find(function (m) { return m.to === nodeId; });
-
-                if (chosenJump) executeMove(activePieceId, chosenJump);
-                else if (chosenMove) executeMove(activePieceId, chosenMove);
-            }
-            ensureValidCursor();
-        }
-
-        function executeMove(fromId, move) {
-            var vp = visualPieces.find(function (p) { return p.id === fromId; });
-            if (vp) {
-                vp.id = move.to;
-                vp.targetX = points[move.to].x;
-                vp.targetY = getDisplayY(points[move.to].y);
-            }
-
-            boardState[move.to] = turn;
-            boardState[fromId] = null;
-
-            // Firebase-এ চাল আপলোড করা
-            if (currentRoomRef) {
-                currentRoomRef.child('lastMove').set({
-                    fromId: fromId,
-                    move: move,
-                    sender: myClientId,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-            }
-
-            if (move.type === 'jump') {
-                var cvpIdx = visualPieces.findIndex(function (p) { return p.id === move.capture; });
-                if (cvpIdx !== -1) {
-                    dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
-                    visualPieces.splice(cvpIdx, 1);
-                }
-                boardState[move.capture] = null;
-                playSound('capture');
-                hasCapturedThisTurn = true;
-                activePieceId = move.to;
-
-                var furtherJumps = getValidJumps(activePieceId);
-                if (furtherJumps.length > 0) {
-                    updateHUD();
-                    updateSoftkeys();
-                    ensureValidCursor();
-                    return;
-                }
-            } else {
-                playSound('move');
-            }
-
-            // Firebase-এ টার্ন শেষ ঘোষণা করা
-            if (currentRoomRef) {
-                currentRoomRef.child('lastEndTurn').set({
-                    sender: myClientId,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-            }
-            finalizeTurnLocal();
-        }
-
-        function executeOpponentMove(fromId, move) {
-            var vp = visualPieces.find(function (p) { return p.id === fromId; });
-            if (vp) {
-                vp.id = move.to;
-                vp.targetX = points[move.to].x;
-                vp.targetY = getDisplayY(points[move.to].y);
-            } else {
-                visualPieces.push({
-                    id: move.to, type: (myRole === 1) ? 2 : 1,
-                    x: points[fromId].x, y: getDisplayY(points[fromId].y),
-                    targetX: points[move.to].x, targetY: getDisplayY(points[move.to].y)
-                });
-            }
-
-            boardState[move.to] = boardState[fromId];
-            boardState[fromId] = null;
-
-            if (move.type === 'jump') {
-                var cvpIdx = visualPieces.findIndex(function (p) { return p.id === move.capture; });
-                if (cvpIdx !== -1) {
-                    dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
-                    visualPieces.splice(cvpIdx, 1);
-                }
-                boardState[move.capture] = null;
-                playSound('capture');
-            } else {
-                playSound('move');
-            }
-        }
-
-        function finalizeTurnLocal() {
-            activePieceId = null;
-            hasCapturedThisTurn = false;
-
-            var winner = checkWin();
-            if (winner) {
-                announceWinner(winner);
-                return;
-            }
-
-            turn = (turn === 1) ? 2 : 1;
-            updateHUD();
-            updateSoftkeys();
-            ensureValidCursor();
-        }
-
-        function checkWin() {
-            var p1Count = boardState.filter(function (s) { return s === 1; }).length;
-            var p2Count = boardState.filter(function (s) { return s === 2; }).length;
-            if (p1Count === 0) return 2;
-            if (p2Count === 0) return 1;
-
-            var nextPlayer = (turn === 1) ? 2 : 1;
-            var hasMoves = false;
-            for (var i = 0; i < 37; i++) {
-                if (boardState[i] === nextPlayer) {
-                    if (getValidMoves(i).length > 0 || getValidJumps(i).length > 0) {
-                        hasMoves = true;
-                        break;
-                    }
-                }
-            }
-            if (!hasMoves) {
-                return turn;
-            }
-            return null;
-        }
-
-        function announceWinner(winner) {
-            gameActive = false;
-            document.getElementById('endScreen').classList.remove('hidden');
-            var winnerName = (winner === 1) ? "Red" : "Green";
-            if (winner === myRole) {
-                document.getElementById('endTitle').innerText = "Victory!";
-                document.getElementById('endDetails').innerText = "Congratulations! You (" + winnerName + ") won the game.";
-            } else {
-                document.getElementById('endTitle').innerText = "Defeat";
-                document.getElementById('endDetails').innerText = winnerName + " has won the game. Better luck next time!";
-            }
-            updateSoftkeys();
-            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'result', onerror: function (e) { }, onready: function (e) { e.call('display') } }) } else {
-                getCloudAd({
-                    publisher: '1748228c05773e8ab91b3c2a48efae79',
-                    onready: function (ad) { ad.call('display'); }
-                });
-            }
-        }
-
-        function triggerDeselect() {
-            if (hasCapturedThisTurn) return;
-            activePieceId = null;
-            updateSoftkeys();
-            ensureValidCursor();
-        }
-
-        window.addEventListener('back', function (event) {
-            event.preventDefault();
-            simulateNaturalPress('SoftRight', 0);
         });
+        publicRooms = roomsList;
+        if (!gameActive && !document.getElementById('lobbyScreen').classList.contains('hidden')) {
+            renderPublicRooms();
+        }
+    });
 
-        // --- Key Navigation System ---
-        window.addEventListener('keydown', function (e) {
-            var lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
-            var waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
-            var endVisible = !document.getElementById('endScreen').classList.contains('hidden');
-
-            if (lobbyVisible) {
-                handleLobbyNav(e.key);
-                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') e.preventDefault();
-                return;
-            }
-
-            if (waitingVisible || endVisible) {
-                if (e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'Escape') {
-                    leaveRoom();
-                    e.preventDefault();
-                }
-                return;
-            }
-
-            if (e.key === 'Escape'||e.key === 'SoftLeft') {
-                leaveRoom();
-                e.preventDefault();
-                return;
-            }
-            
-            if (!gameActive) return;
-            if (turn !== myRole) return;
-
-            switch (e.key) {
-                case 'ArrowUp':
-                case 'W': case 'w':
-                    moveKeyboardCursor('up'); e.preventDefault(); break;
-                case 'ArrowDown':
-                case 'S': case 's':
-                    moveKeyboardCursor('down'); e.preventDefault(); break;
-                case 'ArrowLeft':
-                case 'A': case 'a':
-                    moveKeyboardCursor('left'); e.preventDefault(); break;
-                case 'ArrowRight':
-                case 'D': case 'd':
-                    moveKeyboardCursor('right'); e.preventDefault(); break;
-                case 'Enter':
-                case 'Select':
-                    handleNodeSelection(keyboardCursorIndex); e.preventDefault(); break;
-                case 'SoftLeft': case 'F1': case 'Escape':
-                    leaveRoom(); e.preventDefault(); break;
-                case 'SoftRight': case 'F2': case 'Backspace':
-                    if (hasCapturedThisTurn) endChainTurn();
-                    else if (activePieceId !== null) triggerDeselect();
-                    e.preventDefault();
-                    break;
-            }
-            updateSoftkeys();
+    if (isKaiOS()) {
+        getKaiAd({
+            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+            app: 'sixteen-solider',
+            slot: 'main',
+            onerror: function (e) { },
+            onready: function (e) { e.call('display'); }
         });
+    } else {
+        getCloudAd({
+            publisher: '1748228c05773e8ab91b3c2a48efae79',
+            onready: function (ad) { ad.call('display'); }
+        });
+    }
+}
 
-        function moveKeyboardCursor(dir) {
-            var validTargets = getValidFocusNodes();
-            if (validTargets.length === 0) return;
+function joinRoom(code, isPrivate) {
+    var roomCode = code.trim().toUpperCase();
+    if (!roomCode) {
+        alert("Please enter a code to join.");
+        return;
+    }
 
-            var curX = points[keyboardCursorIndex].x;
-            var curY = getDisplayY(points[keyboardCursorIndex].y);
-            var bestId = -1;
-            var bestScore = Infinity;
+    var roomRef = database.ref('rooms/' + roomCode);
+    currentRoomRef = roomRef;
 
-            validTargets.forEach(function (id) {
-                if (id === keyboardCursorIndex) return;
-                var pX = points[id].x;
-                var pY = getDisplayY(points[id].y);
-                var dx = pX - curX;
-                var dy = pY - curY;
+    roomRef.transaction(function (currentData) {
+        // যদি রুমটি একদম খালি থাকে বা অলরেডি Forfeit হয়ে থাকে, তবে এটিকে নতুন করে রিসেট করা হবে
+        if (currentData === null || currentData.status === 'forfeit' || (!currentData.p1 && !currentData.p2)) {
+            return {
+                p1: myClientId,
+                p2: null,
+                isPrivate: isPrivate,
+                status: "waiting"
+            };
+        } else {
+            // যদি আপনি নিজেই অলরেডি রুমে যুক্ত থাকেন
+            if (currentData.p1 === myClientId || currentData.p2 === myClientId) {
+                return currentData;
+            }
+            // যদি রুমে অলরেডি অন্য ২ জন প্লেয়ার থাকে (রুম ফুল)
+            if (currentData.p1 && currentData.p2) {
+                return; // ট্রানজেকশন ক্যানসেল করবে
+            }
+            // ২য় প্লেয়ার হিসেবে যোগদান
+            currentData.p2 = myClientId;
+            currentData.status = "playing";
+            return currentData;
+        }
+    }, function (error, committed, snapshot) {
+        if (error) {
+            alert("Room error: " + error.message);
+        } else if (!committed) {
+            alert("Room is already full!");
+        } else {
+            var roomData = snapshot.val();
+            setupRoomRealtime(roomCode, roomData);
+        }
+    });
+}
 
-                if (dir === 'up' && dy < -5) {
-                    var score = Math.abs(dy) + Math.abs(dx) * 2.5;
-                    if (score < bestScore) { bestScore = score; bestId = id; }
-                } else if (dir === 'down' && dy > 5) {
-                    var score = Math.abs(dy) + Math.abs(dx) * 2.5;
-                    if (score < bestScore) { bestScore = score; bestId = id; }
-                } else if (dir === 'left' && dx < -5) {
-                    var score = Math.abs(dx) + Math.abs(dy) * 2.5;
-                    if (score < bestScore) { bestScore = score; bestId = id; }
-                } else if (dir === 'right' && dx > 5) {
-                    var score = Math.abs(dx) + Math.abs(dy) * 2.5;
-                    if (score < bestScore) { bestScore = score; bestId = id; }
-                }
-            });
+function setupRoomRealtime(roomCode, roomData) {
+    if (roomData.p1 === myClientId) {
+        myRole = 1;
+    } else if (roomData.p2 === myClientId) {
+        myRole = 2;
+    }
 
-            if (bestId !== -1) keyboardCursorIndex = bestId;
+    if (roomData.status === 'waiting') {
+        document.getElementById('lobbyScreen').classList.add('hidden');
+        document.getElementById('waitingScreen').classList.remove('hidden');
+        document.getElementById('waitingCode').innerText = roomCode;
+        document.getElementById('roomTypeLabel').innerText = roomData.isPrivate ? "Private Room Created" : "Public Room Created";
+        updateSoftkeys();
+    } else if (roomData.status === 'playing') {
+        startGameLocal();
+    }
+
+    // প্লেয়ার ডিসকানেক্ট হয়ে গেলে গেম স্টেট Forfeit করা এবং রুমের স্লট ফাঁকা করার অন-ডিসকানেক্ট হ্যান্ডলার
+    currentRoomRef.child('status').onDisconnect().set('forfeit');
+    currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().remove();
+
+    if (roomListener) currentRoomRef.off('value', roomListener);
+
+    roomListener = currentRoomRef.on('value', function (snapshot) {
+        var data = snapshot.val();
+        if (!data) return;
+
+        // ২য় প্লেয়ার জয়েন করলে গেম শুরু
+        if (data.status === 'playing' && !gameActive) {
+            startGameLocal();
         }
 
-        // --- RENDER SYSTEM ---
-        function updateAnimations() {
-            visualPieces.forEach(function (vp) {
-                var dx = vp.targetX - vp.x; var dy = vp.targetY - vp.y;
-                if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-                    vp.x += dx * 0.15; vp.y += dy * 0.15;
-                } else {
-                    vp.x = vp.targetX; vp.y = vp.targetY;
-                }
-            });
+        // কোনো প্লেয়ার চলে গেলে বা ডিসকানেক্ট হলে forfeit ডিক্লেয়ার
+        if (data.status === 'forfeit' && gameActive) {
+            handleForfeit();
+        }
 
-            for (var i = dyingPieces.length - 1; i >= 0; i--) {
-                dyingPieces[i].frame++; dyingPieces[i].alpha -= 0.05;
-                if (dyingPieces[i].alpha <= 0) dyingPieces.splice(i, 1);
+        // নতুন কোনো চাল বা মুভমেন্ট আসলে
+        if (data.lastMove && data.lastMove.sender !== myClientId) {
+            if (data.lastMove.timestamp > lastProcessedMoveTime) {
+                lastProcessedMoveTime = data.lastMove.timestamp;
+                executeOpponentMove(data.lastMove.fromId, data.lastMove.move);
             }
         }
 
-        function drawBoard() {
-            ctx.fillStyle = '#b08257'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#85582c'; ctx.lineWidth = 1.5;
-            for (var y = 100; y < canvas.height; y += 100) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
-
-            var vignette = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.width / 3, canvas.width / 2, canvas.height / 2, canvas.height / 1.6);
-            vignette.addColorStop(0, 'rgba(0,0,0,0)'); vignette.addColorStop(1, 'rgba(40,20,5,0.45)');
-            ctx.fillStyle = vignette; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = '#000000'; ctx.lineWidth = 4.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            lines.forEach(function (line) {
-                ctx.beginPath(); var start = points[line[0]]; ctx.moveTo(start.x, getDisplayY(start.y));
-                for (var i = 1; i < line.length; i++) ctx.lineTo(points[line[i]].x, getDisplayY(points[line[i]].y));
-                ctx.stroke();
-            });
-
-            var mainSquareTopY = Math.min(getDisplayY(250), getDisplayY(670));
-            ctx.strokeRect(50, mainSquareTopY, 400, 420);
-
-            if (activePieceId !== null && turn === myRole) {
-                var possibleMoves = hasCapturedThisTurn ? getValidJumps(activePieceId) : getValidMoves(activePieceId).concat(getValidJumps(activePieceId));
-                possibleMoves.forEach(function (mv) {
-                    ctx.save(); ctx.fillStyle = 'rgba(255, 179, 0, 0.4)'; ctx.strokeStyle = '#ff8f00'; ctx.lineWidth = 3.5;
-                    ctx.beginPath(); ctx.arc(points[mv.to].x, getDisplayY(points[mv.to].y), 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
-                });
-            }
-
-            points.forEach(function (p) {
-                ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(p.x, getDisplayY(p.y), 6.5, 0, Math.PI * 2); ctx.fill();
-            });
-
-            if (gameActive && turn === myRole) {
-                var kp = points[keyboardCursorIndex];
-                ctx.save(); ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 3.5; ctx.setLineDash([5, 4]);
-                ctx.beginPath(); ctx.arc(kp.x, getDisplayY(kp.y), 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-            }
-
-            visualPieces.forEach(function (vp) {
-                drawPieceAt(vp.x, vp.y, vp.type, (activePieceId === vp.id));
-            });
-
-            dyingPieces.forEach(function (dp) {
-                ctx.save(); ctx.globalAlpha = dp.alpha;
-                drawPieceAt(dp.x + Math.sin(dp.frame * 1.5) * 7, dp.y, dp.type, false);
-                ctx.restore();
-            });
-        }
-
-        function drawPieceAt(x, y, type, isSelected) {
-            var radius = 17.5; ctx.save();
-            ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 5; ctx.shadowOffsetX = 2.5; ctx.shadowOffsetY = 4;
-            ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = (type === 1) ? '#900c0c' : '#144e18'; ctx.fill(); ctx.shadowColor = 'transparent';
-
-            var pieceGrad = ctx.createRadialGradient(x - radius / 3, y - radius / 3, 1.5, x, y, radius);
-            if (type === 1) {
-                pieceGrad.addColorStop(0, '#ff4a4a'); pieceGrad.addColorStop(0.3, '#c62828'); pieceGrad.addColorStop(1, '#4e0000');
-            } else {
-                pieceGrad.addColorStop(0, '#66bb6a'); pieceGrad.addColorStop(0.3, '#2e7d32'); pieceGrad.addColorStop(1, '#0c350e');
-            }
-            ctx.fillStyle = pieceGrad; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
-
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)'; ctx.lineWidth = 1.8;
-            ctx.beginPath(); ctx.arc(x, y, radius - 4.5, 0, Math.PI * 2); ctx.stroke();
-
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; ctx.beginPath(); ctx.arc(x - radius / 3.5, y - radius / 3.5, 3, 0, Math.PI * 2); ctx.fill();
-
-            if (isSelected) {
-                ctx.strokeStyle = '#ffd54f'; ctx.lineWidth = 3.5;
-                ctx.beginPath(); ctx.arc(x, y, radius + 5, 0, Math.PI * 2); ctx.stroke();
-            }
-            ctx.restore();
-        }
-
-        function endChainTurn() {
-            if (hasCapturedThisTurn) {
-                if (currentRoomRef) {
-                    currentRoomRef.child('lastEndTurn').set({
-                        sender: myClientId,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                }
+        // টার্ন শেষ হওয়ার আপডেট আসলে
+        if (data.lastEndTurn && data.lastEndTurn.sender !== myClientId) {
+            if (data.lastEndTurn.timestamp > lastProcessedEndTurnTime) {
+                lastProcessedEndTurnTime = data.lastEndTurn.timestamp;
                 finalizeTurnLocal();
             }
         }
+    });
+}
 
-        function gameLoop() {
-            updateAnimations();
-            if (gameActive) drawBoard();
-            requestAnimationFrame(gameLoop);
-        }
+function startGameLocal() {
+    document.getElementById('waitingScreen').classList.add('hidden');
+    document.getElementById('lobbyScreen').classList.add('hidden');
+    document.getElementById('hudBar').classList.remove('hidden');
+    canvas.classList.remove('hidden');
+    gameActive = true;
+    lastProcessedMoveTime = Date.now();
+    lastProcessedEndTurnTime = Date.now();
+    initGame();
+}
 
-        function handleTouchOrClick(e) {
-            if (!gameActive || turn !== myRole) return;
-            var rect = canvas.getBoundingClientRect();
-            var clientX, clientY;
+function actionJoin() {
+    var val = document.getElementById('roomCodeInput').value.trim();
+    if (val) {
+        joinRoom(val, false);
+    } else {
+        alert("Please enter a code to join.");
+    }
+}
 
-            if (e.touches && e.touches.length > 0) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
+function actionCreate(isPrivate) {
+    var val = document.getElementById('roomCodeInput').value.trim();
+    if (!val) {
+        val = Math.random().toString(36).substring(2, 7);
+    }
+    joinRoom(val, isPrivate);
+}
+
+function leaveRoom() {
+    if (currentRoomRef) {
+        // Disconnect হ্যান্ডলারগুলো বাতিল করা
+        currentRoomRef.child('status').onDisconnect().cancel();
+        currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().cancel();
+
+        currentRoomRef.once('value', function (snapshot) {
+            var data = snapshot.val();
+            if (data) {
+                var opponentId = (myRole === 1) ? data.p2 : data.p1;
+
+                // যদি রুমে অন্য কোনো প্লেয়ার না থাকে, তবে পুরো রুমটি ডিলিট করে দেওয়া হবে
+                if (!opponentId) {
+                    currentRoomRef.remove();
+                } else {
+                    // আর যদি প্রতিপক্ষ এখনো রুমে থাকে, তবে তাকে Forfeit দেখিয়ে নিজে লিভ নেওয়া হবে
+                    currentRoomRef.child('status').set('forfeit');
+                    currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').remove();
+                }
             }
-
-            var scaleX = canvas.width / rect.width;
-            var scaleY = canvas.height / rect.height;
-            var clickX = (clientX - rect.left) * scaleX;
-            var clickY = (clientY - rect.top) * scaleY;
-
-            var clickedPoint = null;
-            var bestDist = 40;
-            for (var i = 0; i < 37; i++) {
-                var dx = clickX - points[i].x;
-                var dy = clickY - getDisplayY(points[i].y);
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < bestDist) { bestDist = dist; clickedPoint = i; }
-            }
-
-            if (clickedPoint !== null) {
-                keyboardCursorIndex = clickedPoint;
-                handleNodeSelection(clickedPoint);
-                updateSoftkeys();
-            }
-        }
-
-        canvas.addEventListener('click', function (e) {
-            handleTouchOrClick(e);
         });
 
-        canvas.addEventListener('touchstart', function (e) {
-            e.preventDefault();
-            handleTouchOrClick(e);
-        }, { passive: false });
+        if (roomListener) {
+            currentRoomRef.off('value', roomListener);
+            roomListener = null;
+        }
+        currentRoomRef = null;
+    }
 
-        connectServer();
+    myRole = null;
+    gameActive = false;
+    canvas.classList.add('hidden');
+    document.getElementById('hudBar').classList.add('hidden');
+    document.getElementById('waitingScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.add('hidden');
+    document.getElementById('lobbyScreen').classList.remove('hidden');
+    activeMenuOption = 0;
+    updateLobbyFocus();
+    updateSoftkeys();
+}
+
+function handleForfeit() {
+    gameActive = false;
+    document.getElementById('endScreen').classList.remove('hidden');
+    document.getElementById('endTitle').innerText = "Opponent Left";
+    document.getElementById('endDetails').innerText = "Opponent disconnected. You won by forfeit!";
+    updateSoftkeys();
+}
+
+// --- D-PAD LOBBY NAVIGATION ---
+function renderPublicRooms() {
+    var container = document.getElementById('roomListContainer');
+    container.innerHTML = "";
+    if (publicRooms.length === 0) {
+        container.innerHTML = '<div style="font-size:9px; color:#aaa; padding:10px;">No active public waiting rooms.</div>';
+    } else {
+        publicRooms.forEach(function (rm, index) {
+            var div = document.createElement('div');
+            div.className = 'room-item';
+            div.id = 'roomItem_' + index;
+            div.innerHTML = '<span>Code: <b>' + rm.code + '</b></span> <span style="color:#873eff;">Join &raquo;</span>';
+            div.onclick = function () {
+                joinRoom(rm.code, false);
+            };
+            container.appendChild(div);
+        });
+    }
+    updateLobbyFocus();
+}
+
+function updateLobbyFocus() {
+    document.getElementById('roomCodeInput').classList.remove('active');
+    document.getElementById('btnJoin').classList.remove('active');
+    document.getElementById('btnCreatePublic').classList.remove('active');
+    document.getElementById('btnCreatePrivate').classList.remove('active');
+
+    // ES5 compliant NodeList iteration
+    var roomItems = document.querySelectorAll('.room-item');
+    for (var i = 0; i < roomItems.length; i++) {
+        roomItems[i].classList.remove('active');
+    }
+
+    var maxIndex = 3 + publicRooms.length;
+    if (activeMenuOption > maxIndex) activeMenuOption = maxIndex;
+
+    if (activeMenuOption === 0) {
+        document.getElementById('roomCodeInput').classList.add('active');
+        document.getElementById('roomCodeInput').focus();
+    } else {
+        document.getElementById('roomCodeInput').blur();
+        if (activeMenuOption === 1) {
+            document.getElementById('btnJoin').classList.add('active');
+        } else if (activeMenuOption === 2) {
+            document.getElementById('btnCreatePublic').classList.add('active');
+        } else if (activeMenuOption === 3) {
+            document.getElementById('btnCreatePrivate').classList.add('active');
+        } else {
+            var roomIndex = activeMenuOption - 4;
+            // ES5 style string concatenation
+            var activeItem = document.getElementById('roomItem_' + roomIndex);
+            if (activeItem) {
+                activeItem.classList.add('active');
+
+                // ES5 compliant safe scroll calculation
+                var container = document.getElementById('roomListContainer');
+                if (container) {
+                    var containerRect = container.getBoundingClientRect();
+                    var itemRect = activeItem.getBoundingClientRect();
+
+                    if (itemRect.top < containerRect.top) {
+                        // Scroll Up
+                        container.scrollTop -= (containerRect.top - itemRect.top);
+                    } else if (itemRect.bottom > containerRect.bottom) {
+                        // Scroll Down
+                        container.scrollTop += (itemRect.bottom - containerRect.bottom);
+                    }
+                }
+            }
+        }
+    }
+}
+
+function handleLobbyNav(key) {
+    var maxIndex = 3 + publicRooms.length;
+    if (key === 'ArrowUp' && activeMenuOption > 0) {
+        activeMenuOption--;
         updateLobbyFocus();
+    } else if (key === 'ArrowDown' && activeMenuOption < maxIndex) {
+        activeMenuOption++;
+        updateLobbyFocus();
+    } else if (key === 'SoftRight' || key === 'Backspace') {
+        if (confirm('Are you sure you want to exit the game?')) {
+            window.close();
+        }
+    } else if (key === 'Enter' || key === 'Select') {
+        if (activeMenuOption === 1) {
+            actionJoin();
+        } else if (activeMenuOption === 2) {
+            actionCreate(false);
+        } else if (activeMenuOption === 3) {
+            actionCreate(true);
+        } else if (activeMenuOption >= 4) {
+            var roomIndex = activeMenuOption - 4;
+            if (publicRooms[roomIndex]) joinRoom(publicRooms[roomIndex].code, false);
+        }
+    }
+}
+
+// --- GAME ENGINE ---
+function initGame() {
+    boardState = Array(37).fill(null);
+    for (var i = 0; i <= 15; i++) boardState[i] = 1; // Red
+    for (var i = 21; i <= 36; i++) boardState[i] = 2; // Green
+
+    turn = 1; // Red starts
+    keyboardCursorIndex = (myRole === 1) ? 8 : 28;
+
+    activePieceId = null;
+    hasCapturedThisTurn = false;
+
+    visualPieces = [];
+    for (var i = 0; i < 37; i++) {
+        if (boardState[i] !== null) {
+            var displayY = getDisplayY(points[i].y);
+            visualPieces.push({
+                id: i,
+                type: boardState[i],
+                x: points[i].x,
+                y: displayY,
+                targetX: points[i].x,
+                targetY: displayY
+            });
+        }
+    }
+    dyingPieces = [];
+    updateHUD();
+    updateSoftkeys();
+    ensureValidCursor();
+}
+
+function getValidFocusNodes() {
+    var validNodes = [];
+    if (!gameActive || turn !== myRole) return [];
+
+    if (hasCapturedThisTurn && activePieceId !== null) {
+        validNodes.push(activePieceId);
+        getValidJumps(activePieceId).forEach(function (j) {
+            validNodes.push(j.to);
+        });
+        return validNodes;
+    }
+
+    if (activePieceId !== null) {
+        validNodes.push(activePieceId);
+        for (var i = 0; i < 37; i++) {
+            if (boardState[i] === myRole) validNodes.push(i);
+        }
+        getValidMoves(activePieceId).forEach(function (m) {
+            validNodes.push(m.to);
+        });
+        getValidJumps(activePieceId).forEach(function (j) {
+            validNodes.push(j.to);
+        });
+
+        return validNodes.filter(function (item, pos, self) {
+            return self.indexOf(item) === pos;
+        });
+    }
+
+    for (var i = 0; i < 37; i++) {
+        if (boardState[i] === myRole) validNodes.push(i);
+    }
+    return validNodes;
+}
+
+function ensureValidCursor() {
+    var validTargets = getValidFocusNodes();
+    if (validTargets.length === 0) return;
+    if (validTargets.indexOf(keyboardCursorIndex) === -1) {
+        var curX = points[keyboardCursorIndex].x;
+        var curY = getDisplayY(points[keyboardCursorIndex].y);
+        var closestId = validTargets[0];
+        var minDistance = Infinity;
+        validTargets.forEach(function (id) {
+            var pX = points[id].x;
+            var pY = getDisplayY(points[id].y);
+            var dx = pX - curX;
+            var dy = pY - curY;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < minDistance) {
+                minDistance = dist;
+                closestId = id;
+            }
+        });
+        keyboardCursorIndex = closestId;
+    }
+}
+
+function updateHUD() {
+    var p1Count = boardState.filter(function (s) {
+        return s === 1;
+    }).length;
+    var p2Count = boardState.filter(function (s) {
+        return s === 2;
+    }).length;
+
+    var redLabel = (myRole === 1) ? "Red (You)" : "Red";
+    var greenLabel = (myRole === 2) ? "Green (You)" : "Green";
+
+    document.getElementById('p1Label').innerText = redLabel + ": " + p1Count;
+    document.getElementById('p2Label').innerText = greenLabel + ": " + p2Count;
+
+    if (turn === myRole) {
+        document.getElementById('turnIndicator').innerText = "Your Turn";
+        document.getElementById('turnIndicator').style.color = "#ffb74d";
+    } else {
+        document.getElementById('turnIndicator').innerText = "Waiting...";
+        document.getElementById('turnIndicator').style.color = "#aaa";
+    }
+}
+
+function updateSoftkeys() {
+    var waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
+    var lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
+    var endVisible = !document.getElementById('endScreen').classList.contains('hidden');
+
+    if (lobbyVisible) {
+        document.getElementById('softLeftText').innerText = "";
+        document.getElementById('softCenterText').innerText = "Select";
+        document.getElementById('softRightText').innerText = "";
+        return;
+    }
+    if (waitingVisible || endVisible) {
+        document.getElementById('softLeftText').innerText = "Leave";
+        document.getElementById('softCenterText').innerText = "";
+        document.getElementById('softRightText').innerText = "";
+        return;
+    }
+
+    document.getElementById('softLeftText').innerText = "Exit";
+    if (hasCapturedThisTurn) {
+        document.getElementById('softCenterText').innerText = "Capture";
+        document.getElementById('softRightText').innerText = "End Turn";
+    } else {
+        document.getElementById('softCenterText').innerText = (activePieceId !== null) ? "Move" : "Select";
+        document.getElementById('softRightText').innerText = (activePieceId !== null) ? "Cancel" : "";
+    }
+}
+
+function filterUnique(arr) {
+    var seen = {};
+    return arr.filter(function (item) {
+        if (seen[item.to]) return false;
+        seen[item.to] = true;
+        return true;
+    });
+}
+
+function getValidMoves(fromId) {
+    var valid = [];
+    var player = boardState[fromId];
+    if (!player) return [];
+    lines.forEach(function (line) {
+        var idx = line.indexOf(fromId);
+        if (idx !== -1) {
+            if (idx > 0 && boardState[line[idx - 1]] === null) {
+                valid.push({ to: line[idx - 1], type: 'move' });
+            }
+            if (idx < line.length - 1 && boardState[line[idx + 1]] === null) {
+                valid.push({ to: line[idx + 1], type: 'move' });
+            }
+        }
+    });
+    return filterUnique(valid);
+}
+
+function getValidJumps(fromId) {
+    var valid = [];
+    var player = boardState[fromId];
+    if (!player) return [];
+    var opponent = (player === 1) ? 2 : 1;
+
+    lines.forEach(function (line) {
+        var idx = line.indexOf(fromId);
+        if (idx !== -1) {
+            if (idx > 1 && boardState[line[idx - 1]] === opponent && boardState[line[idx - 2]] === null) {
+                valid.push({ to: line[idx - 2], capture: line[idx - 1], type: 'jump' });
+            }
+            if (idx < line.length - 2 && boardState[line[idx + 1]] === opponent && boardState[line[idx + 2]] === null) {
+                valid.push({ to: line[idx + 2], capture: line[idx + 1], type: 'jump' });
+            }
+        }
+    });
+    return filterUnique(valid);
+}
+
+function handleNodeSelection(nodeId) {
+    if (turn !== myRole) return;
+    var piece = boardState[nodeId];
+
+    if (hasCapturedThisTurn) {
+        var possibleJumps = getValidJumps(activePieceId);
+        var chosenJump = null;
+        for (var i = 0; i < possibleJumps.length; i++) {
+            if (possibleJumps[i].to === nodeId) {
+                chosenJump = possibleJumps[i];
+                break;
+            }
+        }
+        if (chosenJump) executeMove(activePieceId, chosenJump);
+        return;
+    }
+
+    if (piece === turn) {
+        activePieceId = nodeId;
+    } else if (activePieceId !== null) {
+        var moves = getValidMoves(activePieceId);
+        var jumps = getValidJumps(activePieceId);
+        var chosenJump = null;
+        for (var i = 0; i < jumps.length; i++) {
+            if (jumps[i].to === nodeId) {
+                chosenJump = jumps[i];
+                break;
+            }
+        }
+        var chosenMove = null;
+        for (var i = 0; i < moves.length; i++) {
+            if (moves[i].to === nodeId) {
+                chosenMove = moves[i];
+                break;
+            }
+        }
+
+        if (chosenJump) executeMove(activePieceId, chosenJump);
+        else if (chosenMove) executeMove(activePieceId, chosenMove);
+    }
+    ensureValidCursor();
+}
+
+function executeMove(fromId, move) {
+    var vp = null;
+    for (var i = 0; i < visualPieces.length; i++) {
+        if (visualPieces[i].id === fromId) {
+            vp = visualPieces[i];
+            break;
+        }
+    }
+
+    if (vp) {
+        vp.id = move.to;
+        vp.targetX = points[move.to].x;
+        vp.targetY = getDisplayY(points[move.to].y);
+    }
+
+    boardState[move.to] = turn;
+    boardState[fromId] = null;
+
+    // Firebase-এ চাল আপলোড করা
+    if (currentRoomRef) {
+        currentRoomRef.child('lastMove').set({
+            fromId: fromId,
+            move: move,
+            sender: myClientId,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+
+    if (move.type === 'jump') {
+        var cvpIdx = -1;
+        for (var i = 0; i < visualPieces.length; i++) {
+            if (visualPieces[i].id === move.capture) {
+                cvpIdx = i;
+                break;
+            }
+        }
+        if (cvpIdx !== -1) {
+            dyingPieces.push({
+                x: visualPieces[cvpIdx].x,
+                y: visualPieces[cvpIdx].y,
+                type: visualPieces[cvpIdx].type,
+                alpha: 1.0,
+                frame: 0
+            });
+            visualPieces.splice(cvpIdx, 1);
+        }
+        boardState[move.capture] = null;
+        playSound('capture');
+        hasCapturedThisTurn = true;
+        activePieceId = move.to;
+
+        var furtherJumps = getValidJumps(activePieceId);
+        if (furtherJumps.length > 0) {
+            updateHUD();
+            updateSoftkeys();
+            ensureValidCursor();
+            return;
+        }
+    } else {
+        playSound('move');
+    }
+
+    // Firebase-এ টার্ন শেষ ঘোষণা করা
+    if (currentRoomRef) {
+        currentRoomRef.child('lastEndTurn').set({
+            sender: myClientId,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+    finalizeTurnLocal();
+}
+
+function executeOpponentMove(fromId, move) {
+    var vp = null;
+    for (var i = 0; i < visualPieces.length; i++) {
+        if (visualPieces[i].id === fromId) {
+            vp = visualPieces[i];
+            break;
+        }
+    }
+
+    if (vp) {
+        vp.id = move.to;
+        vp.targetX = points[move.to].x;
+        vp.targetY = getDisplayY(points[move.to].y);
+    } else {
+        visualPieces.push({
+            id: move.to,
+            type: (myRole === 1) ? 2 : 1,
+            x: points[fromId].x,
+            y: getDisplayY(points[fromId].y),
+            targetX: points[move.to].x,
+            targetY: getDisplayY(points[move.to].y)
+        });
+    }
+
+    boardState[move.to] = boardState[fromId];
+    boardState[fromId] = null;
+
+    if (move.type === 'jump') {
+        var cvpIdx = -1;
+        for (var i = 0; i < visualPieces.length; i++) {
+            if (visualPieces[i].id === move.capture) {
+                cvpIdx = i;
+                break;
+            }
+        }
+        if (cvpIdx !== -1) {
+            dyingPieces.push({
+                x: visualPieces[cvpIdx].x,
+                y: visualPieces[cvpIdx].y,
+                type: visualPieces[cvpIdx].type,
+                alpha: 1.0,
+                frame: 0
+            });
+            visualPieces.splice(cvpIdx, 1);
+        }
+        boardState[move.capture] = null;
+        playSound('capture');
+    } else {
+        playSound('move');
+    }
+}
+
+function finalizeTurnLocal() {
+    activePieceId = null;
+    hasCapturedThisTurn = false;
+
+    var winner = checkWin();
+    if (winner) {
+        announceWinner(winner);
+        return;
+    }
+
+    turn = (turn === 1) ? 2 : 1;
+    updateHUD();
+    updateSoftkeys();
+    ensureValidCursor();
+}
+
+function checkWin() {
+    var p1Count = boardState.filter(function (s) {
+        return s === 1;
+    }).length;
+    var p2Count = boardState.filter(function (s) {
+        return s === 2;
+    }).length;
+    if (p1Count === 0) return 2;
+    if (p2Count === 0) return 1;
+
+    var nextPlayer = (turn === 1) ? 2 : 1;
+    var hasMoves = false;
+    for (var i = 0; i < 37; i++) {
+        if (boardState[i] === nextPlayer) {
+            if (getValidMoves(i).length > 0 || getValidJumps(i).length > 0) {
+                hasMoves = true;
+                break;
+            }
+        }
+    }
+    if (!hasMoves) {
+        return turn;
+    }
+    return null;
+}
+
+function announceWinner(winner) {
+    gameActive = false;
+    document.getElementById('endScreen').classList.remove('hidden');
+    var winnerName = (winner === 1) ? "Red" : "Green";
+    if (winner === myRole) {
+        document.getElementById('endTitle').innerText = "Victory!";
+        document.getElementById('endDetails').innerText = "Congratulations! You (" + winnerName + ") won the game.";
+    } else {
+        document.getElementById('endTitle').innerText = "Defeat";
+        document.getElementById('endDetails').innerText = winnerName + " has won the game. Better luck next time!";
+    }
+    updateSoftkeys();
+    if (isKaiOS()) {
+        getKaiAd({
+            publisher: '080b82ab-b33a-4763-a498-50f464567e49',
+            app: 'sixteen-solider',
+            slot: 'result',
+            onerror: function (e) { },
+            onready: function (e) { e.call('display'); }
+        });
+    } else {
+        getCloudAd({
+            publisher: '1748228c05773e8ab91b3c2a48efae79',
+            onready: function (ad) { ad.call('display'); }
+        });
+    }
+}
+
+function triggerDeselect() {
+    if (hasCapturedThisTurn) return;
+    activePieceId = null;
+    updateSoftkeys();
+    ensureValidCursor();
+}
+
+window.addEventListener('back', function (event) {
+    event.preventDefault();
+    simulateNaturalPress('SoftRight', 0);
+});
+
+// --- Key Navigation System ---
+window.addEventListener('keydown', function (e) {
+    var lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
+    var waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
+    var endVisible = !document.getElementById('endScreen').classList.contains('hidden');
+
+    if (lobbyVisible) {
+        handleLobbyNav(e.key);
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') e.preventDefault();
+        return;
+    }
+
+    if (waitingVisible || endVisible) {
+        if (e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'Escape') {
+            leaveRoom();
+            e.preventDefault();
+        }
+        return;
+    }
+
+    if (e.key === 'Escape' || e.key === 'SoftLeft') {
+        leaveRoom();
+        e.preventDefault();
+        return;
+    }
+
+    if (!gameActive) return;
+    if (turn !== myRole) return;
+
+    switch (e.key) {
+        case 'ArrowUp':
+        case 'W': case 'w':
+            moveKeyboardCursor('up'); e.preventDefault(); break;
+        case 'ArrowDown':
+        case 'S': case 's':
+            moveKeyboardCursor('down'); e.preventDefault(); break;
+        case 'ArrowLeft':
+        case 'A': case 'a':
+            moveKeyboardCursor('left'); e.preventDefault(); break;
+        case 'ArrowRight':
+        case 'D': case 'd':
+            moveKeyboardCursor('right'); e.preventDefault(); break;
+        case 'Enter':
+        case 'Select':
+            handleNodeSelection(keyboardCursorIndex); e.preventDefault(); break;
+        case 'SoftLeft': case 'F1': case 'Escape':
+            leaveRoom(); e.preventDefault(); break;
+        case 'SoftRight': case 'F2': case 'Backspace':
+            if (hasCapturedThisTurn) endChainTurn();
+            else if (activePieceId !== null) triggerDeselect();
+            e.preventDefault();
+            break;
+    }
+    updateSoftkeys();
+});
+
+function moveKeyboardCursor(dir) {
+    var validTargets = getValidFocusNodes();
+    if (validTargets.length === 0) return;
+
+    var curX = points[keyboardCursorIndex].x;
+    var curY = getDisplayY(points[keyboardCursorIndex].y);
+    var bestId = -1;
+    var bestScore = Infinity;
+
+    validTargets.forEach(function (id) {
+        if (id === keyboardCursorIndex) return;
+        var pX = points[id].x;
+        var pY = getDisplayY(points[id].y);
+        var dx = pX - curX;
+        var dy = pY - curY;
+
+        if (dir === 'up' && dy < -5) {
+            var score = Math.abs(dy) + Math.abs(dx) * 2.5;
+            if (score < bestScore) { bestScore = score; bestId = id; }
+        } else if (dir === 'down' && dy > 5) {
+            var score = Math.abs(dy) + Math.abs(dx) * 2.5;
+            if (score < bestScore) { bestScore = score; bestId = id; }
+        } else if (dir === 'left' && dx < -5) {
+            var score = Math.abs(dx) + Math.abs(dy) * 2.5;
+            if (score < bestScore) { bestScore = score; bestId = id; }
+        } else if (dir === 'right' && dx > 5) {
+            var score = Math.abs(dx) + Math.abs(dy) * 2.5;
+            if (score < bestScore) { bestScore = score; bestId = id; }
+        }
+    });
+
+    if (bestId !== -1) keyboardCursorIndex = bestId;
+}
+
+// --- RENDER SYSTEM ---
+function updateAnimations() {
+    visualPieces.forEach(function (vp) {
+        var dx = vp.targetX - vp.x;
+        var dy = vp.targetY - vp.y;
+        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+            vp.x += dx * 0.15;
+            vp.y += dy * 0.15;
+        } else {
+            vp.x = vp.targetX;
+            vp.y = vp.targetY;
+        }
+    });
+
+    for (var i = dyingPieces.length - 1; i >= 0; i--) {
+        dyingPieces[i].frame++;
+        dyingPieces[i].alpha -= 0.05;
+        if (dyingPieces[i].alpha <= 0) dyingPieces.splice(i, 1);
+    }
+}
+
+function drawBoard() {
+    ctx.fillStyle = '#b08257';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#85582c';
+    ctx.lineWidth = 1.5;
+    for (var y = 100; y < canvas.height; y += 100) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+
+    var vignette = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.width / 3, canvas.width / 2, canvas.height / 2, canvas.height / 1.6);
+    vignette.addColorStop(0, 'rgba(0,0,0,0)');
+    vignette.addColorStop(1, 'rgba(40,20,5,0.45)');
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 4.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    lines.forEach(function (line) {
+        ctx.beginPath();
+        var start = points[line[0]];
+        ctx.moveTo(start.x, getDisplayY(start.y));
+        for (var i = 1; i < line.length; i++) {
+            ctx.lineTo(points[line[i]].x, getDisplayY(points[line[i]].y));
+        }
+        ctx.stroke();
+    });
+
+    var mainSquareTopY = Math.min(getDisplayY(250), getDisplayY(670));
+    ctx.strokeRect(50, mainSquareTopY, 400, 420);
+
+    if (activePieceId !== null && turn === myRole) {
+        var possibleMoves = hasCapturedThisTurn ? getValidJumps(activePieceId) : getValidMoves(activePieceId).concat(getValidJumps(activePieceId));
+        possibleMoves.forEach(function (mv) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 179, 0, 0.4)';
+            ctx.strokeStyle = '#ff8f00';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.arc(points[mv.to].x, getDisplayY(points[mv.to].y), 16, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        });
+    }
+
+    points.forEach(function (p) {
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(p.x, getDisplayY(p.y), 6.5, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    if (gameActive && turn === myRole) {
+        var kp = points[keyboardCursorIndex];
+        ctx.save();
+        ctx.strokeStyle = '#00e5ff';
+        ctx.lineWidth = 3.5;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.arc(kp.x, getDisplayY(kp.y), 24, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    visualPieces.forEach(function (vp) {
+        drawPieceAt(vp.x, vp.y, vp.type, (activePieceId === vp.id));
+    });
+
+    dyingPieces.forEach(function (dp) {
+        ctx.save();
+        ctx.globalAlpha = dp.alpha;
+        drawPieceAt(dp.x + Math.sin(dp.frame * 1.5) * 7, dp.y, dp.type, false);
+        ctx.restore();
+    });
+}
+
+function drawPieceAt(x, y, type, isSelected) {
+    var radius = 17.5;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.45)';
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetX = 2.5;
+    ctx.shadowOffsetY = 4;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = (type === 1) ? '#900c0c' : '#144e18';
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+
+    var pieceGrad = ctx.createRadialGradient(x - radius / 3, y - radius / 3, 1.5, x, y, radius);
+    if (type === 1) {
+        pieceGrad.addColorStop(0, '#ff4a4a');
+        pieceGrad.addColorStop(0.3, '#c62828');
+        pieceGrad.addColorStop(1, '#4e0000');
+    } else {
+        pieceGrad.addColorStop(0, '#66bb6a');
+        pieceGrad.addColorStop(0.3, '#2e7d32');
+        pieceGrad.addColorStop(1, '#0c350e');
+    }
+    ctx.fillStyle = pieceGrad;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.arc(x, y, radius - 4.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.beginPath();
+    ctx.arc(x - radius / 3.5, y - radius / 3.5, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (isSelected) {
+        ctx.strokeStyle = '#ffd54f';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.arc(x, y, radius + 5, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function endChainTurn() {
+    if (hasCapturedThisTurn) {
+        if (currentRoomRef) {
+            currentRoomRef.child('lastEndTurn').set({
+                sender: myClientId,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+        finalizeTurnLocal();
+    }
+}
+
+function gameLoop() {
+    updateAnimations();
+    if (gameActive) drawBoard();
+    requestAnimationFrame(gameLoop);
+}
+
+function handleTouchOrClick(e) {
+    if (!gameActive || turn !== myRole) return;
+    var rect = canvas.getBoundingClientRect();
+    var clientX, clientY;
+
+    if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+
+    var scaleX = canvas.width / rect.width;
+    var scaleY = canvas.height / rect.height;
+    var clickX = (clientX - rect.left) * scaleX;
+    var clickY = (clientY - rect.top) * scaleY;
+
+    var clickedPoint = null;
+    var bestDist = 40;
+    for (var i = 0; i < 37; i++) {
+        var dx = clickX - points[i].x;
+        var dy = clickY - getDisplayY(points[i].y);
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < bestDist) {
+            bestDist = dist;
+            clickedPoint = i;
+        }
+    }
+
+    if (clickedPoint !== null) {
+        keyboardCursorIndex = clickedPoint;
+        handleNodeSelection(clickedPoint);
         updateSoftkeys();
-        gameLoop();
+    }
+}
+
+canvas.addEventListener('click', function (e) {
+    handleTouchOrClick(e);
+});
+
+canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    handleTouchOrClick(e);
+}, { passive: false });
+
+connectServer();
+updateLobbyFocus();
+updateSoftkeys();
+gameLoop();
     </script>
 </body>
 
