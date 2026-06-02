@@ -387,120 +387,13 @@
         <div class="softkey-right" id="softRightText"></div>
     </div>
     <script>
-        //         (async function () {
-        //     "use strict";
+       --- START OF FILE Paste June 02, 2026 - 11:27AM ---
 
-        //     // =========================
-        //     // ALLOWED DOMAIN
-        //     // =========================
-        //     const allowedHost = "shifat100.github.io";
-
-        //     const allowedPaths = [
-        //         "/cloudfone/sixteen-solider",
-        //         "/cloudfone/sixteen-solider/",
-        //         "/cloudfone/sixteen-solider/index.html"
-        //     ];
-
-        //     // =========================
-        //     // DOMAIN VALIDATION
-        //     // =========================
-        //     function validDomain() {
-        //         return (
-        //             location.hostname === allowedHost &&
-        //             allowedPaths.includes(location.pathname)
-        //         );
-        //     }
-
-        //     // =========================
-        //     // ANTI IFRAME
-        //     // =========================
-        //     function antiIframe() {
-        //         return window.self === window.top;
-        //     }
-
-        //     // =========================
-        //     // DEVTOOLS DETECTION
-        //     // =========================
-        //     function detectDevtools() {
-        //         const threshold = 160;
-
-        //         if (
-        //             window.outerWidth - window.innerWidth > threshold ||
-        //             window.outerHeight - window.innerHeight > threshold
-        //         ) {
-        //             return true;
-        //         }
-
-        //         return false;
-        //     }
-
-        //     // =========================
-        //     // HASH VALIDATION
-        //     // =========================
-        //     async function sha256(text) {
-        //         const data = new TextEncoder().encode(text);
-
-        //         const hashBuffer =
-        //             await crypto.subtle.digest("SHA-256", data);
-
-        //         return Array.from(new Uint8Array(hashBuffer))
-        //             .map(b => b.toString(16).padStart(2, "0"))
-        //             .join("");
-        //     }
-
-        //     // =========================
-        //     // FINGERPRINT
-        //     // =========================
-        //     const secret = "SHIFAT100_SIXTEEN_SOLIDER";
-
-        //     const fingerprint =
-        //         location.hostname +
-        //         location.pathname +
-        //         navigator.userAgent +
-        //         screen.width +
-        //         screen.height +
-        //         secret;
-
-        //     const generatedHash = await sha256(fingerprint);
-
-        //     // Generate this once from original site
-        //     const originalHash =
-        //         "61e0fb9e9339d79128c4ab80d73f7a53cddf74fbcc29d8ffc4e80c328baf4315";
-
-        //     // =========================
-        //     // VALIDATION
-        //     // =========================
-        //     if (
-        //         !validDomain() ||
-        //         !antiIframe() ||
-        //         detectDevtools() ||
-        //         generatedHash !== originalHash
-        //     ) {
-
-        //         // Destroy app
-        //         document.documentElement.innerHTML = "";
-
-        //         // Kill JS
-        //         Object.keys(window).forEach(k => {
-        //             try {
-        //                 window[k] = null;
-        //             } catch (e) {}
-        //         });
-
-        //         // Freeze
-        //         while (true) {
-        //             console.clear();
-        //         }
-        //     }
-
-        // })();
-
-
-        function isKaiOS() {
+  function isKaiOS() {
             return /KAIOS|KaiOS/i.test(navigator.userAgent);
         }
         // --- FIREBASE CONFIGURATION ---
-        const firebaseConfig = {
+        var firebaseConfig = {
             apiKey: "AIzaSyBsAYFWEDYpQEDhEykEWXO_FwB9dzANE3M",
             authDomain: "shulo-guti.firebaseapp.com",
             databaseURL: "https://shulo-guti-default-rtdb.firebaseio.com",
@@ -512,17 +405,17 @@
 
         // Firebase Initialize
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        var database = firebase.database();
 
-        const myClientId = Math.random().toString(36).substring(2, 15);
+        var myClientId = Math.random().toString(36).substring(2, 15);
         var currentRoomRef = null;
         var roomListener = null;
 
         var lastProcessedMoveTime = 0;
         var lastProcessedEndTurnTime = 0;
 
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        var canvas = document.getElementById('gameCanvas');
+        var ctx = canvas.getContext('2d');
         canvas.width = 500;
         canvas.height = 920;
 
@@ -532,7 +425,7 @@
         var activeMenuOption = 0;
 
         // Node Positions
-        const points = [
+        var points = [
             { id: 0, x: 50, y: 40 }, { id: 1, x: 250, y: 40 }, { id: 2, x: 450, y: 40 },
             { id: 3, x: 150, y: 145 }, { id: 4, x: 250, y: 145 }, { id: 5, x: 350, y: 145 },
             { id: 6, x: 50, y: 250 }, { id: 7, x: 150, y: 250 }, { id: 8, x: 250, y: 250 }, { id: 9, x: 350, y: 250 }, { id: 10, x: 450, y: 250 },
@@ -545,7 +438,7 @@
         ];
 
         // CLASSIC BOARD SHAPE LINES
-        const lines = [
+        var lines = [
             [6, 11, 16, 21, 26],
             [7, 12, 17, 22, 27],
             [1, 4, 8, 13, 18, 23, 28, 32, 35],
@@ -589,8 +482,8 @@
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
             try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 if (type === 'move') {
                     osc.type = 'sine'; osc.frequency.setValueAtTime(260, audioCtx.currentTime);
@@ -607,10 +500,10 @@
         // --- ONLINE CONNECTIVITY (FIREBASE) ---
         function connectServer() {
             // অ্যাক্টিভ পাবলিক ওয়েটিং রুমগুলো লাইভ দেখানোর লিসেনার [1]
-            database.ref('rooms').on('value', (snapshot) => {
-                const roomsList = [];
-                snapshot.forEach((childSnapshot) => {
-                    const room = childSnapshot.val();
+            database.ref('rooms').on('value', function (snapshot) {
+                var roomsList = [];
+                snapshot.forEach(function (childSnapshot) {
+                    var room = childSnapshot.val();
                     // শুধুমাত্র পাবলিক এবং যেখানে মাত্র একজন প্লেয়ার অপেক্ষা করছে [1]
                     if (room.status === 'waiting' && !room.isPrivate && room.p1 && !room.p2) {
                         roomsList.push({
@@ -625,25 +518,25 @@
                 }
             });
 
-            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'main', onerror: e => { }, onready: e => { e.call('display') } }) } else {
+            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'main', onerror: function (e) { }, onready: function (e) { e.call('display') } }) } else {
                 getCloudAd({
                     publisher: '1748228c05773e8ab91b3c2a48efae79',
-                    onready: ad => { ad.call('display'); }
+                    onready: function (ad) { ad.call('display'); }
                 });
             }
         }
 
         function joinRoom(code, isPrivate) {
-            const roomCode = code.trim().toUpperCase();
+            var roomCode = code.trim().toUpperCase();
             if (!roomCode) {
                 alert("Please enter a code to join.");
                 return;
             }
 
-            const roomRef = database.ref('rooms/' + roomCode);
+            var roomRef = database.ref('rooms/' + roomCode);
             currentRoomRef = roomRef;
 
-            roomRef.transaction((currentData) => {
+            roomRef.transaction(function (currentData) {
                 // যদি রুমটি একদম খালি থাকে বা অলরেডি Forfeit হয়ে থাকে, তবে এটিকে নতুন করে রিসেট করা হবে
                 if (currentData === null || currentData.status === 'forfeit' || (!currentData.p1 && !currentData.p2)) {
                     return {
@@ -666,13 +559,13 @@
                     currentData.status = "playing";
                     return currentData;
                 }
-            }, (error, committed, snapshot) => {
+            }, function (error, committed, snapshot) {
                 if (error) {
                     alert("Room error: " + error.message);
                 } else if (!committed) {
                     alert("Room is already full!");
                 } else {
-                    const roomData = snapshot.val();
+                    var roomData = snapshot.val();
                     setupRoomRealtime(roomCode, roomData);
                 }
             });
@@ -701,8 +594,8 @@
 
             if (roomListener) currentRoomRef.off('value', roomListener);
 
-            roomListener = currentRoomRef.on('value', (snapshot) => {
-                const data = snapshot.val();
+            roomListener = currentRoomRef.on('value', function (snapshot) {
+                var data = snapshot.val();
                 if (!data) return;
 
                 // ২য় প্লেয়ার জয়েন করলে গেম শুরু
@@ -745,7 +638,7 @@
         }
 
         function actionJoin() {
-            const val = document.getElementById('roomCodeInput').value.trim();
+            var val = document.getElementById('roomCodeInput').value.trim();
             if (val) {
                 joinRoom(val, false);
             } else {
@@ -767,10 +660,10 @@
                 currentRoomRef.child('status').onDisconnect().cancel();
                 currentRoomRef.child(myRole === 1 ? 'p1' : 'p2').onDisconnect().cancel();
 
-                currentRoomRef.once('value', (snapshot) => {
-                    const data = snapshot.val();
+                currentRoomRef.once('value', function (snapshot) {
+                    var data = snapshot.val();
                     if (data) {
-                        const opponentId = (myRole === 1) ? data.p2 : data.p1;
+                        var opponentId = (myRole === 1) ? data.p2 : data.p1;
 
                         // যদি রুমে অন্য কোনো প্লেয়ার না থাকে, তবে পুরো রুমটি ডিলিট করে দেওয়া হবে
                         if (!opponentId) {
@@ -812,17 +705,17 @@
 
         // --- D-PAD LOBBY NAVIGATION ---
         function renderPublicRooms() {
-            const container = document.getElementById('roomListContainer');
+            var container = document.getElementById('roomListContainer');
             container.innerHTML = "";
             if (publicRooms.length === 0) {
                 container.innerHTML = '<div style="font-size:9px; color:#aaa; padding:10px;">No active public waiting rooms.</div>';
             } else {
-                publicRooms.forEach((rm, index) => {
-                    const div = document.createElement('div');
+                publicRooms.forEach(function (rm, index) {
+                    var div = document.createElement('div');
                     div.className = 'room-item';
-                    div.id = `roomItem_${index}`;
-                    div.innerHTML = `<span>Code: <b>${rm.code}</b></span> <span style="color:#873eff;">Join &raquo;</span>`;
-                    div.onclick = () => joinRoom(rm.code, false);
+                    div.id = 'roomItem_' + index;
+                    div.innerHTML = '<span>Code: <b>' + rm.code + '</b></span> <span style="color:#873eff;">Join &raquo;</span>';
+                    div.onclick = function () { joinRoom(rm.code, false); };
                     container.appendChild(div);
                 });
             }
@@ -973,7 +866,7 @@
                 var curY = getDisplayY(points[keyboardCursorIndex].y);
                 var closestId = validTargets[0];
                 var minDistance = Infinity;
-                validTargets.forEach(id => {
+                validTargets.forEach(function (id) {
                     var pX = points[id].x;
                     var pY = getDisplayY(points[id].y);
                     var dx = pX - curX;
@@ -986,14 +879,14 @@
         }
 
         function updateHUD() {
-            var p1Count = boardState.filter(s => s === 1).length;
-            var p2Count = boardState.filter(s => s === 2).length;
+            var p1Count = boardState.filter(function (s) { return s === 1; }).length;
+            var p2Count = boardState.filter(function (s) { return s === 2; }).length;
 
             var redLabel = (myRole === 1) ? "Red (You)" : "Red";
             var greenLabel = (myRole === 2) ? "Green (You)" : "Green";
 
-            document.getElementById('p1Label').innerText = `${redLabel}: ${p1Count}`;
-            document.getElementById('p2Label').innerText = `${greenLabel}: ${p2Count}`;
+            document.getElementById('p1Label').innerText = redLabel + ": " + p1Count;
+            document.getElementById('p2Label').innerText = greenLabel + ": " + p2Count;
 
             if (turn === myRole) {
                 document.getElementById('turnIndicator').innerText = "Your Turn";
@@ -1045,7 +938,7 @@
             var valid = [];
             var player = boardState[fromId];
             if (!player) return [];
-            lines.forEach(line => {
+            lines.forEach(function (line) {
                 var idx = line.indexOf(fromId);
                 if (idx !== -1) {
                     if (idx > 0 && boardState[line[idx - 1]] === null) valid.push({ to: line[idx - 1], type: 'move' });
@@ -1061,7 +954,7 @@
             if (!player) return [];
             var opponent = (player === 1) ? 2 : 1;
 
-            lines.forEach(line => {
+            lines.forEach(function (line) {
                 var idx = line.indexOf(fromId);
                 if (idx !== -1) {
                     if (idx > 1 && boardState[line[idx - 1]] === opponent && boardState[line[idx - 2]] === null) {
@@ -1081,7 +974,7 @@
 
             if (hasCapturedThisTurn) {
                 var possibleJumps = getValidJumps(activePieceId);
-                var chosenJump = possibleJumps.find(j => j.to === nodeId);
+                var chosenJump = possibleJumps.find(function (j) { return j.to === nodeId; });
                 if (chosenJump) executeMove(activePieceId, chosenJump);
                 return;
             }
@@ -1091,8 +984,8 @@
             } else if (activePieceId !== null) {
                 var moves = getValidMoves(activePieceId);
                 var jumps = getValidJumps(activePieceId);
-                var chosenJump = jumps.find(j => j.to === nodeId);
-                var chosenMove = moves.find(m => m.to === nodeId);
+                var chosenJump = jumps.find(function (j) { return j.to === nodeId; });
+                var chosenMove = moves.find(function (m) { return m.to === nodeId; });
 
                 if (chosenJump) executeMove(activePieceId, chosenJump);
                 else if (chosenMove) executeMove(activePieceId, chosenMove);
@@ -1101,7 +994,7 @@
         }
 
         function executeMove(fromId, move) {
-            var vp = visualPieces.find(p => p.id === fromId);
+            var vp = visualPieces.find(function (p) { return p.id === fromId; });
             if (vp) {
                 vp.id = move.to;
                 vp.targetX = points[move.to].x;
@@ -1122,7 +1015,7 @@
             }
 
             if (move.type === 'jump') {
-                var cvpIdx = visualPieces.findIndex(p => p.id === move.capture);
+                var cvpIdx = visualPieces.findIndex(function (p) { return p.id === move.capture; });
                 if (cvpIdx !== -1) {
                     dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
                     visualPieces.splice(cvpIdx, 1);
@@ -1154,7 +1047,7 @@
         }
 
         function executeOpponentMove(fromId, move) {
-            var vp = visualPieces.find(p => p.id === fromId);
+            var vp = visualPieces.find(function (p) { return p.id === fromId; });
             if (vp) {
                 vp.id = move.to;
                 vp.targetX = points[move.to].x;
@@ -1171,7 +1064,7 @@
             boardState[fromId] = null;
 
             if (move.type === 'jump') {
-                var cvpIdx = visualPieces.findIndex(p => p.id === move.capture);
+                var cvpIdx = visualPieces.findIndex(function (p) { return p.id === move.capture; });
                 if (cvpIdx !== -1) {
                     dyingPieces.push({ x: visualPieces[cvpIdx].x, y: visualPieces[cvpIdx].y, type: visualPieces[cvpIdx].type, alpha: 1.0, frame: 0 });
                     visualPieces.splice(cvpIdx, 1);
@@ -1200,8 +1093,8 @@
         }
 
         function checkWin() {
-            var p1Count = boardState.filter(s => s === 1).length;
-            var p2Count = boardState.filter(s => s === 2).length;
+            var p1Count = boardState.filter(function (s) { return s === 1; }).length;
+            var p2Count = boardState.filter(function (s) { return s === 2; }).length;
             if (p1Count === 0) return 2;
             if (p2Count === 0) return 1;
 
@@ -1227,16 +1120,16 @@
             var winnerName = (winner === 1) ? "Red" : "Green";
             if (winner === myRole) {
                 document.getElementById('endTitle').innerText = "Victory!";
-                document.getElementById('endDetails').innerText = `Congratulations! You (${winnerName}) won the game.`;
+                document.getElementById('endDetails').innerText = "Congratulations! You (" + winnerName + ") won the game.";
             } else {
                 document.getElementById('endTitle').innerText = "Defeat";
-                document.getElementById('endDetails').innerText = `${winnerName} has won the game. Better luck next time!`;
+                document.getElementById('endDetails').innerText = winnerName + " has won the game. Better luck next time!";
             }
             updateSoftkeys();
-            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'result', onerror: e => { }, onready: e => { e.call('display') } }) } else {
+            if (isKaiOS()) { getKaiAd({ publisher: '080b82ab-b33a-4763-a498-50f464567e49', app: 'sixteen-solider', slot: 'result', onerror: function (e) { }, onready: function (e) { e.call('display') } }) } else {
                 getCloudAd({
                     publisher: '1748228c05773e8ab91b3c2a48efae79',
-                    onready: ad => { ad.call('display'); }
+                    onready: function (ad) { ad.call('display'); }
                 });
             }
         }
@@ -1248,13 +1141,13 @@
             ensureValidCursor();
         }
 
-        window.addEventListener('back', (event) => {
+        window.addEventListener('back', function (event) {
             event.preventDefault();
             simulateNaturalPress('SoftRight', 0);
         });
 
         // --- Key Navigation System ---
-        window.addEventListener('keydown', (e) => {
+        window.addEventListener('keydown', function (e) {
             var lobbyVisible = !document.getElementById('lobbyScreen').classList.contains('hidden');
             var waitingVisible = !document.getElementById('waitingScreen').classList.contains('hidden');
             var endVisible = !document.getElementById('endScreen').classList.contains('hidden');
@@ -1274,10 +1167,10 @@
             }
 
             if (e.key === 'Escape'||e.key === 'SoftLeft') {
-    leaveRoom();
-    e.preventDefault();
-    return;
-}
+                leaveRoom();
+                e.preventDefault();
+                return;
+            }
             
             if (!gameActive) return;
             if (turn !== myRole) return;
@@ -1318,7 +1211,7 @@
             var bestId = -1;
             var bestScore = Infinity;
 
-            validTargets.forEach(id => {
+            validTargets.forEach(function (id) {
                 if (id === keyboardCursorIndex) return;
                 var pX = points[id].x;
                 var pY = getDisplayY(points[id].y);
@@ -1345,7 +1238,7 @@
 
         // --- RENDER SYSTEM ---
         function updateAnimations() {
-            visualPieces.forEach(vp => {
+            visualPieces.forEach(function (vp) {
                 var dx = vp.targetX - vp.x; var dy = vp.targetY - vp.y;
                 if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
                     vp.x += dx * 0.15; vp.y += dy * 0.15;
@@ -1372,7 +1265,7 @@
             ctx.fillStyle = vignette; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.strokeStyle = '#000000'; ctx.lineWidth = 4.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            lines.forEach(line => {
+            lines.forEach(function (line) {
                 ctx.beginPath(); var start = points[line[0]]; ctx.moveTo(start.x, getDisplayY(start.y));
                 for (var i = 1; i < line.length; i++) ctx.lineTo(points[line[i]].x, getDisplayY(points[line[i]].y));
                 ctx.stroke();
@@ -1382,14 +1275,14 @@
             ctx.strokeRect(50, mainSquareTopY, 400, 420);
 
             if (activePieceId !== null && turn === myRole) {
-                var possibleMoves = hasCapturedThisTurn ? getValidJumps(activePieceId) : [...getValidMoves(activePieceId), ...getValidJumps(activePieceId)];
-                possibleMoves.forEach(mv => {
+                var possibleMoves = hasCapturedThisTurn ? getValidJumps(activePieceId) : getValidMoves(activePieceId).concat(getValidJumps(activePieceId));
+                possibleMoves.forEach(function (mv) {
                     ctx.save(); ctx.fillStyle = 'rgba(255, 179, 0, 0.4)'; ctx.strokeStyle = '#ff8f00'; ctx.lineWidth = 3.5;
                     ctx.beginPath(); ctx.arc(points[mv.to].x, getDisplayY(points[mv.to].y), 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
                 });
             }
 
-            points.forEach(p => {
+            points.forEach(function (p) {
                 ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(p.x, getDisplayY(p.y), 6.5, 0, Math.PI * 2); ctx.fill();
             });
 
@@ -1399,11 +1292,11 @@
                 ctx.beginPath(); ctx.arc(kp.x, getDisplayY(kp.y), 24, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
             }
 
-            visualPieces.forEach(vp => {
+            visualPieces.forEach(function (vp) {
                 drawPieceAt(vp.x, vp.y, vp.type, (activePieceId === vp.id));
             });
 
-            dyingPieces.forEach(dp => {
+            dyingPieces.forEach(function (dp) {
                 ctx.save(); ctx.globalAlpha = dp.alpha;
                 drawPieceAt(dp.x + Math.sin(dp.frame * 1.5) * 7, dp.y, dp.type, false);
                 ctx.restore();
@@ -1456,7 +1349,7 @@
 
         function handleTouchOrClick(e) {
             if (!gameActive || turn !== myRole) return;
-            const rect = canvas.getBoundingClientRect();
+            var rect = canvas.getBoundingClientRect();
             var clientX, clientY;
 
             if (e.touches && e.touches.length > 0) {
@@ -1467,10 +1360,10 @@
                 clientY = e.clientY;
             }
 
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const clickX = (clientX - rect.left) * scaleX;
-            const clickY = (clientY - rect.top) * scaleY;
+            var scaleX = canvas.width / rect.width;
+            var scaleY = canvas.height / rect.height;
+            var clickX = (clientX - rect.left) * scaleX;
+            var clickY = (clientY - rect.top) * scaleY;
 
             var clickedPoint = null;
             var bestDist = 40;
@@ -1488,11 +1381,11 @@
             }
         }
 
-        canvas.addEventListener('click', (e) => {
+        canvas.addEventListener('click', function (e) {
             handleTouchOrClick(e);
         });
 
-        canvas.addEventListener('touchstart', (e) => {
+        canvas.addEventListener('touchstart', function (e) {
             e.preventDefault();
             handleTouchOrClick(e);
         }, { passive: false });
