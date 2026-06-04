@@ -1,0 +1,132 @@
+@font-face {
+  font-family: "Roboto Condensed Local";
+  src: url("/assets/RobotoCondensed-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: var(--app-height, 100svh);
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #f7f7f7;
+  font-family: "Roboto Condensed Local", Arial, sans-serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.shell {
+  display: flex;
+  height: var(--app-height, 100svh);
+  padding: 0;
+  width: 100vw;
+}
+
+.stage {
+  background: #fff;
+  border: 0;
+  height: var(--app-height, 100svh);
+  max-height: none;
+  max-width: none;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+  width: 100vw;
+}
+
+canvas {
+  display: block;
+  height: 100%;
+  image-rendering: auto;
+  touch-action: none;
+  width: 100%;
+}
+
+.topbar {
+  align-items: center;
+  display: none;
+  gap: 8px;
+  grid-template-columns: minmax(86px, 130px) minmax(120px, 1fr) 40px;
+  left: 8px;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+
+select,
+button {
+  background: #f7f7f7;
+  border: 1px solid #111;
+  border-radius: 4px;
+  color: #111;
+  font: inherit;
+  height: 36px;
+}
+
+select {
+  min-width: 0;
+  padding: 0 8px;
+}
+
+button {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 700;
+  justify-content: center;
+  padding: 0;
+  user-select: none;
+}
+
+button:active,
+button.isDown {
+  background: #111;
+  color: #fff;
+}
+
+.pauseButton {
+  align-items: center;
+  background: transparent;
+  border: 0px;
+  color: #111;
+  display: none;
+  font: 700 16px Arial, sans-serif;
+  height: 25px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  right: max(8px, env(safe-area-inset-right));
+  top: max(8px, env(safe-area-inset-top));
+  width: 25px;
+  z-index: 3;
+}
+
+.pauseButton.isVisible {
+  display: inline-flex;
+}
+
+@media (max-width: 700px) {
+  .shell {
+    padding: 0;
+  }
+
+  .stage {
+    border: 0;
+    height: var(--app-height, 100svh);
+    max-height: none;
+    min-height: 0;
+    min-width: 0;
+    width: 100vw;
+  }
+
+}
