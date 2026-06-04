@@ -581,7 +581,7 @@ loadAssets({
 
 // levels.json থেকে সম্পূর্ণ ডেটা লোড করার ফাংশন
 function loadLocalLevelsFile() {
-  return fetch("levels.json")
+  return fetch("./levels.json")
     .then(function(response) {
       if (!response.ok) {
         throw new Error("Could not load levels.json. Please ensure the file is in the root directory.");
