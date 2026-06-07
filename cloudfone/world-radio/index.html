@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SleekStream Retro Widget</title>
+    <style>
+        /* CSS Reset & Variables */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #202020;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Layout Blocks */
+        header {
+            background-color: #0093E0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+        main {
+            flex: 1;
+            background-color: #202020;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: none;
+        }
+        main::-webkit-scrollbar {
+            display: none;
+        }
+        footer {
+            background-color: #000000;
+            border-top: 1px solid #27272a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-shrink: 0;
+            z-index: 40;
+            font-weight: bold;
+        }
+
+        /* Responsive Views */
+        .app-screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        .app-screen.active {
+            display: flex;
+        }
+
+        /* Keyboard Focus Outlines */
+        [tabindex="0"]:focus {
+            background-color: #05AEF2 !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            outline: none !important;
+        }
+
+        /* Vintage Analog Tuner Slider */
+        .tuner-scale {
+            position: relative;
+            width: 100%;
+            background-color: #0b0b0b;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .tuner-ticks {
+            background-image: repeating-linear-gradient(90deg, #52525b, #52525b 1px, transparent 1px, transparent 6px);
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+        }
+        .tuner-pointer {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background-color: #ef4444; /* tuner needle red color */
+            transition: left 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            left: 50%;
+        }
+
+        /* GPU Accelerated Equalizer Visualizer */
+        .eq-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .eq-bar {
+            background-color: #05AEF2;
+            transform-origin: bottom;
+            transform: scaleY(0.15);
+            border-radius: 1px;
+        }
+        
+        /* Keyframe loops for active visualizer */
+        @keyframes eqBust {
+            0%, 100% { transform: scaleY(0.15); }
+            50% { transform: scaleY(1); }
+        }
+        .playing .eq-bar:nth-child(1) { animation: eqBust 0.8s ease-in-out infinite alternate; }
+        .playing .eq-bar:nth-child(2) { animation: eqBust 0.5s ease-in-out infinite alternate; animation-delay: 0.1s; }
+        .playing .eq-bar:nth-child(3) { animation: eqBust 0.7s ease-in-out infinite alternate; animation-delay: 0.3s; }
+        .playing .eq-bar:nth-child(4) { animation: eqBust 0.6s ease-in-out infinite alternate; animation-delay: 0.2s; }
+        .playing .eq-bar:nth-child(5) { animation: eqBust 0.9s ease-in-out infinite alternate; animation-delay: 0.4s; }
+
+        /* General Components */
+        .search-box {
+            width: 100%;
+            background-color: #000000;
+            border: 1px solid #3f3f46;
+            color: #ffffff;
+            border-radius: 4px;
+            outline: none;
+        }
+        .search-box:focus {
+            border-color: #05AEF2;
+            background-color: #111111;
+        }
+        .list-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #ffffff;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .player-meta {
+            text-align: center;
+            width: 100%;
+        }
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        .control-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .text-area {
+            width: 100%;
+            background-color: #000000;
+            border: 1px solid #3f3f46;
+            color: #ffffff;
+            border-radius: 4px;
+            resize: none;
+            outline: none;
+            font-family: monospace;
+        }
+        .text-area:focus {
+            border-color: #05AEF2;
+        }
+        .action-btn {
+            width: 100%;
+            background-color: #0093E0;
+            border: none;
+            color: #ffffff;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .menu-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 50;
+            flex-direction: column;
+        }
+        .menu-overlay.active {
+            display: flex;
+        }
+        .dot {
+            border-radius: 50%;
+            background-color: #52525b;
+            flex-shrink: 0;
+        }
+        .dot.active {
+            background-color: #00A539;
+        }
+        .text-truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ================= MEDIA BREAKPOINT: QQVGA (128x160) ================= */
+        @media (max-width: 128px) {
+            header { height: 20px; padding: 0 4px; }
+            header .brand-text { font-size: 8px; font-weight: bold; }
+            header .status { font-size: 6px; }
+            main { padding: 4px; gap: 3px; }
+            footer { height: 16px; padding: 0 4px; font-size: 7px; }
+            .icon { width: 10px; height: 10px; }
+            .tuner-scale { height: 10px; margin-bottom: 1px; }
+            .eq-container { height: 12px; gap: 1.5px; margin-bottom: 2px; }
+            .eq-bar { width: 3px; height: 100%; }
+            .search-box { padding: 2px 4px; font-size: 8px; }
+            .list-container { gap: 2px; }
+            .list-item { padding: 3px; font-size: 8px; }
+            .player-meta h2 { font-size: 9px; }
+            .player-meta p { font-size: 7px; }
+            .player-controls { gap: 8px; margin-top: 2px; }
+            .control-btn { width: 14px; height: 14px; padding: 1.5px; }
+            .text-area { padding: 2px; font-size: 7px; height: 40px; }
+            .action-btn { padding: 3px; font-size: 8px; }
+            .menu-overlay p { font-size: 8px; padding: 3px 6px; }
+            .dot { width: 4px; height: 4px; }
+        }
+
+        /* ================= MEDIA BREAKPOINT: QVGA (240x320) ================= */
+        @media (min-width: 129px) {
+            header { height: 40px; padding: 0 10px; }
+            header .brand-text { font-size: 13px; font-weight: bold; text-transform: uppercase; }
+            header .status { font-size: 9px; }
+            main { padding: 8px; gap: 6px; }
+            footer { height: 24px; padding: 0 10px; font-size: 10px; }
+            .icon { width: 16px; height: 16px; }
+            .tuner-scale { height: 22px; margin-bottom: 6px; }
+            .eq-container { height: 35px; gap: 3px; margin-bottom: 8px; }
+            .eq-bar { width: 6px; height: 100%; }
+            .search-box { padding: 4px 8px; font-size: 11px; margin-bottom: 4px; }
+            .list-container { gap: 4px; }
+            .list-item { padding: 8px; font-size: 11px; }
+            .player-meta h2 { font-size: 14px; }
+            .player-meta p { font-size: 10px; }
+            .player-controls { gap: 16px; margin-top: 10px; }
+            .control-btn { width: 28px; height: 28px; padding: 4px; }
+            .text-area { padding: 6px; font-size: 10px; height: 80px; margin-bottom: 4px; }
+            .action-btn { padding: 6px; font-size: 11px; }
+            .menu-overlay p { font-size: 12px; padding: 8px 12px; }
+            .dot { width: 6px; height: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header Block -->
+    <header>
+        <span class="brand-text" id="headerTitle">SleekStream</span>
+        <div style="display: flex; align-items: center; gap: 3px;">
+            <span id="globalDot" class="dot" style="width: 4px; height: 4px;"></span>
+            <span class="status" style="color: #e4e4e7; font-family: monospace;">HI-FI</span>
+        </div>
+    </header>
+
+    <!-- App screens container -->
+    <main id="mainContainer">
+
+        <!-- SCREEN 1: PLAYER SCREEN -->
+        <div id="screen-player" class="app-screen active">
+            
+            <!-- Tuner Dial Component (Toggleable) -->
+            <div id="comp-tuner" class="tuner-scale">
+                <div class="tuner-ticks"></div>
+                <div id="tunerPointer" class="tuner-pointer"></div>
+            </div>
+
+            <!-- Equalizer component (Toggleable) -->
+            <div id="comp-eq" class="eq-container">
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+                <div class="eq-bar"></div>
+            </div>
+
+            <!-- Metadata info screen container -->
+            <div class="player-meta" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <h2 id="metaTitle" class="text-truncate" style="font-weight: bold;">Select Station</h2>
+                <p id="metaDetails" style="color: #a1a1aa; font-size: 10px; margin-top: 2px;" class="text-truncate">Stopped</p>
+            </div>
+
+            <!-- Player navigation buttons -->
+            <div class="player-controls">
+                <div id="btn-prev" tabindex="0" class="control-btn" onclick="playPrevious()">
+                    <svg style="width: 100%; height: 100%; fill: currentColor;" viewBox="0 0 24 24">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                    </svg>
+                </div>
+                <div id="btn-play" tabindex="0" class="control-btn" onclick="togglePlayState()">
+                    <svg id="playSvg" style="width: 100%; height: 100%; fill: currentColor;" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </div>
+                <div id="btn-next" tabindex="0" class="control-btn" onclick="playNext()">
+                    <svg style="width: 100%; height: 100%; fill: currentColor;" viewBox="0 0 24 24">
+                        <path d="M6 18l8.5-6L6 6zm9-12h2v12h-2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: CHANNELS SCREEN (with Search option) -->
+        <div id="screen-channels" class="app-screen">
+            <input type="text" id="channelSearch" class="search-box" tabindex="0" placeholder="Search Channels..." oninput="filterChannels()">
+            <div id="channelsList" class="list-container">
+                <!-- Dynamically Populated List -->
+            </div>
+        </div>
+
+        <!-- SCREEN 3: IMPORT SCREEN -->
+        <div id="screen-import" class="app-screen">
+            <textarea id="importTextarea" class="text-area" tabindex="0" placeholder="Paste #EXTM3U markup code here..."></textarea>
+            <button class="action-btn" tabindex="0" onclick="compilePlaylist()">Compile Code</button>
+        </div>
+
+        <!-- SCREEN 4: CONFIG SCREEN -->
+        <div id="screen-settings" class="app-screen" style="gap: 4px;">
+            <!-- UI Element 1 Toggle: Visualizer -->
+            <div class="list-item" tabindex="0" onclick="toggleUIElement('visualizer')" style="border: 1px solid #333;">
+                <span>Visualizer</span>
+                <span id="label-opt-vis" style="color: #00A539; font-weight: bold;">[ON]</span>
+            </div>
+            <!-- UI Element 2 Toggle: Tuner scale -->
+            <div class="list-item" tabindex="0" onclick="toggleUIElement('tuner')" style="border: 1px solid #333;">
+                <span>Analog Tuner</span>
+                <span id="label-opt-tune" style="color: #00A539; font-weight: bold;">[ON]</span>
+            </div>
+            <!-- System Controls -->
+            <div class="list-item" tabindex="0" onclick="clearCustomChannels()" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); margin-top: 10px;">
+                <span style="font-weight: bold; color: #ef4444;">Clear Imports</span>
+            </div>
+            <div class="list-item" tabindex="0" onclick="restoreDefaults()">
+                <span>Restore Defaults</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Overlay D-pad Menu Directory -->
+    <div id="menuOverlay" class="menu-overlay">
+        <header style="background-color: #000000; border-bottom: 1px solid #27272a;">
+            <span class="brand-text" style="color: #05AEF2;">Menu Directory</span>
+        </header>
+        <div class="list-container" style="padding: 4px; gap: 4px;">
+            <p tabindex="0" onclick="navigateTo('screen-player', 'Player')">1. Radio Player</p>
+            <p tabindex="0" onclick="navigateTo('screen-channels', 'Channels')">2. Channels List</p>
+            <p tabindex="0" onclick="navigateTo('screen-import', 'Import Playlist')">3. Import M3U</p>
+            <p tabindex="0" onclick="navigateTo('screen-settings', 'Settings')">4. Configuration</p>
+        </div>
+    </div>
+
+    <!-- Softkey Navigation Bar -->
+    <footer>
+        <span id="lsk-btn" style="color: #05AEF2; cursor: pointer;" onclick="toggleMenuOverlay()">Options</span>
+        <span id="rsk-btn" style="color: #a1a1aa; cursor: pointer;" onclick="handleRSKAction()">Back</span>
+    </footer>
+
+    <!-- Programmatic Application Logic -->
+    <script>
+        const DEFAULT_STATIONS = [
+            { id: "bbc", name: "BBC World Service", country: "UK", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service" },
+            { id: "swissjazz", name: "Radio Swiss Jazz", country: "CH", url: "https://stream.srg-ssr.ch/m/rsj/mp3_128" },
+            { id: "fip", name: "FIP Radio", country: "FR", url: "https://icecast.radiofrance.fr/fip-midfi.mp3?id=radiofrance" },
+            { id: "somagroove", name: "Groove Salad", country: "US", url: "https://ice1.somafm.com/groovesalad-128-mp3" }
+        ];
+
+        let stations = [];
+        let activeIndex = -1;
+        let isPlaying = false;
+        let historyStack = ['screen-player'];
+
+        // Core config toggles state
+        let uiConfig = {
+            visualizer: true,
+            tuner: true
+        };
+
+        const audio = new Audio();
+        audio.preload = "none";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadStations();
+            renderChannelsList();
+            applyUIConfig();
+            window.addEventListener('keydown', handleDPadControls);
+            focusFirstInActiveContext();
+        });
+
+        function loadConfig() {
+            const saved = localStorage.getItem('sleek-ui-config');
+            if (saved) {
+                uiConfig = JSON.parse(saved);
+            }
+        }
+
+        // Toggles elements from settings screen state
+        function toggleUIElement(elementKey) {
+            uiConfig[elementKey] = !uiConfig[elementKey];
+            localStorage.setItem('sleek-ui-config', JSON.stringify(uiConfig));
+            applyUIConfig();
+            
+            // Dynamic focus update so that visual change updates target elements list correctly
+            setTimeout(focusFirstInActiveContext, 50);
+        }
+
+        function applyUIConfig() {
+            const visLabel = document.getElementById('label-opt-vis');
+            const tuneLabel = document.getElementById('label-opt-tune');
+
+            const tunerComp = document.getElementById('comp-tuner');
+            const eqComp = document.getElementById('comp-eq');
+
+            // Apply to visualizer options
+            if (uiConfig.visualizer) {
+                visLabel.textContent = "[ON]";
+                visLabel.style.color = "#00A539";
+                eqComp.style.display = "flex";
+            } else {
+                visLabel.textContent = "[OFF]";
+                visLabel.style.color = "#ef4444";
+                eqComp.style.display = "none";
+            }
+
+            // Apply to analog tuner option
+            if (uiConfig.tuner) {
+                tuneLabel.textContent = "[ON]";
+                tuneLabel.style.color = "#00A539";
+                tunerComp.style.display = "block";
+            } else {
+                tuneLabel.textContent = "[OFF]";
+                tuneLabel.style.color = "#ef4444";
+                tunerComp.style.display = "none";
+            }
+        }
+
+        function loadStations() {
+            const stored = localStorage.getItem('sleek-custom-stations');
+            if (stored) {
+                stations = [...DEFAULT_STATIONS, ...JSON.parse(stored)];
+            } else {
+                stations = [...DEFAULT_STATIONS];
+            }
+        }
+
+        function toggleMenuOverlay() {
+            const overlay = document.getElementById('menuOverlay');
+            if (overlay.classList.contains('active')) {
+                overlay.classList.remove('active');
+                focusFirstInActiveContext();
+            } else {
+                overlay.classList.add('active');
+                const firstItem = overlay.querySelector('p[tabindex="0"]');
+                if (firstItem) firstItem.focus();
+            }
+        }
+
+        function navigateTo(screenId, titleText) {
+            document.getElementById('menuOverlay').classList.remove('active');
+            
+            const screens = document.querySelectorAll('.app-screen');
+            screens.forEach(s => s.classList.remove('active'));
+
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.classList.add('active');
+                document.getElementById('headerTitle').textContent = titleText;
+                
+                if (historyStack[historyStack.length - 1] !== screenId) {
+                    historyStack.push(screenId);
+                }
+                setTimeout(focusFirstInActiveContext, 50);
+            }
+        }
+
+        function handleRSKAction() {
+            const overlay = document.getElementById('menuOverlay');
+            if (overlay.classList.contains('active')) {
+                overlay.classList.remove('active');
+                focusFirstInActiveContext();
+                return;
+            }
+
+            if (historyStack.length > 1) {
+                historyStack.pop();
+                const prevId = historyStack[historyStack.length - 1];
+                
+                let title = "Player";
+                if (prevId === "screen-channels") title = "Channels";
+                if (prevId === "screen-import") title = "Import M3U";
+                if (prevId === "screen-settings") title = "Settings";
+
+                navigateTo(prevId, title);
+            } else {
+                window.history.back();
+            }
+        }
+
+        function renderChannelsList(filteredList = null) {
+            const container = document.getElementById('channelsList');
+            container.innerHTML = '';
+            const listToRender = filteredList || stations;
+
+            if (listToRender.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:10px; font-size:8px; color:#52525b;">No channels found</div>`;
+                return;
+            }
+
+            listToRender.forEach((station) => {
+                const masterIdx = stations.findIndex(s => s.id === station.id);
+                const item = document.createElement('div');
+                item.tabIndex = 0;
+                item.className = "list-item";
+                item.onclick = () => selectAndPlay(masterIdx);
+
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 4px; min-width: 0;">
+                        <svg class="icon" style="color: #a1a1aa; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                        <span class="text-truncate">${station.name}</span>
+                    </div>
+                    <span style="font-size: 8px; color: #52525b; margin-left: 4px; flex-shrink: 0;">${station.country}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function filterChannels() {
+            const query = document.getElementById('channelSearch').value.toLowerCase().trim();
+            if (query === '') {
+                renderChannelsList();
+            } else {
+                const filtered = stations.filter(s => 
+                    s.name.toLowerCase().includes(query) || 
+                    s.country.toLowerCase().includes(query)
+                );
+                renderChannelsList(filtered);
+            }
+        }
+
+        function selectAndPlay(index) {
+            if (index < 0 || index >= stations.length) return;
+            activeIndex = index;
+            const target = stations[activeIndex];
+
+            audio.src = target.url;
+            audio.load();
+            isPlaying = true;
+
+            audio.play().then(() => {
+                syncPlayerUI(target.name, target.country);
+                navigateTo('screen-player', 'Player');
+            }).catch(() => {
+                isPlaying = false;
+                syncPlayerUI("Playback Error", "Failed to connect");
+                navigateTo('screen-player', 'Player');
+            });
+        }
+
+        function togglePlayState() {
+            if (activeIndex === -1) {
+                selectAndPlay(0);
+                return;
+            }
+
+            if (isPlaying) {
+                audio.pause();
+                audio.src = "";
+                isPlaying = false;
+                syncPlayerUI("Playback Paused", stations[activeIndex].country);
+            } else {
+                audio.src = stations[activeIndex].url;
+                audio.load();
+                isPlaying = true;
+                audio.play().then(() => {
+                    syncPlayerUI(stations[activeIndex].name, stations[activeIndex].country);
+                }).catch(() => {
+                    isPlaying = false;
+                    syncPlayerUI("Playback Error", "Failed to connect");
+                });
+            }
+        }
+
+        function playNext() {
+            if (stations.length === 0) return;
+            let nextIdx = (activeIndex + 1) % stations.length;
+            selectAndPlay(nextIdx);
+        }
+
+        function playPrevious() {
+            if (stations.length === 0) return;
+            let prevIdx = (activeIndex - 1 + stations.length) % stations.length;
+            selectAndPlay(prevIdx);
+        }
+
+        // Shifts pointer left/right based on current station index percentage
+        function updateTunerPointer() {
+            const pointer = document.getElementById('tunerPointer');
+            if (activeIndex === -1 || stations.length <= 1) {
+                pointer.style.left = "50%";
+            } else {
+                const percentage = (activeIndex / (stations.length - 1)) * 80 + 10; // Bounds within 10%-90%
+                pointer.style.left = percentage + "%";
+            }
+        }
+
+        function syncPlayerUI(title, country) {
+            document.getElementById('metaTitle').textContent = title;
+            document.getElementById('metaDetails').textContent = isPlaying ? "Broadcasting • " + country : "Stopped";
+            
+            const globalDot = document.getElementById('globalDot');
+            const eqContainer = document.getElementById('comp-eq');
+            const playSvg = document.getElementById('playSvg');
+
+            // Shift tuner pointer to represent frequency matching
+            updateTunerPointer();
+
+            if (isPlaying) {
+                globalDot.classList.add('active');
+                eqContainer.classList.add('playing');
+                playSvg.innerHTML = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`;
+            } else {
+                globalDot.classList.remove('active');
+                eqContainer.classList.remove('playing');
+                playSvg.innerHTML = `<path d="M8 5v14l11-7z"/>`;
+            }
+        }
+
+        function compilePlaylist() {
+            const rawText = document.getElementById('importTextarea').value.trim();
+            if (!rawText) {
+                alert("Paste standard M3U data first");
+                return;
+            }
+
+            const lines = rawText.split(/\r?\n/);
+            const imported = [];
+            let currentTitle = "";
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith("#EXTINF:")) {
+                    const commaIdx = line.indexOf(',');
+                    if (commaIdx !== -1) {
+                        currentTitle = line.substring(commaIdx + 1).trim();
+                    }
+                } else if (line && !line.startsWith("#")) {
+                    imported.push({
+                        id: "custom-" + Date.now() + "-" + i,
+                        name: currentTitle || "Imported Stream " + (imported.length + 1),
+                        country: "USR",
+                        url: line
+                    });
+                    currentTitle = "";
+                }
+            }
+
+            if (imported.length > 0) {
+                const saved = JSON.parse(localStorage.getItem('sleek-custom-stations')) || [];
+                const merged = [...saved, ...imported];
+                localStorage.setItem('sleek-custom-stations', JSON.stringify(merged));
+                
+                loadStations();
+                renderChannelsList();
+                document.getElementById('importTextarea').value = "";
+                alert("Successfully loaded " + imported.length + " links!");
+                navigateTo('screen-channels', 'Channels');
+            } else {
+                alert("Could not parse valid stream lines.");
+            }
+        }
+
+        function clearCustomChannels() {
+            localStorage.removeItem('sleek-custom-stations');
+            loadStations();
+            renderChannelsList();
+            alert("Cleared imported data.");
+            navigateTo('screen-player', 'Player');
+        }
+
+        function restoreDefaults() {
+            localStorage.removeItem('sleek-custom-stations');
+            loadStations();
+            renderChannelsList();
+            alert("Restored defaults.");
+            navigateTo('screen-player', 'Player');
+        }
+
+        function focusFirstInActiveContext() {
+            const activeOverlay = document.querySelector('.menu-overlay.active');
+            let selector = ".app-screen.active [tabindex='0']";
+            
+            if (activeOverlay) {
+                selector = ".menu-overlay.active [tabindex='0']";
+            }
+
+            const first = document.querySelector(selector);
+            if (first) {
+                first.focus();
+            }
+        }
+
+        function handleDPadControls(e) {
+            const overlay = document.getElementById('menuOverlay');
+            const isActiveOverlay = overlay.classList.contains('active');
+
+            const queryContext = isActiveOverlay 
+                ? '.menu-overlay.active [tabindex="0"]' 
+                : '.app-screen.active [tabindex="0"]';
+
+            const interactives = Array.from(document.querySelectorAll(queryContext));
+            if (interactives.length === 0) return;
+
+            const focused = document.activeElement;
+            let currentIdx = interactives.indexOf(focused);
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                let nextIdx = 0;
+                if (currentIdx !== -1) {
+                    nextIdx = (currentIdx + 1) % interactives.length;
+                }
+                interactives[nextIdx].focus();
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                let prevIdx = interactives.length - 1;
+                if (currentIdx !== -1) {
+                    prevIdx = (currentIdx - 1 + interactives.length) % interactives.length;
+                }
+                interactives[prevIdx].focus();
+            } else if (e.key === 'Enter') {
+                if (focused && currentIdx !== -1) {
+                    e.preventDefault();
+                    focused.click();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
