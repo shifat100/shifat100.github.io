@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SleekStream Retro Widget</title>
+    <title>World Radio</title>
     <style>
         /* CSS Reset & Core Standards */
         * {
@@ -839,7 +839,14 @@
             }
         }
 
-        function handleDPadControls(e) {
+        function handleDPadControls(e) {function handleDPadControls(e) {
+            // LSK Emulation: Escape key triggers the Options Menu directory
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                toggleMenuOverlay();
+                return;
+            }
+
             const overlay = document.getElementById('menuOverlay');
             const isActiveOverlay = overlay.classList.contains('active');
 
