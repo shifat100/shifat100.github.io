@@ -402,7 +402,7 @@
         <span id="lsk-btn" style="color: #05AEF2; cursor: pointer;" onclick="toggleMenuOverlay()">Options</span>
         <span id="rsk-btn" style="color: #a1a1aa; cursor: pointer;" onclick="handleRSKAction()">Back</span>
     </footer>
-
+<script src="https://shifat100.github.io/key-simulator/Keysim-min.js"></script>
     <!-- Core Interactive Script block -->
     <script>
         const DEFAULT_STATIONS = [
@@ -424,7 +424,10 @@
 
         const audio = new Audio();
         audio.preload = "none";
-
+window.addEventListener('back', (event) => {
+  event.preventDefault();
+ simulateNaturalPress('SoftRight', 0);
+});
         window.addEventListener('DOMContentLoaded', () => {
             loadConfig();
             loadStations();
