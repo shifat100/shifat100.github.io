@@ -872,36 +872,34 @@ https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
             });
         }
         
-        /* // --- MEDIA PLAYER ---
-         function playMedia(url) {
-             if (!url) return;
-             navigate('player');
-             
-             if (Hls.isSupported()) {
-                 hlsInstance = new Hls();
-                 hlsInstance.loadSource(url);
-                 hlsInstance.attachMedia(elVideo);
-                 hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() { elVideo.play(); });
-                 hlsInstance.on(Hls.Events.ERROR, function(e, data) {
-                     if(data.fatal) openModal("Stream Error", function(){ history.back(); });
-                 });
-             } else {
-                 elVideo.src = url;
-                 elVideo.play();
-             }
-         }*/
+      function hasNativeHLS() {
+    return elVideo.canPlayType("application/vnd.apple.mpegurl") !== "";
+}
 
-        function playMedia(url) {
-            if (!url) return;
-            navigate('player');
+function playMedia(url) {
+    if (!url) return;
 
-            // hls.js এর সব কোড সরিয়ে দিয়ে শুধু এই দুটি লাইন লিখুন
-            elVideo.src = url;
-            elVideo.play().catch(function (error) {
-                console.log("Playback failed:", error);
-                openModal("Stream Error: Browser doesn't support native HLS", function () { history.back(); });
-            });
-        }
+    navigate('player');
+
+    if (!hasNativeHLS()) {
+        openModal(
+            "This browser doesn't support native HLS",
+            function () { history.back(); }
+        );
+        return;
+    }
+
+    elVideo.src = url;
+
+    elVideo.play().catch(function(error) {
+        console.log("Playback failed:", error);
+
+        openModal(
+            "Stream Error",
+            function () { history.back(); }
+        );
+    });
+}
 
         // --- SEARCH / DATA LOGIC ---
         document.getElementById('search-input').addEventListener('input', function (e) {
