@@ -918,16 +918,14 @@ window.addEventListener('back', (event) => {
                 if (e.key === 'ArrowUp') {
                     e.preventDefault();
                     if (navigator.volumeManager) {
-                        navigator.volumeManager.requestShow();
-                        navigator.volumeManager.requestUp();
+                     navigator.volumeManager.requestUp();
                     }
                     return;
                 }
                 if (e.key === 'ArrowDown') {
                     e.preventDefault();
                     if (navigator.volumeManager) {
-                        navigator.volumeManager.requestShow();
-                        navigator.volumeManager.requestDown();
+                     navigator.volumeManager.requestDown();
                     }
                     return;
                 }
