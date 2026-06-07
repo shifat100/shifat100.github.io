@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SleekStream Retro Widget</title>
     <style>
-        /* CSS Reset & Variables */
+        /* CSS Reset & Core Standards */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -23,7 +23,7 @@
             flex-direction: column;
         }
 
-        /* Layout Blocks */
+        /* Responsive Layout Base Grid */
         header {
             background-color: #0093E0;
             display: flex;
@@ -56,7 +56,7 @@
             font-weight: bold;
         }
 
-        /* Responsive Views */
+        /* View State Architecture */
         .app-screen {
             display: none;
             flex-direction: column;
@@ -67,7 +67,7 @@
             display: flex;
         }
 
-        /* Keyboard Focus Outlines */
+        /* Keyboard D-pad Active States */
         [tabindex="0"]:focus {
             background-color: #05AEF2 !important;
             color: #ffffff !important;
@@ -75,7 +75,7 @@
             outline: none !important;
         }
 
-        /* Vintage Analog Tuner Slider */
+        /* Tuner Scale Element */
         .tuner-scale {
             position: relative;
             width: 100%;
@@ -96,12 +96,12 @@
             top: 0;
             width: 2px;
             height: 100%;
-            background-color: #ef4444; /* tuner needle red color */
+            background-color: #ef4444; /* Tuner needle pin */
             transition: left 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
             left: 50%;
         }
 
-        /* GPU Accelerated Equalizer Visualizer */
+        /* EQ Wave Animation */
         .eq-container {
             display: flex;
             align-items: flex-end;
@@ -114,8 +114,6 @@
             transform: scaleY(0.15);
             border-radius: 1px;
         }
-        
-        /* Keyframe loops for active visualizer */
         @keyframes eqBust {
             0%, 100% { transform: scaleY(0.15); }
             50% { transform: scaleY(1); }
@@ -126,7 +124,7 @@
         .playing .eq-bar:nth-child(4) { animation: eqBust 0.6s ease-in-out infinite alternate; animation-delay: 0.2s; }
         .playing .eq-bar:nth-child(5) { animation: eqBust 0.9s ease-in-out infinite alternate; animation-delay: 0.4s; }
 
-        /* General Components */
+        /* Generic Forms, Containers & Inputs */
         .search-box {
             width: 100%;
             background-color: #000000;
@@ -172,19 +170,6 @@
             justify-content: center;
             cursor: pointer;
             border-radius: 50%;
-        }
-        .text-area {
-            width: 100%;
-            background-color: #000000;
-            border: 1px solid #3f3f46;
-            color: #ffffff;
-            border-radius: 4px;
-            resize: none;
-            outline: none;
-            font-family: monospace;
-        }
-        .text-area:focus {
-            border-color: #05AEF2;
         }
         .action-btn {
             width: 100%;
@@ -242,7 +227,6 @@
             .player-meta p { font-size: 7px; }
             .player-controls { gap: 8px; margin-top: 2px; }
             .control-btn { width: 14px; height: 14px; padding: 1.5px; }
-            .text-area { padding: 2px; font-size: 7px; height: 40px; }
             .action-btn { padding: 3px; font-size: 8px; }
             .menu-overlay p { font-size: 8px; padding: 3px 6px; }
             .dot { width: 4px; height: 4px; }
@@ -266,7 +250,6 @@
             .player-meta p { font-size: 10px; }
             .player-controls { gap: 16px; margin-top: 10px; }
             .control-btn { width: 28px; height: 28px; padding: 4px; }
-            .text-area { padding: 6px; font-size: 10px; height: 80px; margin-bottom: 4px; }
             .action-btn { padding: 6px; font-size: 11px; }
             .menu-overlay p { font-size: 12px; padding: 8px 12px; }
             .dot { width: 6px; height: 6px; }
@@ -275,7 +258,7 @@
 </head>
 <body>
 
-    <!-- Sticky Header Block -->
+    <!-- Header Block -->
     <header>
         <span class="brand-text" id="headerTitle">SleekStream</span>
         <div style="display: flex; align-items: center; gap: 3px;">
@@ -284,19 +267,17 @@
         </div>
     </header>
 
-    <!-- App screens container -->
+    <!-- Main Dynamic Content Views -->
     <main id="mainContainer">
 
-        <!-- SCREEN 1: PLAYER SCREEN -->
+        <!-- SCREEN 1: RADIO TUNER PLAYER -->
         <div id="screen-player" class="app-screen active">
             
-            <!-- Tuner Dial Component (Toggleable) -->
             <div id="comp-tuner" class="tuner-scale">
                 <div class="tuner-ticks"></div>
                 <div id="tunerPointer" class="tuner-pointer"></div>
             </div>
 
-            <!-- Equalizer component (Toggleable) -->
             <div id="comp-eq" class="eq-container">
                 <div class="eq-bar"></div>
                 <div class="eq-bar"></div>
@@ -305,13 +286,11 @@
                 <div class="eq-bar"></div>
             </div>
 
-            <!-- Metadata info screen container -->
             <div class="player-meta" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
                 <h2 id="metaTitle" class="text-truncate" style="font-weight: bold;">Select Station</h2>
                 <p id="metaDetails" style="color: #a1a1aa; font-size: 10px; margin-top: 2px;" class="text-truncate">Stopped</p>
             </div>
 
-            <!-- Player navigation buttons -->
             <div class="player-controls">
                 <div id="btn-prev" tabindex="0" class="control-btn" onclick="playPrevious()">
                     <svg style="width: 100%; height: 100%; fill: currentColor;" viewBox="0 0 24 24">
@@ -331,33 +310,62 @@
             </div>
         </div>
 
-        <!-- SCREEN 2: CHANNELS SCREEN (with Search option) -->
+        <!-- SCREEN 2: CHANNELS VIEW (with Search Input) -->
         <div id="screen-channels" class="app-screen">
             <input type="text" id="channelSearch" class="search-box" tabindex="0" placeholder="Search Channels..." oninput="filterChannels()">
             <div id="channelsList" class="list-container">
-                <!-- Dynamically Populated List -->
+                <!-- Programmatically populated on load -->
             </div>
         </div>
 
-        <!-- SCREEN 3: IMPORT SCREEN -->
-        <div id="screen-import" class="app-screen">
-            <textarea id="importTextarea" class="text-area" tabindex="0" placeholder="Paste #EXTM3U markup code here..."></textarea>
-            <button class="action-btn" tabindex="0" onclick="compilePlaylist()">Compile Code</button>
+        <!-- SCREEN 3: IMPORT PATH / URL SCREEN -->
+        <div id="screen-load-path" class="app-screen" style="gap: 4px;">
+            <span style="font-size: 8px; color: #71717a; font-weight: bold;">Load Playlist URL or Local Path:</span>
+            <input type="text" id="importPathInput" class="search-box" tabindex="0" placeholder="e.g. /playlists/classic.m3u">
+            <button class="action-btn" tabindex="0" onclick="fetchAndCompilePlaylist()">Load Path</button>
         </div>
 
-        <!-- SCREEN 4: CONFIG SCREEN -->
+        <!-- SCREEN 4: LOCAL BROWSE & PRESETS SCREEN -->
+        <div id="screen-local-presets" class="app-screen" style="gap: 4px;">
+            <!-- Browse Storage Container button -->
+            <span style="font-size: 8px; color: #71717a; font-weight: bold;">Device Files:</span>
+            <div tabindex="0" class="list-item" onclick="triggerFileBrowser()" style="border: 1px dashed #3f3f46; background-color: rgba(0,0,0,0.3); justify-content: center; padding: 6px; font-weight: bold; margin-bottom: 2px;">
+                <svg class="icon" style="color: #05AEF2; margin-right: 4px; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                <span>Browse Device</span>
+            </div>
+            <!-- Hidden input picker to trigger on keypad click -->
+            <input type="file" id="localFileInput" style="display:none;" accept=".m3u,.m3u8,.pls,.xspf,.asx" onchange="handleFileSelection(event)">
+
+            <!-- Named Quick Presets List items -->
+            <span style="font-size: 8px; color: #71717a; font-weight: bold; margin-top: 4px;">Quick Preset Playlists:</span>
+            <div class="list-container" style="gap: 2px;">
+                <div class="list-item" tabindex="0" onclick="fetchPreset('playlists/live.m3u')" style="border: 1px solid #27272a;">
+                    <div style="display: flex; flex-direction: column; min-width: 0; padding: 2px 0;">
+                        <span style="font-weight: bold;">1. Global Live TV & Radio</span>
+                        <span style="font-size: 7px; color: #71717a; margin-top: 1px;">File: playlists/live.m3u</span>
+                    </div>
+                </div>
+                <div class="list-item" tabindex="0" onclick="fetchPreset('playlists/global.pls')" style="border: 1px solid #27272a;">
+                    <div style="display: flex; flex-direction: column; min-width: 0; padding: 2px 0;">
+                        <span style="font-weight: bold;">2. Premium Jazz & Blues</span>
+                        <span style="font-size: 7px; color: #71717a; margin-top: 1px;">File: playlists/global.pls</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: CONFIGURATION SETTINGS SCREEN -->
         <div id="screen-settings" class="app-screen" style="gap: 4px;">
-            <!-- UI Element 1 Toggle: Visualizer -->
             <div class="list-item" tabindex="0" onclick="toggleUIElement('visualizer')" style="border: 1px solid #333;">
                 <span>Visualizer</span>
                 <span id="label-opt-vis" style="color: #00A539; font-weight: bold;">[ON]</span>
             </div>
-            <!-- UI Element 2 Toggle: Tuner scale -->
             <div class="list-item" tabindex="0" onclick="toggleUIElement('tuner')" style="border: 1px solid #333;">
                 <span>Analog Tuner</span>
                 <span id="label-opt-tune" style="color: #00A539; font-weight: bold;">[ON]</span>
             </div>
-            <!-- System Controls -->
             <div class="list-item" tabindex="0" onclick="clearCustomChannels()" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); margin-top: 10px;">
                 <span style="font-weight: bold; color: #ef4444;">Clear Imports</span>
             </div>
@@ -368,7 +376,7 @@
 
     </main>
 
-    <!-- Overlay D-pad Menu Directory -->
+    <!-- Overlay D-pad Nav Directory -->
     <div id="menuOverlay" class="menu-overlay">
         <header style="background-color: #000000; border-bottom: 1px solid #27272a;">
             <span class="brand-text" style="color: #05AEF2;">Menu Directory</span>
@@ -376,8 +384,9 @@
         <div class="list-container" style="padding: 4px; gap: 4px;">
             <p tabindex="0" onclick="navigateTo('screen-player', 'Player')">1. Radio Player</p>
             <p tabindex="0" onclick="navigateTo('screen-channels', 'Channels')">2. Channels List</p>
-            <p tabindex="0" onclick="navigateTo('screen-import', 'Import Playlist')">3. Import M3U</p>
-            <p tabindex="0" onclick="navigateTo('screen-settings', 'Settings')">4. Configuration</p>
+            <p tabindex="0" onclick="navigateTo('screen-load-path', 'Load Path')">3. Load Path / URL</p>
+            <p tabindex="0" onclick="navigateTo('screen-local-presets', 'Local & Presets')">4. Browse / Presets</p>
+            <p tabindex="0" onclick="navigateTo('screen-settings', 'Settings')">5. Configuration</p>
         </div>
     </div>
 
@@ -387,7 +396,7 @@
         <span id="rsk-btn" style="color: #a1a1aa; cursor: pointer;" onclick="handleRSKAction()">Back</span>
     </footer>
 
-    <!-- Programmatic Application Logic -->
+    <!-- Core Interactive Script block -->
     <script>
         const DEFAULT_STATIONS = [
             { id: "bbc", name: "BBC World Service", country: "UK", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service" },
@@ -401,7 +410,6 @@
         let isPlaying = false;
         let historyStack = ['screen-player'];
 
-        // Core config toggles state
         let uiConfig = {
             visualizer: true,
             tuner: true
@@ -426,13 +434,10 @@
             }
         }
 
-        // Toggles elements from settings screen state
         function toggleUIElement(elementKey) {
             uiConfig[elementKey] = !uiConfig[elementKey];
             localStorage.setItem('sleek-ui-config', JSON.stringify(uiConfig));
             applyUIConfig();
-            
-            // Dynamic focus update so that visual change updates target elements list correctly
             setTimeout(focusFirstInActiveContext, 50);
         }
 
@@ -443,7 +448,6 @@
             const tunerComp = document.getElementById('comp-tuner');
             const eqComp = document.getElementById('comp-eq');
 
-            // Apply to visualizer options
             if (uiConfig.visualizer) {
                 visLabel.textContent = "[ON]";
                 visLabel.style.color = "#00A539";
@@ -454,7 +458,6 @@
                 eqComp.style.display = "none";
             }
 
-            // Apply to analog tuner option
             if (uiConfig.tuner) {
                 tuneLabel.textContent = "[ON]";
                 tuneLabel.style.color = "#00A539";
@@ -519,7 +522,8 @@
                 
                 let title = "Player";
                 if (prevId === "screen-channels") title = "Channels";
-                if (prevId === "screen-import") title = "Import M3U";
+                if (prevId === "screen-load-path") title = "Load Path";
+                if (prevId === "screen-local-presets") title = "Local & Presets";
                 if (prevId === "screen-settings") title = "Settings";
 
                 navigateTo(prevId, title);
@@ -626,13 +630,12 @@
             selectAndPlay(prevIdx);
         }
 
-        // Shifts pointer left/right based on current station index percentage
         function updateTunerPointer() {
             const pointer = document.getElementById('tunerPointer');
             if (activeIndex === -1 || stations.length <= 1) {
                 pointer.style.left = "50%";
             } else {
-                const percentage = (activeIndex / (stations.length - 1)) * 80 + 10; // Bounds within 10%-90%
+                const percentage = (activeIndex / (stations.length - 1)) * 80 + 10;
                 pointer.style.left = percentage + "%";
             }
         }
@@ -645,7 +648,6 @@
             const eqContainer = document.getElementById('comp-eq');
             const playSvg = document.getElementById('playSvg');
 
-            // Shift tuner pointer to represent frequency matching
             updateTunerPointer();
 
             if (isPlaying) {
@@ -659,44 +661,148 @@
             }
         }
 
-        function compilePlaylist() {
-            const rawText = document.getElementById('importTextarea').value.trim();
-            if (!rawText) {
-                alert("Paste standard M3U data first");
-                return;
-            }
+        // Standard Dynamic Playlist Parser
+        function parsePlaylist(text) {
+            const lines = text.split(/\r?\n/);
+            const list = [];
 
-            const lines = rawText.split(/\r?\n/);
-            const imported = [];
-            let currentTitle = "";
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line.startsWith("#EXTINF:")) {
-                    const commaIdx = line.indexOf(',');
-                    if (commaIdx !== -1) {
-                        currentTitle = line.substring(commaIdx + 1).trim();
+            if (text.includes('<playlist') && text.includes('<trackList>')) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, "text/xml");
+                const tracks = doc.getElementsByTagName("track");
+                for (let i = 0; i < tracks.length; i++) {
+                    const title = tracks[i].getElementsByTagName("title")[0];
+                    const loc = tracks[i].getElementsByTagName("location")[0];
+                    if (loc) {
+                        list.push({
+                            id: "xspf-" + Date.now() + "-" + i,
+                            name: title ? title.textContent.trim() : "XSPF Track " + (i + 1),
+                            country: "XSPF",
+                            url: loc.textContent.trim()
+                        });
                     }
-                } else if (line && !line.startsWith("#")) {
-                    imported.push({
-                        id: "custom-" + Date.now() + "-" + i,
-                        name: currentTitle || "Imported Stream " + (imported.length + 1),
-                        country: "USR",
-                        url: line
-                    });
-                    currentTitle = "";
                 }
             }
+            else if (text.toLowerCase().includes('<asx') || text.toLowerCase().includes('<entry>')) {
+                const entryRegex = /<entry[^>]*>([\s\S]*?)<\/entry>/gi;
+                let match;
+                let i = 0;
+                while ((match = entryRegex.exec(text)) !== null) {
+                    const content = match[1];
+                    const ref = /<ref\s+href=["']([^"']+)["']/i.exec(content);
+                    const title = /<title>([^<]+)<\/title>/i.exec(content);
+                    if (ref) {
+                        list.push({
+                            id: "asx-" + Date.now() + "-" + i,
+                            name: title ? title[1].trim() : "ASX Stream " + (i + 1),
+                            country: "ASX",
+                            url: ref[1].trim()
+                        });
+                    }
+                    i++;
+                }
+            }
+            else if (text.toLowerCase().includes('[playlist]')) {
+                const files = {};
+                const titles = {};
+                lines.forEach(line => {
+                    const match = line.match(/^\s*(File|Title)(\d+)\s*=\s*(.+)$/i);
+                    if (match) {
+                        const type = match[1].toLowerCase();
+                        const num = match[2];
+                        const val = match[3].trim();
+                        if (type === 'file') files[num] = val;
+                        if (type === 'title') titles[num] = val;
+                    }
+                });
+                Object.keys(files).forEach(num => {
+                    list.push({
+                        id: "pls-" + Date.now() + "-" + num,
+                        name: titles[num] || "PLS Track " + num,
+                        country: "PLS",
+                        url: files[num]
+                    });
+                });
+            }
+            else {
+                let currentTitle = "";
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line.startsWith("#EXTINF:")) {
+                        const commaIdx = line.indexOf(',');
+                        if (commaIdx !== -1) {
+                            currentTitle = line.substring(commaIdx + 1).trim();
+                        }
+                    } else if (line && !line.startsWith("#")) {
+                        list.push({
+                            id: "m3u-" + Date.now() + "-" + i,
+                            name: currentTitle || "M3U Stream " + (list.length + 1),
+                            country: "M3U",
+                            url: line
+                        });
+                        currentTitle = "";
+                    }
+                }
+            }
+            return list;
+        }
 
-            if (imported.length > 0) {
+        // Active Load Path handler
+        function fetchAndCompilePlaylist() {
+            const path = document.getElementById('importPathInput').value.trim();
+            if (!path) {
+                alert("Please enter a path or URL");
+                return;
+            }
+            fetchPreset(path);
+        }
+
+        // Preset execution & Path fetch logic
+        function fetchPreset(path) {
+            fetch(path)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Load failed. HTTP " + response.status);
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    const parsed = parsePlaylist(text);
+                    saveCustomChannels(parsed);
+                })
+                .catch(error => {
+                    alert("Error: " + error.message);
+                });
+        }
+
+        // Local storage file browsers handlers
+        function triggerFileBrowser() {
+            document.getElementById('localFileInput').click();
+        }
+
+        function handleFileSelection(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const parsed = parsePlaylist(evt.target.result);
+                saveCustomChannels(parsed);
+            };
+            reader.readAsText(file);
+            document.getElementById('localFileInput').value = ''; // Reset files values
+        }
+
+        function saveCustomChannels(list) {
+            if (list.length > 0) {
                 const saved = JSON.parse(localStorage.getItem('sleek-custom-stations')) || [];
-                const merged = [...saved, ...imported];
+                const merged = [...saved, ...list];
                 localStorage.setItem('sleek-custom-stations', JSON.stringify(merged));
                 
                 loadStations();
                 renderChannelsList();
-                document.getElementById('importTextarea').value = "";
-                alert("Successfully loaded " + imported.length + " links!");
+                document.getElementById('importPathInput').value = "";
+                alert("Successfully loaded " + list.length + " links!");
                 navigateTo('screen-channels', 'Channels');
             } else {
                 alert("Could not parse valid stream lines.");
