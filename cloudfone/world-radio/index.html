@@ -170,6 +170,12 @@
             justify-content: center;
             cursor: pointer;
             border-radius: 50%;
+            transition: transform 0.1s ease-in-out, background-color 0.1s ease-in-out;
+        }
+        /* Click animation class */
+        .active-click {
+            transform: scale(0.75);
+            background-color: rgba(255, 255, 255, 0.2);
         }
         .action-btn {
             width: 100%;
@@ -292,17 +298,18 @@
             </div>
 
             <div class="player-controls">
-                <div id="btn-prev" tabindex="0" class="control-btn" onclick="playPrevious()">
+                <!-- tabindex removed, handled via direct keys now -->
+                <div id="btn-prev" class="control-btn" onclick="animateClick('btn-prev'); playPrevious()">
                     <svg style="width: 100%; height: 100%; fill: currentColor;" viewBox="0 0 24 24">
                         <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
                     </svg>
                 </div>
-                <div id="btn-play" tabindex="0" class="control-btn" onclick="togglePlayState()">
+                <div id="btn-play" class="control-btn" onclick="animateClick('btn-play'); togglePlayState()">
                     <svg id="playSvg" style="width: 100%; height: 100%; fill: currentColor;" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                     </svg>
                 </div>
-                <div id="btn-next" tabindex="0" class="control-btn" onclick="playNext()">
+                <div id="btn-next" class="control-btn" onclick="animateClick('btn-next'); playNext()">
                     <svg style="width: 100%; height: 100%; fill: currentColor;" viewBox="0 0 24 24">
                         <path d="M6 18l8.5-6L6 6zm9-12h2v12h-2z"/>
                     </svg>
@@ -426,6 +433,16 @@
             window.addEventListener('keydown', handleDPadControls);
             focusFirstInActiveContext();
         });
+
+        // Generates the visual press animation for player buttons
+        function animateClick(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.classList.add('active-click');
+            setTimeout(() => {
+                el.classList.remove('active-click');
+            }, 150);
+        }
 
         function loadConfig() {
             const saved = localStorage.getItem('sleek-ui-config');
@@ -661,7 +678,6 @@
             }
         }
 
-        // Standard Dynamic Playlist Parser
         function parsePlaylist(text) {
             const lines = text.split(/\r?\n/);
             const list = [];
@@ -747,7 +763,6 @@
             return list;
         }
 
-        // Active Load Path handler
         function fetchAndCompilePlaylist() {
             const path = document.getElementById('importPathInput').value.trim();
             if (!path) {
@@ -757,7 +772,6 @@
             fetchPreset(path);
         }
 
-        // Preset execution & Path fetch logic
         function fetchPreset(path) {
             fetch(path)
                 .then(response => {
@@ -775,7 +789,6 @@
                 });
         }
 
-        // Local storage file browsers handlers
         function triggerFileBrowser() {
             document.getElementById('localFileInput').click();
         }
@@ -790,7 +803,7 @@
                 saveCustomChannels(parsed);
             };
             reader.readAsText(file);
-            document.getElementById('localFileInput').value = ''; // Reset files values
+            document.getElementById('localFileInput').value = '';
         }
 
         function saveCustomChannels(list) {
@@ -826,6 +839,15 @@
         }
 
         function focusFirstInActiveContext() {
+            // Ignore focus auto-assignment for the player view 
+            // since we removed the standard D-pad focus system from the player controls
+            const activeScreen = historyStack[historyStack.length - 1];
+            const overlay = document.getElementById('menuOverlay');
+            
+            if (activeScreen === 'screen-player' && !overlay.classList.contains('active')) {
+                return;
+            }
+
             const activeOverlay = document.querySelector('.menu-overlay.active');
             let selector = ".app-screen.active [tabindex='0']";
             
@@ -840,16 +862,64 @@
         }
 
        function handleDPadControls(e) {
-            // LSK Emulation: Escape key triggers the Options Menu directory
-            if (e.key === 'Escape') {
+            // Options / Menu Key Trigger
+            if (e.key === 'SoftLeft' || e.key === 'Escape') {
                 e.preventDefault();
                 toggleMenuOverlay();
                 return;
             }
 
+            // SoftRight / Back Button Trigger
+            if (e.key === 'SoftRight' || e.key === 'Backspace') {
+                e.preventDefault();
+                handleRSKAction();
+                return;
+            }
+
             const overlay = document.getElementById('menuOverlay');
             const isActiveOverlay = overlay.classList.contains('active');
+            const activeScreen = historyStack[historyStack.length - 1];
 
+            // 1. D-PAD direct mappings for the Player Screen (Focus system removed here)
+            if (activeScreen === 'screen-player' && !isActiveOverlay) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    animateClick('btn-prev');
+                    playPrevious();
+                    return;
+                }
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    animateClick('btn-next');
+                    playNext();
+                    return;
+                }
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    animateClick('btn-play');
+                    togglePlayState();
+                    return;
+                }
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (navigator.volumeManager) {
+                        navigator.volumeManager.requestShow();
+                        navigator.volumeManager.requestUp();
+                    }
+                    return;
+                }
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (navigator.volumeManager) {
+                        navigator.volumeManager.requestShow();
+                        navigator.volumeManager.requestDown();
+                    }
+                    return;
+                }
+                return; 
+            }
+
+            // 2. Standard list focus navigation logic for other menus (Kept as requested)
             const queryContext = isActiveOverlay 
                 ? '.menu-overlay.active [tabindex="0"]' 
                 : '.app-screen.active [tabindex="0"]';
