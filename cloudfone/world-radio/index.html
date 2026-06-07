@@ -864,26 +864,38 @@ window.addEventListener('back', (event) => {
             }
         }
 
-       function handleDPadControls(e) {
-            // Options / Menu Key Trigger
-            if (e.key === 'SoftLeft' || e.key === 'Escape') {
+     function handleDPadControls(e) {
+            const overlay = document.getElementById('menuOverlay');
+            const isActiveOverlay = overlay.classList.contains('active');
+            const activeScreen = historyStack[historyStack.length - 1];
+
+            // =========================================================
+            // NEW LOGIC: If menu is open, SoftRight and Escape close it
+            // =========================================================
+            if (isActiveOverlay && (e.key === 'SoftRight' || e.key === 'Escape' || e.key === 'Backspace')) {
+                e.preventDefault();
+                overlay.classList.remove('active');
+                focusFirstInActiveContext();
+                return;
+            }
+
+            // Open Menu Trigger (SoftLeft or Escape opens it if closed)
+            if (!isActiveOverlay && (e.key === 'SoftLeft' || e.key === 'Escape')) {
                 e.preventDefault();
                 toggleMenuOverlay();
                 return;
             }
 
-            // SoftRight / Back Button Trigger
-            if (e.key === 'SoftRight' || e.key === 'Backspace') {
+            // SoftRight / Back Button Trigger (Navigates Back if menu is closed)
+            if (!isActiveOverlay && (e.key === 'SoftRight' || e.key === 'Backspace')) {
                 e.preventDefault();
                 handleRSKAction();
                 return;
             }
 
-            const overlay = document.getElementById('menuOverlay');
-            const isActiveOverlay = overlay.classList.contains('active');
-            const activeScreen = historyStack[historyStack.length - 1];
-
-            // 1. D-PAD direct mappings for the Player Screen (Focus system removed here)
+            // =========================================================
+            // 1. D-PAD direct mappings for the Player Screen 
+            // =========================================================
             if (activeScreen === 'screen-player' && !isActiveOverlay) {
                 if (e.key === 'ArrowLeft') {
                     e.preventDefault();
@@ -922,7 +934,9 @@ window.addEventListener('back', (event) => {
                 return; 
             }
 
-            // 2. Standard list focus navigation logic for other menus (Kept as requested)
+            // =========================================================
+            // 2. Standard list focus navigation logic for other menus 
+            // =========================================================
             const queryContext = isActiveOverlay 
                 ? '.menu-overlay.active [tabindex="0"]' 
                 : '.app-screen.active [tabindex="0"]';
