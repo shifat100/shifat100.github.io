@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Canvas IP TV</title>
+    <!-- HLS.js Library added for robust .m3u8 playback on Cloud Phones -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        /* --- RESET & BASIC --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #222; display: flex; justify-content: center; align-items: center; height: 100vh; color: white; overflow: hidden; }
+
+        /* --- CONTAINER --- */
+        #app-container { width: 100%; height: 100%; max-width: 240px; max-height: 320px; background-color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+
+        /* --- HEADER --- */
+        header { height: 26px; background-color: #202020; display: flex; align-items: center; padding: 0 8px; border-bottom: 2px solid #009be5; z-index: 10; position: relative; }
+        .header-title { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #search-input { width: 100%; height: 22px; background: #fff; border: 2px solid #009be5; color: #000; font-size: 12px; padding: 0 5px; border-radius: 2px; display: none; position: absolute; left: 0; top: 2px; right: 0; margin: 0 4px; z-index: 20; }
+
+        /* --- MAIN VIEW (List & Grid) --- */
+        main { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; scroll-behavior: smooth; }
+        
+        /* --- LIST STYLE (Updated with Icons) --- */
+        .list-container { display: flex; flex-direction: column; }
+        .list-item { display: flex; flex-direction: row; align-items: center; padding: 6px 8px; border-bottom: 1px solid #222; cursor: pointer; overflow: hidden; }
+        
+        .list-icon { width: 36px; height: 36px; border-radius: 4px; margin-right: 10px; object-fit: contain; background: #fff; flex-shrink: 0; }
+        .list-icon.placeholder { background: #555; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; border: 1px solid #777; color: #fff; }
+        
+        .list-text-container { display: flex; flex-direction: column; overflow: hidden; flex: 1; justify-content: center; }
+        .title-container { width: 100%; overflow: hidden; white-space: nowrap; }
+        .list-item span.title { font-size: 14px; color: #ccc; font-weight: 500; display: inline-block; }
+        .list-item span.group { font-size: 10px; color: #777; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .list-item.focused { background-color: #009be5; }
+        .list-item.focused span.title { color: #fff; font-weight: 600; }
+        .list-item.focused span.group { color: #d0e7ff; }
+
+        /* Marquee Animation for Focused Items */
+        .list-item.focused .marquee-text { animation: marquee 4s linear infinite; padding-right: 50px; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- GRID STYLE --- */
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; width: 100%; }
+        @media (max-width: 140px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr) !important; }
+            .header-title { font-size: 11px; }
+            .soft-btn { font-size: 10px; }
+        }
+
+        .grid-item { background: #333; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 3px; border: 2px solid transparent; cursor: pointer; overflow: hidden; padding: 2px; }
+        .grid-item img { width: 80%; height: 50%; object-fit: contain; margin-bottom: 2px; background: #fff; border-radius: 2px; }
+        .grid-item .title-container { width: 100%; overflow: hidden; white-space: nowrap; text-align: center; }
+        .grid-item span { font-size: 10px; display: inline-block; color: #ccc; }
+        .grid-item.focused { border-color: #009be5; background: #444; }
+        .grid-item.focused span { color: #fff; font-weight: bold; }
+        .grid-item.focused .marquee-text { animation: marquee 3s linear infinite; padding-right: 20px; }
+        .grid-placeholder { width: 30px; height: 30px; background: #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; color: #888; margin-bottom: 2px;}
+
+        /* --- FOOTER --- */
+        footer { height: 30px; background-color: #000; display: flex; justify-content: space-between; align-items: center; padding: 0 8px; border-top: 1px solid #333; z-index: 200; position: relative; }
+        .soft-btn { min-width: 30px; height: 100%; display: flex; align-items: center; color: white; font-weight: 600; font-size: 11px; cursor: pointer; }
+        .soft-center { flex: 1; justify-content: center; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        svg { fill: white; width: 18px; height: 18px; pointer-events: none; }
+
+        /* --- PLAYER UI --- */
+        #player-ui { position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 30px); background: black; z-index: 100; display: none; overflow: hidden; }
+        video { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform 0.2s ease; }
+        
+        #video-controls, #player-top { position: absolute; width: 100%; background: rgba(0,0,0,0.7); z-index: 110; transition: opacity 0.3s; display: flex; }
+        #video-controls { bottom: 0; left: 0; padding: 4px; flex-direction: column; gap: 2px; }
+        #player-top { top: 0; left: 0; padding: 4px; justify-content: space-between; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
+        .hidden { opacity: 0; pointer-events: none; }
+
+        .ctrl-row { display: flex; align-items: center; justify-content: space-between; gap: 5px; }
+        .time-text { font-size: 10px; color: #ddd; min-width: 50px; }
+        input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; background: #555; border-radius: 2px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: #009be5; border-radius: 50%; }
+        .icon-btn { width: 20px; height: 20px; padding: 2px; cursor: pointer; }
+        .p-title { font-size: 11px; color: #fff; font-weight: bold; text-shadow: 1px 1px 2px black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+
+        /* --- MODALS --- */
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: #1a1a1a; width: 95%; max-height: 90%; border-radius: 4px; overflow-y: auto; border: 1px solid #444; display: flex; flex-direction: column; }
+        .modal-header { background: #009be5; color: white; padding: 4px; font-weight: bold; font-size: 13px; text-align: center; }
+        .menu-item { padding: 8px 6px; border-bottom: 1px solid #333; color: #ccc; font-size: 12px; cursor: pointer; }
+        .menu-item.focused { background: #333; color: white; border-left: 3px solid #009be5; }
+
+        /* --- NETWORK INPUT UI --- */
+        .input-box { background: #fff; color: #000; border: 2px solid #009be5; width: 100%; padding: 6px; font-size: 12px; outline: none; border-radius: 2px; margin-top: 5px; }
+        .input-box:focus { background: #e0f7fa; }
+
+        #osd { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 6px 12px; border-radius: 4px; font-size: 14px; z-index: 300; display: none; pointer-events: none; text-align: center; border: 1px solid #555; width: max-content; max-width: 90%;}
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- HEADER -->
+        <header id="header-bar">
+            <div class="header-title">Canvas IP TV</div>
+            <input type="text" id="search-input" placeholder="Search...">
+        </header>
+
+        <!-- MAIN VIEW -->
+        <main id="main-view"></main>
+
+        <!-- PLAYER UI -->
+        <div id="player-ui">
+            <video id="video-source" playsinline></video>
+
+            <div id="player-top">
+                <div class="icon-btn" id="btn-back"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
+                <div class="p-title" id="p-title-text">Channel</div>
+                <div class="icon-btn" id="btn-settings"><svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.5.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49-.12-.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg></div>
+            </div>
+
+            <div id="video-controls">
+                <div class="ctrl-row">
+                    <input type="range" id="seek-bar" value="0" min="0" max="100">
+                </div>
+                <div class="ctrl-row">
+                    <div class="icon-btn" id="btn-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+                    <div class="time-text" id="time-display">00:00</div>
+                    <div style="flex:1"></div>
+                    <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                    <input type="range" id="vol-bar" value="100" min="0" max="100" style="width: 50px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer id="footer-bar">
+            <div class="soft-btn soft-left" id="sk-left"></div>
+            <div class="soft-btn soft-center" id="sk-center"></div>
+            <div class="soft-btn soft-right" id="sk-right"></div>
+        </footer>
+
+        <!-- MENU MODAL -->
+        <div id="menu-modal" class="modal-overlay">
+            <div class="modal-box">
+                <div class="modal-header" id="modal-title">Menu</div>
+                <div id="menu-list"></div>
+            </div>
+        </div>
+
+        <!-- NETWORK STREAM MODAL -->
+        <div id="network-modal" class="modal-overlay">
+            <div class="modal-box" style="padding: 10px;">
+                <div class="modal-header" style="margin-bottom: 5px;">Network Stream</div>
+                <div style="font-size: 11px; color: #ccc;">Enter m3u8/mp4 URL:</div>
+                <input type="text" id="network-input" class="input-box" placeholder="http://...">
+            </div>
+        </div>
+
+        <!-- OSD TOAST -->
+        <div id="osd">Info</div>
+        <input type="file" id="fileInput" accept=".m3u,.txt">
+    </div>
+
+    <script>
+        // --- ASSETS ---
+        const ICONS = {
+            play: `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`,
+            pause: `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`,
+            menu: `<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`,
+            search: `<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`,
+            back: `<svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>`,
+            close: `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 17.59 13.41 12z"/></svg>`,
+            check: `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`,
+            quit: `<svg viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H10v2h10v14H10v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`
+            
+        };
+
+        const DEFAULT_PLAYLIST = '#EXTM3U\n' +
+            '#EXTINF:-1 group-title="Bangla" tvg-logo="https://upload.wikimedia.org/wikipedia/bn/thumb/f/f6/%E0%A6%B8%E0%A6%AE%E0%A6%AF%E0%A6%BC_%E0%A6%9F%E0%A6%BF%E0%A6%AD%E0%A6%BF%E0%A6%B0_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg/330px-%E0%A6%B8%E0%A6%AE%E0%A6%AF%E0%A6%BC_%E0%A6%9F%E0%A6%BF%E0%A6%AD%E0%A6%BF%E0%A6%B0_%E0%A6%B2%E0%A7%8B%E0%A6%97%E0%A7%8B.svg.png",Somoy TV\n' +
+            'https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8\n' +
+            '#EXTINF:-1 group-title="Bangla" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Jamuna_TV_logo.svg/960px-Jamuna_TV_logo.svg.png",Jamuna TV\n' +
+            'https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/index.m3u8\n' +
+            '#EXTINF:-1 group-title="Sports" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/T_Sports_logo.svg/250px-T_Sports_logo.svg.png",T Sports\n' +
+            'http://103.60.204.26:3255/TSportsHD/tracks-v1a1/mono.m3u8\n' +
+            '#EXTINF:-1 group-title="Movies" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Big.Buck.Bunny.-.Opening.Screen.png/960px-Big.Buck.Bunny.-.Opening.Screen.png",Sample Big Buck Bunny\n' +
+            'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+
+        const LS_KEY = 'bd_iptv_playlist';
+
+        // --- STATE ---
+        const State = {
+            view: 'list', // list, menu, player, search, network
+            layout: 'list', // list or grid
+            channels:[], filtered:[], listIdx: 0, menuIdx: 0,
+            pRot: 0, pZoom: 1.0, objectFit: 'contain', isPlaying: false, ctrlTimeout: null, hls: null
+        };
+
+        // --- DOM ---
+        const UI = {
+            main: document.getElementById('main-view'),
+            headerTitle: document.querySelector('.header-title'),
+            search: document.getElementById('search-input'),
+            skL: document.getElementById('sk-left'), skC: document.getElementById('sk-center'), skR: document.getElementById('sk-right'),
+            player: document.getElementById('player-ui'), video: document.getElementById('video-source'),
+            controls: document.getElementById('video-controls'), topBar: document.getElementById('player-top'), title: document.getElementById('p-title-text'),
+            btnPlay: document.getElementById('btn-play'), btnBack: document.getElementById('btn-back'), btnSet: document.getElementById('btn-settings'),
+            volBar: document.getElementById('vol-bar'), seekBar: document.getElementById('seek-bar'),
+            modal: document.getElementById('menu-modal'), mList: document.getElementById('menu-list'), mTitle: document.getElementById('modal-title'),
+            netModal: document.getElementById('network-modal'), netInput: document.getElementById('network-input'),
+            osd: document.getElementById('osd'), fileIn: document.getElementById('fileInput')
+        };
+
+        // --- INIT ---
+        window.onload = () => {
+            const saved = localStorage.getItem(LS_KEY);
+            parseM3U(saved || DEFAULT_PLAYLIST, false);
+            if(saved) showOSD("Loaded Saved Data");
+            updateSoftKeys();
+        };
+
+        // --- EVENT LISTENERS (D-PAD & KEYBOARD) ---
+        document.addEventListener('keydown', (e) => {
+            let key = e.key;
+            let action = null;
+
+            if (key === 'Escape' || key === 'SoftLeft' || key === 'F1') action = 'menu';
+            else if (key === 'Backspace' || key === 'SoftRight' || key === 'F2') {
+                if (State.view === 'search' && document.activeElement === UI.search && UI.search.value.length > 0) return; // Allow native backspace delete
+                if (State.view === 'network' && document.activeElement === UI.netInput && UI.netInput.value.length > 0) return;
+                action = 'back';
+            }
+            else if (State.view === 'player') {
+                if (key === '4') { State.pRot -= 90; applyTransform(); showOSD("Rot -90"); return; }
+                if (key === '6') { State.pRot += 90; applyTransform(); showOSD("Rot +90"); return; }
+                if (key === '1' || key === '*') { State.pZoom = Math.max(0.5, State.pZoom - 0.2); applyTransform(); showOSD(`Zoom ${State.pZoom.toFixed(1)}`); return; }
+                if (key === '3' || key === '#') { State.pZoom += 0.2; applyTransform(); showOSD(`Zoom ${State.pZoom.toFixed(1)}`); return; }
+            }
+
+            if (!action) {
+                if (key === 'ArrowUp') action = 'up';
+                else if (key === 'ArrowDown') action = 'down';
+                else if (key === 'ArrowLeft') action = State.view === 'player' ? 'seekleft' : 'left';
+                else if (key === 'ArrowRight') action = State.view === 'player' ? 'seekright' : 'right';
+                else if (key === 'Enter' || key === 'SoftCenter' || key === '5') action = 'enter';
+            }
+
+            // Direct alphanumeric typing triggers search
+            if (State.view === 'list' && key.length === 1 && /[a-z0-9]/i.test(key)) {
+                e.preventDefault(); // Prevent native typing to avoid double letters
+                enterSearch();
+                UI.search.value += key;
+                triggerSearch(UI.search.value);
+                return;
+            }
+
+            if (action) { e.preventDefault(); handleInput(action); }
+        });
+
+        // --- INPUT ROUTER ---
+        function handleInput(action) {
+            if (State.view === 'player') {
+                showControlsTemp();
+                if (action === 'back') closePlayer();
+                if (action === 'enter') togglePlay();
+                if (action === 'seekright') seekVideo(10);
+                if (action === 'seekleft') seekVideo(-10);
+                if (action === 'up') changeVol(0.1);
+                if (action === 'down') changeVol(-0.1);
+                if (action === 'menu') toggleAspectRatio();
+                return;
+            }
+
+            if (State.view === 'list') {
+                const isGrid = State.layout === 'grid';
+                const cols = window.innerWidth <= 140 ? 2 : 3;
+
+                if (action === 'up') {
+                    if (State.listIdx === 0 && UI.search.style.display === 'block') {
+                        State.view = 'search'; // Move focus back to search box
+                        UI.search.focus();
+                        updateSoftKeys();
+                    } else {
+                        moveList(isGrid ? -cols : -1); 
+                    }
+                }
+                if (action === 'down') moveList(isGrid ? cols : 1);
+                if (action === 'left') { if (isGrid) moveList(-1); }
+                if (action === 'right') { if (isGrid) moveList(1); else enterSearch(); } // Right arrow triggers Search in List mode
+                
+                if (action === 'search') enterSearch(); // Triggered by RSK Softkey
+                
+                if (action === 'enter') {
+                    if(State.filtered.length > 0) playChannel(State.filtered[State.listIdx]);
+                }
+                if (action === 'menu') openMenu();
+                if (action === 'back') {
+                    if (UI.search.style.display === 'block') closeSearch();
+                }
+                return;
+            }
+
+            if (State.view === 'search') {
+                if (action === 'down' || action === 'enter') {
+                    if (State.filtered.length > 0) { 
+                        UI.search.blur(); 
+                        State.view = 'list'; 
+                        updateSoftKeys(); // Changes RSK from GO to Close
+                    }
+                }
+                if (action === 'back') closeSearch();
+                return;
+            }
+
+            if (State.view === 'menu') {
+                if (action === 'up') navMenu(-1);
+                if (action === 'down') navMenu(1);
+                if (action === 'enter') execMenu();
+                if (action === 'back') closeMenu();
+                return;
+            }
+
+            if (State.view === 'network') {
+                if (action === 'enter') {
+                    const url = UI.netInput.value.trim();
+                    if(url) {
+                        closeNetworkInput();
+                        playChannel({name: "Network Stream", url: url});
+                    } else {
+                        showOSD("Please enter a URL");
+                    }
+                }
+                if (action === 'back') closeNetworkInput();
+                return;
+            }
+        }
+
+        // --- RENDER LOGIC (LIST & GRID) ---
+        function renderList() {
+            UI.main.innerHTML = '';
+            const container = document.createElement('div');
+            container.className = State.layout === 'grid' ? 'grid-container' : 'list-container';
+
+            State.filtered.forEach((ch, i) => {
+                const div = document.createElement('div');
+                const focused = i === State.listIdx;
+                div.className = (State.layout === 'grid' ? 'grid-item' : 'list-item') + (focused ? ' focused' : '');
+                
+                const needsMarquee = ch.name.length > (State.layout === 'grid' ? 10 : 20);
+                const titleSpanHtml = `<span class="title ${focused && needsMarquee ? 'marquee-text' : ''}">${ch.name}${focused && needsMarquee ? ' &nbsp; &nbsp; ' + ch.name : ''}</span>`;
+
+                if (State.layout === 'grid') {
+                    if (ch.logo) {
+                        const img = document.createElement('img'); img.src = ch.logo; img.onerror = () => img.style.display='none'; div.appendChild(img);
+                    } else {
+                        const ph = document.createElement('div'); ph.className = 'grid-placeholder'; ph.innerText = ch.name.substring(0,1).toUpperCase(); div.appendChild(ph);
+                    }
+                    div.innerHTML += `<div class="title-container">${titleSpanHtml}</div>`;
+                } else {
+                    const iconHtml = ch.logo 
+                        ? `<img src="${ch.logo}" class="list-icon" onerror="this.style.display='none'">` 
+                        : `<div class="list-icon placeholder">${ch.name.substring(0,1).toUpperCase()}</div>`;
+                    
+                    div.innerHTML = `
+                        ${iconHtml}
+                        <div class="list-text-container">
+                            <div class="title-container">${titleSpanHtml}</div>
+                            ${ch.group ? `<span class="group">${ch.group}</span>` : ''}
+                        </div>
+                    `;
+                }
+                div.onclick = () => { State.listIdx = i; renderList(); playChannel(ch); };
+                container.appendChild(div);
+            });
+            UI.main.appendChild(container);
+            
+            const f = container.querySelector('.focused');
+            if (f) {
+                f.scrollIntoView({ block: 'center' });
+                UI.headerTitle.innerText = State.filtered.length > 0 ? State.filtered[State.listIdx].name : "No Channels";
+            }
+        }
+
+        function moveList(delta) {
+            const n = State.listIdx + delta;
+            if (n >= 0 && n < State.filtered.length) { State.listIdx = n; renderList(); }
+        }
+
+        // --- MENU LOGIC ---
+        function openMenu() {
+            State.view = 'menu';
+            UI.mTitle.innerText = "Options";
+            UI.modal.style.display = 'flex';
+            
+            const items =[
+                { t: 'Toggle List / Grid', a: () => { State.layout = State.layout === 'list' ? 'grid' : 'list'; closeMenu(); renderList(); } },
+                { t: 'Network Stream', a: () => { closeMenu(); openNetworkInput(); } },
+                { t: 'Load Playlist (M3U)', a: () => UI.fileIn.click() },
+                { t: 'Restore Defaults', a: () => { localStorage.removeItem(LS_KEY); parseM3U(DEFAULT_PLAYLIST); closeMenu(); showOSD("Defaults Restored"); } },
+                { t: 'About', a: () => { showOSD("IPTV Cloud Edition v3"); closeMenu(); } }
+            ];
+            renderMenuOptions(items);
+            updateSoftKeys();
+        }
+
+        let currentMenuItems =[];
+        function renderMenuOptions(items) {
+            currentMenuItems = items; UI.mList.innerHTML = '';
+            items.forEach((it, i) => {
+                const d = document.createElement('div');
+                d.className = 'menu-item ' + (i === 0 ? 'focused' : '');
+                d.innerText = it.t; 
+                d.onclick = () => { State.menuIdx = i; execMenu(); };
+                UI.mList.appendChild(d);
+            });
+            State.menuIdx = 0;
+        }
+
+        function navMenu(d) {
+            const el = document.querySelectorAll('.menu-item');
+            el[State.menuIdx].classList.remove('focused');
+            State.menuIdx = (State.menuIdx + d + el.length) % el.length;
+            el[State.menuIdx].classList.add('focused');
+        }
+
+        function execMenu() { currentMenuItems[State.menuIdx].a(); }
+        function closeMenu() { State.view = State.isPlaying ? 'player' : 'list'; UI.modal.style.display = 'none'; updateSoftKeys(); }
+
+        function openNetworkInput() { State.view = 'network'; UI.netModal.style.display = 'flex'; UI.netInput.value = ''; UI.netInput.focus(); updateSoftKeys(); }
+        function closeNetworkInput() { State.view = 'list'; UI.netModal.style.display = 'none'; UI.netInput.blur(); updateSoftKeys(); }
+
+        // --- SEARCH LOGIC ---
+        function enterSearch() { 
+            State.view = 'search'; 
+            UI.search.style.display = 'block'; 
+            UI.search.focus(); 
+            updateSoftKeys(); 
+        }
+        function closeSearch() { 
+            State.view = 'list'; 
+            UI.search.style.display = 'none'; 
+            UI.search.value = ''; 
+            State.filtered = State.channels; 
+            State.listIdx = 0;
+            renderList(); 
+            updateSoftKeys(); 
+        }
+        function triggerSearch(t) { 
+            State.filtered = State.channels.filter(c => c.name.toLowerCase().includes(t.toLowerCase())); 
+            State.listIdx = 0; 
+            renderList(); 
+        }
+        UI.search.addEventListener('input', e => triggerSearch(e.target.value));
+
+        // --- ROBUST PLAYER LOGIC (HLS.js + Native Fallback) ---
+        function playChannel(ch) {
+            State.view = 'player';
+            UI.player.style.display = 'block';
+            document.getElementById('header-bar').style.display = 'none';
+            UI.title.textContent = ch.name;
+            
+            State.pZoom = 1.0; State.pRot = 0; State.objectFit = 'contain';
+            applyTransform();
+
+            if (State.hls) { State.hls.destroy(); State.hls = null; }
+            UI.video.pause();
+            UI.video.removeAttribute('src');
+
+            const startPlay = () => {
+                UI.video.play().then(() => {
+                    State.isPlaying = true; updatePlayBtn();
+                }).catch(e => {
+                    console.error("Play Error:", e);
+                    showOSD("Playback Failed / Blocked");
+                    setTimeout(() => { if(State.view === 'player') closePlayer(); }, 2000);
+                });
+            };
+
+            if (ch.url.includes('.m3u8') && typeof Hls !== 'undefined' && Hls.isSupported()) {
+                State.hls = new Hls({ debug: false });
+                State.hls.loadSource(ch.url);
+                State.hls.attachMedia(UI.video);
+                State.hls.on(Hls.Events.MANIFEST_PARSED, startPlay);
+                
+                State.hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) showOSD("Network Error / Dead Link");
+                        else showOSD("Stream Error");
+                        setTimeout(() => { if(State.view === 'player') closePlayer(); }, 2000);
+                    }
+                });
+            } else {
+                UI.video.src = ch.url;
+                UI.video.onerror = () => {
+                    showOSD("Format Not Supported");
+                    setTimeout(() => { if(State.view === 'player') closePlayer(); }, 2000);
+                };
+                startPlay();
+            }
+            
+            showControlsTemp();
+            updateSoftKeys();
+        }
+
+        function closePlayer() {
+            UI.video.pause(); UI.video.removeAttribute('src');
+            if (State.hls) { State.hls.destroy(); State.hls = null; }
+            UI.player.style.display = 'none';
+            document.getElementById('header-bar').style.display = 'flex';
+            State.view = 'list';
+            State.isPlaying = false;
+            UI.headerTitle.innerText = "Canvas IP TV"; 
+            updateSoftKeys();
+        }
+
+        function applyTransform() {
+            UI.video.style.transform = `scale(${State.pZoom}) rotate(${State.pRot}deg)`;
+            UI.video.style.objectFit = State.objectFit;
+        }
+
+        function toggleAspectRatio() {
+            State.objectFit = State.objectFit === 'contain' ? 'cover' : 'contain'; 
+            applyTransform(); 
+            showOSD("Aspect: " + State.objectFit);
+        }
+
+        // --- HELPERS ---
+        function parseM3U(data, saveToStore = false) {
+            if (saveToStore) { 
+                try { localStorage.setItem(LS_KEY, data); showOSD("Playlist Saved"); } 
+                catch(e) { showOSD("Save Failed"); } 
+            }
+            State.channels =[]; 
+            let item = {};
+            const lines = data.split('\n');
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (line.indexOf('#EXTINF:') === 0) {
+                    let logo = line.match(/tvg-logo="([^"]*)"/); 
+                    item.logo = logo ? logo[1] : null;
+                    let group = line.match(/group-title="([^"]*)"/); 
+                    item.group = group ? group[1] : 'General';
+                    let parts = line.split(','); 
+                    item.name = parts[parts.length - 1].trim();
+                } else if (line.length > 0 && line.indexOf('#') !== 0) {
+                    item.url = line; 
+                    State.channels.push(item); 
+                    item = {};
+                }
+            }
+            State.filtered = State.channels; 
+            State.listIdx = 0;
+            renderList();
+        }
+
+        function showOSD(m) { UI.osd.innerText = m; UI.osd.style.display = 'block'; setTimeout(()=>UI.osd.style.display='none', 2000); }
+        
+        function showControlsTemp() {
+            UI.controls.classList.remove('hidden'); UI.topBar.classList.remove('hidden');
+            clearTimeout(State.ctrlTimeout);
+            State.ctrlTimeout = setTimeout(() => { if (State.isPlaying) { UI.controls.classList.add('hidden'); UI.topBar.classList.add('hidden'); } }, 4000);
+        }
+        
+        function togglePlay() { if(UI.video.paused) UI.video.play(); else UI.video.pause(); State.isPlaying = !UI.video.paused; updatePlayBtn(); showControlsTemp(); updateSoftKeys(); }
+        function updatePlayBtn() { UI.btnPlay.innerHTML = State.isPlaying ? ICONS.pause : ICONS.play; }
+        
+        function seekVideo(d) { UI.video.currentTime += d; showControlsTemp(); }
+        function changeVol(d) { 
+            let newVol = Math.max(0, Math.min(1, UI.video.volume + d)); 
+            UI.video.volume = newVol; 
+            UI.volBar.value = newVol * 100; 
+            showOSD("Vol " + Math.round(newVol * 100) + "%"); 
+            showControlsTemp(); 
+        }
+        
+        UI.video.addEventListener('timeupdate', () => { 
+            if(!isNaN(UI.video.duration)) { 
+                UI.seekBar.value = (UI.video.currentTime/UI.video.duration)*100; 
+                document.getElementById('time-display').innerText = Math.floor(UI.video.currentTime/60)+":"+ (Math.floor(UI.video.currentTime%60)).toString().padStart(2, '0'); 
+            } 
+        });
+        
+        // --- SOFTKEYS UPDATE ---
+        function updateSoftKeys() {
+            if (State.view === 'search') { 
+                UI.skL.innerHTML = ""; 
+                UI.skC.innerHTML = "GO"; 
+                UI.skR.innerHTML = ICONS.close; // 'Close' icon inside Search Box
+            }
+            else if (State.view === 'menu') { UI.skL.innerHTML = ""; UI.skC.innerHTML = "OK"; UI.skR.innerHTML = ICONS.back; }
+            else if (State.view === 'network') { UI.skL.innerHTML = ""; UI.skC.innerHTML = "PLAY"; UI.skR.innerHTML = ICONS.back; }
+            else if (State.view === 'player') { UI.skL.innerHTML = "Ratio"; UI.skC.innerHTML = State.isPlaying ? "PAUSE" : "PLAY"; UI.skR.innerHTML = ICONS.back; }
+            else { 
+                // List View
+                UI.skL.innerHTML = ICONS.menu; 
+                UI.skC.innerHTML = "PLAY"; 
+                UI.skR.innerHTML = UI.search.style.display === 'block' ? ICONS.close : ICONS.search; // Shows Search or Close
+            }
+        }
+        
+        // --- MOUSE / TOUCH EVENTS FOR SOFTKEYS ---
+        UI.skL.onclick = () => { if(State.view === 'list') handleInput('menu'); else if (State.view === 'player') toggleAspectRatio(); };
+        UI.skC.onclick = () => handleInput('enter');
+        UI.skR.onclick = () => {
+            if (State.view === 'list' && UI.search.style.display !== 'block') {
+                handleInput('search'); // Opens Search if not open
+            } else {
+                handleInput('back'); // Closes Search or goes back from Player/Menu
+            }
+        };
+        
+        UI.btnPlay.onclick = (e) => { e.stopPropagation(); togglePlay(); };
+        UI.btnBack.onclick = (e) => { e.stopPropagation(); closePlayer(); };
+        UI.btnSet.onclick = (e) => { e.stopPropagation(); toggleAspectRatio(); };
+        
+        UI.fileIn.onchange = e => { const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=v => { parseM3U(v.target.result, true); closeMenu(); }; r.readAsText(f); } };
+
+    </script>
+</body>
+</html>
