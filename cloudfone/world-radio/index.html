@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>World Radio</title>
     <style>
         /* CSS Reset & Core Standards */
@@ -11,17 +11,18 @@
             margin: 0;
             padding: 0;
         }
-        body {
-            background-color: #202020;
-            color: #ffffff;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+       body {
+    background-color: #202020;
+    color: #ffffff;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    height: 100vh;  /* পুরোনো ব্রাউজারের জন্য ফলব্যাক */
+    height: 100dvh; /* অ্যান্ড্রয়েড/iOS এর নেভিগেশন বার ফিক্স */
+    display: flex;
+    flex-direction: column;
+}
 
         /* Responsive Layout Base Grid */
         header {
@@ -44,17 +45,18 @@
         main::-webkit-scrollbar {
             display: none;
         }
-        footer {
-            background-color: #000000;
-            border-top: 1px solid #27272a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            flex-shrink: 0;
-            z-index: 40;
-            font-weight: bold;
-        }
+      footer {
+    background-color: #000000;
+    border-top: 1px solid #27272a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-shrink: 0;
+    z-index: 40;
+    font-weight: bold;
+    padding-bottom: env(safe-area-inset-bottom); /* নতুন ফিক্স */
+}
 
         /* View State Architecture */
         .app-screen {
@@ -343,7 +345,7 @@
                 <span>Browse Device</span>
             </div>
             <!-- Hidden input picker to trigger on keypad click -->
-            <input type="file" id="localFileInput" style="display:none;" accept=".m3u,.m3u8,.pls,.xspf,.asx" onchange="handleFileSelection(event)">
+            <input type="file" id="localFileInput" style="display:none;" accept=".m3u,.m3u8,.pls,.opml,.xspf,.asx" onchange="handleFileSelection(event)">
 
             <!-- Named Quick Presets List items -->
             <span style="font-size: 8px; color: #71717a; font-weight: bold; margin-top: 4px;">Quick Preset Playlists:</span>
