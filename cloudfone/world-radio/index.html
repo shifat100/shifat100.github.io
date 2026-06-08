@@ -744,6 +744,29 @@ window.addEventListener('back', (event) => {
                     });
                 });
             }
+                else if (text.toLowerCase().includes('<opml') && text.toLowerCase().includes('<outline')) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, "text/xml");
+        const outlines = doc.getElementsByTagName("outline");
+        let validStreamCount = 0;
+        
+        for (let i = 0; i < outlines.length; i++) {
+            const outline = outlines[i];
+            const url = outline.getAttribute("url") || outline.getAttribute("URL") || outline.getAttribute("xmlUrl");
+            
+            if (url) {
+                // OPMLs store names in 'text' or 'title' attributes
+                const title = outline.getAttribute("text") || outline.getAttribute("title") || "OPML Stream " + (validStreamCount + 1);
+                list.push({
+                    id: "opml-" + Date.now() + "-" + validStreamCount,
+                    name: title.trim(),
+                    country: "OPML",
+                    url: url.trim()
+                });
+                validStreamCount++;
+            }
+        }
+    }
             else {
                 let currentTitle = "";
                 for (let i = 0; i < lines.length; i++) {
