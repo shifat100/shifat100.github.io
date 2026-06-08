@@ -529,28 +529,29 @@ window.addEventListener('back', (event) => {
         }
 
         function handleRSKAction() {
-            const overlay = document.getElementById('menuOverlay');
-            if (overlay.classList.contains('active')) {
-                overlay.classList.remove('active');
-                focusFirstInActiveContext();
-                return;
-            }
+    const overlay = document.getElementById('menuOverlay');
+    if (overlay.classList.contains('active')) {
+        overlay.classList.remove('active');
+        focusFirstInActiveContext();
+        return;
+    }
 
-            if (historyStack.length > 1) {
-                historyStack.pop();
-                const prevId = historyStack[historyStack.length - 1];
-                
-                let title = "Player";
-                if (prevId === "screen-channels") title = "Channels";
-                if (prevId === "screen-load-path") title = "Load Path";
-                if (prevId === "screen-local-presets") title = "Local & Presets";
-                if (prevId === "screen-settings") title = "Settings";
+    if (historyStack.length > 1) {
+        historyStack.pop();
+        const prevId = historyStack[historyStack.length - 1];
+        
+        let title = "Player";
+        if (prevId === "screen-channels") title = "Channels";
+        if (prevId === "screen-load-path") title = "Load Path";
+        if (prevId === "screen-local-presets") title = "Local & Presets";
+        if (prevId === "screen-settings") title = "Settings";
 
-                navigateTo(prevId, title);
-            } else {
-                window.history.back();
-            }
-        }
+        navigateTo(prevId, title);
+    } else {
+        // CHANGED: Explicitly exit the app instead of relying on browser history
+        window.close(); 
+    }
+}
 
         function renderChannelsList(filteredList = null) {
             const container = document.getElementById('channelsList');
