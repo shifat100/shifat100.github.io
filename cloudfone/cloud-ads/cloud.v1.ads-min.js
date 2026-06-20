@@ -316,7 +316,7 @@
     };
 
     window.getCloudAd =  function (config) {
-        processAdRequest(config);
+       // processAdRequest(config);
     };
 
     while (window.cloudAdsQueue.length > 0) {
