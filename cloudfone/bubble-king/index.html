@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Magnetic Bubble Spinner</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #gameCanvas {
+            display: block;
+            background: radial-gradient(circle, #0e0e2d 0%, #010105 100%);
+            image-rendering: optimizeSpeed;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: -o-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas" width="320" height="480"></canvas>
+
+    <script>
+        (function() {
+            var canvas = document.getElementById("gameCanvas");
+            var ctx = canvas.getContext("2d");
+
+            // Game Virtual Resolution (Expanded for more space)
+            var WIDTH = 320;
+            var HEIGHT = 480;
+            var RADIUS = 11;
+            var DIAMETER = 22;
+            var ROW_HEIGHT = 19; 
+            
+            // Core coordinate offsets
+            var centerX = 160;
+            var centerY = 200;
+
+            // Danger boundary line
+            var DANGER_Y = 380;
+
+            // Glass/Bubble Color Schemes
+            var BUBBLE_COLORS = [
+                null,
+                { base: '#ff3b30', highlight: '#ff9500' }, // 1: Red
+                { base: '#007aff', highlight: '#4cd964' }, // 2: Blue
+                { base: '#4cd964', highlight: '#acffad' }, // 3: Green
+                { base: '#ffcc00', highlight: '#fffcad' }, // 4: Yellow
+                { base: '#af52de', highlight: '#ff95ff' }, // 5: Purple
+                { base: '#d4af37', highlight: '#fffdf0' }  // 6: Golden Queen Bubble
+            ];
+
+            // Core States
+            var slots = [];
+            var particles = [];
+            var fallingBubbles = [];
+            
+            var score = 0;
+            var currentLevel = 1;
+            var lives = 3;
+            var maxLives = 5;
+            var shotsFired = 0;
+            var gameOver = false;
+            var levelTransitionTimer = 0;
+            var levelClearedTriggered = false;
+
+            // Magnetic Spinning Physics
+            var clusterAngle = 0;
+            var clusterVelocity = 0;
+
+            // Launcher Config (Aligned within the bottom dashboard)
+            var shooterX = 160;
+            var shooterY = 440;
+            var aimAngle = -Math.PI / 2;
+            var currentBulletColor = 1;
+            var nextBulletColor = 2;
+
+            // Shot Trajectory
+            var shot = {
+                active: false,
+                x: 0,
+                y: 0,
+                vx: 0,
+                vy: 0,
+                color: 1
+            };
+
+            // Input States
+            var isDragging = false;
+            var keysPressed = {}; 
+
+            // Responsive Scaling Engine
+            function resizeCanvas() {
+                var windowWidth = window.innerWidth;
+                var windowHeight = window.innerHeight;
+                var targetRatio = WIDTH / HEIGHT;
+                var currentRatio = windowWidth / windowHeight;
+
+                if (currentRatio > targetRatio) {
+                    canvas.style.height = windowHeight + 'px';
+                    canvas.style.width = (windowHeight * targetRatio) + 'px';
+                } else {
+                    canvas.style.width = windowWidth + 'px';
+                    canvas.style.height = (windowWidth / targetRatio) + 'px';
+                }
+            }
+            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('load', resizeCanvas);
+
+            // Audio Context Setup
+            var audioCtx = null;
+            function initAudio() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }
+
+            function playSynthSound(freqStart, freqEnd, duration, type, volume) {
+                try {
+                    initAudio();
+                    if (!audioCtx) return;
+                    var osc = audioCtx.createOscillator();
+                    var gain = audioCtx.createGain();
+                    osc.type = type || 'sine';
+                    osc.frequency.setValueAtTime(freqStart, audioCtx.currentTime);
+                    if (freqEnd) {
+                        osc.frequency.exponentialRampToValueAtTime(freqEnd, audioCtx.currentTime + duration);
+                    }
+                    gain.gain.setValueAtTime(volume || 0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + duration);
+                } catch(e) {}
+            }
+
+            // Generate concentric hexagonal rings around the Queen
+            function generateMagneticSlots() {
+                slots = [];
+                var maxRing = 5; 
+                for (var r = -maxRing; r <= maxRing; r++) {
+                    for (var q = -maxRing; q <= maxRing; q++) {
+                        var dist = (Math.abs(q) + Math.abs(q + r) + Math.abs(r)) / 2;
+                        if (dist <= maxRing) {
+                            slots.push({
+                                q: q,
+                                r: r,
+                                rx: (q + r / 2.0) * DIAMETER, 
+                                ry: r * ROW_HEIGHT,           
+                                color: 0,
+                                absX: 0,
+                                absY: 0
+                            });
+                        }
+                    }
+                }
+            }
+
+            function arrayContains(arr, val) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] === val) return true;
+                }
+                return false;
+            }
+
+            function getAvailableColors() {
+                var colors = [];
+                var colorSet = {};
+                for (var i = 0; i < slots.length; i++) {
+                    var s = slots[i];
+                    if (s.color >= 1 && s.color <= 5) {
+                        if (!colorSet[s.color]) {
+                            colorSet[s.color] = true;
+                            colors.push(s.color);
+                        }
+                    }
+                }
+                return colors;
+            }
+
+            function generateLevel() {
+                generateMagneticSlots();
+                
+                for (var i = 0; i < slots.length; i++) {
+                    var s = slots[i];
+                    if (s.q === 0 && s.r === 0) {
+                        s.color = 6; // Central Queen Anchor
+                    } else {
+                        var dist = (Math.abs(s.q) + Math.abs(s.q + s.r) + Math.abs(s.r)) / 2;
+                        
+                        var fillRadius = Math.min(4, 2 + Math.floor((currentLevel - 1) / 2));
+                        var activeColors = Math.min(5, 3 + Math.floor((currentLevel - 1) / 3));
+
+                        if (dist > 0 && dist <= fillRadius) {
+                            if (dist === fillRadius && Math.random() > 0.6) {
+                                s.color = 0;
+                            } else {
+                                s.color = Math.floor(Math.random() * activeColors) + 1;
+                            }
+                        } else {
+                            s.color = 0;
+                        }
+                    }
+                }
+
+                clusterAngle = Math.random() * Math.PI;
+                clusterVelocity = (Math.random() - 0.5) * 0.02;
+                shotsFired = 0;
+                gameOver = false;
+                levelClearedTriggered = false;
+                
+                var avail = getAvailableColors();
+                if (avail.length > 0) {
+                    currentBulletColor = avail[Math.floor(Math.random() * avail.length)];
+                    nextBulletColor = avail[Math.floor(Math.random() * avail.length)];
+                } else {
+                    currentBulletColor = 1;
+                    nextBulletColor = 1;
+                }
+            }
+
+            function rollBullet() {
+                var avail = getAvailableColors();
+                if (avail.length === 0) {
+                    currentBulletColor = 1;
+                    nextBulletColor = 1;
+                    return;
+                }
+                
+                currentBulletColor = nextBulletColor;
+                if (!arrayContains(avail, currentBulletColor)) {
+                    currentBulletColor = avail[Math.floor(Math.random() * avail.length)];
+                }
+                
+                nextBulletColor = avail[Math.floor(Math.random() * avail.length)];
+            }
+
+            function getSlotNeighbors(s) {
+                var list = [];
+                var directions = [
+                    { dq: 1, dr: 0 }, { dq: 1, dr: -1 }, { dq: 0, dr: -1 },
+                    { dq: -1, dr: 0 }, { dq: -1, dr: 1 }, { dq: 0, dr: 1 }
+                ];
+                for (var d = 0; d < directions.length; d++) {
+                    var nq = s.q + directions[d].dq;
+                    var nr = s.r + directions[d].dr;
+                    for (var i = 0; i < slots.length; i++) {
+                        if (slots[i].q === nq && slots[i].r === nr) {
+                            list.push(slots[i]);
+                            break;
+                        }
+                    }
+                }
+                return list;
+            }
+
+            function hasNeighbor(s) {
+                if (s.q === 0 && s.r === 0) return true;
+                var neighbors = getSlotNeighbors(s);
+                for (var i = 0; i < neighbors.length; i++) {
+                    if (neighbors[i].color !== 0) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function dropFloatingBubbles() {
+                var visited = {};
+                var queue = [];
+
+                var queen = null;
+                for (var i = 0; i < slots.length; i++) {
+                    if (slots[i].q === 0 && slots[i].r === 0) {
+                        queen = slots[i];
+                        break;
+                    }
+                }
+
+                if (queen && queen.color !== 0) {
+                    queue.push(queen);
+                    visited["0,0"] = true;
+                }
+
+                var head = 0;
+                while (head < queue.length) {
+                    var curr = queue[head++];
+                    var neighbors = getSlotNeighbors(curr);
+                    for (var i = 0; i < neighbors.length; i++) {
+                        var nb = neighbors[i];
+                        var key = nb.q + "," + nb.r;
+                        if (nb.color !== 0 && !visited[key]) {
+                            visited[key] = true;
+                            queue.push(nb);
+                        }
+                    }
+                }
+
+                for (var i = 0; i < slots.length; i++) {
+                    var s = slots[i];
+                    var key = s.q + "," + s.r;
+                    if (s.color !== 0 && s.color !== 6 && !visited[key]) {
+                        var ax = centerX + s.rx * Math.cos(clusterAngle) - s.ry * Math.sin(clusterAngle);
+                        var ay = centerY + s.rx * Math.sin(clusterAngle) + s.ry * Math.cos(clusterAngle);
+                        spawnFallingBubble(ax, ay, s.color);
+                        s.color = 0;
+                        score += 25;
+                    }
+                }
+            }
+
+            function processMatch(startSlot) {
+                var targetColor = startSlot.color;
+                if (targetColor === 0 || targetColor === 6) return;
+
+                var queue = [startSlot];
+                var matched = [startSlot];
+                var visited = {};
+                visited[startSlot.q + "," + startSlot.r] = true;
+
+                var head = 0;
+                while (head < queue.length) {
+                    var curr = queue[head++];
+                    var neighbors = getSlotNeighbors(curr);
+                    for (var i = 0; i < neighbors.length; i++) {
+                        var nb = neighbors[i];
+                        var key = nb.q + "," + nb.r;
+                        if (nb.color === targetColor && !visited[key]) {
+                            visited[key] = true;
+                            queue.push(nb);
+                            matched.push(nb);
+                        }
+                    }
+                }
+
+                if (matched.length >= 3) {
+                    for (var i = 0; i < matched.length; i++) {
+                        var s = matched[i];
+                        var ax = centerX + s.rx * Math.cos(clusterAngle) - s.ry * Math.sin(clusterAngle);
+                        var ay = centerY + s.rx * Math.sin(clusterAngle) + s.ry * Math.cos(clusterAngle);
+                        spawnParticles(ax, ay, s.color);
+                        s.color = 0;
+                        score += 15;
+                    }
+                    playSynthSound(440, 880, 0.15, 'sine', 0.18);
+                    dropFloatingBubbles();
+                } else {
+                    playSynthSound(160, 100, 0.1, 'triangle', 0.15);
+                }
+            }
+
+            function isLevelCleared() {
+                for (var i = 0; i < slots.length; i++) {
+                    var s = slots[i];
+                    if (s.color !== 0 && s.color !== 6) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function shootBullet() {
+                if (shot.active || gameOver || levelTransitionTimer > 0 || levelClearedTriggered) return;
+                shot.active = true;
+                shot.x = shooterX;
+                shot.y = shooterY;
+                var speed = 8;
+                shot.vx = Math.cos(aimAngle) * speed;
+                shot.vy = Math.sin(aimAngle) * speed;
+                shot.color = currentBulletColor;
+                shotsFired++;
+                playSynthSound(400, 200, 0.08, 'triangle', 0.1);
+            }
+
+            function resetGame() {
+                currentLevel = 1;
+                score = 0;
+                lives = 3;
+                generateLevel();
+            }
+
+            // Keyboard Mapping Engine
+            window.addEventListener('keydown', function(e) {
+                initAudio();
+                var key = e.key || '';
+                var code = e.keyCode || 0;
+
+                // Move States
+                if (key === 'ArrowLeft' || key === 'a' || key === 'A' || key === 'Left' || code === 37 || code === 65) {
+                    keysPressed['left'] = true;
+                }
+                if (key === 'ArrowRight' || key === 'd' || key === 'D' || key === 'Right' || code === 39 || code === 68) {
+                    keysPressed['right'] = true;
+                }
+
+                // Shoot Actions
+                if (key === 'ArrowUp' || key === 'w' || key === 'W' || key === 'Up' || key === ' ' || key === 'Enter' || code === 38 || code === 87 || code === 13 || code === 32) {
+                    if (gameOver) {
+                        resetGame();
+                    } else {
+                        shootBullet();
+                    }
+                }
+
+                if ([32, 37, 38, 39, 40, 13].indexOf(code) > -1) {
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('keyup', function(e) {
+                var key = e.key || '';
+                var code = e.keyCode || 0;
+
+                if (key === 'ArrowLeft' || key === 'a' || key === 'A' || key === 'Left' || code === 37 || code === 65) {
+                    keysPressed['left'] = false;
+                }
+                if (key === 'ArrowRight' || key === 'd' || key === 'D' || key === 'Right' || code === 39 || code === 68) {
+                    keysPressed['right'] = false;
+                }
+            });
+
+            // Update Loop
+            function update() {
+                if (gameOver) return;
+
+                if (levelTransitionTimer > 0) {
+                    levelTransitionTimer--;
+                    if (levelTransitionTimer === 0) {
+                        currentLevel++;
+                        lives = Math.min(maxLives, lives + 1);
+                        generateLevel();
+                    }
+                    return;
+                }
+
+                // Delayed Level Transition logic: Wait for active particle & drop bubble animations to finish
+                if (levelClearedTriggered && levelTransitionTimer === 0) {
+                    if (fallingBubbles.length === 0 && particles.length === 0) {
+                        levelTransitionTimer = 100;
+                        playSynthSound(600, 1400, 0.6, 'sine', 0.25);
+                    }
+                }
+
+                if (keysPressed['left']) {
+                    aimAngle -= 0.04;
+                    if (aimAngle < -Math.PI + 0.15) aimAngle = -Math.PI + 0.15;
+                }
+                if (keysPressed['right']) {
+                    aimAngle += 0.04;
+                    if (aimAngle > -0.15) aimAngle = -0.15;
+                }
+
+                clusterAngle += clusterVelocity;
+                clusterVelocity *= 0.98; 
+
+                // Bullet updates
+                if (shot.active) {
+                    shot.x += shot.vx;
+                    shot.y += shot.vy;
+
+                    if (shot.x - RADIUS < 0) {
+                        shot.x = RADIUS;
+                        shot.vx = -shot.vx;
+                        playSynthSound(300, 300, 0.05, 'sine', 0.05);
+                    } else if (shot.x + RADIUS > WIDTH) {
+                        shot.x = WIDTH - RADIUS;
+                        shot.vx = -shot.vx;
+                        playSynthSound(300, 300, 0.05, 'sine', 0.05);
+                    }
+
+                    // A miss occurs when the bullet travels off-screen without hitting anything
+                    if (shot.y < 0 || shot.y > HEIGHT) {
+                        shot.active = false;
+                        lives--;
+                        playSynthSound(150, 80, 0.25, 'sawtooth', 0.15);
+                        if (lives <= 0) {
+                            gameOver = true;
+                            playSynthSound(100, 50, 0.8, 'sawtooth', 0.3);
+                        }
+                        rollBullet();
+                        return;
+                    }
+
+                    var collided = false;
+                    for (var i = 0; i < slots.length; i++) {
+                        var s = slots[i];
+                        if (s.color !== 0) {
+                            s.absX = centerX + s.rx * Math.cos(clusterAngle) - s.ry * Math.sin(clusterAngle);
+                            s.absY = centerY + s.rx * Math.sin(clusterAngle) + s.ry * Math.cos(clusterAngle);
+                            
+                            var dx = shot.x - s.absX;
+                            var dy = shot.y - s.absY;
+                            var dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < RADIUS * 1.8) {
+                                collided = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (collided) {
+                        snapToCluster();
+                    }
+                }
+
+                // Boundary/Last-Line verification (Game over if cluster touches DANGER_Y)
+                for (var i = 0; i < slots.length; i++) {
+                    var s = slots[i];
+                    if (s.color !== 0) {
+                        var ay = centerY + s.rx * Math.sin(clusterAngle) + s.ry * Math.cos(clusterAngle);
+                        if (ay > DANGER_Y) {
+                            gameOver = true;
+                            playSynthSound(150, 60, 0.6, 'sawtooth', 0.25);
+                            break;
+                        }
+                    }
+                }
+
+                // Falling bubbles
+                for (var i = 0; i < fallingBubbles.length; i++) {
+                    var fb = fallingBubbles[i];
+                    fb.x += fb.vx;
+                    fb.y += fb.vy;
+                    fb.vy += 0.3;
+                    if (fb.y > HEIGHT) {
+                        fallingBubbles.splice(i, 1);
+                    }
+                }
+
+                // Particles
+                for (var i = particles.length - 1; i >= 0; i--) {
+                    var p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= p.decay;
+                    if (p.alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+            }
+
+            function snapToCluster() {
+                var nearestSlot = null;
+                var minDistance = 999999;
+
+                for (var i = 0; i < slots.length; i++) {
+                    var s = slots[i];
+                    if (s.color === 0) {
+                        if (!hasNeighbor(s)) continue;
+
+                        var ax = centerX + s.rx * Math.cos(clusterAngle) - s.ry * Math.sin(clusterAngle);
+                        var ay = centerY + s.rx * Math.sin(clusterAngle) + s.ry * Math.cos(clusterAngle);
+                        var dx = shot.x - ax;
+                        var dy = shot.y - ay;
+                        var distSq = dx * dx + dy * dy;
+                        if (distSq < minDistance) {
+                            minDistance = distSq;
+                            nearestSlot = s;
+                        }
+                    }
+                }
+
+                if (nearestSlot) {
+                    nearestSlot.color = shot.color;
+
+                    var relX = shot.x - centerX;
+                    var relY = shot.y - centerY;
+                    
+                    var torque = (relX * shot.vy - relY * shot.vx) * 0.00015;
+                    clusterVelocity += torque; 
+
+                    processMatch(nearestSlot);
+                    
+                    if (isLevelCleared()) {
+                        levelClearedTriggered = true;
+                    }
+                }
+                shot.active = false;
+                rollBullet();
+            }
+
+            function drawAimGuide() {
+                if (shot.active || gameOver || levelTransitionTimer > 0 || levelClearedTriggered) return;
+
+                ctx.save();
+                ctx.strokeStyle = 'rgba(0, 255, 204, 0.45)';
+                ctx.setLineDash([4, 6]);
+                ctx.lineWidth = 1.5;
+
+                var cx = shooterX;
+                var cy = shooterY;
+                var dx = Math.cos(aimAngle);
+                var dy = Math.sin(aimAngle);
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+
+                var steps = 150;
+                while (steps > 0) {
+                    steps--;
+                    cx += dx * 4;
+                    cy += dy * 4;
+
+                    if (cx - RADIUS < 0) {
+                        cx = RADIUS;
+                        dx = -dx;
+                        ctx.lineTo(cx, cy);
+                    } else if (cx + RADIUS > WIDTH) {
+                        cx = WIDTH - RADIUS;
+                        dx = -dx;
+                        ctx.lineTo(cx, cy);
+                    }
+
+                    if (cy <= 25) { 
+                        ctx.lineTo(cx, cy);
+                        break;
+                    }
+
+                    var hit = false;
+                    for (var i = 0; i < slots.length; i++) {
+                        var s = slots[i];
+                        if (s.color !== 0) {
+                            var ax = centerX + s.rx * Math.cos(clusterAngle) - s.ry * Math.sin(clusterAngle);
+                            var ay = centerY + s.rx * Math.sin(clusterAngle) + s.ry * Math.cos(clusterAngle);
+                            var distSq = (cx - ax) * (cx - ax) + (cy - ay) * (cy - ay);
+                            if (distSq < (RADIUS * 1.8) * (RADIUS * 1.8)) {
+                                hit = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hit) {
+                        ctx.lineTo(cx, cy);
+                        break;
+                    }
+                }
+                ctx.lineTo(cx, cy);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            function drawGlossyBubble(x, y, radius, colorIdx) {
+                var colors = BUBBLE_COLORS[colorIdx];
+                if (!colors) return;
+
+                ctx.save();
+
+                // Drop Shadow
+                ctx.beginPath();
+                ctx.arc(x + 1, y + 2, radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fill();
+
+                if (colorIdx === 6) {
+                    var gradient = ctx.createRadialGradient(
+                        x - radius * 0.35, y - radius * 0.35, radius * 0.05,
+                        x, y, radius
+                    );
+                    gradient.addColorStop(0, '#fffdf0');
+                    gradient.addColorStop(0.3, '#ffcc00');
+                    gradient.addColorStop(0.85, '#d4af37'); 
+                    gradient.addColorStop(1, '#1a1300');
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+
+                    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                    ctx.beginPath();
+                    ctx.moveTo(x - 5, y + 4);
+                    ctx.lineTo(x - 7, y - 2);
+                    ctx.lineTo(x - 3, y + 1);
+                    ctx.lineTo(x, y - 5);
+                    ctx.lineTo(x + 3, y + 1);
+                    ctx.lineTo(x + 7, y - 2);
+                    ctx.lineTo(x + 5, y + 4);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    var gradient = ctx.createRadialGradient(
+                        x - radius * 0.35, y - radius * 0.35, radius * 0.05,
+                        x, y, radius
+                    );
+                    gradient.addColorStop(0, '#ffffff');
+                    gradient.addColorStop(0.2, colors.highlight);
+                    gradient.addColorStop(0.85, colors.base);
+                    gradient.addColorStop(1, '#050512');
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(x - radius * 0.15, y - radius * 0.15, radius * 0.35, 0, Math.PI * 2);
+                    var specGrad = ctx.createRadialGradient(
+                        x - radius * 0.15, y - radius * 0.15, 0,
+                        x - radius * 0.15, y - radius * 0.15, radius * 0.35
+                    );
+                    specGrad.addColorStop(0, 'rgba(255,255,255,0.85)');
+                    specGrad.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.fillStyle = specGrad;
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+
+            function render() {
+                ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+                drawAimGuide();
+
+                // Draw Danger Line
+                ctx.save();
+                ctx.strokeStyle = 'rgba(255, 59, 48, 0.4)';
+                ctx.setLineDash([6, 6]);
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(0, DANGER_Y);
+                ctx.lineTo(WIDTH, DANGER_Y);
+                ctx.stroke();
+                
+                ctx.fillStyle = 'rgba(255, 59, 48, 0.6)';
+                ctx.font = 'bold 8px monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText("DANGER LINE", WIDTH - 10, DANGER_Y - 5);
+                ctx.restore();
+
+                for (var i = 0; i < slots.length; i++) {
+                    var s = slots[i];
+                    if (s.color !== 0) {
+                        var ax = centerX + s.rx * Math.cos(clusterAngle) - s.ry * Math.sin(clusterAngle);
+                        var ay = centerY + s.rx * Math.sin(clusterAngle) + s.ry * Math.cos(clusterAngle);
+                        drawGlossyBubble(ax, ay, RADIUS, s.color);
+                    }
+                }
+
+                for (var i = 0; i < fallingBubbles.length; i++) {
+                    var fb = fallingBubbles[i];
+                    drawGlossyBubble(fb.x, fb.y, RADIUS, fb.color);
+                }
+
+                if (shot.active) {
+                    drawGlossyBubble(shot.x, shot.y, RADIUS, shot.color);
+                }
+
+                for (var i = 0; i < particles.length; i++) {
+                    var p = particles[i];
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = BUBBLE_COLORS[p.color].highlight;
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                }
+
+                drawHUD();
+            }
+
+            function drawHUD() {
+                // Top Status Bar Area
+                ctx.fillStyle = '#050514';
+                ctx.fillRect(0, 0, WIDTH, 25);
+                ctx.strokeStyle = '#18183c';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, 25);
+                ctx.lineTo(WIDTH, 25);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 9px monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText("LEVEL: " + currentLevel, 15, 16);
+
+                // Lives Display
+                ctx.fillStyle = '#ff3b30';
+                var heartString = "";
+                for (var l = 0; l < lives; l++) {
+                    heartString += "♥ ";
+                }
+                ctx.fillText("LIVES: " + heartString, 100, 16);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'right';
+                ctx.fillText("SCORE: " + score, WIDTH - 15, 16);
+
+                // Bottom Dashboard Area
+                ctx.fillStyle = '#050514';
+                ctx.fillRect(0, 410, WIDTH, 70);
+                ctx.strokeStyle = '#18183c';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(0, 410);
+                ctx.lineTo(WIDTH, 410);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#18183c';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(shooterX, shooterY, 20, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(shooterX, shooterY);
+                ctx.rotate(aimAngle);
+                ctx.strokeStyle = '#00ffcc';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(12, 0);
+                ctx.lineTo(24, 0);
+                ctx.moveTo(18, -4);
+                ctx.lineTo(24, 0);
+                ctx.lineTo(18, 4);
+                ctx.stroke();
+                ctx.restore();
+
+                if (!gameOver && levelTransitionTimer === 0 && !levelClearedTriggered) {
+                    drawGlossyBubble(shooterX, shooterY, RADIUS, currentBulletColor);
+                    
+                    ctx.textAlign = 'left';
+                    ctx.fillStyle = '#65658e';
+                    ctx.font = 'bold 8px monospace';
+                    ctx.fillText("NEXT", 200, 443);
+                    drawGlossyBubble(245, 440, 8, nextBulletColor);
+                }
+
+                if (gameOver) {
+                    drawModal("GAME OVER", "Touch anywhere to restart");
+                } else if (levelTransitionTimer > 0) {
+                    drawModal("LEVEL CLEAR!", "Loading Next...");
+                }
+            }
+
+            function drawModal(title, subtitle) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(2, 2, 8, 0.9)';
+                var mw = 260;
+                var mh = 90;
+                var mx = (WIDTH - mw) / 2;
+                var my = (HEIGHT - mh) / 2;
+                ctx.fillRect(mx, my, mw, mh);
+
+                ctx.strokeStyle = '#ff9500';
+                if (title === "LEVEL CLEAR!") ctx.strokeStyle = '#4cd964';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(mx, my, mw, mh);
+
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#ff3b30';
+                if (title === "LEVEL CLEAR!") ctx.fillStyle = '#4cd964';
+                ctx.font = 'bold 18px monospace';
+                ctx.fillText(title, WIDTH / 2, my + 38);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '10px monospace';
+                ctx.fillText(subtitle, WIDTH / 2, my + 64);
+                ctx.restore();
+            }
+
+            function spawnParticles(x, y, colorIdx) {
+                for (var i = 0; i < 8; i++) {
+                    particles.push({
+                        x: x, y: y,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: (Math.random() - 0.5) * 4 - 1.0,
+                        color: colorIdx,
+                        alpha: 1,
+                        decay: 0.05 + Math.random() * 0.04
+                    });
+                }
+            }
+
+            function spawnFallingBubble(x, y, colorIdx) {
+                fallingBubbles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: -1.0 - Math.random() * 2,
+                    color: colorIdx
+                });
+            }
+
+            // Screen pointer scaling calculator
+            function getPointerCoords(clientX, clientY) {
+                var rect = canvas.getBoundingClientRect();
+                return {
+                    x: (clientX - rect.left) * (WIDTH / rect.width),
+                    y: (clientY - rect.top) * (HEIGHT / rect.height)
+                };
+            }
+
+            function updateAimAngle(x, y) {
+                var dx = x - shooterX;
+                var dy = y - shooterY;
+                var angle = Math.atan2(dy, dx);
+                
+                // Keep the shooter aimed upwards (semicircle)
+                if (angle > 0) {
+                    if (angle < Math.PI / 2) {
+                        angle = -0.15;
+                    } else {
+                        angle = -Math.PI + 0.15;
+                    }
+                }
+                if (angle > -0.15) angle = -0.15;
+                if (angle < -Math.PI + 0.15) angle = -Math.PI + 0.15;
+                
+                aimAngle = angle;
+            }
+
+            // Desktop Mouse Event Rules
+            canvas.addEventListener('mousemove', function(e) {
+                var coords = getPointerCoords(e.clientX, e.clientY);
+                if (!gameOver && levelTransitionTimer === 0 && !shot.active && !levelClearedTriggered) {
+                    updateAimAngle(coords.x, coords.y);
+                }
+            });
+
+            canvas.addEventListener('mousedown', function(e) {
+                initAudio();
+                if (gameOver) {
+                    resetGame();
+                    return;
+                }
+                if (levelTransitionTimer > 0 || shot.active || levelClearedTriggered) return;
+                
+                var coords = getPointerCoords(e.clientX, e.clientY);
+                updateAimAngle(coords.x, coords.y);
+                shootBullet();
+            });
+
+            // Mobile Touch Event Rules (Drag-to-Aim & Release-to-Shoot)
+            canvas.addEventListener('touchstart', function(e) {
+                if (e.touches && e.touches.length > 0) {
+                    initAudio();
+                    if (gameOver) {
+                        resetGame();
+                        e.preventDefault();
+                        return;
+                    }
+                    if (levelTransitionTimer > 0 || shot.active || levelClearedTriggered) {
+                        e.preventDefault();
+                        return;
+                    }
+                    isDragging = true;
+                    var coords = getPointerCoords(e.touches[0].clientX, e.touches[0].clientY);
+                    updateAimAngle(coords.x, coords.y);
+                }
+                e.preventDefault();
+            }, {passive: false});
+
+            canvas.addEventListener('touchmove', function(e) {
+                if (isDragging && e.touches && e.touches.length > 0) {
+                    var coords = getPointerCoords(e.touches[0].clientX, e.touches[0].clientY);
+                    updateAimAngle(coords.x, coords.y);
+                }
+                e.preventDefault();
+            }, {passive: false});
+
+            canvas.addEventListener('touchend', function(e) {
+                if (isDragging) {
+                    isDragging = false;
+                    shootBullet();
+                }
+                e.preventDefault();
+            }, {passive: false});
+
+            window.addEventListener('touchcancel', function(e) {
+                isDragging = false;
+            });
+
+            function mainLoop() {
+                update();
+                render();
+                requestAnimationFrame(mainLoop);
+            }
+
+            generateLevel();
+            requestAnimationFrame(mainLoop);
+        })();
+    </script>
+</body>
+</html>
