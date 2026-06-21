@@ -339,7 +339,6 @@
       var fallbackYears = [
         { year: "2026", displayName: "2026 World Cup", url: BASE_URL + "2026/worldcup.json" },
         { year: "2025-club", displayName: "2025 Club World Cup", url: BASE_URL + "2025/clubworldcup.json" },
-        { year: "2023-club", displayName: "2023 Club World Cup", url: BASE_URL + "2023/clubworldcup.json" },
         { year: "2022", displayName: "2022 World Cup", url: BASE_URL + "2022/worldcup.json" },
         { year: "2018", displayName: "2018 World Cup", url: BASE_URL + "2018/worldcup.json" },
         { year: "2014", displayName: "2014 World Cup", url: BASE_URL + "2014/worldcup.json" }
@@ -476,7 +475,7 @@
         }
       }
 
-    
+
       function fetchWorldCupData(callback) {
         var activeUrl = state.currentYearObj.url;
         if (tournamentCache[activeUrl]) {
@@ -526,7 +525,7 @@
             targetMatches.forEach(function (match) {
               var matchEl = document.createElement('div');
               matchEl.className = 'focusable menu-item match-card';
-            
+
               var score = (match.score && match.score.ft) ? match.score.ft[0] + ' - ' + match.score.ft[1] : 'VS';
 
               matchEl.innerHTML =
@@ -691,7 +690,7 @@
         fetchWorldCupData(function (matches) {
           container.innerHTML = '';
           var filtered = matches.filter(function (match) {
-          
+
             if (state.currentFilter === 'results') return !!match.score;
             if (state.currentFilter === 'upcoming') return !match.score;
             if (state.currentFilter === 'team') {
@@ -708,7 +707,7 @@
           filtered.forEach(function (match) {
             var matchEl = document.createElement('div');
             matchEl.className = 'focusable menu-item match-card';
-           
+
             var scoreText = (match.score && match.score.ft) ? match.score.ft[0] + ' - ' + match.score.ft[1] : 'VS';
 
             matchEl.innerHTML =
@@ -780,7 +779,7 @@
           var biggestGoalDiff = -1;
 
           matches.forEach(function (match) {
-            if (match.score && match.score.ft) { 
+            if (match.score && match.score.ft) {
               playedMatches++;
               var g1 = match.score.ft[0];
               var g2 = match.score.ft[1];
@@ -797,7 +796,7 @@
           var avgGoals = playedMatches > 0 ? (totalGoals / playedMatches).toFixed(2) : 0;
           var upcomingMatches = totalMatches - playedMatches;
 
-        
+
           var html =
             '<div class="focusable stat-box"><div>Total Matches</div><div class="stat-val">' + totalMatches + '</div></div>' +
             '<div class="focusable stat-box"><div>Played Matches</div><div class="stat-val">' + playedMatches + '</div></div>' +
@@ -826,23 +825,47 @@
             if (Array.isArray(data)) {
               data.forEach(function (item) {
                 if (item.type === 'dir' && /^\d{4}$/.test(item.name)) {
-                  rootYears.push({ year: item.name, displayName: item.name + " World Cup", url: BASE_URL + item.name + "/worldcup.json" });
+                  var yearStr = item.name;
+                  var yearNum = parseInt(yearStr, 10);
+
+                  // ফিফা বিশ্বকাপের সালকে ৪ দিয়ে ভাগ করলে ভাগশেষ ২ হয়
+                  var isFifaWorldCup = (yearNum % 4 === 2);
+
+                  // লজিক অনুযায়ী ফাইলের নাম এবং টাইটেল সেট করা
+                  var fileName = isFifaWorldCup ? "worldcup.json" : "clubworldcup.json";
+                  var title = isFifaWorldCup ? yearStr + " World Cup" : yearStr + " Club World Cup";
+
+                  rootYears.push({
+                    year: yearStr,
+                    displayName: title,
+                    url: BASE_URL + yearStr + "/" + fileName
+                  });
                 }
               });
             }
-            return fetch(GITHUB_API_URL + 'club-worldcup');
+            // পুরোনো ক্লাব ওয়ার্ল্ডকাপ (যেমন: 2023) এর ডাটা আনতে দ্বিতীয় ফোল্ডার চেক
+            return fetch(GITHUB_API_URL);
           })
-          .then(function (res) { return res.json(); })
+          .then(function (res) {
+            if (res.ok) return res.json();
+            return [];
+          })
           .then(function (data) {
             if (Array.isArray(data)) {
               data.forEach(function (item) {
                 if (item.type === 'dir' && /^\d{4}$/.test(item.name)) {
-                  clubYears.push({ year: item.name + "-club", displayName: item.name + " Club World Cup", url: BASE_URL + "club-worldcup/" + item.name + "/clubworldcup.json" });
+                  clubYears.push({
+                    year: item.name + "-club",
+                    displayName: item.name + " Club World Cup",
+                    url: BASE_URL + item.name + "/clubworldcup.json"
+                  });
                 }
               });
             }
 
             var combined = rootYears.concat(clubYears);
+
+            // সাল অনুযায়ী সাজানো (বড় থেকে ছোট)
             combined.sort(function (a, b) {
               return parseInt(b.year, 10) - parseInt(a.year, 10);
             });
