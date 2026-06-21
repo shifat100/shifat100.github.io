@@ -815,10 +815,10 @@
         });
       }
 
-      function fetchAvailableYears() {
-        var rootYears = [];
-        var clubYears = [];
+     function fetchAvailableYears() {
+        var allYears = [];
 
+        // শুধুমাত্র একটি রিকোয়েস্ট দিয়ে মেইন ফোল্ডার ফেচ করা হচ্ছে
         fetch(GITHUB_API_URL)
           .then(function (res) { return res.json(); })
           .then(function (data) {
@@ -828,14 +828,14 @@
                   var yearStr = item.name;
                   var yearNum = parseInt(yearStr, 10);
 
-                  // ফিফা বিশ্বকাপের সালকে ৪ দিয়ে ভাগ করলে ভাগশেষ ২ হয়
+                  // ফিফা বিশ্বকাপের সালকে ৪ দিয়ে ভাগ করলে ভাগশেষ ২ হয় (যেমন: 2026, 2022, 2018)
                   var isFifaWorldCup = (yearNum % 4 === 2);
 
-                  // লজিক অনুযায়ী ফাইলের নাম এবং টাইটেল সেট করা
+                  // অতিরিক্ত কোনো পাথ ছাড়া সরাসরি ফাইল এবং টাইটেল সেট করা হচ্ছে
                   var fileName = isFifaWorldCup ? "worldcup.json" : "clubworldcup.json";
                   var title = isFifaWorldCup ? yearStr + " World Cup" : yearStr + " Club World Cup";
 
-                  rootYears.push({
+                  allYears.push({
                     year: yearStr,
                     displayName: title,
                     url: BASE_URL + yearStr + "/" + fileName
@@ -843,44 +843,23 @@
                 }
               });
             }
-            // পুরোনো ক্লাব ওয়ার্ল্ডকাপ (যেমন: 2023) এর ডাটা আনতে দ্বিতীয় ফোল্ডার চেক
-            return fetch(GITHUB_API_URL);
-          })
-          .then(function (res) {
-            if (res.ok) return res.json();
-            return [];
-          })
-          .then(function (data) {
-            if (Array.isArray(data)) {
-              data.forEach(function (item) {
-                if (item.type === 'dir' && /^\d{4}$/.test(item.name)) {
-                  clubYears.push({
-                    year: item.name + "-club",
-                    displayName: item.name + " Club World Cup",
-                    url: BASE_URL + item.name + "/clubworldcup.json"
-                  });
-                }
-              });
-            }
-
-            var combined = rootYears.concat(clubYears);
 
             // সাল অনুযায়ী সাজানো (বড় থেকে ছোট)
-            combined.sort(function (a, b) {
+            allYears.sort(function (a, b) {
               return parseInt(b.year, 10) - parseInt(a.year, 10);
             });
 
-            if (combined.length > 0) {
-              state.availableYears = combined;
+            if (allYears.length > 0) {
+              state.availableYears = allYears;
               var found = false;
-              for (var i = 0; i < combined.length; i++) {
-                if (combined[i].year === state.currentYearObj.year) {
-                  state.currentYearObj = combined[i];
+              for (var i = 0; i < allYears.length; i++) {
+                if (allYears[i].year === state.currentYearObj.year) {
+                  state.currentYearObj = allYears[i];
                   found = true;
                   break;
                 }
               }
-              if (!found) { state.currentYearObj = combined[0]; }
+              if (!found) { state.currentYearObj = allYears[0]; }
               renderYearSubmenu();
             }
           })
