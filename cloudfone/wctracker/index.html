@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>World Cup Tracker Pro</title>
+  <style>
+    :root {
+      --black-bg: #000000;
+      --white-fg: #ffffff;
+      --gray-fg: #8e8e8e;
+      --accent-gold: #ffc107;
+      --card-bg: #111111;
+      --border-color: #222222;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--black-bg);
+      color: var(--white-fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #app-header {
+      height: 28px;
+      background-color: var(--black-bg);
+      border-bottom: 2px solid var(--accent-gold);
+      color: var(--white-fg);
+      text-align: center;
+      line-height: 26px;
+      font-size: 11px;
+      font-weight: bold;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 10;
+      text-transform: uppercase;
+    }
+
+    #app-container {
+      position: absolute;
+      top: 28px;
+      bottom: 30px;
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 6px 8px;
+    }
+
+    #softkey-bar {
+      height: 30px;
+      background-color: #111111;
+      border-top: 1px solid var(--border-color);
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      z-index: 10;
+    }
+
+    .softkey {
+      flex: 1;
+    }
+
+    #softkey-left {
+      text-align: left;
+      color: var(--accent-gold);
+    }
+
+    #softkey-center {
+      text-align: center;
+      color: var(--white-fg);
+    }
+
+    #softkey-right {
+      text-align: right;
+      color: var(--white-fg);
+    }
+
+    .app-view {
+      display: none;
+    }
+
+    .app-view.active {
+      display: block;
+    }
+
+    .date-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--white-fg);
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    #current-local-date {
+      color: var(--accent-gold);
+    }
+
+    .nav-arrow {
+      color: var(--gray-fg);
+      font-size: 12px;
+    }
+
+    .section-title {
+      font-size: 10px;
+      color: var(--accent-gold);
+      margin: 4px 0 6px 2px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .status-msg {
+      text-align: center;
+      font-size: 11px;
+      margin-top: 20px;
+      color: var(--gray-fg);
+    }
+
+    .focusable {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      font-size: 12px;
+      border-radius: 4px;
+      outline: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 36px;
+    }
+
+    .focusable.focused {
+      background-color: var(--white-fg) !important;
+      color: var(--black-bg) !important;
+      border-color: var(--accent-gold);
+      font-weight: bold;
+    }
+
+    .icon-svg {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .icon-svg svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .item-text {
+      display: flex;
+      align-items: center;
+    }
+
+    .match-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .match-meta {
+      font-size: 9px;
+      color: var(--gray-fg);
+      margin-bottom: 2px;
+    }
+
+    .focusable.focused .match-meta {
+      color: #333333;
+    }
+
+    .match-teams-grid {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .match-result {
+      font-weight: bold;
+      color: var(--accent-gold);
+    }
+
+    .focusable.focused .match-result {
+      color: #8a1538;
+    }
+
+    .submenu-container {
+      padding-left: 10px;
+      margin-bottom: 4px;
+    }
+
+    .submenu-item {
+      background-color: #1a1a1a;
+    }
+
+    .stat-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      margin-bottom: 4px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .stat-val {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--accent-gold);
+      margin-top: 2px;
+    }
+
+    .help-box {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 6px 8px;
+      min-height: auto;
+    }
+
+    .help-heading {
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--accent-gold);
+      margin-bottom: 2px;
+    }
+
+    .focusable.focused .help-heading {
+      color: var(--black-bg);
+    }
+
+    .help-text {
+      font-size: 10px;
+      color: var(--gray-fg);
+      line-height: 1.3;
+    }
+
+    .focusable.focused .help-text {
+      color: #222222;
+    }
+
+    @media (max-width: 140px),
+    (max-height: 180px) {
+      #app-header {
+        height: 20px;
+        line-height: 18px;
+        font-size: 8px;
+      }
+
+      #app-container {
+        top: 20px;
+        bottom: 22px;
+        padding: 3px 4px;
+      }
+
+      #softkey-bar {
+        height: 22px;
+        font-size: 8px;
+        padding: 0 4px;
+      }
+
+      .focusable {
+        min-height: 24px;
+        padding: 4px;
+        font-size: 9px;
+        margin-bottom: 2px;
+      }
+
+      .icon-svg svg {
+        width: 9px;
+        height: 9px;
+      }
+
+      .section-title {
+        font-size: 8px;
+        margin: 2px 0 4px 1px;
+      }
+
+      .match-meta {
+        font-size: 7px;
+      }
+
+      .date-badge {
+        font-size: 8px;
+        padding: 2px 4px;
+        margin-bottom: 4px;
+      }
+
+      .nav-arrow {
+        font-size: 9px;
+      }
+
+      .stat-box {
+        padding: 4px;
+        font-size: 9px;
+      }
+
+      .stat-val {
+        font-size: 10px;
+      }
+
+      .help-heading {
+        font-size: 9px;
+      }
+
+      .help-text {
+        font-size: 8px;
+      }
+    }
+  </style>
+  <script src="https://shifat100.github.io/key-simulator/Keysim-min.js"></script>
+  <script>(function () {
+      'use strict';
+
+      var BASE_URL = 'https://raw.githubusercontent.com/openfootball/worldcup.json/master/';
+      var GITHUB_API_URL = 'https://api.github.com/repos/openfootball/worldcup.json/contents/';
+
+      var fallbackYears = [
+        { year: "2026", displayName: "2026 World Cup", url: BASE_URL + "2026/worldcup.json" },
+        { year: "2025-club", displayName: "2025 Club World Cup", url: BASE_URL + "2025/clubworldcup.json" },
+        { year: "2023-club", displayName: "2023 Club World Cup", url: BASE_URL + "2023/clubworldcup.json" },
+        { year: "2022", displayName: "2022 World Cup", url: BASE_URL + "2022/worldcup.json" },
+        { year: "2018", displayName: "2018 World Cup", url: BASE_URL + "2018/worldcup.json" },
+        { year: "2014", displayName: "2014 World Cup", url: BASE_URL + "2014/worldcup.json" }
+      ];
+
+      var tzOptions = [
+        { label: "Auto ", value: "auto" },
+        { label: "UTC -12:00 (IDL West)", value: "-12:00" },
+        { label: "UTC -11:00 (Samoa)", value: "-11:00" },
+        { label: "UTC -10:00 (Hawaii)", value: "-10:00" },
+        { label: "UTC -09:00 (Alaska)", value: "-09:00" },
+        { label: "UTC -08:00 (Pacific)", value: "-08:00" },
+        { label: "UTC -07:00 (Mountain)", value: "-07:00" },
+        { label: "UTC -06:00 (Central)", value: "-06:00" },
+        { label: "UTC -05:00 (Eastern)", value: "-05:00" },
+        { label: "UTC -04:00 (Atlantic)", value: "-04:00" },
+        { label: "UTC -03:30 (Newfoundland)", value: "-03:30" },
+        { label: "UTC -03:00 (Buenos Aires)", value: "-03:00" },
+        { label: "UTC -02:00 (Mid-Atlantic)", value: "-02:00" },
+        { label: "UTC -01:00 (Azores)", value: "-01:00" },
+        { label: "UTC +00:00 (London)", value: "+00:00" },
+        { label: "UTC +01:00 (Central Europe)", value: "+01:00" },
+        { label: "UTC +02:00 (Est. Europe/Cairo)", value: "+02:00" },
+        { label: "UTC +03:00 (Arabia/Moscow)", value: "+03:00" },
+        { label: "UTC +03:30 (Tehran)", value: "+03:30" },
+        { label: "UTC +04:00 (Gulf/Baku)", value: "+04:00" },
+        { label: "UTC +04:30 (Kabul)", value: "+04:30" },
+        { label: "UTC +05:00 (Karachi/Tashkent)", value: "+05:00" },
+        { label: "UTC +05:30 (India)", value: "+05:30" },
+        { label: "UTC +05:45 (Kathmandu)", value: "+05:45" },
+        { label: "UTC +06:00 (Dhaka/Almaty)", value: "+06:00" },
+        { label: "UTC +06:30 (Yangon)", value: "+06:30" },
+        { label: "UTC +07:00 (Bangkok/Jakarta)", value: "+07:00" },
+        { label: "UTC +08:00 (Beijing/Singapore)", value: "+08:00" },
+        { label: "UTC +08:45 (Eucla)", value: "+08:45" },
+        { label: "UTC +09:00 (Tokyo/Seoul)", value: "+09:00" },
+        { label: "UTC +09:30 (Adelaide/Darwin)", value: "+09:30" },
+        { label: "UTC +10:00 (Sydney/Vladivostok)", value: "+10:00" },
+        { label: "UTC +10:30 (Lord Howe)", value: "+10:30" },
+        { label: "UTC +11:00 (Solomon Islands)", value: "+11:00" },
+        { label: "UTC +12:00 (Auckland/Fiji)", value: "+12:00" },
+        { label: "UTC +12:45 (Chatham Islands)", value: "+12:45" },
+        { label: "UTC +13:00 (Tonga/Tokelau)", value: "+13:00" },
+        { label: "UTC +14:00 (Line Islands)", value: "+14:00" }
+      ];
+
+      var state = {
+        currentView: 'dashboard',
+        history: ['dashboard'],
+        focusedIndex: 0,
+        focusMemory: {},
+        availableYears: fallbackYears,
+        currentYearObj: fallbackYears[0],
+        currentFilter: 'all',
+        selectedTeam: '',
+        dashboardDate: new Date(),
+        timezoneOffset: localStorage.getItem('wc_tz') || 'auto'
+      };
+
+      var tournamentCache = {};
+
+      function padValue(val) {
+        return val < 10 ? '0' + val : '' + val;
+      }
+
+      function applyTimezone(d) {
+        if (state.timezoneOffset === 'auto') {
+          return {
+            y: d.getFullYear(), m: d.getMonth() + 1, date: d.getDate(),
+            h: d.getHours(), min: d.getMinutes()
+          };
+        } else {
+          var sign = state.timezoneOffset.charAt(0) === '+' ? 1 : -1;
+          var parts = state.timezoneOffset.substring(1).split(':');
+          var offsetMs = sign * ((parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10)) * 60 * 1000;
+          var targetTime = new Date(d.getTime() + offsetMs);
+          return {
+            y: targetTime.getUTCFullYear(), m: targetTime.getUTCMonth() + 1, date: targetTime.getUTCDate(),
+            h: targetTime.getUTCHours(), min: targetTime.getUTCMinutes()
+          };
+        }
+      }
+
+      function getCustomDateStr(d) {
+        var tzData = applyTimezone(d);
+        return tzData.y + "-" + padValue(tzData.m) + "-" + padValue(tzData.date);
+      }
+
+      function preprocessMatchDate(match) {
+        var dateStr = match.date || "";
+        var timeStr = match.time || "";
+
+        if (!timeStr) {
+          match._dateObj = new Date(dateStr + "T00:00:00");
+          match._localDateStr = dateStr;
+          match._localTimeStr = "TBD";
+          return;
+        }
+
+        var offsetPart = "+00:00";
+        var timeClean = timeStr;
+        var utcMatch = timeStr.match(/UTC([+-]\d+)(?::(\d+))?/i);
+
+        if (utcMatch) {
+          var offsetNum = parseInt(utcMatch[1], 10);
+          var sign = offsetNum >= 0 ? "+" : "-";
+          var absOffset = Math.abs(offsetNum);
+          var minPart = utcMatch[2] ? utcMatch[2] : "00";
+          offsetPart = sign + (absOffset < 10 ? "0" : "") + absOffset + ":" + minPart;
+          timeClean = timeStr.replace(/UTC[+-]\d+(?::\d+)?/i, "").trim();
+        } else if (timeStr.toUpperCase().indexOf("UTC") !== -1) {
+          offsetPart = "+00:00";
+          timeClean = timeStr.replace(/UTC/i, "").trim();
+        }
+
+        var isoString = dateStr + "T" + timeClean + ":00" + offsetPart;
+        var d = new Date(isoString);
+
+        if (isNaN(d.getTime())) {
+          match._dateObj = new Date(dateStr + "T00:00:00");
+          match._localDateStr = dateStr;
+          match._localTimeStr = timeStr;
+        } else {
+          match._dateObj = d;
+          var tzData = applyTimezone(d);
+          match._localDateStr = tzData.y + "-" + padValue(tzData.m) + "-" + padValue(tzData.date);
+
+          var h = tzData.h;
+          var mStr = padValue(tzData.min);
+          var ampm = h >= 12 ? 'PM' : 'AM';
+          h = h % 12;
+          h = h ? h : 12;
+          match._localTimeStr = h + ':' + mStr + ' ' + ampm;
+        }
+      }
+
+    
+      function fetchWorldCupData(callback) {
+        var activeUrl = state.currentYearObj.url;
+        if (tournamentCache[activeUrl]) {
+          return callback(tournamentCache[activeUrl]);
+        }
+
+        fetch(activeUrl)
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            var matches = data.matches || [];
+            matches.forEach(preprocessMatchDate);
+            matches.sort(function (a, b) {
+              return a._dateObj - b._dateObj;
+            });
+            tournamentCache[activeUrl] = matches;
+            callback(matches);
+          })
+          .catch(function () {
+            callback([]);
+          });
+      }
+
+      function updateDashboard() {
+        var targetDateStr = getCustomDateStr(state.dashboardDate);
+        var todayStr = getCustomDateStr(new Date());
+        var isToday = targetDateStr === todayStr;
+
+        var dateBadgeText = isToday ? targetDateStr + " (Today)" : targetDateStr;
+        var dateLabel = document.getElementById('current-local-date');
+        if (dateLabel) {
+          dateLabel.innerText = dateBadgeText;
+        }
+
+        var container = document.getElementById('today-matches-container');
+        container.innerHTML = '<p class="status-msg">Loading data...</p>';
+
+        fetchWorldCupData(function (matches) {
+          container.innerHTML = '';
+
+          var targetMatches = matches.filter(function (m) {
+            return m._localDateStr === targetDateStr;
+          });
+
+          if (targetMatches.length === 0) {
+            container.innerHTML = '<p class="status-msg">No matches on this date.</p>';
+          } else {
+            targetMatches.forEach(function (match) {
+              var matchEl = document.createElement('div');
+              matchEl.className = 'focusable menu-item match-card';
+            
+              var score = (match.score && match.score.ft) ? match.score.ft[0] + ' - ' + match.score.ft[1] : 'VS';
+
+              matchEl.innerHTML =
+                '<div class="match-meta">' + (match.round || "Match") + ' • ' + match._localTimeStr + '</div>' +
+                '<div class="match-teams-grid">' +
+                '<span>' + match.team1 + '</span>' +
+                '<span class="match-result">' + score + '</span>' +
+                '<span>' + match.team2 + '</span>' +
+                '</div>';
+              container.appendChild(matchEl);
+            });
+          }
+          updateNavigationState();
+        });
+      }
+
+      function renderYearSubmenu() {
+        var submenu = document.getElementById('year-submenu');
+        if (!submenu) return;
+        submenu.innerHTML = '';
+
+        state.availableYears.forEach(function (yearObj) {
+          var yearBtn = document.createElement('div');
+          yearBtn.className = 'focusable menu-item submenu-item';
+          yearBtn.setAttribute('data-action', 'select-year');
+          yearBtn.setAttribute('data-year', yearObj.year);
+          yearBtn.innerHTML = `<span class="item-text"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="20" height="20">
+  <!-- Definitions for Gradients -->
+  <defs>
+    <!-- Shiny Gold Gradient -->
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D4AF37" />
+      <stop offset="30%" stop-color="#FFD700" />
+      <stop offset="70%" stop-color="#FFF8DC" />
+      <stop offset="100%" stop-color="#B8860B" />
+    </linearGradient>
+    
+    <!-- Dark Gold Shadow Gradient -->
+    <linearGradient id="gold-shadow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#B8860B" />
+      <stop offset="100%" stop-color="#9A6B00" />
+    </linearGradient>
+
+    <!-- Base/Platform Gradient -->
+    <linearGradient id="base-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#333333" />
+      <stop offset="50%" stop-color="#666666" />
+      <stop offset="100%" stop-color="#222222" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Handle -->
+  <path d="M 32 30 C 15 30, 15 55, 32 55 C 23 55, 23 36, 32 36" fill="url(#gold)" />
+
+  <!-- Right Handle -->
+  <path d="M 68 30 C 85 30, 85 55, 68 55 C 77 55, 77 36, 68 36" fill="url(#gold)" />
+
+  <!-- Trophy Cup Body -->
+  <path d="M 30 25 
+           L 70 25 
+           C 70 55, 65 65, 50 65 
+           C 35 65, 30 55, 30 25 Z" 
+        fill="url(#gold)" />
+
+  <!-- Cup Rim/Inside Shadow -->
+  <ellipse cx="50" cy="25" rx="20" ry="4" fill="url(#gold-shadow)" />
+
+  <!-- Trophy Stem/Neck -->
+  <path d="M 45 63 L 55 63 L 57 78 L 43 78 Z" fill="url(#gold)" />
+
+  <!-- Upper Tier Base -->
+  <ellipse cx="50" cy="78" rx="12" ry="3" fill="url(#gold-shadow)" />
+
+  <!-- Main Pedestal Base -->
+  <path d="M 35 80 L 65 80 L 68 90 L 32 90 Z" fill="url(#base-grad)" />
+  <ellipse cx="50" cy="80" rx="15" ry="2" fill="#111" opacity="0.4" />
+  <ellipse cx="50" cy="90" rx="18" ry="3" fill="#222" />
+
+  <!-- Star Highlight Detail -->
+  <path d="M 42 38 L 44 43 L 49 44 L 45 47 L 46 52 L 42 49 L 38 52 L 39 47 L 35 44 L 40 43 Z" fill="#FFFFFF" opacity="0.8" />
+</svg>
+` + yearObj.displayName + '</span>';
+          submenu.appendChild(yearBtn);
+        });
+      }
+
+      function renderSettings() {
+        var container = document.getElementById('settings-list');
+        if (!container) return;
+        container.innerHTML = '';
+
+        tzOptions.forEach(function (opt) {
+          var el = document.createElement('div');
+          el.className = 'focusable menu-item';
+          el.setAttribute('data-action', 'set-timezone');
+          el.setAttribute('data-value', opt.value);
+          var isSelected = state.timezoneOffset === opt.value ? `<svg xmlns="http://w3.org" viewBox="0 0 100 100" width="14" height="14">
+  <!-- Definitions for Gradients -->
+  <defs>
+    <!-- Vibrant Green Gradient -->
+    <linearGradient id="green-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4CE166" />
+      <stop offset="100%" stop-color="#22B13B" />
+    </linearGradient>
+
+    <!-- Deep Stroke/Border Gradient -->
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1B852C" />
+      <stop offset="100%" stop-color="#11581D" />
+    </linearGradient>
+
+    <!-- White Check Shadow for Subtle Depth -->
+    <filter id="drop-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Rounded Square Button Base -->
+  <rect x="5" y="5" width="90" height="90" rx="22" fill="url(#green-grad)" stroke="url(#border-grad)" stroke-width="4" />
+
+  <!-- Inner Gloss Highlight Line -->
+  <rect x="9" y="9" width="82" height="82" rx="18" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.25" />
+
+  <!-- White Checkmark Icon -->
+  <path d="M 28 50 
+           L 42 64 
+           L 72 34" 
+        fill="none" 
+        stroke="#FFFFFF" 
+        stroke-width="12" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#drop-shadow)" />
+</svg>
+` : '';
+          el.innerHTML = `<svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="grey" stroke-width="1.5">
+  <!-- Outer Circle -->
+  <circle cx="8" cy="8" r="6.5"/>
+  <!-- Equator Line -->
+  <line x1="1.5" y1="8" x2="14.5" y2="8"/>
+  <!-- Meridian Lines (Vertical Curves) -->
+  <path d="M8 1.5C9.5 3.3 10.5 5.5 10.5 8s-1 4.7-2.5 6.5"/>
+  <path d="M8 1.5C6.5 3.3 5.5 5.5 5.5 8s1 4.7 2.5 6.5"/>
+</svg>
+
+ ` + opt.label + isSelected + '</span>';
+          container.appendChild(el);
+        });
+        updateNavigationState();
+      }
+
+      function renderMatches() {
+        var container = document.getElementById('matches-list');
+        container.innerHTML = '<p class="status-msg">Loading schedules...</p>';
+
+        var titleText = state.currentYearObj.displayName + " Fixtures";
+        if (state.currentFilter === 'team') {
+          titleText = state.selectedTeam + " Fixtures";
+        }
+        document.getElementById('matches-view-title').innerText = titleText;
+
+        fetchWorldCupData(function (matches) {
+          container.innerHTML = '';
+          var filtered = matches.filter(function (match) {
+          
+            if (state.currentFilter === 'results') return !!match.score;
+            if (state.currentFilter === 'upcoming') return !match.score;
+            if (state.currentFilter === 'team') {
+              return match.team1 === state.selectedTeam || match.team2 === state.selectedTeam;
+            }
+            return true;
+          });
+
+          if (filtered.length === 0) {
+            container.innerHTML = '<p class="status-msg">No matches found.</p>';
+            return;
+          }
+
+          filtered.forEach(function (match) {
+            var matchEl = document.createElement('div');
+            matchEl.className = 'focusable menu-item match-card';
+           
+            var scoreText = (match.score && match.score.ft) ? match.score.ft[0] + ' - ' + match.score.ft[1] : 'VS';
+
+            matchEl.innerHTML =
+              '<div class="match-meta">' + match._localDateStr + ' • ' + match._localTimeStr + '</div>' +
+              '<div class="match-teams-grid">' +
+              '<span>' + match.team1 + '</span>' +
+              '<span class="match-result">' + scoreText + '</span>' +
+              '<span>' + match.team2 + '</span>' +
+              '</div>';
+            container.appendChild(matchEl);
+          });
+          updateNavigationState();
+        });
+      }
+
+      function showTeamsFilter() {
+        var container = document.getElementById('teams-list-container');
+        container.innerHTML = '<p class="status-msg">Parsing teams...</p>';
+        navigateTo('teams');
+
+        fetchWorldCupData(function (matches) {
+          var teamsMap = {};
+          matches.forEach(function (match) {
+            teamsMap[match.team1] = true;
+            teamsMap[match.team2] = true;
+          });
+
+          var teamsList = Object.keys(teamsMap).sort();
+          container.innerHTML = '';
+
+          if (teamsList.length === 0) {
+            container.innerHTML = '<p class="status-msg">No profiles found.</p>';
+            return;
+          }
+
+          teamsList.forEach(function (team) {
+            var teamEl = document.createElement('div');
+            teamEl.className = 'focusable menu-item';
+            teamEl.setAttribute('data-action', 'select-team');
+            teamEl.setAttribute('data-team', team);
+            teamEl.innerHTML = `<span class="item-text"><svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+</svg>
+ ` + team + '</span>';
+            container.appendChild(teamEl);
+          });
+
+          state.focusedIndex = 0;
+          updateNavigationState();
+        });
+      }
+
+      function showTournamentStats() {
+        var container = document.getElementById('stats-container');
+        container.innerHTML = '<p class="status-msg">Analyzing statistics...</p>';
+        navigateTo('stats');
+
+        fetchWorldCupData(function (matches) {
+          container.innerHTML = '';
+          if (matches.length === 0) {
+            container.innerHTML = '<p class="status-msg">No metrics found.</p>';
+            return;
+          }
+
+          var totalMatches = matches.length;
+          var playedMatches = 0;
+          var totalGoals = 0;
+          var biggestWin = null;
+          var biggestGoalDiff = -1;
+
+          matches.forEach(function (match) {
+            if (match.score && match.score.ft) { 
+              playedMatches++;
+              var g1 = match.score.ft[0];
+              var g2 = match.score.ft[1];
+              totalGoals += (g1 + g2);
+
+              var diff = Math.abs(g1 - g2);
+              if (diff > biggestGoalDiff) {
+                biggestGoalDiff = diff;
+                biggestWin = match;
+              }
+            }
+          });
+
+          var avgGoals = playedMatches > 0 ? (totalGoals / playedMatches).toFixed(2) : 0;
+          var upcomingMatches = totalMatches - playedMatches;
+
+        
+          var html =
+            '<div class="focusable stat-box"><div>Total Matches</div><div class="stat-val">' + totalMatches + '</div></div>' +
+            '<div class="focusable stat-box"><div>Played Matches</div><div class="stat-val">' + playedMatches + '</div></div>' +
+            '<div class="focusable stat-box"><div>Upcoming Matches</div><div class="stat-val">' + upcomingMatches + '</div></div>' +
+            '<div class="focusable stat-box"><div>Total Goals</div><div class="stat-val">' + totalGoals + '</div></div>' +
+            '<div class="focusable stat-box"><div>Average Goals/Match</div><div class="stat-val">' + avgGoals + '</div></div>';
+
+          if (biggestWin) {
+            var scoreStr = biggestWin.team1 + " (" + biggestWin.score.ft[0] + " - " + biggestWin.score.ft[1] + ") " + biggestWin.team2;
+            html += '<div class="focusable stat-box"><div>Biggest Victory</div><div class="stat-val" style="font-size:11px; color:#ffb300;">' + scoreStr + '</div></div>';
+          }
+
+          container.innerHTML = html;
+          state.focusedIndex = 0;
+          updateNavigationState();
+        });
+      }
+
+      function fetchAvailableYears() {
+        var rootYears = [];
+        var clubYears = [];
+
+        fetch(GITHUB_API_URL)
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (Array.isArray(data)) {
+              data.forEach(function (item) {
+                if (item.type === 'dir' && /^\d{4}$/.test(item.name)) {
+                  rootYears.push({ year: item.name, displayName: item.name + " World Cup", url: BASE_URL + item.name + "/worldcup.json" });
+                }
+              });
+            }
+            return fetch(GITHUB_API_URL + 'club-worldcup');
+          })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (Array.isArray(data)) {
+              data.forEach(function (item) {
+                if (item.type === 'dir' && /^\d{4}$/.test(item.name)) {
+                  clubYears.push({ year: item.name + "-club", displayName: item.name + " Club World Cup", url: BASE_URL + "club-worldcup/" + item.name + "/clubworldcup.json" });
+                }
+              });
+            }
+
+            var combined = rootYears.concat(clubYears);
+            combined.sort(function (a, b) {
+              return parseInt(b.year, 10) - parseInt(a.year, 10);
+            });
+
+            if (combined.length > 0) {
+              state.availableYears = combined;
+              var found = false;
+              for (var i = 0; i < combined.length; i++) {
+                if (combined[i].year === state.currentYearObj.year) {
+                  state.currentYearObj = combined[i];
+                  found = true;
+                  break;
+                }
+              }
+              if (!found) { state.currentYearObj = combined[0]; }
+              renderYearSubmenu();
+            }
+          })
+          .catch(function () {
+            renderYearSubmenu();
+          });
+      }
+
+      function navigateTo(viewId) {
+        if (viewId === state.currentView) return;
+
+        state.focusMemory[state.currentView] = state.focusedIndex;
+
+        document.getElementById('view-' + state.currentView).classList.remove('active');
+        state.currentView = viewId;
+        state.history.push(viewId);
+        document.getElementById('view-' + viewId).classList.add('active');
+
+        var headerTitle = document.getElementById('header-title');
+        if (viewId === 'dashboard') {
+          headerTitle.innerText = "Match Dashboard";
+          state.dashboardDate = new Date();
+          updateDashboard();
+        } else if (viewId === 'menu') {
+          headerTitle.innerText = "Quick Menu";
+        } else if (viewId === 'matches') {
+          headerTitle.innerText = state.currentYearObj.displayName;
+          renderMatches();
+        } else if (viewId === 'stats') {
+          headerTitle.innerText = state.currentYearObj.displayName + " Stats";
+        } else if (viewId === 'teams') {
+          headerTitle.innerText = "Select Team";
+        } else if (viewId === 'help') {
+          headerTitle.innerText = "Help & Info";
+        } else if (viewId === 'settings') {
+          headerTitle.innerText = "Timezone";
+          renderSettings();
+        }
+
+        state.focusedIndex = 0;
+        updateNavigationState();
+      }
+
+      function navigateBack() {
+        if (state.history.length > 1) {
+
+          state.focusMemory[state.currentView] = state.focusedIndex;
+
+          document.getElementById('view-' + state.currentView).classList.remove('active');
+          state.history.pop();
+          var prevView = state.history[state.history.length - 1];
+          state.currentView = prevView;
+          document.getElementById('view-' + prevView).classList.add('active');
+
+          var headerTitle = document.getElementById('header-title');
+          if (prevView === 'dashboard') {
+            headerTitle.innerText = "Match Dashboard";
+            updateDashboard();
+          } else if (prevView === 'menu') {
+            headerTitle.innerText = "Quick Menu";
+          } else if (prevView === 'matches') {
+            headerTitle.innerText = state.currentYearObj.displayName;
+          } else if (prevView === 'help') {
+            headerTitle.innerText = "Help & Info";
+          } else if (prevView === 'settings') {
+            headerTitle.innerText = "Timezone";
+          }
+
+          state.focusedIndex = state.focusMemory[prevView] !== undefined ? state.focusMemory[prevView] : 0;
+          updateNavigationState();
+        }
+      }
+
+      function getFocusableElements() {
+        var activeView = document.getElementById('view-' + state.currentView);
+        return Array.prototype.slice.call(activeView.querySelectorAll('.focusable')).filter(function (el) {
+          return el.offsetParent !== null;
+        });
+      }
+
+      function updateNavigationState() {
+        var focusable = getFocusableElements();
+        document.querySelectorAll('.focusable').forEach(function (el) {
+          el.classList.remove('focused');
+        });
+
+        if (focusable.length > 0) {
+          if (state.focusedIndex >= focusable.length) state.focusedIndex = focusable.length - 1;
+          if (state.focusedIndex < 0) state.focusedIndex = 0;
+
+          var activeEl = focusable[state.focusedIndex];
+          if (activeEl) {
+            activeEl.classList.add('focused');
+            var isLowRes = window.innerWidth <= 140 || window.innerHeight <= 180;
+            if (isLowRes) {
+              activeEl.scrollIntoView({ block: 'center' });
+            } else {
+              activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+          }
+        }
+
+        var softkeyLeft = document.getElementById('softkey-left');
+        softkeyLeft.innerText = state.currentView === 'menu' ? 'Close' : 'Menu';
+      }
+
+      function handleKeyDown(e) {
+        var focusable = getFocusableElements();
+
+        switch (e.key) {
+          case 'ArrowLeft':
+            if (state.currentView === 'dashboard') {
+              e.preventDefault();
+              state.dashboardDate.setDate(state.dashboardDate.getDate() - 1);
+              updateDashboard();
+            }
+            break;
+
+          case 'ArrowRight':
+            if (state.currentView === 'dashboard') {
+              e.preventDefault();
+              state.dashboardDate.setDate(state.dashboardDate.getDate() + 1);
+              updateDashboard();
+            }
+            break;
+
+          case 'ArrowUp':
+            e.preventDefault();
+            if (state.focusedIndex > 0) {
+              state.focusedIndex--;
+              updateNavigationState();
+            }
+            break;
+
+          case 'ArrowDown':
+            e.preventDefault();
+            if (state.focusedIndex < focusable.length - 1) {
+              state.focusedIndex++;
+              updateNavigationState();
+            }
+            break;
+
+          case 'Enter':
+            e.preventDefault();
+            if (focusable.length > 0 && focusable[state.focusedIndex]) {
+              triggerAction(focusable[state.focusedIndex]);
+            }
+            break;
+
+          case 'SoftLeft':
+          case 'F1': case 'Escape':
+            e.preventDefault();
+            if (state.currentView === 'menu') {
+              navigateBack();
+            } else {
+              navigateTo('menu');
+            }
+            break;
+
+          case 'SoftRight':
+          case 'F2':
+            e.preventDefault();
+            if (state.currentView !== 'dashboard') {
+              navigateBack();
+            } else {
+              window.close();
+            }
+            break;
+        }
+      }
+
+      function triggerAction(element) {
+        var action = element.getAttribute('data-action');
+        var target = element.getAttribute('data-target');
+
+        if (action === 'navigate') {
+          navigateTo(target);
+        }
+        else if (action === 'toggle-submenu') {
+          var submenu = document.getElementById(target);
+          submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+          state.focusedIndex = 0;
+          updateNavigationState();
+        }
+        else if (action === 'select-year') {
+          var selectedYearValue = element.getAttribute('data-year');
+          for (var i = 0; i < state.availableYears.length; i++) {
+            if (state.availableYears[i].year === selectedYearValue) {
+              state.currentYearObj = state.availableYears[i];
+              break;
+            }
+          }
+          state.currentFilter = 'all';
+          navigateTo('matches');
+        }
+        else if (action === 'filter-matches') {
+          state.currentFilter = element.getAttribute('data-filter');
+          navigateTo('matches');
+        }
+        else if (action === 'show-teams-filter') {
+          showTeamsFilter();
+        }
+        else if (action === 'select-team') {
+          state.selectedTeam = element.getAttribute('data-team');
+          state.currentFilter = 'team';
+          navigateTo('matches');
+        }
+        else if (action === 'show-stats') {
+          showTournamentStats();
+        }
+        else if (action === 'set-timezone') {
+          state.timezoneOffset = element.getAttribute('data-value');
+          localStorage.setItem('wc_tz', state.timezoneOffset);
+          tournamentCache = {};
+          renderSettings();
+        }
+      }
+
+      function init() {
+        window.addEventListener('keydown', handleKeyDown);
+        renderYearSubmenu();
+        updateDashboard();
+        fetchAvailableYears();
+      }
+
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        init();
+      } else {
+        document.addEventListener('DOMContentLoaded', init);
+      }
+
+    })();
+
+
+    window.addEventListener('back', (event) => {
+      event.preventDefault();
+      simulateNaturalPress('SoftRight', 0);
+    });</script>
+</head>
+
+<body>
+
+  <header id="app-header">
+    <span id="header-title">Match Dashboard</span>
+  </header>
+
+  <main id="app-container">
+
+    <!-- 1. DASHBOARD VIEW -->
+    <div id="view-dashboard" class="app-view active">
+      <div class="date-badge" id="dashboard-date-ctrl">
+        <span class="nav-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+            fill="white">
+            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" />
+          </svg>
+        </span>
+        <span id="current-local-date">Loading...</span>
+        <span class="nav-arrow"><svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+          </svg>
+        </span>
+      </div>
+      <div id="today-matches-container">
+        <p class="status-msg">Searching matches...</p>
+      </div>
+    </div>
+
+    <!-- 2. QUICK MENU VIEW -->
+    <div id="view-menu" class="app-view">
+      <div class="section-title">Navigation Menu</div>
+      <div class="menu-list">
+
+        <div class="focusable menu-item" data-action="toggle-submenu" data-target="year-submenu">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
+              </svg>
+            </span>
+            Select Tournament
+          </span>
+        </div>
+        <div id="year-submenu" class="submenu-container" style="display:none;"></div>
+
+        <div class="focusable menu-item" data-action="show-teams-filter">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 17.91c-3.11-1.02-5.5-4.75-5.5-8.82V6.3l5.5-2.06 5.5 2.06v5.09c0 4.07-2.39 7.8-5.5 8.82z" />
+              </svg>
+            </span>
+            Filter by Team
+          </span>
+        </div>
+
+        <div class="focusable menu-item" data-action="show-stats">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor" d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z" />
+              </svg>
+            </span>
+            Tournament Stats
+          </span>
+        </div>
+
+        <div class="focusable menu-item" data-action="filter-matches" data-filter="all">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 2c1.85 0 3.55.63 4.9 1.69L15 8.5h-6L7.1 5.69C8.45 4.63 10.15 4 12 4zM5.69 7.1L8.5 9v6l-2.81 1.9C4.63 15.55 4 13.85 4 12c0-1.85.63-3.55 1.69-4.9zM12 20c-1.85 0-3.55-.63-4.9-1.69L9 15.5h6l1.9 2.81c-1.35 1.06-3.05 1.69-4.9 1.69zm4.31-3.1L15 15V9l2.81-1.9c1.06 1.35 1.69 3.05 1.69 4.9 0 1.85-.63 3.55-1.69 4.9z" />
+              </svg>
+            </span>
+            All Matches
+          </span>
+        </div>
+
+        <div class="focusable menu-item" data-action="filter-matches" data-filter="results">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v3c0 2.44 1.72 4.48 4 4.88V19h-3v2h16v-2h-3v-4.12c2.28-.4 4-2.44 4-4.88V7c0-1.1-.9-2-2-2zM5 10V7h2v3H5zm14 0h-2V7h2v3z" />
+              </svg>
+            </span>
+            Match Results
+          </span>
+        </div>
+
+        <div class="focusable menu-item" data-action="filter-matches" data-filter="upcoming">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+              </svg>
+            </span>
+            Upcoming Matches
+          </span>
+        </div>
+        <!-- Help এর ঠিক উপরে এই Settings বাটনটি যোগ করুন -->
+        <div class="focusable menu-item" data-action="navigate" data-target="settings">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.73 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+              </svg>
+            </span>
+            Timezone Settings
+          </span>
+        </div>
+
+        <div class="focusable menu-item" data-action="navigate" data-target="help">
+          <span class="item-text">
+            <span class="icon-svg">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+              </svg>
+            </span>
+            Help
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. MATCHES LIST VIEW -->
+    <div id="view-matches" class="app-view">
+      <div class="section-title" id="matches-view-title">Match Schedule</div>
+      <div id="matches-list" class="menu-list"></div>
+    </div>
+
+    <!-- 4. TOURNAMENT STATS VIEW -->
+    <div id="view-stats" class="app-view">
+      <div class="section-title">Tournament Statistics</div>
+      <div id="stats-container"></div>
+    </div>
+
+    <!-- 5. TEAMS FILTER VIEW -->
+    <div id="view-teams" class="app-view">
+      <div class="section-title">Select Team</div>
+      <div id="teams-list-container" class="menu-list"></div>
+    </div>
+
+    <!-- 6. HELP & INFO VIEW -->
+    <div id="view-help" class="app-view">
+      <div class="section-title">Help & Info</div>
+      <div class="menu-list">
+        <div class="focusable help-box">
+          <div class="help-heading">Dashboard Controls</div>
+          <div class="help-text">Use <strong>Left/Right Keys</strong> on the dashboard to change dates.</div>
+        </div>
+        <div class="focusable help-box">
+          <div class="help-heading">Navigation</div>
+          <div class="help-text">Use <strong>Up/Down Keys</strong> to scroll. Press <strong>Center</strong> to select.
+          </div>
+        </div>
+        <div class="focusable help-box">
+          <div class="help-heading">Database</div>
+          <div class="help-text">Powered by openfootball. All matches are auto-sorted by local kickoff time.</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 7. SETTINGS VIEW -->
+    <div id="view-settings" class="app-view">
+      <div class="section-title">Select Timezone</div>
+      <div id="settings-list" class="menu-list"></div>
+    </div>
+
+  </main>
+
+  <footer id="softkey-bar">
+    <div id="softkey-left" class="softkey">Menu</div>
+    <div id="softkey-center" class="softkey">SELECT</div>
+    <div id="softkey-right" class="softkey">Back</div>
+  </footer>
+
+</body>
+
+</html>
