@@ -1,0 +1,1278 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MessManager - Custom Cloud Phone Widget</title>
+  <!-- Google Roboto Font Link -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'cm-gray-020': '#202020',
+            'cm-blue-009': '#0093E0',
+            'cm-blue-05a': '#05AEF2',
+            'cm-green-00a': '#00A539',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Safe Area Breakpoints and Font Scaling for QQVGA & QVGA */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #202020;
+    }
+
+    /* QQVGA target scaling rules (max-width: 128px) */
+    @media (max-width: 8rem) {
+      .safe-margin {
+        padding: 4px !important;
+      }
+      .text-responsive {
+        font-size: 10px !important;
+      }
+      .header-height {
+        height: 20px !important;
+      }
+      .footer-height {
+        height: 18px !important;
+      }
+    }
+
+    /* QVGA target styling configuration (min-width: 240px) */
+    @media (min-width: 15rem) {
+      .safe-margin {
+        padding: 8px !important;
+      }
+      .text-responsive {
+        font-size: 13px !important;
+      }
+      .header-height {
+        height: 36px !important;
+      }
+      .footer-height {
+        height: 28px !important;
+      }
+    }
+
+    /* Custom Design System focus states */
+    [tabindex="0"]:focus, input:focus, textarea:focus, button:focus {
+      background-color: #05AEF2 !important;
+      color: #000000 !important;
+      font-weight: bold !important;
+      outline: none !important;
+    }
+
+    /* Continuous marquee animations for focused long texts */
+    .marquee-text:focus span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 5s linear infinite;
+    }
+    @keyframes marquee {
+      0%   { transform: translate(0, 0); }
+      100% { transform: translate(-100%, 0); }
+    }
+  </style>
+</head>
+<body class="text-white overflow-hidden">
+
+  <!-- Fluid Responsive Container -->
+  <div class="w-full h-screen flex flex-col justify-between select-none bg-cm-gray-020">
+    
+    <!-- Sticky Top Header -->
+    <header class="bg-cm-blue-009 header-height flex items-center justify-between safe-margin shrink-0">
+      <div class="flex items-center gap-1">
+        <span class="text-responsive font-bold tracking-tight" id="headerTitle">MessManager</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <span id="networkBadge" class="text-[9px] px-1 bg-black rounded font-bold text-cm-green-00a">ON</span>
+      </div>
+    </header>
+
+    <!-- Scrollable Center Body Area -->
+    <main class="flex-1 overflow-y-auto safe-margin bg-cm-gray-020" id="mainContent">
+
+      <!-- VIEW 1: MAIN NAVIGATION HOME MENU -->
+      <section id="view-menu" class="app-view block">
+        <h2 class="text-responsive font-bold text-center border-b border-gray-800 pb-1 mb-1">Main Menu</h2>
+        <div class="flex flex-col gap-0.5">
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('dashboard')">
+            <span>1. Dashboard Stats</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('members')">
+            <span>2. Members List</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('meals')">
+            <span>3. Meals Tracker</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('bazaar')">
+            <span>4. Bazaar Logs</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('expenses')">
+            <span>5. General Expenses</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('deposits')">
+            <span>6. Cash Deposits</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('guests')">
+            <span>7. Guest Book</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('settings')">
+            <span>8. Settings & Backup</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('closing')">
+            <span>9. Monthly Closing</span> <span>»</span>
+          </div>
+          <div tabindex="0" class="menu-item p-1.5 border-b border-gray-800 text-responsive cursor-pointer flex justify-between" onclick="ui.switchView('trash')">
+            <span>10. Recycle Bin</span> <span>»</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: DASHBOARD STATS -->
+      <section id="view-dashboard" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Dashboard</h2>
+        <div class="flex flex-col gap-1 text-[11px] cm-qvga:text-[13px]">
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Members (Act):</span> <span id="dashTotalMembers" class="font-bold text-cm-blue-05a">0 / 0</span>
+          </div>
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Total Meals:</span> <span id="dashTotalMeals" class="font-bold">0.0</span>
+          </div>
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Meal Rate:</span> <span id="dashMealRate" class="font-bold text-yellow-400">$0.00</span>
+          </div>
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Bazaar Spent:</span> <span id="dashTotalBazaar" class="font-bold text-orange-400">$0.00</span>
+          </div>
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Fixed Exp:</span> <span id="dashTotalExpenses" class="font-bold text-red-400">$0.00</span>
+          </div>
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Total Deposits:</span> <span id="dashTotalDeposits" class="font-bold text-cm-green-00a">$0.00</span>
+          </div>
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Cash Bal:</span> <span id="dashCurrentBalance" class="font-bold">$0.00</span>
+          </div>
+          <div class="flex justify-between p-1 bg-black/45 rounded">
+            <span>Net Outflow:</span> <span id="dashDueAmount" class="font-bold text-red-500">$0.00</span>
+          </div>
+          <!-- Compact List overview -->
+          <div class="mt-2 border-t border-gray-800 pt-1">
+            <span class="text-responsive font-bold block mb-1">Ledger State</span>
+            <div id="dashLedgerTbody" class="flex flex-col gap-1"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: MEMBERS VIEW -->
+      <section id="view-members" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Members</h2>
+        <div class="mb-1">
+          <input type="text" id="searchMember" placeholder="Search..." class="w-full text-responsive bg-black border border-gray-800 p-1.5 rounded focus:bg-cm-blue-05a text-white">
+        </div>
+        <div id="membersTableBody" class="flex flex-col gap-0.5"></div>
+      </section>
+
+      <!-- VIEW 4: MEALS TRACKER -->
+      <section id="view-meals" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center" id="mealsDateHeader">Meals</h2>
+        <div class="mb-2" id="mealsDatePickerContainer">
+          <!-- Custom Date Picker dynamically injected here -->
+        </div>
+        <div id="mealsTableBody" class="flex flex-col gap-1.5"></div>
+      </section>
+
+      <!-- VIEW 5: BAZAAR LOGS -->
+      <section id="view-bazaar" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Bazaar Logs</h2>
+        <div id="bazaarTableBody" class="flex flex-col gap-1"></div>
+      </section>
+
+      <!-- VIEW 6: GENERAL EXPENSES -->
+      <section id="view-expenses" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Expenses</h2>
+        <div id="expensesTableBody" class="flex flex-col gap-1"></div>
+      </section>
+
+      <!-- VIEW 7: CASH DEPOSITS -->
+      <section id="view-deposits" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Deposits</h2>
+        <div id="depositsTableBody" class="flex flex-col gap-1"></div>
+      </section>
+
+      <!-- VIEW 8: GUEST BOOK -->
+      <section id="view-guests" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Guests</h2>
+        <div id="guestsTableBody" class="flex flex-col gap-1"></div>
+      </section>
+
+      <!-- VIEW 9: MONTHLY CLOSING -->
+      <section id="view-closing" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Monthly Closing</h2>
+        <div id="closingSummaryContainer" class="text-responsive space-y-1 mb-2"></div>
+        <button tabindex="0" class="w-full text-responsive bg-red-600 hover:bg-red-700 py-1.5 rounded font-bold" onclick="ui.executeMonthlyClosing()">Execute Month Close</button>
+      </section>
+
+      <!-- VIEW 10: TRASH BIN -->
+      <section id="view-trash" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Recycle Bin</h2>
+        <div id="trashTableBody" class="flex flex-col gap-1"></div>
+      </section>
+
+      <!-- VIEW 11: SETTINGS & BACKUP -->
+      <section id="view-settings" class="app-view hidden">
+        <h2 class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Settings</h2>
+        <div class="space-y-2 text-responsive">
+          <div>
+            <label class="block mb-0.5">Mess Name:</label>
+            <input type="text" id="setMessName" class="w-full bg-black border border-gray-800 p-1.5 rounded focus:bg-cm-blue-05a text-white">
+          </div>
+          <div>
+            <label class="block mb-0.5">Currency:</label>
+            <input type="text" id="setCurrency" class="w-full bg-black border border-gray-800 p-1.5 rounded focus:bg-cm-blue-05a text-white">
+          </div>
+          <button tabindex="0" class="w-full bg-cm-blue-009 text-black py-1.5 rounded font-bold" onclick="ui.saveSettings()">Save Config</button>
+          
+          <div class="border-t border-gray-800 pt-2 space-y-1">
+            <button tabindex="0" class="w-full bg-cm-green-00a text-black py-1.5 rounded font-bold" onclick="ui.processBackupExport()">💾 Download Backup</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FORM VIEW (Generic Shared for adding records) -->
+      <section id="view-form" class="app-view hidden">
+        <h2 id="formViewTitle" class="text-responsive font-bold border-b border-gray-800 pb-1 mb-1 text-center">Form</h2>
+        <form id="dynamicForm" class="space-y-1.5 text-responsive text-white">
+          <!-- Custom Fields dynamically injected -->
+          <div id="dynamicFormFields" class="space-y-1"></div>
+        </form>
+      </section>
+
+    </main>
+
+    <!-- Interactive Options Modal Overlay -->
+    <div id="optionsModal" class="modal-overlay hidden absolute inset-0 bg-black/85 z-50 flex flex-col justify-end">
+      <div class="bg-cm-gray-020 p-2 border-t border-cm-blue-05a safe-margin flex flex-col gap-1">
+        <span class="text-responsive font-bold border-b border-gray-800 pb-0.5 text-center block mb-1 text-cm-blue-05a">Options</span>
+        <div id="optionsList" class="flex flex-col gap-0.5"></div>
+      </div>
+    </div>
+
+    <!-- Sticky Navigation Softkey Bar -->
+    <footer class="bg-black footer-height border-t border-gray-800 flex justify-between items-center safe-margin shrink-0">
+      <button id="lsk-btn" class="text-responsive text-cm-blue-05a font-bold focus:outline-none flex items-center gap-0.5">
+        <span>☰</span> <span id="lsk-text">Menu</span>
+      </button>
+      <button id="rsk-btn" class="text-responsive text-red-500 font-bold focus:outline-none flex items-center gap-0.5" onclick="window.history.back()">
+        <span>&lt;</span> <span id="rsk-text">Back</span>
+      </button>
+    </footer>
+
+  </div>
+
+  <script>
+    /**
+     * Bachelor Mess Management System Core Business Logic Engine
+     * Fluid Layout implementation featuring completely custom non-native components.
+     */
+
+    // --- DATABASE MANAGER (IndexedDB Setup) ---
+    class DatabaseManager {
+      constructor() {
+        this.dbName = 'MessManagementDB';
+        this.dbVersion = 1;
+        this.db = null;
+      }
+
+      init() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(this.dbName, this.dbVersion);
+          request.onerror = (e) => reject(e);
+          request.onsuccess = (e) => {
+            this.db = e.target.result;
+            resolve(this.db);
+          };
+          request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            const stores = ['members', 'meals', 'bazaar', 'expenses', 'deposits', 'guests', 'settings', 'activity_logs', 'trash'];
+            stores.forEach(store => {
+              if (!db.objectStoreNames.contains(store)) {
+                db.createObjectStore(store, { keyPath: store === 'settings' ? 'key' : 'id', autoIncrement: store !== 'settings' });
+              }
+            });
+          };
+        });
+      }
+
+      getAll(storeName) {
+        return new Promise((resolve, reject) => {
+          const trans = this.db.transaction(storeName, 'readonly');
+          const store = trans.objectStore(storeName);
+          const req = store.getAll();
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      get(storeName, key) {
+        return new Promise((resolve, reject) => {
+          const trans = this.db.transaction(storeName, 'readonly');
+          const store = trans.objectStore(storeName);
+          const req = store.get(key);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      put(storeName, data) {
+        return new Promise((resolve, reject) => {
+          const trans = this.db.transaction(storeName, 'readwrite');
+          const store = trans.objectStore(storeName);
+          const req = store.put(data);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      delete(storeName, key) {
+        return new Promise((resolve, reject) => {
+          const trans = this.db.transaction(storeName, 'readwrite');
+          const store = trans.objectStore(storeName);
+          const req = store.delete(key);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      clear(storeName) {
+        return new Promise((resolve, reject) => {
+          const trans = this.db.transaction(storeName, 'readwrite');
+          const store = trans.objectStore(storeName);
+          const req = store.clear();
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+    }
+
+    const dbMgr = new DatabaseManager();
+
+    // --- UTILITY SETTINGS & LOGGING ENGINE ---
+    class SettingsManager {
+      static async get(key, defaultValue = '') {
+        try {
+          const record = await dbMgr.get('settings', key);
+          return record ? record.value : defaultValue;
+        } catch {
+          return defaultValue;
+        }
+      }
+      static async set(key, value) {
+        await dbMgr.put('settings', { key, value });
+      }
+      static async logActivity(action, details) {
+        await dbMgr.put('activity_logs', { timestamp: Date.now(), action, details });
+      }
+    }
+
+    // --- BUSINESS OPERATIONS MANAGEMENT LOGICS ---
+    class MemberManager {
+      static async saveMember(id, name, phone, status) {
+        const member = { name, phone, status };
+        if (id) member.id = Number(id);
+        await dbMgr.put('members', member);
+        await SettingsManager.logActivity('MEMBER_SAVE', `Saved member: ${name}`);
+      }
+      static async deleteMember(id) {
+        const member = await dbMgr.get('members', id);
+        if (member) {
+          await dbMgr.put('trash', { storeName: 'members', originalId: id, data: member, deletedAt: Date.now() });
+          await dbMgr.delete('members', id);
+          await SettingsManager.logActivity('MEMBER_DELETE', `Deleted: ${member.name}`);
+        }
+      }
+    }
+
+    class MealManager {
+      static async getDayMeals(dateString) {
+        const meals = await dbMgr.getAll('meals');
+        return meals.filter(m => m.date === dateString);
+      }
+      static async saveMeal(row) {
+        await dbMgr.put('meals', row);
+        await SettingsManager.logActivity('MEAL_UPDATE', `Updated meals on date ${row.date}`);
+      }
+    }
+
+    class BazaarManager {
+      static async saveBazaar(id, date, memberId, amount, details) {
+        const entry = { date, memberId: Number(memberId), amount: Number(amount), details };
+        if (id) entry.id = Number(id);
+        await dbMgr.put('bazaar', entry);
+      }
+      static async deleteBazaar(id) {
+        const entry = await dbMgr.get('bazaar', id);
+        if (entry) {
+          await dbMgr.put('trash', { storeName: 'bazaar', originalId: id, data: entry, deletedAt: Date.now() });
+          await dbMgr.delete('bazaar', id);
+        }
+      }
+    }
+
+    class ExpenseManager {
+      static async saveExpense(id, date, category, amount, details) {
+        const entry = { date, category, amount: Number(amount), details };
+        if (id) entry.id = Number(id);
+        await dbMgr.put('expenses', entry);
+      }
+      static async deleteExpense(id) {
+        const entry = await dbMgr.get('expenses', id);
+        if (entry) {
+          await dbMgr.put('trash', { storeName: 'expenses', originalId: id, data: entry, deletedAt: Date.now() });
+          await dbMgr.delete('expenses', id);
+        }
+      }
+    }
+
+    class DepositManager {
+      static async saveDeposit(id, date, memberId, amount, details) {
+        const entry = { date, memberId: Number(memberId), amount: Number(amount), details };
+        if (id) entry.id = Number(id);
+        await dbMgr.put('deposits', entry);
+      }
+      static async deleteDeposit(id) {
+        const entry = await dbMgr.get('deposits', id);
+        if (entry) {
+          await dbMgr.put('trash', { storeName: 'deposits', originalId: id, data: entry, deletedAt: Date.now() });
+          await dbMgr.delete('deposits', id);
+        }
+      }
+    }
+
+    class GuestManager {
+      static async saveGuest(id, date, memberId, guestName, count) {
+        const entry = { date, memberId: Number(memberId), guestName, count: Number(count) };
+        if (id) entry.id = Number(id);
+        await dbMgr.put('guests', entry);
+      }
+      static async deleteGuest(id) {
+        const entry = await dbMgr.get('guests', id);
+        if (entry) {
+          await dbMgr.put('trash', { storeName: 'guests', originalId: id, data: entry, deletedAt: Date.now() });
+          await dbMgr.delete('guests', id);
+        }
+      }
+    }
+
+    // --- REPORT MANAGER & CALCULATION ENGINE ---
+    class ReportManager {
+      static async calculateState() {
+        const members = await dbMgr.getAll('members');
+        const meals = await dbMgr.getAll('meals');
+        const bazaar = await dbMgr.getAll('bazaar');
+        const expenses = await dbMgr.getAll('expenses');
+        const deposits = await dbMgr.getAll('deposits');
+
+        const activeMembers = members.filter(m => m.status === 'active').length;
+        const totalBazaar = bazaar.reduce((sum, b) => sum + b.amount, 0);
+        const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+        const totalDeposits = deposits.reduce((sum, d) => sum + d.amount, 0);
+
+        let totalMeals = 0;
+        const memberMealsMap = {};
+        members.forEach(m => memberMealsMap[m.id] = 0);
+
+        meals.forEach(m => {
+          const computed = (m.breakfast * 0.5) + m.lunch + m.dinner + m.special + m.guest;
+          if (memberMealsMap[m.memberId] !== undefined) {
+            memberMealsMap[m.memberId] += computed;
+          }
+          totalMeals += computed;
+        });
+
+        const mealRate = totalMeals > 0 ? (totalBazaar + totalExpenses) / totalMeals : 0;
+        const currentBalance = totalDeposits - totalBazaar - totalExpenses;
+
+        const ledger = members.map(m => {
+          const memberMeals = memberMealsMap[m.id] || 0;
+          const cost = memberMeals * mealRate;
+          const individualDeposited = deposits.filter(d => d.memberId === m.id).reduce((sum, item) => sum + item.amount, 0);
+          const netBalance = individualDeposited - cost;
+          return { id: m.id, name: m.name, meals: memberMeals, deposits: individualDeposited, netBalance };
+        });
+
+        const netMessDue = ledger.filter(l => l.netBalance < 0).reduce((sum, item) => sum + Math.abs(item.netBalance), 0);
+
+        return { totalMembers: members.length, activeMembers, totalMeals, mealRate, totalBazaar, totalExpenses, totalDeposits, currentBalance, netMessDue, ledger };
+      }
+    }
+
+    // --- KEYBOARD D-PAD NAVIGATION SYSTEM ---
+    class KeyNavigation {
+      constructor() {
+        this.focusableSelector = '[tabindex="0"], input, textarea, button';
+        document.addEventListener('keydown', this.handleKeyDown.bind(this));
+      }
+
+      getActiveElements() {
+        const activeView = document.querySelector('.app-view:not(.hidden), .modal-overlay:not(.hidden)');
+        if (!activeView) return [];
+        return Array.from(activeView.querySelectorAll(this.focusableSelector))
+                    .filter(el => el.offsetWidth > 0 && el.offsetHeight > 0);
+      }
+
+      handleKeyDown(e) {
+        const elements = this.getActiveElements();
+        const active = document.activeElement;
+        let index = elements.indexOf(active);
+
+        switch (e.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            if (index < elements.length - 1) {
+              elements[index + 1].focus();
+            } else if (elements.length > 0) {
+              elements[0].focus();
+            }
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            if (index > 0) {
+              elements[index - 1].focus();
+            } else if (elements.length > 0) {
+              elements[elements.length - 1].focus();
+            }
+            break;
+          case 'ArrowLeft':
+          case 'ArrowRight':
+            if (active) {
+              const type = active.getAttribute('data-type');
+              if (type === 'number') {
+                e.preventDefault();
+                let val = parseFloat(active.getAttribute('data-value') || 0);
+                const step = parseFloat(active.getAttribute('data-step') || 1);
+                const min = parseFloat(active.getAttribute('data-min') || 0);
+                const max = parseFloat(active.getAttribute('data-max') || 9999);
+                if (e.key === 'ArrowLeft') {
+                  val = Math.max(min, val - step);
+                } else {
+                  val = Math.min(max, val + step);
+                }
+                active.setAttribute('data-value', val);
+                active.querySelector('.number-text').textContent = val.toFixed(step % 1 === 0 ? 0 : 1);
+              }
+              if (type === 'date') {
+                e.preventDefault();
+                let dateStr = active.getAttribute('data-value');
+                let dateObj = new Date(dateStr);
+                if (isNaN(dateObj.getTime())) dateObj = new Date();
+                if (e.key === 'ArrowLeft') {
+                  dateObj.setDate(dateObj.getDate() - 1);
+                } else {
+                  dateObj.setDate(dateObj.getDate() + 1);
+                }
+                const newVal = dateObj.toISOString().split('T')[0];
+                active.setAttribute('data-value', newVal);
+                active.querySelector('.date-text').textContent = newVal;
+                // If it is the main meals list date filter, trigger load automatically
+                if (active.id === 'mealFilterDate') {
+                  ui.renderMeals();
+                }
+              }
+            }
+            break;
+          case 'Enter':
+            if (active && active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA') {
+              e.preventDefault();
+              active.click();
+            }
+            break;
+        }
+      }
+    }
+
+    // --- SYSTEM UI MANAGER ---
+    class UIManager {
+      constructor() {
+        this.currentView = 'menu';
+        this.currency = '$';
+        this.keyNav = new KeyNavigation();
+        this.setupCustomSelectTriggers();
+      }
+
+      async init() {
+        this.currency = await SettingsManager.get('currency', '$');
+        this.setupRoutes();
+        this.switchView('menu');
+      }
+
+      setupRoutes() {
+        window.addEventListener('hashchange', () => {
+          const hash = window.location.hash.replace('#', '') || 'menu';
+          this.switchView(hash);
+        });
+      }
+
+      async switchView(viewId) {
+        document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
+        this.closeOptions();
+
+        const target = document.getElementById(`view-${viewId}`);
+        if (target) {
+          target.classList.remove('hidden');
+          this.currentView = viewId;
+          document.getElementById('headerTitle').textContent = viewId.toUpperCase();
+          await this.renderViewData(viewId);
+        }
+
+        setTimeout(() => {
+          const elements = this.keyNav.getActiveElements();
+          if (elements.length > 0) elements[0].focus();
+        }, 80);
+      }
+
+      // Helper to dynamically collect values from both native and fully custom UI widgets
+      getInputValue(id) {
+        const el = document.getElementById(id) || document.querySelector(`[data-id="${id}"]`);
+        if (!el) return '';
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          return el.value;
+        }
+        if (el.hasAttribute('data-value')) {
+          return el.getAttribute('data-value');
+        }
+        return '';
+      }
+
+      // Custom Select Rendering
+      renderCustomSelect(id, label, options, selectedValue) {
+        const selectedText = options.find(o => o.value == selectedValue)?.text || selectedValue;
+        return `
+          <div class="space-y-0.5">
+            <label class="block text-gray-400 text-[10px] cm-qvga:text-[11px]">${label}</label>
+            <div tabindex="0" data-type="select" data-id="${id}" data-value="${selectedValue}" data-options='${JSON.stringify(options)}'
+                 class="w-full bg-black border border-gray-800 p-1.5 rounded text-left flex justify-between items-center text-responsive cursor-pointer">
+              <span>${selectedText}</span>
+              <span class="text-cm-blue-05a">▼</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Custom Date Rendering (D-pad left/right support)
+      renderCustomDate(id, label, initialValue) {
+        return `
+          <div class="space-y-0.5">
+            <label class="block text-gray-400 text-[10px] cm-qvga:text-[11px]">${label} (Left/Right to shift)</label>
+            <div tabindex="0" data-type="date" id="${id}" data-value="${initialValue}"
+                 class="w-full bg-black border border-gray-800 p-1.5 rounded flex justify-between items-center text-responsive cursor-pointer font-mono">
+              <span class="text-cm-blue-05a font-bold">&lt;</span>
+              <span class="date-text">${initialValue}</span>
+              <span class="text-cm-blue-05a font-bold">&gt;</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Custom Number Input Rendering (D-pad left/right support)
+      renderCustomNumber(id, label, initialValue, step = 1, min = 0, max = 9999) {
+        return `
+          <div class="space-y-0.5">
+            <label class="block text-gray-400 text-[10px] cm-qvga:text-[11px]">${label} (Left/Right to adjust)</label>
+            <div tabindex="0" data-type="number" data-id="${id}" data-value="${initialValue}" data-step="${step}" data-min="${min}" data-max="${max}"
+                 class="w-full bg-black border border-gray-800 p-1.5 rounded flex justify-between items-center text-responsive cursor-pointer font-mono">
+              <span class="text-red-500 font-bold">-</span>
+              <span class="number-text">${Number(initialValue).toFixed(step % 1 === 0 ? 0 : 1)}</span>
+              <span class="text-cm-green-00a font-bold">+</span>
+            </div>
+          </div>
+        `;
+      }
+
+      setupCustomSelectTriggers() {
+        document.addEventListener('click', (e) => {
+          const select = e.target.closest('[data-type="select"]');
+          if (select) {
+            const id = select.getAttribute('data-id');
+            const options = JSON.parse(select.getAttribute('data-options') || '[]');
+            this.openCustomSelectModal(id, options);
+          }
+        });
+      }
+
+      openCustomSelectModal(id, options) {
+        const selectElement = document.querySelector(`[data-id="${id}"]`);
+        const currentValue = selectElement.getAttribute('data-value');
+        
+        const html = options.map(o => `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer flex justify-between items-center" 
+               onclick="ui.setCustomSelectValue('${id}', '${o.value}', '${o.text}')">
+            <span>${o.text}</span>
+            ${o.value == currentValue ? '<span class="text-cm-green-00a">✓</span>' : ''}
+          </div>
+        `).join('');
+        
+        this.openOptions(html);
+      }
+
+      setCustomSelectValue(id, value, text) {
+        const selectElement = document.querySelector(`[data-id="${id}"]`);
+        if (selectElement) {
+          selectElement.setAttribute('data-value', value);
+          const span = selectElement.querySelector('span');
+          if (span) span.textContent = text;
+        }
+        this.closeOptions();
+      }
+
+      async renderViewData(viewId) {
+        const cur = this.currency;
+        switch (viewId) {
+          case 'menu':
+            this.setSoftkeys('Options', () => this.openMenuOptions(), 'Back', () => window.history.back());
+            break;
+          case 'dashboard':
+            const state = await ReportManager.calculateState();
+            document.getElementById('dashTotalMembers').textContent = `${state.totalMembers}/${state.activeMembers}`;
+            document.getElementById('dashTotalMeals').textContent = state.totalMeals.toFixed(1);
+            document.getElementById('dashMealRate').textContent = `${cur}${state.mealRate.toFixed(2)}`;
+            document.getElementById('dashTotalBazaar').textContent = `${cur}${state.totalBazaar.toFixed(2)}`;
+            document.getElementById('dashTotalExpenses').textContent = `${cur}${state.totalExpenses.toFixed(2)}`;
+            document.getElementById('dashTotalDeposits').textContent = `${cur}${state.totalDeposits.toFixed(2)}`;
+            document.getElementById('dashCurrentBalance').textContent = `${cur}${state.currentBalance.toFixed(2)}`;
+            document.getElementById('dashDueAmount').textContent = `${cur}${state.netMessDue.toFixed(2)}`;
+
+            const ledgerTbody = document.getElementById('dashLedgerTbody');
+            ledgerTbody.innerHTML = state.ledger.map(l => `
+              <div class="flex justify-between p-1 bg-black/25 text-[10px] cm-qvga:text-[11px] border-b border-gray-800">
+                <span class="font-medium">${l.name}</span>
+                <span>${l.meals.toFixed(1)}m | ${cur}${l.netBalance.toFixed(1)}</span>
+              </div>
+            `).join('');
+            this.setSoftkeys('Menu', () => this.switchView('menu'), 'Back', () => window.history.back());
+            break;
+          case 'members':
+            const members = await dbMgr.getAll('members');
+            const membersDiv = document.getElementById('membersTableBody');
+            membersDiv.innerHTML = members.map(m => `
+              <div tabindex="0" class="p-1.5 border-b border-gray-800 text-[11px] cm-qvga:text-[12px] flex justify-between cursor-pointer" onclick="ui.openMemberOptions(${m.id})">
+                <span class="font-bold">${m.name}</span>
+                <span class="text-xs text-cm-blue-05a">[${m.status}]</span>
+              </div>
+            `).join('');
+            this.setSoftkeys('Add New', () => this.openAddMemberForm(), 'Back', () => window.history.back());
+            break;
+          case 'meals':
+            // Custom Date Filter Implementation
+            let filterDateEl = document.getElementById('mealFilterDate');
+            let initialDate = filterDateEl ? filterDateEl.getAttribute('data-value') : new Date().toISOString().split('T')[0];
+            
+            const pickerContainer = document.getElementById('mealsDatePickerContainer');
+            pickerContainer.innerHTML = this.renderCustomDate('mealFilterDate', 'Meal Date Filter', initialDate);
+
+            document.getElementById('mealsDateHeader').textContent = `Meals - ${initialDate}`;
+            const mems = await dbMgr.getAll('members');
+            const activeMems = mems.filter(m => m.status === 'active');
+            const meals = await MealManager.getDayMeals(initialDate);
+            const mealsDiv = document.getElementById('mealsTableBody');
+
+            mealsDiv.innerHTML = activeMems.map(m => {
+              const ml = meals.find(x => x.memberId === m.id) || { breakfast: 0, lunch: 0, dinner: 0, special: 0, guest: 0 };
+              const subtotal = (ml.breakfast * 0.5) + ml.lunch + ml.dinner + ml.special + ml.guest;
+              return `
+                <div tabindex="0" class="p-1.5 bg-black/35 rounded border border-gray-800 text-[11px] flex justify-between cursor-pointer" onclick="ui.openMealEditForm(${m.id}, '${initialDate}')">
+                  <span class="font-bold">${m.name}</span>
+                  <span class="text-cm-blue-05a font-bold">Total: ${subtotal.toFixed(1)} »</span>
+                </div>
+              `;
+            }).join('');
+            this.setSoftkeys('Menu', () => this.switchView('menu'), 'Back', () => window.history.back());
+            break;
+          case 'bazaar':
+            const bazaar = await dbMgr.getAll('bazaar');
+            const allM = await dbMgr.getAll('members');
+            const bazaarDiv = document.getElementById('bazaarTableBody');
+            bazaarDiv.innerHTML = bazaar.map(b => {
+              const p = allM.find(x => x.id === b.memberId);
+              return `
+                <div tabindex="0" class="p-1.5 border-b border-gray-800 text-[11px] flex justify-between cursor-pointer" onclick="ui.openBazaarOptions(${b.id})">
+                  <div>
+                    <span class="font-bold text-orange-400">${cur}${b.amount}</span>
+                    <span class="text-[9px] block text-gray-400">${b.date} - ${p ? p.name : 'Unknown'}</span>
+                  </div>
+                  <span class="text-[10px] self-center truncate max-w-[120px]">${b.details || ''}</span>
+                </div>
+              `;
+            }).join('');
+            this.setSoftkeys('Add Log', () => this.openAddBazaarForm(), 'Back', () => window.history.back());
+            break;
+          case 'expenses':
+            const expenses = await dbMgr.getAll('expenses');
+            const expDiv = document.getElementById('expensesTableBody');
+            expDiv.innerHTML = expenses.map(e => `
+              <div tabindex="0" class="p-1.5 border-b border-gray-800 text-[11px] flex justify-between cursor-pointer" onclick="ui.openExpenseOptions(${e.id})">
+                <div>
+                  <span class="font-bold text-red-400">${cur}${e.amount}</span>
+                  <span class="text-[9px] block text-gray-400">${e.date} - ${e.category}</span>
+                </div>
+                <span class="text-[10px] self-center truncate max-w-[120px]">${e.details || ''}</span>
+              </div>
+            `).join('');
+            this.setSoftkeys('Add Record', () => this.openAddExpenseForm(), 'Back', () => window.history.back());
+            break;
+          case 'deposits':
+            const deposits = await dbMgr.getAll('deposits');
+            const allMem = await dbMgr.getAll('members');
+            const depDiv = document.getElementById('depositsTableBody');
+            depDiv.innerHTML = deposits.map(d => {
+              const p = allMem.find(x => x.id === d.memberId);
+              return `
+                <div tabindex="0" class="p-1.5 border-b border-gray-800 text-[11px] flex justify-between cursor-pointer" onclick="ui.openDepositOptions(${d.id})">
+                  <div>
+                    <span class="font-bold text-cm-green-00a">${cur}${d.amount}</span>
+                    <span class="text-[9px] block text-gray-400">${d.date} - ${p ? p.name : 'Unknown'}</span>
+                  </div>
+                  <span class="text-[10px] self-center truncate max-w-[120px]">${d.details || ''}</span>
+                </div>
+              `;
+            }).join('');
+            this.setSoftkeys('Add Deposit', () => this.openAddDepositForm(), 'Back', () => window.history.back());
+            break;
+          case 'guests':
+            const guests = await dbMgr.getAll('guests');
+            const gstDiv = document.getElementById('guestsTableBody');
+            gstDiv.innerHTML = guests.map(g => `
+              <div tabindex="0" class="p-1.5 border-b border-gray-800 text-[11px] flex justify-between cursor-pointer" onclick="ui.openGuestOptions(${g.id})">
+                <div>
+                  <span class="font-bold text-cm-blue-05a">${g.guestName}</span>
+                  <span class="text-[9px] block text-gray-400">${g.date} (${g.count} Meals)</span>
+                </div>
+                <span>»</span>
+              </div>
+            `).join('');
+            this.setSoftkeys('Add Guest', () => this.openAddGuestForm(), 'Back', () => window.history.back());
+            break;
+          case 'closing':
+            const cState = await ReportManager.calculateState();
+            const closeContainer = document.getElementById('closingSummaryContainer');
+            closeContainer.innerHTML = `
+              <div class="bg-black/40 p-1.5 rounded space-y-1">
+                <div class="flex justify-between"><span>Meals:</span><span>${cState.totalMeals.toFixed(1)}</span></div>
+                <div class="flex justify-between"><span>Rate:</span><span>${cur}${cState.mealRate.toFixed(2)}</span></div>
+                <div class="flex justify-between"><span>Balance:</span><span>${cur}${cState.currentBalance.toFixed(2)}</span></div>
+              </div>
+            `;
+            this.setSoftkeys('Menu', () => this.switchView('menu'), 'Back', () => window.history.back());
+            break;
+          case 'trash':
+            const trash = await dbMgr.getAll('trash');
+            const trashDiv = document.getElementById('trashTableBody');
+            trashDiv.innerHTML = trash.map(t => `
+              <div tabindex="0" class="p-1.5 border-b border-gray-800 text-[11px] flex justify-between cursor-pointer" onclick="ui.openTrashOptions(${t.id})">
+                <span>[${t.storeName.toUpperCase()}]</span>
+                <span class="font-bold truncate max-w-[100px]">${new Date(t.deletedAt).toLocaleDateString()}</span>
+              </div>
+            `).join('');
+            this.setSoftkeys('Menu', () => this.switchView('menu'), 'Back', () => window.history.back());
+            break;
+          case 'settings':
+            document.getElementById('setMessName').value = await SettingsManager.get('messName', 'Sky View Apartment');
+            document.getElementById('setCurrency').value = await SettingsManager.get('currency', '$');
+            this.setSoftkeys('Save', () => this.saveSettings(), 'Back', () => window.history.back());
+            break;
+        }
+      }
+
+      setSoftkeys(lskText, lskAction, rskText, rskAction) {
+        const lsk = document.getElementById('lsk-btn');
+        const rsk = document.getElementById('rsk-btn');
+        
+        lsk.innerHTML = `<span>☰</span> <span>${lskText}</span>`;
+        lsk.onclick = (e) => { e.preventDefault(); lskAction(); };
+
+        rsk.innerHTML = `<span>&lt;</span> <span>${rskText}</span>`;
+        rsk.onclick = (e) => { e.preventDefault(); rskAction(); };
+      }
+
+      // --- OPTIONS MODAL LOGIC (D-pad optimized popup selection) ---
+      openOptions(htmlContent) {
+        const modal = document.getElementById('optionsModal');
+        const list = document.getElementById('optionsList');
+        list.innerHTML = htmlContent;
+        modal.classList.remove('hidden');
+
+        setTimeout(() => {
+          const items = list.querySelectorAll('[tabindex="0"]');
+          if (items.length > 0) items[0].focus();
+        }, 50);
+
+        this.setSoftkeys('Select', () => {
+          const active = document.activeElement;
+          if (active) active.click();
+        }, 'Cancel', () => this.closeOptions());
+      }
+
+      closeOptions() {
+        document.getElementById('optionsModal').classList.add('hidden');
+        this.renderViewData(this.currentView);
+      }
+
+      // --- CONCRETE OPTIONS MENUS FOR LIST ITEMS ---
+      openMenuOptions() {
+        const html = `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer" onclick="ui.switchView('settings')">1. System Setup</div>
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer" onclick="ui.switchView('trash')">2. Recycle Bin</div>
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer" onclick="ui.closeOptions()">3. Close Options</div>
+        `;
+        this.openOptions(html);
+      }
+
+      openMemberOptions(id) {
+        const html = `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer" onclick="ui.openEditMemberForm(${id})">1. Edit Profile</div>
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer text-red-500" onclick="ui.deleteMember(${id})">2. Delete Record</div>
+        `;
+        this.openOptions(html);
+      }
+
+      openBazaarOptions(id) {
+        const html = `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer text-red-500" onclick="ui.deleteBazaar(${id})">1. Delete Entry</div>
+        `;
+        this.openOptions(html);
+      }
+
+      openExpenseOptions(id) {
+        const html = `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer text-red-500" onclick="ui.deleteExpense(${id})">1. Delete Expense</div>
+        `;
+        this.openOptions(html);
+      }
+
+      openDepositOptions(id) {
+        const html = `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer text-red-500" onclick="ui.deleteDeposit(${id})">1. Delete Deposit</div>
+        `;
+        this.openOptions(html);
+      }
+
+      openGuestOptions(id) {
+        const html = `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer text-red-500" onclick="ui.deleteGuest(${id})">1. Delete Guest Log</div>
+        `;
+        this.openOptions(html);
+      }
+
+      openTrashOptions(id) {
+        const html = `
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer text-cm-green-00a" onclick="ui.restoreTrash(${id})">1. Undo / Restore</div>
+          <div tabindex="0" class="p-1.5 bg-black/50 text-responsive border-b border-gray-800 cursor-pointer text-red-500" onclick="ui.purgeTrash(${id})">2. Permanent Delete</div>
+        `;
+        this.openOptions(html);
+      }
+
+      // --- COMPACT FORM BUILDERS & FORM SWITCHES (Fully Custom Controls Only) ---
+      async openAddMemberForm() {
+        this.switchView('form');
+        document.getElementById('formViewTitle').textContent = 'Add Member';
+        const fields = document.getElementById('dynamicFormFields');
+        fields.innerHTML = `
+          <input type="hidden" id="f_id" value="">
+          <div><label class="block mb-0.5 text-gray-400">Name *</label><input type="text" id="f_name" required class="w-full bg-black border border-gray-800 p-1.5 rounded focus:bg-cm-blue-05a text-white"></div>
+          <div><label class="block mb-0.5 text-gray-400">Phone *</label><input type="text" id="f_phone" required class="w-full bg-black border border-gray-800 p-1.5 rounded focus:bg-cm-blue-05a text-white"></div>
+          ${this.renderCustomSelect('f_status', 'Status', [{value:'active', text:'Active'}, {value:'inactive', text:'Inactive'}], 'active')}
+        `;
+        this.setSoftkeys('Save', () => this.submitMemberForm(), 'Cancel', () => this.switchView('members'));
+      }
+
+      async openEditMemberForm(id) {
+        const member = await dbMgr.get('members', id);
+        this.switchView('form');
+        document.getElementById('formViewTitle').textContent = 'Edit Profile';
+        const fields = document.getElementById('dynamicFormFields');
+        fields.innerHTML = `
+          <input type="hidden" id="f_id" value="${member.id}">
+          <div><label class="block mb-0.5 text-gray-400">Name *</label><input type="text" id="f_name" value="${member.name}" required class="w-full bg-black border border-gray-800 p-1.5 rounded focus:bg-cm-blue-05a text-white"></div>
+          <div><label class="block mb-0.5 text-gray-400">Phone *</label><input type="text" id="f_phone" value="${member.phone}" required class="w-full bg-black border border-gray-800 p-1.5 rounded focus:bg-cm-blue-05a text-white"></div>
+          ${this.renderCustomSelect('f_status', 'Status', [{value:'active', text:'Active'}, {value:'inactive', text:'Inactive'}], member.status)}
+        `;
+        this.setSoftkeys('Save', () => this.submitMemberForm(), 'Cancel', () => this.switchView('members'));
+      }
+
+      async submitMemberForm() {
+        const id = this.getInputValue('f_id');
+        const name = this.getInputValue('f_name');
+        const phone = this.getInputValue('f_phone');
+        const status = this.getInputValue('f_status');
+        if (name && phone) {
+          await MemberManager.saveMember(id, name, phone, status);
+          this.switchView('members');
+        }
+      }
+
+      async openMealEditForm(memberId, date) {
+        const member = await dbMgr.get('members', memberId);
+        const meals = await MealManager.getDayMeals(date);
+        const ml = meals.find(x => x.memberId === memberId) || { breakfast: 0, lunch: 0, dinner: 0, special: 0, guest: 0 };
+        this.switchView('form');
+        document.getElementById('formViewTitle').textContent = member.name;
+        const fields = document.getElementById('dynamicFormFields');
+        fields.innerHTML = `
+          <input type="hidden" id="m_id" value="${ml.id || ''}">
+          <input type="hidden" id="m_mem_id" value="${memberId}">
+          <input type="hidden" id="m_date" value="${date}">
+          ${this.renderCustomNumber('m_bf', 'Breakfast (0.5)', ml.breakfast, 0.5, 0, 10)}
+          ${this.renderCustomNumber('m_ln', 'Lunch (1.0)', ml.lunch, 1.0, 0, 10)}
+          ${this.renderCustomNumber('m_dn', 'Dinner (1.0)', ml.dinner, 1.0, 0, 10)}
+          ${this.renderCustomNumber('m_sp', 'Special (1.0)', ml.special, 1.0, 0, 10)}
+          ${this.renderCustomNumber('m_gst', 'Guest Meals', ml.guest, 0.5, 0, 10)}
+        `;
+        this.setSoftkeys('Save', () => this.submitMealForm(), 'Cancel', () => this.switchView('meals'));
+      }
+
+      async submitMealForm() {
+        const record = {
+          date: this.getInputValue('m_date'),
+          memberId: Number(this.getInputValue('m_mem_id')),
+          breakfast: Number(this.getInputValue('m_bf') || 0),
+          lunch: Number(this.getInputValue('m_ln') || 0),
+          dinner: Number(this.getInputValue('m_dn') || 0),
+          special: Number(this.getInputValue('m_sp') || 0),
+          guest: Number(this.getInputValue('m_gst') || 0)
+        };
+        const id = this.getInputValue('m_id');
+        if (id) record.id = Number(id);
+        await MealManager.saveMeal(record);
+        this.switchView('meals');
+      }
+
+      async openAddBazaarForm() {
+        const mems = await dbMgr.getAll('members');
+        const activeMems = mems.filter(m => m.status === 'active');
+        const selectOptions = activeMems.map(m => ({ value: m.id, text: m.name }));
+        this.switchView('form');
+        document.getElementById('formViewTitle').textContent = 'Add Bazaar';
+        const fields = document.getElementById('dynamicFormFields');
+        
+        const defaultDate = new Date().toISOString().split('T')[0];
+        fields.innerHTML = `
+          ${this.renderCustomDate('b_date', 'Bazaar Date', defaultDate)}
+          ${this.renderCustomSelect('b_mem', 'Purchaser', selectOptions, selectOptions[0]?.value || '')}
+          ${this.renderCustomNumber('b_amt', 'Amount Spent', 10, 5, 0, 50000)}
+          <div><label class="block mb-0.5 text-gray-400">Details</label><input type="text" id="b_det" class="w-full bg-black border border-gray-800 p-1.5 rounded text-white"></div>
+        `;
+        this.setSoftkeys('Save', () => this.submitBazaarForm(), 'Cancel', () => this.switchView('bazaar'));
+      }
+
+      async submitBazaarForm() {
+        const date = this.getInputValue('b_date');
+        const mem = this.getInputValue('b_mem');
+        const amt = this.getInputValue('b_amt');
+        const det = this.getInputValue('b_det');
+        if (date && mem && amt) {
+          await BazaarManager.saveBazaar(null, date, mem, amt, det);
+          this.switchView('bazaar');
+        }
+      }
+
+      async openAddExpenseForm() {
+        this.switchView('form');
+        document.getElementById('formViewTitle').textContent = 'Add Expense';
+        const fields = document.getElementById('dynamicFormFields');
+        const defaultDate = new Date().toISOString().split('T')[0];
+        fields.innerHTML = `
+          ${this.renderCustomDate('e_date', 'Expense Date', defaultDate)}
+          ${this.renderCustomSelect('e_cat', 'Category', [
+            {value:'Electricity', text:'Electricity'}, {value:'Gas', text:'Gas Bill'}, {value:'Water', text:'Water Bill'},
+            {value:'Internet', text:'Internet'}, {value:'Rent', text:'Flat Rent'}, {value:'Miscellaneous', text:'Misc'}
+          ], 'Electricity')}
+          ${this.renderCustomNumber('e_amt', 'Amount Spent', 50, 10, 0, 100000)}
+          <div><label class="block mb-0.5 text-gray-400">Details</label><input type="text" id="e_det" class="w-full bg-black border border-gray-800 p-1.5 rounded text-white"></div>
+        `;
+        this.setSoftkeys('Save', () => this.submitExpenseForm(), 'Cancel', () => this.switchView('expenses'));
+      }
+
+      async submitExpenseForm() {
+        const date = this.getInputValue('e_date');
+        const cat = this.getInputValue('e_cat');
+        const amt = this.getInputValue('e_amt');
+        const det = this.getInputValue('e_det');
+        if (date && cat && amt) {
+          await ExpenseManager.saveExpense(null, date, cat, amt, det);
+          this.switchView('expenses');
+        }
+      }
+
+      async openAddDepositForm() {
+        const mems = await dbMgr.getAll('members');
+        const activeMems = mems.filter(m => m.status === 'active');
+        const selectOptions = activeMems.map(m => ({ value: m.id, text: m.name }));
+        this.switchView('form');
+        document.getElementById('formViewTitle').textContent = 'Deposit';
+        const fields = document.getElementById('dynamicFormFields');
+        const defaultDate = new Date().toISOString().split('T')[0];
+        fields.innerHTML = `
+          ${this.renderCustomDate('d_date', 'Deposit Date', defaultDate)}
+          ${this.renderCustomSelect('d_mem', 'Member', selectOptions, selectOptions[0]?.value || '')}
+          ${this.renderCustomNumber('d_amt', 'Deposit Sum', 500, 100, 0, 50000)}
+          <div><label class="block mb-0.5 text-gray-400">Details</label><input type="text" id="d_det" class="w-full bg-black border border-gray-800 p-1.5 rounded text-white"></div>
+        `;
+        this.setSoftkeys('Save', () => this.submitDepositForm(), 'Cancel', () => this.switchView('deposits'));
+      }
+
+      async submitDepositForm() {
+        const date = this.getInputValue('d_date');
+        const mem = this.getInputValue('d_mem');
+        const amt = this.getInputValue('d_amt');
+        const det = this.getInputValue('d_det');
+        if (date && mem && amt) {
+          await DepositManager.saveDeposit(null, date, mem, amt, det);
+          this.switchView('deposits');
+        }
+      }
+
+      async openAddGuestForm() {
+        const mems = await dbMgr.getAll('members');
+        const activeMems = mems.filter(m => m.status === 'active');
+        const selectOptions = activeMems.map(m => ({ value: m.id, text: m.name }));
+        this.switchView('form');
+        document.getElementById('formViewTitle').textContent = 'Guest Entry';
+        const fields = document.getElementById('dynamicFormFields');
+        const defaultDate = new Date().toISOString().split('T')[0];
+        fields.innerHTML = `
+          ${this.renderCustomDate('g_date', 'Entry Date', defaultDate)}
+          ${this.renderCustomSelect('g_mem', 'Host', selectOptions, selectOptions[0]?.value || '')}
+          <div><label class="block mb-0.5 text-gray-400">Guest Name *</label><input type="text" id="g_name" required class="w-full bg-black border border-gray-800 p-1.5 rounded text-white"></div>
+          ${this.renderCustomNumber('g_cnt', 'Meals Count', 2, 0.5, 0, 10)}
+        `;
+        this.setSoftkeys('Save', () => this.submitGuestForm(), 'Cancel', () => this.switchView('guests'));
+      }
+
+      async submitGuestForm() {
+        const date = this.getInputValue('g_date');
+        const mem = this.getInputValue('g_mem');
+        const name = this.getInputValue('g_name');
+        const cnt = this.getInputValue('g_cnt');
+        if (date && mem && name && cnt) {
+          await GuestManager.saveGuest(null, date, mem, name, cnt);
+          this.switchView('guests');
+        }
+      }
+
+      // --- OPERATIONS TRIGGERS ---
+      async deleteMember(id) {
+        await MemberManager.deleteMember(id);
+        this.closeOptions();
+        this.renderViewData('members');
+      }
+      async deleteBazaar(id) {
+        await BazaarManager.deleteBazaar(id);
+        this.closeOptions();
+        this.renderViewData('bazaar');
+      }
+      async deleteExpense(id) {
+        await ExpenseManager.deleteExpense(id);
+        this.closeOptions();
+        this.renderViewData('expenses');
+      }
+      async deleteDeposit(id) {
+        await DepositManager.deleteDeposit(id);
+        this.closeOptions();
+        this.renderViewData('deposits');
+      }
+      async deleteGuest(id) {
+        await GuestManager.deleteGuest(id);
+        this.closeOptions();
+        this.renderViewData('guests');
+      }
+
+      async executeMonthlyClosing() {
+        const state = await ReportManager.calculateState();
+        await dbMgr.clear('meals');
+        await dbMgr.clear('bazaar');
+        await dbMgr.clear('expenses');
+        await dbMgr.clear('deposits');
+        await dbMgr.clear('guests');
+
+        const dateString = new Date().toISOString().split('T')[0];
+        for (const ledgerItem of state.ledger) {
+          if (ledgerItem.netBalance !== 0) {
+            await DepositManager.saveDeposit(null, dateString, ledgerItem.id, ledgerItem.netBalance, 'Cycle Carry Forward');
+          }
+        }
+        await SettingsManager.logActivity('MONTHLY_CLOSING', 'Balances transferred to new ledger successfully.');
+        this.switchView('dashboard');
+      }
+
+      async restoreTrash(id) {
+        const item = await dbMgr.get('trash', id);
+        if (item) {
+          await dbMgr.put(item.storeName, item.data);
+          await dbMgr.delete('trash', id);
+          this.closeOptions();
+          this.renderViewData('trash');
+        }
+      }
+
+      async purgeTrash(id) {
+        await dbMgr.delete('trash', id);
+        this.closeOptions();
+        this.renderViewData('trash');
+      }
+
+      async saveSettings() {
+        const name = document.getElementById('setMessName').value;
+        const cur = document.getElementById('setCurrency').value;
+        await SettingsManager.set('messName', name);
+        await SettingsManager.set('currency', cur);
+        this.currency = cur;
+        this.switchView('menu');
+      }
+
+      async processBackupExport() {
+        const data = {
+          timestamp: Date.now(),
+          payload: {
+            members: await dbMgr.getAll('members'),
+            meals: await dbMgr.getAll('meals'),
+            bazaar: await dbMgr.getAll('bazaar'),
+            expenses: await dbMgr.getAll('expenses'),
+            deposits: await dbMgr.getAll('deposits'),
+            guests: await dbMgr.getAll('guests'),
+            settings: await dbMgr.getAll('settings')
+          }
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `MessManager_Backup_${Date.now()}.json`;
+        a.click();
+      }
+    }
+
+    const ui = new UIManager();
+
+    // --- BOOTSTRAP SYSTEM ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await dbMgr.init();
+        await ui.init();
+      } catch (err) {
+        console.error('Initialization Failed', err);
+      }
+    });
+  </script>
+</body>
+</html>
