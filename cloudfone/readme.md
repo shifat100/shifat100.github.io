@@ -7,8 +7,8 @@ ui prompt:
 - **Resolutions:** Primary targets are **QQVGA (128x160)** and **QVGA (240x320)**. 
 - **Navigation:** No touch support. Use **D-pad (Up/Down/Left/Right/Center)**. Every interactive element must have a focus state.
 - **Soft Keys:** 
-  - **LSK (Escape Key):** Always for "Options", "Menu" (hamburger icon ☰), or positive actions like "Yes".
-  - **RSK (use always window.history.back()):** Always for "Back" (arrow icon <), "Clear", or negative actions like "No".
+  - **LSK (Escape Key):** Always for "Options", "Menu" (hamburger svg icon ☰ only), or positive actions like "Yes".
+  - **RSK (use always window.history.back()):** Always for "Back" (arrow svg icon < only), "Clear", or negative actions like "No".
 - **Margins:** Must maintain a safe area margin (**4pt for QQVGA**, **8pt for QVGA**) to avoid bezel shadows.
 
 **2. Visual Identity (Based on Demo UI):**
