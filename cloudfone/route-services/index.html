@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Bus Route Guide</title>
+    <style>
+        /* Lightweight CSS optimized for feature phones (e.g., 240x320 or 320x480 screens) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            max-width: 360px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .nav-tabs {
+            display: flex;
+            background-color: #e2e2e2;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: none;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #0056b3;
+            background-color: #fff;
+            color: #0056b3;
+        }
+        .content {
+            padding: 10px;
+            flex: 1;
+        }
+        .view {
+            display: none;
+        }
+        .view.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        select, button {
+            width: 100%;
+            padding: 8px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+        }
+        button.btn-primary {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            border: none;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        button.btn-primary:active {
+            background-color: #218838;
+        }
+        /* Results Cards */
+        .bus-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .bus-name {
+            font-weight: bold;
+            color: #0056b3;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        .bus-info {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        /* Roadmap Visual Timeline */
+        .roadmap {
+            margin-top: 10px;
+            padding-left: 15px;
+            border-left: 2px dashed #0056b3;
+            position: relative;
+        }
+        .roadmap-stop {
+            font-size: 12px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .roadmap-stop::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            background-color: #28a745;
+            border-radius: 50%;
+        }
+        .roadmap-stop:first-child::before {
+            background-color: #0056b3;
+        }
+        .roadmap-stop:last-child::before {
+            background-color: #dc3545;
+        }
+        .no-result {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-top: 20px;
+        }
+        .bus-list-item {
+            background: white;
+            padding: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        footer {
+            background: #e2e2e2;
+            text-align: center;
+            font-size: 10px;
+            padding: 5px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <header>Easy Bus Route</header>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('search-view', this)">Find Route</button>
+        <button class="tab-btn" onclick="switchTab('all-buses-view', this)">All Buses</button>
+    </div>
+
+    <div class="content">
+        <!-- Tab 1: Route Search Screen -->
+        <div id="search-view" class="view active">
+            <div class="form-group">
+                <label for="city-select">Select City & Country:</label>
+                <select id="city-select" onchange="loadStops()"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="from-select">From:</label>
+                <select id="from-select"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="to-select">To:</label>
+                <select id="to-select"></select>
+            </div>
+
+            <button class="btn-primary" onclick="searchBuses()">Search Bus</button>
+
+            <!-- Results Section -->
+            <div id="results-container"></div>
+        </div>
+
+        <!-- Tab 2: Browse All Buses Screen -->
+        <div id="all-buses-view" class="view">
+            <div class="form-group">
+                <label for="city-filter">Select City:</label>
+                <select id="city-filter" onchange="displayAllBuses()"></select>
+            </div>
+            <div id="all-buses-container"></div>
+        </div>
+    </div>
+
+    <footer>Easy Bus Route © 2026</footer>
+
+    <script>
+        // Global Database array containing fetched information
+        let BUS_DATABASE = [];
+
+        // Dynamic Loading from separate JSON files
+        async function loadDatabase() {
+            const resultsContainer = document.getElementById('results-container');
+            try {
+                // Step 1: Fetch the main configuration file
+                const mainResponse = await fetch('data/main.json');
+                if (!mainResponse.ok) throw new Error('Could not load main.json');
+                const mainData = await mainResponse.json();
+
+                // Step 2: Fetch all country databases in parallel
+                const promises = mainData.countries.map(async (country) => {
+                    const countryResponse = await fetch('data/'+country.file);
+                    if (!countryResponse.ok) throw new Error(`Could not load ${country.file}`);
+                    const countryData = await countryResponse.json();
+                    return {
+                        country: country.name,
+                        cities: countryData
+                    };
+                });
+
+                BUS_DATABASE = await Promise.all(promises);
+                initApp();
+            } catch (error) {
+                console.error("Database initialization error:", error);
+                resultsContainer.innerHTML = `
+                    <div class="no-result" style="color: red; padding: 10px;">
+                        <strong>Error loading database!</strong><br>
+                        Please run this app on a local web server (e.g. VS Code Live Server, Python HTTP server) to satisfy browser CORS security policies.
+                    </div>
+                `;
+            }
+        }
+
+        // Tab Switch logic
+        function switchTab(viewId, element) {
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // Initialize UI Dropdowns
+        function initApp() {
+            const citySelect = document.getElementById('city-select');
+            const cityFilter = document.getElementById('city-filter');
+            citySelect.innerHTML = '';
+            cityFilter.innerHTML = '';
+
+            BUS_DATABASE.forEach((countryData, countryIdx) => {
+                countryData.cities.forEach((cityData, cityIdx) => {
+                    const optionText = `${cityData.city}, ${countryData.country}`;
+                    const val = `${countryIdx}-${cityIdx}`;
+
+                    let opt1 = document.createElement('option');
+                    opt1.value = val;
+                    opt1.textContent = optionText;
+                    citySelect.appendChild(opt1);
+
+                    let opt2 = document.createElement('option');
+                    opt2.value = val;
+                    opt2.textContent = optionText;
+                    cityFilter.appendChild(opt2);
+                });
+            });
+
+            loadStops();
+            displayAllBuses();
+        }
+
+        // Parse selected value back to database indexes
+        function getSelectedCityIndices(selectId) {
+            const val = document.getElementById(selectId).value;
+            if (!val) return null;
+            const parts = val.split('-');
+            return {
+                countryIdx: parseInt(parts[0]),
+                cityIdx: parseInt(parts[1])
+            };
+        }
+
+        // Load unique stops for selected city
+        function loadStops() {
+            const indices = getSelectedCityIndices('city-select');
+            if (!indices) return;
+
+            const cityData = BUS_DATABASE[indices.countryIdx].cities[indices.cityIdx];
+            const fromSelect = document.getElementById('from-select');
+            const toSelect = document.getElementById('to-select');
+            
+            fromSelect.innerHTML = '';
+            toSelect.innerHTML = '';
+
+            let stopsSet = new Set();
+            cityData.buses.forEach(bus => {
+                bus.route.forEach(stop => stopsSet.add(stop));
+            });
+
+            const sortedStops = Array.from(stopsSet).sort();
+
+            sortedStops.forEach(stop => {
+                let optFrom = document.createElement('option');
+                optFrom.value = stop;
+                optFrom.textContent = stop;
+                fromSelect.appendChild(optFrom);
+
+                let optTo = document.createElement('option');
+                optTo.value = stop;
+                optTo.textContent = stop;
+                toSelect.appendChild(optTo);
+            });
+        }
+
+        // Algorithm to search for matching buses
+        // Algorithm to search for matching buses (Handles both Forward and Return trips)
+        function searchBuses() {
+            const indices = getSelectedCityIndices('city-select');
+            if (!indices) return;
+
+            const cityData = BUS_DATABASE[indices.countryIdx].cities[indices.cityIdx];
+            const fromStop = document.getElementById('from-select').value;
+            const toStop = document.getElementById('to-select').value;
+            const resultsContainer = document.getElementById('results-container');
+            
+            resultsContainer.innerHTML = '';
+
+            if (fromStop === toStop) {
+                resultsContainer.innerHTML = '<div class="no-result">Origin and Destination cannot be the same!</div>';
+                return;
+            }
+
+            let foundBuses = [];
+
+            cityData.buses.forEach(bus => {
+                const fromIndex = bus.route.indexOf(fromStop);
+                const toIndex = bus.route.indexOf(toStop);
+
+                // Check if both stops exist in the bus route
+                if (fromIndex !== -1 && toIndex !== -1) {
+                    let subRoute;
+                    let stopsCount;
+                    
+                    // Case 1: Going Forward (e.g., Mirpur 12 to Farmgate)
+                    if (fromIndex < toIndex) {
+                        subRoute = bus.route.slice(fromIndex, toIndex + 1);
+                        stopsCount = toIndex - fromIndex;
+                    } 
+                    // Case 2: Return Trip / Reverse Direction (e.g., Farmgate to Mirpur 12)
+                    else {
+                        // Slice the route in reverse and reverse the array order for the roadmap
+                        subRoute = bus.route.slice(toIndex, fromIndex + 1).reverse();
+                        stopsCount = fromIndex - toIndex;
+                    }
+
+                    const fare = stopsCount * bus.farePerStop;
+
+                    foundBuses.push({
+                        name: bus.name,
+                        timetable: bus.timetable,
+                        subRoute: subRoute,
+                        fare: fare
+                    });
+                }
+            });
+
+            if (foundBuses.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-result">Sorry, no direct bus found for this route.</div>';
+                return;
+            }
+
+            // Render Output Cards
+            foundBuses.forEach(bus => {
+                let busHtml = `
+                    <div class="bus-card">
+                        <div class="bus-name">${bus.name}</div>
+                        <div class="bus-info"><b>Estimated Fare:</b> ৳${bus.fare}</div>
+                        <div class="bus-info"><b>Schedule:</b> ${bus.timetable}</div>
+                        <div class="bus-info"><b>Roadmap (Stops):</b></div>
+                        <div class="roadmap">
+                `;
+
+                bus.subRoute.forEach(stop => {
+                    busHtml += `<div class="roadmap-stop">${stop}</div>`;
+                });
+
+                busHtml += `
+                        </div>
+                    </div>
+                `;
+                resultsContainer.innerHTML += busHtml;
+            });
+        }
+
+        // Display all buses for browsing
+        function displayAllBuses() {
+            const indices = getSelectedCityIndices('city-filter');
+            const container = document.getElementById('all-buses-container');
+            container.innerHTML = '';
+
+            if (!indices) return;
+
+            const cityData = BUS_DATABASE[indices.countryIdx].cities[indices.cityIdx];
+
+            if (!cityData || cityData.buses.length === 0) {
+                container.innerHTML = '<div class="no-result">No buses registered in this city.</div>';
+                return;
+            }
+
+            cityData.buses.forEach(bus => {
+                const routeString = bus.route.join(' ➔ ');
+                container.innerHTML += `
+                    <div class="bus-list-item">
+                        <strong style="color:#0056b3;">${bus.name}</strong><br>
+                        <b>Schedule:</b> ${bus.timetable}<br>
+                        <b>Full Route:</b> <span style="color:#555;">${routeString}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // Initialize application trigger
+        window.onload = loadDatabase;
+    </script>
+</body>
+</html>
