@@ -1,0 +1,13 @@
+[
+  {
+    "city": "Kolkata",
+    "buses": [
+      {
+        "name": "S-24",
+        "farePerStop": 4,
+        "timetable": "07:00 AM - 08:00 PM (Every 15 mins)",
+        "route": ["Howrah", "Esplanade", "Park Street", "Rabindra Sadan", "Gariahat"]
+      }
+    ]
+  }
+]

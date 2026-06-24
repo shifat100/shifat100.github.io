@@ -1,0 +1,19 @@
+[
+  {
+    "city": "Dhaka",
+    "buses": [
+      {
+        "name": "Mirpur Link",
+        "farePerStop": 5,
+        "timetable": "06:00 AM - 10:00 PM (Every 10 mins)",
+        "route": ["Mirpur 12", "Mirpur 10", "Kazipara", "Shewrapara", "Farmgate", "Shahbagh", "Motijheel"]
+      },
+      {
+        "name": "Turag",
+        "farePerStop": 5,
+        "timetable": "05:30 AM - 09:30 PM (Every 15 mins)",
+        "route": ["Uttara", "Airport", "Khilkhet", "Badda", "Rampura", "Sadarghat"]
+      }
+    ]
+  }
+]
