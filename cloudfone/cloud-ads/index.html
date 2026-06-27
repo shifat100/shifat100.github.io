@@ -64,7 +64,7 @@
     </style>
 
     <!-- 1. Load the Library via path -->
-    <script src="cloudads.js"></script>
+    <script src="cloudads.min.js"></script>
 </head>
 <body>
 
@@ -90,6 +90,9 @@
     </div>
 
     <script>
+        window.getCloudAd =  function (config) {
+        processAdRequest(config);
+    };
         /**
          * NOTE: In the provided library, window.getCloudAd is an empty function.
          * The library processes ads via window.cloudAdsQueue.
