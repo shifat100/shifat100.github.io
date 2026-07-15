@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>C64Console</title>
+  <title>C64 Console</title>
   <style>
     /* CSS Variables for Classic Retro Look */
     :root {
@@ -206,7 +206,7 @@
       z-index: 9999;
     }
 
-    /* ডাইনামিক টাচ কন্ট্রোলস (শুধুমাত্র টাচ ডিভাইসে শো করার জন্য) */
+    /* ডাইনামিক টাচ কন্ট্রোলস */
     #touch-controls {
       position: absolute;
       top: 0;
@@ -215,10 +215,9 @@
       height: 100%;
       pointer-events: none;
       z-index: 10;
-      display: none; /* ডিফল্টভাবে লুকানো থাকবে */
+      display: none;
     }
 
-    /* ডিভাইস যদি টাচস্ক্রিন হয় তবে এটি প্রদর্শিত হবে */
     body.touch-device #touch-controls {
       display: block;
     }
@@ -338,6 +337,13 @@
 
     .sk:first-child { text-align: left; }
     .sk:last-child { text-align: right; }
+
+    /* ব্লিংক অ্যানিমেশন কি প্রেসের সময় */
+    @keyframes blink {
+      0% { opacity: 1.0; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1.0; }
+    }
   </style>
 </head>
 <body>
@@ -383,6 +389,9 @@
         <div class="menu-item" data-action="toggle-port">
           <span>Active Joy Port</span><span class="val" id="val-port">Port 2 (Standard)</span>
         </div>
+        <div class="menu-item" data-action="goto-mapping">
+          <span>Custom Key Mapping</span><span class="val">&gt;</span>
+        </div>
       </div>
     </div>
 
@@ -390,14 +399,28 @@
     <div id="scr-help" class="screen" style="display:none;">
       <h1>Control Reference</h1>
       <div class="menu-list" style="border: 1px solid #1a1525; background: #120f1c; padding: 5px;">
-        <div class="help-row"><span class="help-key">D-Pad / 2,4,6,8</span><span class="help-action">Joystick Move</span></div>
-        <div class="help-row"><span class="help-key">Center / 5 / Touch Fire</span><span class="help-action">Joy Fire</span></div>
-        <div class="help-row"><span class="help-key">1 Key / Touch Return</span><span class="help-action">C64 Enter</span></div>
-        <div class="help-row"><span class="help-key">3 Key / Touch Space</span><span class="help-action">Space (Skip)</span></div>
-        <div class="help-row"><span class="help-key">7 Key / Touch R/Stop</span><span class="help-action">Run/Stop (Esc)</span></div>
+        <div class="help-row"><span class="help-key">D-Pad / Custom Keys</span><span class="help-action">Joystick Move</span></div>
+        <div class="help-row"><span class="help-key">Center / Custom Fire</span><span class="help-action">Joy Fire</span></div>
+        <div class="help-row"><span class="help-key">Mapped System Key</span><span class="help-action">C64 Keyboard Actions</span></div>
         <div class="help-row"><span class="help-key">SoftLeft / Backspace</span><span class="help-action">Back / Close</span></div>
         <div class="help-row"><span class="help-key">SoftRight / # Key</span><span class="help-action">Options Overlay</span></div>
         <div class="help-row"><span class="help-key">9 / * Key</span><span class="help-action">Swap Joy Port (1 & 2)</span></div>
+      </div>
+    </div>
+
+    <!-- স্ক্রিন ৫: ডাইনামিক কি ম্যাপিং স্ক্রিন -->
+    <div id="scr-mapping" class="screen" style="display:none;">
+      <h1 id="mapping-title">Custom Key Mapping</h1>
+      <div id="mapping-container" class="menu-list" style="justify-content: flex-start; overflow-y: auto;">
+        <!-- ডাইনামিক কনটেন্ট জাভাস্ক্রিপ্ট দিয়ে তৈরি হবে -->
+      </div>
+    </div>
+
+    <!-- স্ক্রিন ৬: টার্গেট সি৬৪ কি সিলেকশন স্ক্রিন -->
+    <div id="scr-target-select" class="screen" style="display:none;">
+      <h1>Select C64 Action</h1>
+      <div id="target-select-container" class="menu-list" style="justify-content: flex-start; overflow-y: auto;">
+        <!-- জাভাস্ক্রিপ্ট দিয়ে সি৬৪ কী লিস্ট জেনারেট হবে -->
       </div>
     </div>
 
@@ -416,14 +439,12 @@
 
       <!-- ডাইনামিক ভার্চুয়াল টাচ ওভারলে -->
       <div id="touch-controls">
-        <!-- ইউটিলিটি মেনু বার -->
         <div class="v-utility">
           <div id="v-util-port" class="v-btn-act" style="width: 70px; height: 30px;">PORT 2</div>
           <div id="v-util-warp" class="v-btn-act" style="width: 60px; height: 30px;">WARP</div>
           <div id="v-util-menu" class="v-btn-act" style="width: 60px; height: 30px; background: rgba(106, 91, 168, 0.4);">MENU</div>
         </div>
 
-        <!-- জয়স্টিক নেভিগেশন প্যাড -->
         <div class="v-pad">
           <div id="v-up" class="v-btn-dir">▲</div>
           <div id="v-left" class="v-btn-dir">◀</div>
@@ -431,7 +452,6 @@
           <div id="v-down" class="v-btn-dir">▼</div>
         </div>
 
-        <!-- প্রধান গেম অ্যাকশন বাটনসমূহ -->
         <div class="v-actions">
           <div id="v-fire" class="v-btn-act" style="background: rgba(255, 0, 0, 0.3); border-color: rgba(255, 0, 0, 0.5);">FIRE</div>
           <div id="v-space" class="v-btn-act">SPACE</div>
@@ -468,6 +488,10 @@
     let loadedGame = null;
     let warpActive = false;
 
+    // কি ম্যাপিং স্টেট ট্র্যাকিং
+    let mappingState = 'list'; // 'list', 'listening'
+    let tempPhysicalKey = null;
+
     let config = {
       system: 'c64',
       sound: '22050',
@@ -475,10 +499,52 @@
       joyPort: '2'
     };
 
+    // এমুলেটর টার্গেট কি-র ডাটাবেস (সহজে ব্যবহারের জন্য সব ধরনের ফিজিক্যাল কি ম্যাপ করা যাবে)
+    const TARGETS = {
+      "joyUp": { label: "Joystick Up", code: 104, name: "Numpad8", domCode: "Numpad8" },
+      "joyDown": { label: "Joystick Down", code: 98, name: "Numpad2", domCode: "Numpad2" },
+      "joyLeft": { label: "Joystick Left", code: 100, name: "Numpad4", domCode: "Numpad4" },
+      "joyRight": { label: "Joystick Right", code: 102, name: "Numpad6", domCode: "Numpad6" },
+      "joyFire": { label: "Joystick Fire", code: 96, name: "Numpad0", domCode: "Numpad0" },
+      "c64Return": { label: "C64 Return (Enter)", code: 13, name: "Enter", domCode: "Enter" },
+      "c64Space": { label: "C64 Space", code: 32, name: " ", domCode: "Space" },
+      "c64Stop": { label: "C64 Run/Stop (Esc)", code: 27, name: "Escape", domCode: "Escape" },
+      "c64F1": { label: "C64 F1 Key", code: 112, name: "F1", domCode: "F1" },
+      "c64F3": { label: "C64 F3 Key", code: 114, name: "F3", domCode: "F3" },
+      "c64F5": { label: "C64 F5 Key", code: 116, name: "F5", domCode: "F5" },
+      "c64F7": { label: "C64 F7 Key", code: 118, name: "F7", domCode: "F7" },
+      "c64Y": { label: "C64 'Y' (Yes)", code: 89, name: "y", domCode: "KeyY" },
+      "c64N": { label: "C64 'N' (No)", code: 78, name: "n", domCode: "KeyN" },
+      "c64Num1": { label: "C64 '1' Key", code: 49, name: "1", domCode: "Digit1" },
+      "c64Num2": { label: "C64 '2' Key", code: 50, name: "2", domCode: "Digit2" },
+      "c64Num3": { label: "C64 '3' Key", code: 51, name: "3", domCode: "Digit3" },
+      "c64Ctrl": { label: "C64 Control Key", code: 17, name: "Control", domCode: "ControlLeft" }
+    };
+
+    // ডিফল্ট ডাইনামিক কি ম্যাপিং অ্যারে
+    let userMappings = [
+      { physical: "2", target: "joyUp" },
+      { physical: "8", target: "joyDown" },
+      { physical: "4", target: "joyLeft" },
+      { physical: "6", target: "joyRight" },
+      { physical: "5", target: "joyFire" },
+      { physical: "1", target: "c64Return" },
+      { physical: "3", target: "c64Space" },
+      { physical: "7", target: "c64Stop" }
+    ];
+
     if (localStorage.getItem('config_sound')) {
       config.sound = localStorage.getItem('config_sound');
       config.frameskip = localStorage.getItem('config_frameskip');
       config.joyPort = localStorage.getItem('config_joyPort');
+    }
+
+    if (localStorage.getItem('config_userMappings')) {
+      try {
+        userMappings = JSON.parse(localStorage.getItem('config_userMappings'));
+      } catch (e) {
+        console.error("Failed to parse userMappings.");
+      }
     }
 
     const softkeyLeft = document.getElementById('softkey-left');
@@ -534,6 +600,8 @@
       document.getElementById('scr-main').style.display = 'none';
       document.getElementById('scr-settings').style.display = 'none';
       document.getElementById('scr-help').style.display = 'none';
+      document.getElementById('scr-mapping').style.display = 'none';
+      document.getElementById('scr-target-select').style.display = 'none';
       document.getElementById('emulator-container').style.display = 'none';
       document.getElementById('overlay-menu').style.display = 'none';
 
@@ -548,7 +616,7 @@
       } else if (targetScreen === 'settings') {
         document.getElementById('scr-settings').style.display = 'flex';
         softkeyLeft.textContent = "BACK";
-        softkeyCenter.textContent = "TOGGLE";
+        softkeyCenter.textContent = "SELECT";
         softkeyRight.textContent = "";
         updateSettingsDisplay();
       } else if (targetScreen === 'help') {
@@ -556,6 +624,19 @@
         softkeyLeft.textContent = "BACK";
         softkeyCenter.textContent = "";
         softkeyRight.textContent = "";
+      } else if (targetScreen === 'mapping') {
+        document.getElementById('scr-mapping').style.display = 'flex';
+        softkeyLeft.textContent = "BACK";
+        softkeyCenter.textContent = "SELECT";
+        softkeyRight.textContent = "";
+        mappingState = 'list';
+        renderMappingScreen();
+      } else if (targetScreen === 'target-select') {
+        document.getElementById('scr-target-select').style.display = 'flex';
+        softkeyLeft.textContent = "CANCEL";
+        softkeyCenter.textContent = "SELECT";
+        softkeyRight.textContent = "";
+        renderTargetSelectScreen();
       } else if (targetScreen === 'game') {
         document.getElementById('emulator-container').style.display = 'flex';
         softkeyLeft.textContent = "Reset";
@@ -575,6 +656,8 @@
       let selector = '';
       if (activeScreen === 'main') selector = '#scr-main .menu-item';
       else if (activeScreen === 'settings') selector = '#scr-settings .menu-item';
+      else if (activeScreen === 'mapping') selector = '#scr-mapping .menu-item';
+      else if (activeScreen === 'target-select') selector = '#scr-target-select .menu-item';
       else if (activeScreen === 'overlay') selector = '#overlay-menu .menu-item';
 
       if (!selector) return;
@@ -599,6 +682,58 @@
       if (vPortBtn) {
         vPortBtn.textContent = "PORT " + config.joyPort;
       }
+    }
+
+    // ডাইনামিক ম্যাপিং লিস্ট স্ক্রিন তৈরি করা
+    function renderMappingScreen() {
+      const container = document.getElementById('mapping-container');
+      container.innerHTML = '';
+
+      // ১. অ্যাড নিউ ম্যাপিং বাটন
+      const addBtn = document.createElement('div');
+      addBtn.className = 'menu-item';
+      addBtn.setAttribute('data-map-action', 'add');
+      addBtn.innerHTML = '<span style="width:100%; text-align:center; font-weight:bold; color:var(--terminal-green);">+ ADD NEW MAPPING</span>';
+      container.appendChild(addBtn);
+
+      // ২. সব অ্যাক্টিভ কাস্টম কি ম্যাপিং প্রদর্শন
+      userMappings.forEach((m, idx) => {
+        const item = document.createElement('div');
+        item.className = 'menu-item';
+        item.setAttribute('data-map-idx', idx);
+        
+        const targetLabel = TARGETS[m.target] ? TARGETS[m.target].label : m.target;
+        const physicalLabel = m.physical === " " ? "Space" : m.physical.toUpperCase();
+        
+        item.innerHTML = `<span>"${physicalLabel}" &rarr; ${targetLabel}</span><span class="val" style="color: #ff5555;">[Delete]</span>`;
+        container.appendChild(item);
+      });
+
+      // ৩. ডিফল্ট রিসেট বাটন
+      const resetBtn = document.createElement('div');
+      resetBtn.className = 'menu-item';
+      resetBtn.setAttribute('data-map-action', 'reset');
+      resetBtn.innerHTML = '<span style="width:100%; text-align:center; font-weight:bold; color: #ff5555;">RESET TO DEFAULTS</span>';
+      container.appendChild(resetBtn);
+
+      updateActiveMenuItem();
+    }
+
+    // সি৬৪ টার্গেট অ্যাকশন চয়ন স্ক্রিন তৈরি করা
+    function renderTargetSelectScreen() {
+      const container = document.getElementById('target-select-container');
+      container.innerHTML = '';
+
+      const targetKeys = Object.keys(TARGETS);
+      targetKeys.forEach((key, idx) => {
+        const item = document.createElement('div');
+        item.className = 'menu-item';
+        item.setAttribute('data-target-key', key);
+        item.innerHTML = `<span>${TARGETS[key].label}</span><span class="val">&gt;</span>`;
+        container.appendChild(item);
+      });
+
+      updateActiveMenuItem();
     }
 
     function triggerDeviceFilePicker(context) {
@@ -631,7 +766,6 @@
       canvas: (function() {
         var canvas = document.getElementById('canvas');
         
-        // Canvas rendering context ইন্টারসেপ্ট করে 'willReadFrequently: true' ফোর্স করা হলো
         const originalGetContext = canvas.getContext;
         canvas.getContext = function(type, attributes) {
           if (type === '2d') {
@@ -649,7 +783,6 @@
       })(),
       arguments: [],
       
-      // ডাইনামিক রিয়েল-টাইম প্রোগ্রেস লোডিং স্ক্রিন
       setStatus: function(text) {
         if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
         if (text === Module.setStatus.last.text) return;
@@ -733,7 +866,6 @@
       document.body.appendChild(script);
     }
 
-    // ব্রাউজারে কি-বোর্ড স্ট্রোক ইভেন্ট সিমুলেশন করার নিরাপদ ও আধুনিক ফাংশন
     function simulateKeyboardStroke(keyCode, eventType, keyName = "", codeName = "") {
       if (!Module.canvas) return;
       
@@ -757,7 +889,6 @@
       document.getElementById('canvas').dispatchEvent(e);
     }
 
-    // আধুনিক ব্রাউজারে সাউন্ড আনলক করার জন্য অটো-রিসিউম ফাংশন
     function unlockAudio() {
       if (typeof Module !== 'undefined' && Module.audioContext) {
         if (Module.audioContext.state === 'suspended') {
@@ -795,7 +926,19 @@
 
         const key = e.key;
 
-        // কিপ্যাড ফিজিক্যাল ডি-প্যাড কন্ট্রোল
+        // কাস্টম ডাইনামিক ম্যাপ করা কী এবং টার্গেট ডিটেক্ট করা
+        const matches = userMappings.filter(m => m.physical.toLowerCase() === key.toLowerCase());
+        if (matches.length > 0) {
+          matches.forEach(m => {
+            const tgt = TARGETS[m.target];
+            if (tgt) {
+              simulateKeyboardStroke(tgt.code, "keydown", tgt.name, tgt.domCode);
+            }
+          });
+          return;
+        }
+
+        // স্ট্যান্ডার্ড ফিজিক্যাল অ্যারো কি / নেভিগেশন ব্যাকআপ
         const joystickMap = config.joyPort === '2' ? PORT2_JOY : PORT1_JOY;
         if (joystickMap[key] !== undefined) {
           let simKey = "Numpad0";
@@ -808,46 +951,7 @@
           return;
         }
 
-        // কিপ্যাড নম্বর প্যাড ভিত্তিক আরামদায়ক গেমিং কন্ট্রোল (২, ৪, ৬, ৮ এবং ৫)
-        if (key === "2") {
-          simulateKeyboardStroke(joystickMap["ArrowUp"], "keydown", "Numpad8", "Numpad8");
-          return;
-        }
-        if (key === "8") {
-          simulateKeyboardStroke(joystickMap["ArrowDown"], "keydown", "Numpad2", "Numpad2");
-          return;
-        }
-        if (key === "4") {
-          simulateKeyboardStroke(joystickMap["ArrowLeft"], "keydown", "Numpad4", "Numpad4");
-          return;
-        }
-        if (key === "6") {
-          simulateKeyboardStroke(joystickMap["ArrowRight"], "keydown", "Numpad6", "Numpad6");
-          return;
-        }
-        if (key === "5") {
-          simulateKeyboardStroke(joystickMap["Control"], "keydown", "Numpad0", "Numpad0");
-          return;
-        }
-
-        // ফিজিক্যাল কিপ্যাডের আরামদায়ক অ্যাকশন কি
-        if (key === "1") {
-          simulateKeyboardStroke(13, "keydown", "Enter", "Enter"); // Return
-          return;
-        }
-        if (key === "3") {
-          simulateKeyboardStroke(32, "keydown", " ", "Space"); // Space
-          return;
-        }
-        if (key === "7") {
-          simulateKeyboardStroke(27, "keydown", "Escape", "Escape"); // Run/Stop
-          return;
-        }
-        if (key === "9") {
-          toggleJoyPort();
-          return;
-        }
-
+        // স্ট্যান্ডার্ড অক্সিলিয়ারি কি
         if (AUX_KEYS[key] !== undefined) {
           simulateKeyboardStroke(AUX_KEYS[key], "keydown", key, e.code);
           return;
@@ -859,7 +963,6 @@
         }
 
         if (key === "#") {
-          // # কি চাপলে সরাসরি ইন-গেম ওভারলে অপশন মেনু ওপেন হবে
           if (typeof Module.pauseMainLoop === 'function') Module.pauseMainLoop();
           switchScreen('overlay');
           return;
@@ -874,6 +977,19 @@
         e.preventDefault();
         const key = e.key;
 
+        // কাস্টম কি-আপ রিলিজ হ্যান্ডলিং
+        const matches = userMappings.filter(m => m.physical.toLowerCase() === key.toLowerCase());
+        if (matches.length > 0) {
+          matches.forEach(m => {
+            const tgt = TARGETS[m.target];
+            if (tgt) {
+              simulateKeyboardStroke(tgt.code, "keyup", tgt.name, tgt.domCode);
+            }
+          });
+          return;
+        }
+
+        // স্ট্যান্ডার্ড ফিজিক্যাল অ্যারো কি রিলিজ ব্যাকআপ
         const joystickMap = config.joyPort === '2' ? PORT2_JOY : PORT1_JOY;
         if (joystickMap[key] !== undefined) {
           let simKey = "Numpad0";
@@ -886,41 +1002,6 @@
           return;
         }
 
-        // কিপ্যাড নম্বর প্যাড কি-আপ রিলিজ
-        if (key === "2") {
-          simulateKeyboardStroke(joystickMap["ArrowUp"], "keyup", "Numpad8", "Numpad8");
-          return;
-        }
-        if (key === "8") {
-          simulateKeyboardStroke(joystickMap["ArrowDown"], "keyup", "Numpad2", "Numpad2");
-          return;
-        }
-        if (key === "4") {
-          simulateKeyboardStroke(joystickMap["ArrowLeft"], "keyup", "Numpad4", "Numpad4");
-          return;
-        }
-        if (key === "6") {
-          simulateKeyboardStroke(joystickMap["ArrowRight"], "keyup", "Numpad6", "Numpad6");
-          return;
-        }
-        if (key === "5") {
-          simulateKeyboardStroke(joystickMap["Control"], "keyup", "Numpad0", "Numpad0");
-          return;
-        }
-
-        if (key === "1") {
-          simulateKeyboardStroke(13, "keyup", "Enter", "Enter");
-          return;
-        }
-        if (key === "3") {
-          simulateKeyboardStroke(32, "keyup", " ", "Space");
-          return;
-        }
-        if (key === "7") {
-          simulateKeyboardStroke(27, "keyup", "Escape", "Escape");
-          return;
-        }
-
         if (AUX_KEYS[key] !== undefined) {
           simulateKeyboardStroke(AUX_KEYS[key], "keyup", key, e.code);
           return;
@@ -929,11 +1010,29 @@
     }
 
     function handleNavigation(e) {
-      const isDpadUp = e.key === 'ArrowUp';
-      const isDpadDown = e.key === 'ArrowDown';
-      const isSoftLeft = e.key === 'SoftLeft' || e.key === 'F1' || e.key === 'l';
-      const isSoftRight = e.key === 'SoftRight' || e.key === 'F2' || e.key === 'r';
-      const isBackspace = e.key === 'Backspace' || e.key === 'Clear';
+      const key = e.key;
+
+      // কি ম্যাপিং মোডে যেকোনো ফিজিক্যাল কি রিড করা
+      if (activeScreen === 'mapping' && mappingState === 'listening') {
+        e.preventDefault();
+        
+        if (key === "SoftLeft" || key === "SoftRight" || key === "F1" || key === "F2") {
+          showHUD("Softkeys cannot be mapped!");
+          return;
+        }
+
+        tempPhysicalKey = key;
+        document.getElementById('mapping-title').textContent = "Custom Key Mapping"; // টাইটেল রিস্টোর করা
+        
+        switchScreen('target-select');
+        return;
+      }
+
+      const isDpadUp = key === 'ArrowUp';
+      const isDpadDown = key === 'ArrowDown';
+      const isSoftLeft = key === 'SoftLeft' || key === 'F1' || key === 'l';
+      const isSoftRight = key === 'SoftRight' || key === 'F2' || key === 'r';
+      const isBackspace = key === 'Backspace' || key === 'Clear';
 
       if (activeScreen === 'game') {
         if (isSoftRight) { 
@@ -949,7 +1048,9 @@
       if (isDpadUp || isDpadDown) {
         let maxItems = 0;
         if (activeScreen === 'main') maxItems = 5;
-        else if (activeScreen === 'settings') maxItems = 3;
+        else if (activeScreen === 'settings') maxItems = 4;
+        else if (activeScreen === 'mapping') maxItems = userMappings.length + 2; // Add, items, reset
+        else if (activeScreen === 'target-select') maxItems = Object.keys(TARGETS).length;
         else if (activeScreen === 'overlay') maxItems = 5;
 
         if (isDpadUp) cursorIndex = (cursorIndex > 0) ? cursorIndex - 1 : maxItems - 1;
@@ -961,6 +1062,15 @@
       if (isSoftLeft || isBackspace) {
         if (activeScreen === 'settings' || activeScreen === 'help') {
           switchScreen('main');
+        } else if (activeScreen === 'mapping') {
+          if (mappingState === 'listening') {
+            document.getElementById('mapping-title').textContent = "Custom Key Mapping";
+            switchScreen('mapping');
+          } else {
+            switchScreen('settings');
+          }
+        } else if (activeScreen === 'target-select') {
+          switchScreen('mapping');
         } else if (activeScreen === 'overlay') {
           if (typeof Module.resumeMainLoop === 'function') Module.resumeMainLoop();
           switchScreen('game');
@@ -968,9 +1078,11 @@
         return;
       }
 
-      if (e.key === 'Enter') {
+      if (key === 'Enter') {
         if (activeScreen === 'main') executeMainMenuAction();
         else if (activeScreen === 'settings') executeSettingsMenuAction();
+        else if (activeScreen === 'mapping') executeMappingAction();
+        else if (activeScreen === 'target-select') executeTargetSelectAction();
         else if (activeScreen === 'overlay') executeOverlayAction();
       }
     }
@@ -1000,17 +1112,74 @@
 
       if (action === 'toggle-sound') {
         config.sound = config.sound === '22050' ? '44100' : (config.sound === '44100' ? 'off' : '22050');
+        updateSettingsDisplay();
       } else if (action === 'toggle-frameskip') {
         config.frameskip = config.frameskip === '2' ? '4' : (config.frameskip === '4' ? '0' : '2');
+        updateSettingsDisplay();
       } else if (action === 'toggle-port') {
         config.joyPort = config.joyPort === '2' ? '1' : '2';
+        updateSettingsDisplay();
+      } else if (action === 'goto-mapping') {
+        switchScreen('mapping');
       }
 
       localStorage.setItem('config_sound', config.sound);
       localStorage.setItem('config_frameskip', config.frameskip);
       localStorage.setItem('config_joyPort', config.joyPort);
+    }
 
-      updateSettingsDisplay();
+    function executeMappingAction() {
+      const items = document.querySelectorAll('#scr-mapping .menu-item');
+      const activeItem = items[cursorIndex];
+      
+      const mapAction = activeItem.getAttribute('data-map-action');
+      const mapIdx = activeItem.getAttribute('data-map-idx');
+
+      if (mapAction === 'add') {
+        mappingState = 'listening';
+        softkeyLeft.textContent = "CANCEL";
+        softkeyCenter.textContent = "";
+        
+        document.getElementById('mapping-title').textContent = "PRESS ANY PHYSICAL KEY...";
+        activeItem.innerHTML = '<span style="width:100%; text-align:center; font-weight:bold; color:var(--terminal-green); animation: blink 1s infinite;">[ PRESS KEY NOW ]</span>';
+      } else if (mapAction === 'reset') {
+        userMappings = [
+          { physical: "2", target: "joyUp" },
+          { physical: "8", target: "joyDown" },
+          { physical: "4", target: "joyLeft" },
+          { physical: "6", target: "joyRight" },
+          { physical: "5", target: "joyFire" },
+          { physical: "1", target: "c64Return" },
+          { physical: "3", target: "c64Space" },
+          { physical: "7", target: "c64Stop" }
+        ];
+        localStorage.setItem('config_userMappings', JSON.stringify(userMappings));
+        renderMappingScreen();
+        showHUD("RESTORED DEFAULT MAPPINGS");
+      } else if (mapIdx !== null) {
+        // ডিলিট ম্যাপিং হ্যান্ডলার
+        const idx = parseInt(mapIdx);
+        userMappings.splice(idx, 1);
+        localStorage.setItem('config_userMappings', JSON.stringify(userMappings));
+        showHUD("DELETED MAPPING");
+        renderMappingScreen();
+      }
+    }
+
+    function executeTargetSelectAction() {
+      const items = document.querySelectorAll('#scr-target-select .menu-item');
+      const targetKey = items[cursorIndex].getAttribute('data-target-key');
+
+      if (targetKey) {
+        userMappings.push({
+          physical: tempPhysicalKey,
+          target: targetKey
+        });
+        localStorage.setItem('config_userMappings', JSON.stringify(userMappings));
+        
+        showHUD("MAPPING SAVED!");
+        switchScreen('mapping');
+      }
     }
 
     function executeOverlayAction() {
@@ -1036,7 +1205,6 @@
       }
     }
 
-    // টাচ বাটনগুলোর জন্য সরাসরি সঠিক Numpad কোড ফেরত দেওয়ার ফাংশন
     function resolveKeyDataForAction(action) {
       if (action === 'up') return { code: 104, name: "Numpad8", domCode: "Numpad8" };
       if (action === 'down') return { code: 98, name: "Numpad2", domCode: "Numpad2" };
@@ -1077,7 +1245,6 @@
     bindVirtualTouchAction('v-return', 'return');
     bindVirtualTouchAction('v-stop', 'stop');
 
-    // ইউটিলিটি টাচ বাটন হ্যান্ডলিং
     const utilPort = document.getElementById('v-util-port');
     if (utilPort) {
       utilPort.addEventListener('touchstart', (e) => {
@@ -1103,7 +1270,6 @@
       }, { passive: false });
     }
 
-    // ডিভাইস টাইপ সনাক্তকরণ (টাচস্ক্রিন নাকি কিপ্যাড)
     function detectDeviceType() {
       const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
       if (isTouch) {
@@ -1113,7 +1279,6 @@
       }
     }
 
-    // ক্লিক ও টাচ ইভেন্টে ব্রাউজার অডিও সচল করার জন্য লিসেনার
     window.addEventListener('click', unlockAudio);
     window.addEventListener('touchstart', unlockAudio);
 
@@ -1130,6 +1295,8 @@
 
           if (activeScreen === 'main') executeMainMenuAction();
           else if (activeScreen === 'settings') executeSettingsMenuAction();
+          else if (activeScreen === 'mapping') executeMappingAction();
+          else if (activeScreen === 'target-select') executeTargetSelectAction();
           else if (activeScreen === 'overlay') executeOverlayAction();
           return;
         }
