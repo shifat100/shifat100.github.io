@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>KaiC64 Pro Console</title>
+  <style>
+    /* CSS Variables for Classic Retro Look */
+    :root {
+      --bg-color: #0d0b14;
+      --accent-color: #6a5ba8;
+      --highlight-color: #9d8fe6;
+      --text-color: #ffffff;
+      --terminal-green: #39ff14;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* রেসপনসিভ ইউনিভার্সাল লেআউট */
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: monospace;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      width: 100%;
+      height: calc(100vh - 30px);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    h1 {
+      font-size: 14px;
+      color: var(--highlight-color);
+      text-align: center;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed var(--accent-color);
+      padding-bottom: 5px;
+    }
+    .menu-list {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .menu-item {
+      padding: 8px 10px;
+      margin: 4px 0;
+      border: 1px solid #1a1525;
+      background: #120f1c;
+      font-size: 11px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .menu-item.active {
+      background: var(--accent-color);
+      color: #000;
+      font-weight: bold;
+      border-color: var(--highlight-color);
+    }
+    .val {
+      font-size: 10px;
+      color: var(--highlight-color);
+    }
+    .menu-item.active .val {
+      color: #000;
+    }
+
+    /* কন্ট্রোল গাইড লেআউট */
+    .help-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px;
+      font-size: 10px;
+      border-bottom: 1px solid #1a1525;
+    }
+    .help-key {
+      color: var(--highlight-color);
+      font-weight: bold;
+    }
+    .help-action {
+      color: #ccc;
+      text-align: right;
+    }
+
+    /* ক্যানভাস লেআউট */
+    #emulator-container {
+      width: 100%;
+      height: calc(100vh - 30px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      position: relative;
+    }
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    /* ইন্টারেক্টিভ প্রোগ্রেস লোডিং স্ক্রিন */
+    #loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .loading-title {
+      font-size: 13px;
+      color: var(--highlight-color);
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+    .progress-container {
+      width: 80%;
+      max-width: 180px;
+      height: 8px;
+      border: 1px solid var(--accent-color);
+      background: #120f1c;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--terminal-green);
+      transition: width 0.1s ease-out;
+    }
+    .loading-status {
+      font-size: 9px;
+      color: #888;
+      text-align: center;
+    }
+
+    #overlay-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 220px;
+      background: rgba(13, 11, 20, 0.95);
+      border: 2px solid var(--accent-color);
+      border-radius: 6px;
+      padding: 10px;
+      z-index: 9999;
+    }
+
+    /* ডাইনামিক টাচ কন্ট্রোলস */
+    #touch-controls {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .v-pad {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 100px;
+      height: 100px;
+      pointer-events: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+    }
+    .v-btn-dir {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+      border-radius: 6px;
+      user-select: none;
+      opacity: 0.4;
+      cursor: pointer;
+    }
+    #v-up { grid-column: 2; grid-row: 1; }
+    #v-left { grid-column: 1; grid-row: 2; }
+    #v-right { grid-column: 3; grid-row: 2; }
+    #v-down { grid-column: 2; grid-row: 3; }
+
+    .v-actions {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .v-btn-act {
+      width: 55px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 9px;
+      font-weight: bold;
+      border-radius: 6px;
+      user-select: none;
+      opacity: 0.4;
+      cursor: pointer;
+    }
+
+    /* HUD */
+    #hud-msg {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(0, 0, 0, 0.85);
+      color: var(--terminal-green);
+      font-size: 10px;
+      padding: 3px 6px;
+      border-radius: 3px;
+      display: none;
+      z-index: 999;
+    }
+
+    /* সফ্টকি ফুটর বার */
+    footer {
+      width: 100%;
+      height: 30px;
+      background: #120f1c;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      font-size: 11px;
+      border-top: 1px solid var(--accent-color);
+      z-index: 1000;
+    }
+    .sk {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+    .sk:first-child { text-align: left; }
+    .sk:last-child { text-align: right; }
+  </style>
+</head>
+<body>
+
+  <!-- HUD গেম মেসেজ বার -->
+  <div id="hud-msg">C64 EMULATION ACTIVE</div>
+
+  <!-- স্ক্রিন ১: প্রধান মেনু -->
+  <div id="scr-main" class="screen">
+    <h1>KaiC64 Pro Emulator</h1>
+    <div class="menu-list">
+      <div class="menu-item active" data-action="toggle-system">
+        <span>System Mode</span><span class="val" id="val-system">C64</span>
+      </div>
+      <div class="menu-item" data-action="load-game">
+        <span>Load Game File</span><span class="val" id="val-game">None Loaded</span>
+      </div>
+      <div class="menu-item" data-action="goto-settings">
+        <span>Emulation Settings</span><span class="val">&gt;</span>
+      </div>
+      <div class="menu-item" data-action="goto-help">
+        <span>Help & Controls</span><span class="val">&gt;</span>
+      </div>
+      <div class="menu-item" data-action="start-emu" style="border-color: var(--highlight-color); margin-top: 8px;">
+        <span style="width:100%; text-align:center; font-weight:bold;">LAUNCH EMULATOR</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- স্ক্রিন ২: এমুলেশন সেটিংস মেনু -->
+  <div id="scr-settings" class="screen" style="display:none;">
+    <h1>Emulation Settings</h1>
+    <div class="menu-list">
+      <div class="menu-item active" data-action="toggle-sound">
+        <span>Sound Settings</span><span class="val" id="val-sound">Low Quality</span>
+      </div>
+      <div class="menu-item" data-action="toggle-frameskip">
+        <span>Frameskip (Speed)</span><span class="val" id="val-frameskip">Auto (2)</span>
+      </div>
+      <div class="menu-item" data-action="toggle-port">
+        <span>Active Joy Port</span><span class="val" id="val-port">Port 2 (Standard)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- স্ক্রিন ৩: সাহায্য ও নিয়ন্ত্রণ নির্দেশিকা -->
+  <div id="scr-help" class="screen" style="display:none;">
+    <h1>Control Reference</h1>
+    <div class="menu-list" style="border: 1px solid #1a1525; background: #120f1c; padding: 5px;">
+      <div class="help-row"><span class="help-key">D-Pad / Touch</span><span class="help-action">Joy Directions</span></div>
+      <div class="help-row"><span class="help-key">Center / Fire</span><span class="help-action">Fire button (Active Port)</span></div>
+      <div class="help-row"><span class="help-key">Call / Space</span><span class="help-action">Spacebar (Jump / Skip)</span></div>
+      <div class="help-row"><span class="help-key">SoftLeft</span><span class="help-action">Run/Stop (Escape Key)</span></div>
+      <div class="help-row"><span class="help-key">SoftRight</span><span class="help-action">In-Game Options Overlay</span></div>
+      <div class="help-row"><span class="help-key">1 Key</span><span class="help-action">C64 Return / Enter</span></div>
+      <div class="help-row"><span class="help-key">2 / 3 Key</span><span class="help-action">Y Key (Yes) / N Key (No)</span></div>
+      <div class="help-row"><span class="help-key">4 / 5 Key</span><span class="help-action">F1 / F3</span></div>
+      <div class="help-row"><span class="help-key">6 / 7 Key</span><span class="help-action">F5 / F7</span></div>
+      <div class="help-row"><span class="help-key">* Key</span><span class="help-action">Swap Joy Port (1 & 2)</span></div>
+      <div class="help-row"><span class="help-key"># Key</span><span class="help-action">Warp Mode Toggle</span></div>
+    </div>
+  </div>
+
+  <!-- স্ক্রিন ৪: এমুলেটর ক্যানভাস এরিয়া -->
+  <div id="emulator-container" style="display: none;">
+    <!-- প্রোগ্রেস লোডিং স্ক্রিন % সহ -->
+    <div id="loading-overlay">
+      <div class="loading-title">Compiling Emulator...</div>
+      <div class="progress-container">
+        <div id="loading-progress" class="progress-bar"></div>
+      </div>
+      <div id="loading-status" class="loading-status">Setting up memory blocks...</div>
+    </div>
+
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+    <!-- ভার্চুয়াল টাচ জয়স্টিক ওভারলে -->
+    <div id="touch-controls" style="display: none;">
+      <div class="v-pad">
+        <div id="v-up" class="v-btn-dir">▲</div>
+        <div id="v-left" class="v-btn-dir">◀</div>
+        <div id="v-right" class="v-btn-dir">▶</div>
+        <div id="v-down" class="v-btn-dir">▼</div>
+      </div>
+      <div class="v-actions">
+        <div id="v-fire" class="v-btn-act">FIRE</div>
+        <div id="v-space" class="v-btn-act">SPACE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ইন-গেম ওভারলে ড্যাশবোর্ড -->
+  <div id="overlay-menu" style="display:none;">
+    <h1 style="font-size:11px; margin-bottom:8px;">Control Overlay</h1>
+    <div class="menu-item active" data-overlay="resume">Resume Game</div>
+    <div class="menu-item" data-overlay="swap">Swap Joy Port (* key)</div>
+    <div class="menu-item" data-overlay="warp">Warp Speed Toggle (# key)</div>
+    <div class="menu-item" data-overlay="help">Show Controls</div>
+    <div class="menu-item" data-overlay="exit">Exit / Reset</div>
+  </div>
+
+  <!-- সফ্টকি ফুটর বার -->
+  <footer>
+    <div id="softkey-left" class="sk">EXIT</div>
+    <div id="softkey-center" class="sk">SELECT</div>
+    <div id="softkey-right" class="sk"></div>
+  </footer>
+
+  <script>
+    // --- State Variables ---
+    let activeScreen = 'main';
+    let prevScreen = 'main';
+    let cursorIndex = 0;
+    let loadedGame = null;
+    let warpActive = false;
+
+    let config = {
+      system: 'c64',
+      sound: '22050',
+      frameskip: '2',
+      joyPort: '2'
+    };
+
+    if (localStorage.getItem('config_sound')) {
+      config.sound = localStorage.getItem('config_sound');
+      config.frameskip = localStorage.getItem('config_frameskip');
+      config.joyPort = localStorage.getItem('config_joyPort');
+    }
+
+    const softkeyLeft = document.getElementById('softkey-left');
+    const softkeyCenter = document.getElementById('softkey-center');
+    const softkeyRight = document.getElementById('softkey-right');
+    const hud = document.getElementById('hud-msg');
+
+    // JS Standard KeyCodes for Numpad Simulation
+    const PORT2_JOY = { 
+      "ArrowUp": 104, 
+      "ArrowDown": 98, 
+      "ArrowLeft": 100, 
+      "ArrowRight": 102, 
+      "Control": 96, 
+      " ": 96,
+      "Spacebar": 96,
+      "Enter": 96
+    };
+    
+    const PORT1_JOY = { 
+      "ArrowUp": 104, 
+      "ArrowDown": 98, 
+      "ArrowLeft": 100, 
+      "ArrowRight": 102, 
+      "Control": 96, 
+      " ": 96,
+      "Spacebar": 96,
+      "Enter": 96
+    };
+
+    const AUX_KEYS = {
+      "Call": 32,      
+      "SoftLeft": 27,  
+      "1": 13,         
+      "2": 89,         
+      "3": 78,         
+      "4": 112,        
+      "5": 114,        
+      "6": 116,        
+      "7": 118,        
+      "8": 9,          
+      "9": 16,         
+      "0": 48          
+    };
+
+    function showHUD(text) {
+      hud.textContent = text;
+      hud.style.display = 'block';
+      setTimeout(() => { hud.style.display = 'none'; }, 2000);
+    }
+
+    function switchScreen(targetScreen) {
+      document.getElementById('scr-main').style.display = 'none';
+      document.getElementById('scr-settings').style.display = 'none';
+      document.getElementById('scr-help').style.display = 'none';
+      document.getElementById('emulator-container').style.display = 'none';
+      document.getElementById('overlay-menu').style.display = 'none';
+
+      activeScreen = targetScreen;
+      cursorIndex = 0;
+
+      if (targetScreen === 'main') {
+        document.getElementById('scr-main').style.display = 'flex';
+        softkeyLeft.textContent = "Exit";
+        softkeyCenter.textContent = "SELECT";
+        softkeyRight.textContent = "";
+      } else if (targetScreen === 'settings') {
+        document.getElementById('scr-settings').style.display = 'flex';
+        softkeyLeft.textContent = "BACK";
+        softkeyCenter.textContent = "TOGGLE";
+        softkeyRight.textContent = "";
+        updateSettingsDisplay();
+      } else if (targetScreen === 'help') {
+        document.getElementById('scr-help').style.display = 'flex';
+        softkeyLeft.textContent = "BACK";
+        softkeyCenter.textContent = "";
+        softkeyRight.textContent = "";
+      } else if (targetScreen === 'game') {
+        document.getElementById('emulator-container').style.display = 'flex';
+        softkeyLeft.textContent = "Reset";
+        softkeyCenter.textContent = "Space";
+        softkeyRight.textContent = "MENU";
+      } else if (targetScreen === 'overlay') {
+        document.getElementById('emulator-container').style.display = 'flex';
+        document.getElementById('overlay-menu').style.display = 'block';
+        softkeyLeft.textContent = "Resume";
+        softkeyCenter.textContent = "SELECT";
+        softkeyRight.textContent = "";
+      }
+      updateActiveMenuItem();
+    }
+
+    function updateActiveMenuItem() {
+      let selector = '';
+      if (activeScreen === 'main') selector = '#scr-main .menu-item';
+      else if (activeScreen === 'settings') selector = '#scr-settings .menu-item';
+      else if (activeScreen === 'overlay') selector = '#overlay-menu .menu-item';
+
+      if (!selector) return;
+
+      const items = document.querySelectorAll(selector);
+      items.forEach((item, index) => {
+        if (index === cursorIndex) {
+          item.classList.add('active');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
+    function updateSettingsDisplay() {
+      document.getElementById('val-system').textContent = config.system.toUpperCase();
+      document.getElementById('val-sound').textContent = config.sound === 'off' ? 'Muted' : config.sound + ' Hz';
+      document.getElementById('val-frameskip').textContent = config.frameskip === '0' ? 'Off' : 'Skip ' + config.frameskip;
+      document.getElementById('val-port').textContent = 'Port ' + config.joyPort;
+    }
+
+    function triggerDeviceFilePicker(context) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.d64,.prg,.t64,.tap';
+
+      input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const u8Array = new Uint8Array(evt.target.result);
+          loadedGame = {
+            name: file.name,
+            data: u8Array,
+            ext: file.name.split('.').pop().toLowerCase()
+          };
+          document.getElementById('val-game').textContent = file.name.substring(0, 15) + "...";
+          showHUD("LOADED: " + file.name);
+        };
+        reader.readAsArrayBuffer(file);
+      };
+      input.click();
+    }
+
+    // --- Emscripten Configuration & Live Status Parser ---
+    var Module = {
+      // ব্রাউজার ক্যানভাস এবং এর গেটকন্টেক্সট (getContext) অপ্টিমাইজেশন
+      canvas: (function() {
+        var canvas = document.getElementById('canvas');
+        
+        // Canvas rendering context ইন্টারসেপ্ট করে 'willReadFrequently: true' ফোর্স করা হলো
+        const originalGetContext = canvas.getContext;
+        canvas.getContext = function(type, attributes) {
+          if (type === '2d') {
+            attributes = attributes || {};
+            attributes.willReadFrequently = true;
+          }
+          return originalGetContext.call(this, type, attributes);
+        };
+
+        canvas.addEventListener("webglcontextlost", function(e) { 
+          alert('WebGL context lost. You will need to reload the page.'); 
+          e.preventDefault(); 
+        }, false);
+        return canvas;
+      })(),
+      arguments: [],
+      
+      // ডাইনামিক রিয়েল-টাইম প্রোগ্রেস লোডিং স্ক্রিন
+      setStatus: function(text) {
+        if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+        if (text === Module.setStatus.last.text) return;
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        if (m && now - Module.setStatus.last.time < 30) return; // Limit DOM refresh rate
+        Module.setStatus.last.time = now;
+        Module.setStatus.last.text = text;
+        
+        var progressElement = document.getElementById('loading-progress');
+        var statusElement = document.getElementById('loading-status');
+        var overlay = document.getElementById('loading-overlay');
+        
+        if (m) {
+          text = m[1];
+          var percent = Math.round(parseFloat(m[2]) / parseFloat(m[4]) * 100);
+          if (progressElement) progressElement.style.width = percent + '%';
+          if (statusElement) statusElement.textContent = text + ' (' + percent + '%)';
+        } else {
+          if (progressElement) progressElement.style.width = text ? '50%' : '100%';
+          if (statusElement) statusElement.textContent = text || 'Ready!';
+          if (!text) {
+            setTimeout(function() {
+              if (overlay) overlay.style.display = 'none';
+            }, 500);
+          }
+        }
+      },
+      
+      preRun: [function() {
+        if (loadedGame) {
+          try {
+            const fs = typeof FS !== 'undefined' ? FS : (Module.FS || null);
+            if (fs) {
+              fs.writeFile('/game.' + loadedGame.ext, loadedGame.data, { encoding: 'binary' });
+              console.log("Game written successfully to virtual FS.");
+            }
+          } catch (e) {
+            console.error("FS Write error: ", e);
+          }
+        }
+      }]
+    };
+
+    function launchEmuProcess() {
+      switchScreen('game');
+      document.getElementById('loading-overlay').style.display = 'flex'; 
+
+      // -directory আর্গুমেন্টটি স্থায়ীভাবে বাদ দেওয়া হয়েছে
+      let args = [];
+
+      if (config.joyPort === '1') {
+        args.push("-joydev1", "1"); 
+        args.push("-joydev2", "0"); 
+      } else {
+        args.push("-joydev1", "0");
+        args.push("-joydev2", "1"); 
+      }
+
+      if (config.sound === 'off') {
+        args.push("+sound");
+      } else {
+        args.push("+sound", "-soundsync", "0", "-soundrate", config.sound);
+      }
+      
+      args.push("-refresh", config.frameskip);
+
+      if (loadedGame) {
+        args.push("-autostart", "/game." + loadedGame.ext);
+      }
+
+      Module.arguments = args;
+
+      const script = document.createElement('script');
+      script.src = config.system === 'c64' ? 'js/x64.js' : 'js/x128.js';
+      
+      script.onerror = function() {
+        alert("ভুল ডিরেক্টরি! আপনার প্যাকেজে 'js' ফোল্ডারের ভেতরে " + script.src + " ফাইলটি পাওয়া যায়নি। অনুগ্রহ করে ফাইল দুটি সঠিক স্থানে রাখুন।");
+        window.location.reload();
+      };
+      
+      document.body.appendChild(script);
+    }
+
+    // ব্রাউজারে কি-বোর্ড স্ট্রোক ইভেন্ট সিমুলেশন করার নিরাপদ ও আধুনিক ফাংশন
+    function simulateKeyboardStroke(keyCode, eventType, keyName = "", codeName = "") {
+      if (!Module.canvas) return;
+      
+      const eventInit = {
+        keyCode: keyCode,
+        which: keyCode,
+        key: keyName,
+        code: codeName,
+        bubbles: true,
+        cancelable: true,
+        view: window
+      };
+
+      const e = new KeyboardEvent(eventType, eventInit);
+      Object.defineProperty(e, 'keyCode', { value: keyCode });
+      Object.defineProperty(e, 'which', { value: keyCode });
+      Object.defineProperty(e, 'code', { value: codeName });
+      
+      window.dispatchEvent(e);
+      document.dispatchEvent(e);
+      document.getElementById('canvas').dispatchEvent(e);
+    }
+
+    // আধুনিক ব্রাউজারে সাউন্ড আনলক করার জন্য অটো-রিসিউম ফাংশন
+    function unlockAudio() {
+      if (typeof Module !== 'undefined' && Module.audioContext) {
+        if (Module.audioContext.state === 'suspended') {
+          Module.audioContext.resume();
+        }
+      }
+    }
+
+    function handleInputKeyDown(e) {
+      if (!e.isTrusted) return; 
+
+      if (activeScreen === 'game') {
+        e.preventDefault();
+        unlockAudio(); 
+
+        const joystickMap = config.joyPort === '2' ? PORT2_JOY : PORT1_JOY;
+        if (joystickMap[e.key] !== undefined) {
+          let simKey = "Numpad0";
+          if (e.key === "ArrowUp") simKey = "Numpad8";
+          else if (e.key === "ArrowDown") simKey = "Numpad2";
+          else if (e.key === "ArrowLeft") simKey = "Numpad4";
+          else if (e.key === "ArrowRight") simKey = "Numpad6";
+
+          simulateKeyboardStroke(joystickMap[e.key], "keydown", simKey, simKey);
+          return;
+        }
+
+        if (AUX_KEYS[e.key] !== undefined) {
+          simulateKeyboardStroke(AUX_KEYS[e.key], "keydown", e.key, e.code);
+          return;
+        }
+
+        if (e.key === "*") {
+          config.joyPort = config.joyPort === "2" ? "1" : "2";
+          showHUD("SWAPPED TO JOYSTICK PORT " + config.joyPort);
+          return;
+        }
+
+        if (e.key === "#") {
+          warpActive = !warpActive;
+          if (warpActive) {
+            simulateKeyboardStroke(341, "keydown", "ControlLeft", "ControlLeft"); 
+            showHUD("WARP SPEED ON");
+          } else {
+            simulateKeyboardStroke(341, "keyup", "ControlLeft", "ControlLeft");
+            showHUD("WARP SPEED OFF");
+          }
+          return;
+        }
+      }
+    }
+
+    function handleInputKeyUp(e) {
+      if (!e.isTrusted) return;
+
+      if (activeScreen === 'game') {
+        e.preventDefault();
+
+        const joystickMap = config.joyPort === '2' ? PORT2_JOY : PORT1_JOY;
+        if (joystickMap[e.key] !== undefined) {
+          let simKey = "Numpad0";
+          if (e.key === "ArrowUp") simKey = "Numpad8";
+          else if (e.key === "ArrowDown") simKey = "Numpad2";
+          else if (e.key === "ArrowLeft") simKey = "Numpad4";
+          else if (e.key === "ArrowRight") simKey = "Numpad6";
+
+          simulateKeyboardStroke(joystickMap[e.key], "keyup", simKey, simKey);
+          return;
+        }
+
+        if (AUX_KEYS[e.key] !== undefined) {
+          simulateKeyboardStroke(AUX_KEYS[e.key], "keyup", e.key, e.code);
+          return;
+        }
+      }
+    }
+
+    function handleNavigation(e) {
+      const isDpadUp = e.key === 'ArrowUp';
+      const isDpadDown = e.key === 'ArrowDown';
+
+      if (activeScreen === 'game') {
+        if (e.key === 'SoftRight') { 
+          e.preventDefault();
+          if (typeof Module.pauseMainLoop === 'function') Module.pauseMainLoop();
+          switchScreen('overlay');
+        }
+        return;
+      }
+
+      e.preventDefault();
+
+      if (isDpadUp || isDpadDown) {
+        let maxItems = 0;
+        if (activeScreen === 'main') maxItems = 5;
+        else if (activeScreen === 'settings') maxItems = 3;
+        else if (activeScreen === 'overlay') maxItems = 5;
+
+        if (isDpadUp) cursorIndex = (cursorIndex > 0) ? cursorIndex - 1 : maxItems - 1;
+        if (isDpadDown) cursorIndex = (cursorIndex < maxItems - 1) ? cursorIndex + 1 : 0;
+        updateActiveMenuItem();
+        return;
+      }
+
+      if (e.key === 'SoftLeft' || e.key === 'Backspace') {
+        if (activeScreen === 'settings' || activeScreen === 'help') {
+          switchScreen('main');
+        } else if (activeScreen === 'overlay') {
+          if (typeof Module.resumeMainLoop === 'function') Module.resumeMainLoop();
+          switchScreen('game');
+        }
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        if (activeScreen === 'main') executeMainMenuAction();
+        else if (activeScreen === 'settings') executeSettingsMenuAction();
+        else if (activeScreen === 'overlay') executeOverlayAction();
+      }
+    }
+
+    function executeMainMenuAction() {
+      const items = document.querySelectorAll('#scr-main .menu-item');
+      const action = items[cursorIndex].getAttribute('data-action');
+
+      if (action === 'toggle-system') {
+        config.system = config.system === 'c64' ? 'c128' : 'c64';
+        updateSettingsDisplay();
+      } else if (action === 'load-game') {
+        triggerDeviceFilePicker('game');
+      } else if (action === 'goto-settings') {
+        switchScreen('settings');
+      } else if (action === 'goto-help') {
+        prevScreen = 'main';
+        switchScreen('help');
+      } else if (action === 'start-emu') {
+        launchEmuProcess();
+      }
+    }
+
+    // Settings
+    function executeSettingsMenuAction() {
+      const items = document.querySelectorAll('#scr-settings .menu-item');
+      const action = items[cursorIndex].getAttribute('data-action');
+
+      if (action === 'toggle-sound') {
+        config.sound = config.sound === '22050' ? '44100' : (config.sound === '44100' ? 'off' : '22050');
+      } else if (action === 'toggle-frameskip') {
+        config.frameskip = config.frameskip === '2' ? '4' : (config.frameskip === '4' ? '0' : '2');
+      } else if (action === 'toggle-port') {
+        config.joyPort = config.joyPort === '2' ? '1' : '2';
+      }
+
+      localStorage.setItem('config_sound', config.sound);
+      localStorage.setItem('config_frameskip', config.frameskip);
+      localStorage.setItem('config_joyPort', config.joyPort);
+
+      updateSettingsDisplay();
+    }
+
+    function executeOverlayAction() {
+      const items = document.querySelectorAll('#overlay-menu .menu-item');
+      const mode = items[cursorIndex].getAttribute('data-overlay');
+
+      if (mode === 'resume') {
+        if (typeof Module.resumeMainLoop === 'function') Module.resumeMainLoop();
+        switchScreen('game');
+      } else if (mode === 'swap') {
+        config.joyPort = config.joyPort === '2' ? '1' : '2';
+        showHUD("PORT SWAPPED TO " + config.joyPort);
+        if (typeof Module.resumeMainLoop === 'function') Module.resumeMainLoop();
+        switchScreen('game');
+      } else if (mode === 'warp') {
+        warpActive = !warpActive;
+        if (warpActive) {
+          simulateKeyboardStroke(341, "keydown", "ControlLeft", "ControlLeft");
+          showHUD("WARP SPEED ACTIVE");
+        } else {
+          simulateKeyboardStroke(341, "keyup", "ControlLeft", "ControlLeft");
+          showHUD("WARP SPEED DISABLED");
+        }
+        if (typeof Module.resumeMainLoop === 'function') Module.resumeMainLoop();
+        switchScreen('game');
+      } else if (mode === 'help') {
+        prevScreen = 'overlay';
+        switchScreen('help');
+      } else if (mode === 'exit') {
+        window.location.reload();
+      }
+    }
+
+    // টাচ বাটনগুলোর জন্য সরাসরি সঠিক Numpad কোড ফেরত দেওয়ার ফাংশন
+    function resolveKeyDataForAction(action) {
+      if (action === 'up') return { code: 104, name: "Numpad8", domCode: "Numpad8" };
+      if (action === 'down') return { code: 98, name: "Numpad2", domCode: "Numpad2" };
+      if (action === 'left') return { code: 100, name: "Numpad4", domCode: "Numpad4" };
+      if (action === 'right') return { code: 102, name: "Numpad6", domCode: "Numpad6" };
+      if (action === 'fire') return { code: 96, name: "Numpad0", domCode: "Numpad0" };
+      if (action === 'space') return { code: 32, name: " ", domCode: "Space" };
+      return null;
+    }
+
+    function bindVirtualTouchAction(elementId, actionName) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+
+      el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        el.style.opacity = '0.9';
+        const keyData = resolveKeyDataForAction(actionName);
+        if (keyData) simulateKeyboardStroke(keyData.code, "keydown", keyData.name, keyData.domCode);
+      }, { passive: false });
+
+      el.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        el.style.opacity = '0.4';
+        const keyData = resolveKeyDataForAction(actionName);
+        if (keyData) simulateKeyboardStroke(keyData.code, "keyup", keyData.name, keyData.domCode);
+      }, { passive: false });
+    }
+
+    bindVirtualTouchAction('v-up', 'up');
+    bindVirtualTouchAction('v-left', 'left');
+    bindVirtualTouchAction('v-right', 'right');
+    bindVirtualTouchAction('v-down', 'down');
+    bindVirtualTouchAction('v-fire', 'fire');
+    bindVirtualTouchAction('v-space', 'space');
+
+    window.addEventListener('touchstart', function configureTouchOverlay() {
+      document.getElementById('touch-controls').style.display = 'block';
+      window.removeEventListener('touchstart', configureTouchOverlay);
+    });
+
+    // ক্লিক ও টাচ ইভেন্টে ব্রাউজার অডিও সচল করার জন্য লিসেনার
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.addEventListener('click', (e) => {
+        const menuItem = e.target.closest('.menu-item');
+        if (menuItem) {
+          const parent = menuItem.parentElement;
+          const list = Array.from(parent.querySelectorAll('.menu-item'));
+          cursorIndex = list.indexOf(menuItem);
+          updateActiveMenuItem();
+
+          if (activeScreen === 'main') executeMainMenuAction();
+          else if (activeScreen === 'settings') executeSettingsMenuAction();
+          else if (activeScreen === 'overlay') executeOverlayAction();
+          return;
+        }
+
+        if (e.target.closest('#softkey-left')) {
+          handleNavigation({ key: 'SoftLeft', preventDefault: () => {} });
+        } else if (e.target.closest('#softkey-center')) {
+          handleNavigation({ key: 'Enter', preventDefault: () => {} });
+        } else if (e.target.closest('#softkey-right')) {
+          handleNavigation({ key: 'SoftRight', preventDefault: () => {} });
+        }
+      });
+    });
+
+    document.addEventListener("keydown", handleNavigation);
+    document.addEventListener("keydown", handleInputKeyDown);
+    document.addEventListener("keyup", handleInputKeyUp);
+
+    switchScreen('main');
+    updateSettingsDisplay();
+  </script>
+</body>
+  </html>
