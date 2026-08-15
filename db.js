@@ -81,6 +81,12 @@ var db = `{
     "category": "utility",
     "file": "zip_web_host", 
     "description": "A Material 3 designed sandbox tool to upload, host, and run ZIP file contents directly in your browser."
+},
+{
+    "title": "File Spliter",
+    "category": "utility",
+    "file": "filespliter", 
+    "description": "Split Merger Files Copy Download splited file comtent Easily"
 }
 ]}`;
 
