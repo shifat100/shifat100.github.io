@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cosmic Portfolio - Journey of a Legend</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body {
+      background-color: #000;
+      overflow: hidden;
+      font-family: 'Courier New', Courier, monospace;
+      color: #fff;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    /* Scene 1: Welcome Overlay */
+    #welcome-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
+      pointer-events: none;
+      padding: 0 15px;
+    }
+    .letter-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(0.4rem, 2.5vw, 1.8rem);
+      width: 100%;
+      max-width: 95vw;
+    }
+    .letter {
+      display: inline-block;
+      font-size: clamp(2rem, 9vw, 4.2rem);
+      font-weight: 300;
+      letter-spacing: clamp(2px, 1.2vw, 6px);
+      color: #f8fafc;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(56, 189, 248, 0.5);
+      transition: transform 1.2s cubic-bezier(0.7, 0, 0.2, 1), opacity 1.2s ease, filter 1.2s ease;
+      will-change: transform, opacity, filter;
+    }
+
+    /* Flash Overlay */
+    #flash-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 40;
+      transition: opacity 0.2s ease-out;
+    }
+
+    /* Left-Top Text HUD */
+    #hud-text {
+      position: absolute;
+      top: clamp(20px, 4vh, 40px);
+      left: clamp(20px, 5vw, 45px);
+      z-index: 25;
+      font-size: clamp(1.4rem, 5vw, 2.3rem);
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #ffffff;
+      text-shadow: 0 0 18px rgba(56, 189, 248, 0.75);
+      opacity: 0;
+      transition: opacity 1s ease, color 1s ease;
+    }
+    #hud-subtext {
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: #38bdf8;
+      margin-top: 4px;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    /* Scene 2 Finale: Pure White Screen & Centered Text */
+    #whiteout-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .legend-wrapper {
+      position: relative;
+      display: inline-block;
+      overflow: visible;
+      padding: 15px 30px;
+    }
+    #legend-text {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      font-size: clamp(2.2rem, 7.5vw, 4.5rem);
+      font-weight: 300;
+      letter-spacing: clamp(6px, 1.8vw, 18px);
+      text-transform: uppercase;
+      color: #0f172a;
+      opacity: 0;
+      margin: 0;
+      line-height: 1.2;
+      transition: opacity 2.0s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* শেকিং রাবার ইরেজার */
+    #eraser-tool {
+      position: absolute;
+      top: 50%;
+      left: -80px;
+      width: 48px;
+      height: 78px;
+      background: linear-gradient(135deg, #f43f5e 45%, #f1f5f9 46%);
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.15);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transform-origin: center center;
+    }
+  </style>
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <!-- Scene 1: Welcome Screen -->
+  <div id="welcome-screen">
+    <div class="letter-container" id="letterContainer">
+      <span class="letter">W</span>
+      <span class="letter">E</span>
+      <span class="letter">L</span>
+      <span class="letter">C</span>
+      <span class="letter">O</span>
+      <span class="letter">M</span>
+      <span class="letter">E</span>
+    </div>
+  </div>
+
+  <div id="flash-overlay"></div>
+  <div id="hud-text">
+    <div id="hud-title"></div>
+    <div id="hud-subtext"></div>
+  </div>
+
+  <!-- Scene 2: White Background & Legend Born -->
+  <div id="whiteout-screen">
+    <div class="legend-wrapper" id="legendWrapper">
+      <h1 id="legend-text">A Legend Born</h1>
+      <div id="eraser-tool"></div>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <script>
+    // =========================================================
+    // পরবর্তী পেজের লিঙ্ক
+    // =========================================================
+    const NEXT_PAGE_URL = "./datas.html"; 
+
+    // --- Soft Particle Texture Generator ---
+    function createGlowPointTexture() {
+      const c = document.createElement('canvas');
+      c.width = 64; c.height = 64;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(255,255,255,1)');
+      grad.addColorStop(0.25, 'rgba(255,255,255,0.85)');
+      grad.addColorStop(0.5, 'rgba(255,255,255,0.25)');
+      grad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(c);
+    }
+    const particleTex = createGlowPointTexture();
+
+    // --- ১. ম্যাগমা টেক্সচার ---
+    function createMagmaTexture() {
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#0a0201';
+      ctx.fillRect(0, 0, c.width, c.height);
+      for (let i = 0; i < 900; i++) {
+        const x = Math.random() * c.width, y = Math.random() * c.height;
+        const r = Math.random() * 55 + 8;
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, '#ffcc00');
+        grad.addColorStop(0.25, '#ff3700');
+        grad.addColorStop(0.65, '#3b0600');
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+
+    // =========================================================
+    // ২. বাস্তবসম্মত সুষম পৃথিবী টেক্সচার: ৭০% সাগর + মেরু ও ৩০% স্পষ্ট ভূখণ্ড
+    // (চারপাশে সমভাবে বিস্তৃত যাতে পুরো ঘূর্ণন দেখতে পাওয়া যায়)
+    // =========================================================
+    function createCooledEarthTexture() {
+      const c = document.createElement('canvas');
+      c.width = 2048; c.height = 1024;
+      const ctx = c.getContext('2d');
+
+      // ৭০% গভীর নীল মহাসাগর
+      ctx.fillStyle = '#082348';
+      ctx.fillRect(0, 0, c.width, c.height);
+
+      // হালকা উপকূলীয় অগভীর জলভাগ (Shallow Coastal Water)
+      ctx.fillStyle = '#0d426e';
+      for (let i = 0; i < 90; i++) {
+        let x = Math.random() * c.width, y = 140 + Math.random() * (c.height - 280);
+        ctx.beginPath();
+        ctx.arc(x, y, 45 + Math.random() * 75, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // স্পষ্ট সাদা উত্তর ও দক্ষিণ মেরুর বরফ অঞ্চল (Polar Ice Caps)
+      ctx.fillStyle = '#f0f9ff';
+      ctx.fillRect(0, 0, c.width, 130); // উত্তর মেরু
+      ctx.fillRect(0, c.height - 130, c.width, 130); // দক্ষিণ মেরু
+
+      // মেরুর খাঁজকাটা প্রাকৃতিক বরফের কিনারা
+      ctx.fillStyle = '#e0f2fe';
+      for (let i = 0; i < c.width; i += 30) {
+        ctx.beginPath();
+        ctx.arc(i, 130 + Math.random() * 20, 25, 0, Math.PI * 2);
+        ctx.arc(i, c.height - 130 - Math.random() * 20, 25, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // ৩০% সুস্পষ্ট ভূখণ্ড (বিশ্বব্যাপী ৪টি মূল চতুর্ভাগে সুন্দরভাবে ছড়ানো)
+      // কোঅর্ডিনেট ১: আফ্রিকা ও ইউরোপীয় ভূখণ্ড (Longitude 0° - 90°)
+      drawRealisticLandmass(ctx, 320, 480, 18, 120);
+      drawRealisticLandmass(ctx, 280, 310, 14, 90);
+
+      // কোঅর্ডিনেট ২: এশিয়া ও ভারতীয় উপমহাদেশ (Longitude 90° - 180°)
+      drawRealisticLandmass(ctx, 750, 340, 24, 150);
+      drawRealisticLandmass(ctx, 680, 480, 10, 70); // ভারতীয় উপদ্বীপ
+      drawRealisticLandmass(ctx, 890, 680, 12, 85); // অস্ট্রেলিয়া অঞ্চল
+
+      // কোঅর্ডিনেট ৩: পূর্ব এশিয়া ও প্রশান্ত মহাসাগরীয় দ্বীপমালা (Longitude 180° - 270°)
+      drawRealisticLandmass(ctx, 1200, 320, 14, 100);
+      drawRealisticLandmass(ctx, 1150, 560, 8, 55);
+
+      // কোঅর্ডিনেট ৪: উত্তর ও দক্ষিণ আমেরিকা (Longitude 270° - 360°)
+      drawRealisticLandmass(ctx, 1580, 340, 20, 130); // উত্তর আমেরিকা
+      drawRealisticLandmass(ctx, 1720, 640, 18, 110); // দক্ষিণ আমেরিকা
+
+      return new THREE.CanvasTexture(c);
+    }
+
+    function drawRealisticLandmass(ctx, centerX, centerY, blobCount, spread) {
+      for (let i = 0; i < blobCount; i++) {
+        let cx = centerX + (Math.random() - 0.5) * spread * 2;
+        let cy = centerY + (Math.random() - 0.5) * spread * 1.5;
+        let r = 25 + Math.random() * 65;
+
+        // সমৃদ্ধ সবুজ উদ্ভিদ অঞ্চল
+        ctx.fillStyle = '#1e7845';
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // সোনালি শুষ্ক ভূমি ও পর্বত শৃঙ্গ
+        if (Math.random() > 0.35) {
+          ctx.fillStyle = '#7a642e';
+          ctx.beginPath();
+          ctx.arc(cx + (Math.random() - 0.5) * 35, cy + (Math.random() - 0.5) * 25, r * 0.55, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    function createCloudTexture() {
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (let i = 0; i < 160; i++) {
+        const x = Math.random() * c.width, y = Math.random() * c.height;
+        const r = 25 + Math.random() * 65;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, 'rgba(255, 255, 255, 0.75)');
+        g.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+
+    // =========================================================
+    // Scene 3: ডাইনামিক হ্যাকার টার্মিনাল ডিসপ্লে ক্যানভাস
+    // =========================================================
+    const hackerCanvas = document.createElement('canvas');
+    hackerCanvas.width = 1280;
+    hackerCanvas.height = 720;
+    const hCtx = hackerCanvas.getContext('2d');
+    const hackerTex = new THREE.CanvasTexture(hackerCanvas);
+
+    const cols = 56;
+    const ypos = Array(cols).fill(0);
+    const chars = "01アイウエオカキクケコサシスセソ0123456789ABCDEF<>{}/*$#@";
+
+    function updateHackerScreen(elapsed) {
+      hCtx.fillStyle = 'rgba(3, 10, 16, 0.22)';
+      hCtx.fillRect(0, 0, hackerCanvas.width, hackerCanvas.height);
+
+      hCtx.font = '16px monospace';
+      for (let i = 0; i < cols; i++) {
+        const char = chars.charAt(Math.floor(Math.random() * chars.length));
+        const x = i * 23;
+        const y = ypos[i] * 20;
+
+        if (Math.random() > 0.85) hCtx.fillStyle = '#ffffff';
+        else hCtx.fillStyle = '#00ffcc';
+        hCtx.fillText(char, x, y);
+
+        if (y > hackerCanvas.height && Math.random() > 0.975) ypos[i] = 0;
+        else ypos[i]++;
+      }
+
+      const cx = hackerCanvas.width / 2;
+      const cy = hackerCanvas.height / 2;
+
+      hCtx.fillStyle = 'rgba(4, 15, 22, 0.94)';
+      hCtx.fillRect(cx - 480, cy - 200, 960, 400);
+
+      hCtx.strokeStyle = '#00ff88';
+      hCtx.lineWidth = 3;
+      hCtx.strokeRect(cx - 480, cy - 200, 960, 400);
+
+      hCtx.fillStyle = '#38bdf8';
+      hCtx.font = '14px monospace';
+      hCtx.fillText("[SYS_ID: 06082004] // SECURE TERMINAL", cx - 450, cy - 165);
+      hCtx.fillText("STATUS: OVERRIDE COMPLETE", cx + 220, cy - 165);
+
+      hCtx.textAlign = 'center';
+      hCtx.fillStyle = '#38bdf8';
+      hCtx.font = 'bold 36px "Segoe UI", monospace';
+      hCtx.fillText("INTRODUCING", cx, cy - 65);
+
+      hCtx.fillStyle = '#00ff88';
+      hCtx.font = '900 68px "Segoe UI", sans-serif';
+      hCtx.shadowColor = '#00ff88';
+      hCtx.shadowBlur = 24;
+      hCtx.fillText("MD AL SHAHREYA SHIFAT", cx, cy + 30);
+      hCtx.shadowBlur = 0;
+
+      const cursor = Math.floor(elapsed * 3) % 2 === 0 ? "█" : "";
+      hCtx.fillStyle = '#f59e0b';
+      hCtx.font = 'bold 22px monospace';
+      hCtx.fillText(`> ORIGIN: MYMENSINGH // NETROKONA ${cursor}`, cx, cy + 115);
+
+      hCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      hCtx.font = '16px monospace';
+      hCtx.fillText("PREPARING ENVIRONMENT... INITIALIZING CORE INTERFACE", cx, cy + 155);
+
+      hCtx.textAlign = 'left';
+      hackerTex.needsUpdate = true;
+    }
+
+    // --- Scene, Camera, Renderer ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 14000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const camPosTarget = new THREE.Vector3(0, 20, 160);
+    const camLookTarget = new THREE.Vector3(0, 0, 0);
+    const camCurrentLook = new THREE.Vector3(0, 0, 0);
+    camera.position.set(0, 20, 160);
+
+    // --- Cosmic Stars ---
+    const starGeom = new THREE.BufferGeometry();
+    const starPos = [];
+    for (let i = 0; i < 5000; i++) {
+      starPos.push((Math.random() - 0.5) * 5000, (Math.random() - 0.5) * 5000, (Math.random() - 0.5) * 5000);
+    }
+    starGeom.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({
+      map: particleTex,
+      color: 0xffffff,
+      size: 2.2,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false
+    });
+    scene.add(new THREE.Points(starGeom, starMat));
+
+    // --- Big Bang Particles ---
+    const BANG_COUNT = 16000;
+    const bangGeom = new THREE.BufferGeometry();
+    const bangPositions = new Float32Array(BANG_COUNT * 3);
+    const bangVelocities = new Float32Array(BANG_COUNT * 3);
+    const bangColors = new Float32Array(BANG_COUNT * 3);
+
+    for (let i = 0; i < BANG_COUNT; i++) {
+      bangPositions[i * 3] = 0;
+      bangPositions[i * 3 + 1] = 0;
+      bangPositions[i * 3 + 2] = 0;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      const spd = Math.random() * 90 + 25;
+      bangVelocities[i * 3] = spd * Math.sin(phi) * Math.cos(theta);
+      bangVelocities[i * 3 + 1] = spd * Math.sin(phi) * Math.sin(theta);
+      bangVelocities[i * 3 + 2] = spd * Math.cos(phi);
+
+      const c = new THREE.Color().setHSL(Math.random() * 0.16 + 0.02, 1, 0.7);
+      bangColors[i * 3] = c.r;
+      bangColors[i * 3 + 1] = c.g;
+      bangColors[i * 3 + 2] = c.b;
+    }
+    bangGeom.setAttribute('position', new THREE.BufferAttribute(bangPositions, 3));
+    bangGeom.setAttribute('color', new THREE.BufferAttribute(bangColors, 3));
+    const bangMat = new THREE.PointsMaterial({
+      map: particleTex,
+      size: 3.5,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false
+    });
+    const bangPoints = new THREE.Points(bangGeom, bangMat);
+    scene.add(bangPoints);
+
+    // --- Sun Accretion Vortex ---
+    const ACCRETE_COUNT = 6000;
+    const accreteGeom = new THREE.BufferGeometry();
+    const accretePos = new Float32Array(ACCRETE_COUNT * 3);
+    const accreteStartPos = new Float32Array(ACCRETE_COUNT * 3);
+
+    for (let i = 0; i < ACCRETE_COUNT; i++) {
+      const radius = 70 + Math.random() * 100;
+      const angle = Math.random() * Math.PI * 2;
+      const y = (Math.random() - 0.5) * 45;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      accretePos[i * 3] = x;
+      accretePos[i * 3 + 1] = y;
+      accretePos[i * 3 + 2] = z;
+      accreteStartPos[i * 3] = x;
+      accreteStartPos[i * 3 + 1] = y;
+      accreteStartPos[i * 3 + 2] = z;
+    }
+    accreteGeom.setAttribute('position', new THREE.BufferAttribute(accretePos, 3));
+    const accreteMat = new THREE.PointsMaterial({
+      map: particleTex,
+      color: 0xffaa00,
+      size: 3.2,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const accretePoints = new THREE.Points(accreteGeom, accreteMat);
+    scene.add(accretePoints);
+
+    // --- The Sun ---
+    const sunGeom = new THREE.SphereGeometry(15, 48, 48);
+    const sunMat = new THREE.MeshBasicMaterial({ color: 0xff8c00 });
+    const sunMesh = new THREE.Mesh(sunGeom, sunMat);
+    sunMesh.scale.setScalar(0.0001);
+    scene.add(sunMesh);
+
+    const sunGlowGeom = new THREE.SphereGeometry(22, 32, 32);
+    const sunGlowMat = new THREE.MeshBasicMaterial({
+      color: 0xff4800,
+      side: THREE.BackSide,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending
+    });
+    const sunGlow = new THREE.Mesh(sunGlowGeom, sunGlowMat);
+    sunMesh.add(sunGlow);
+
+    const sunLight = new THREE.PointLight(0xffeedd, 0, 2500, 0.4);
+    scene.add(sunLight);
+    scene.add(new THREE.AmbientLight(0x334155, 0.8)); // পৃথিবীর আলো আরও স্পষ্ট
+
+    // --- Other 6 Planets ---
+    const planetSpecs = [
+      { r: 1.4, dist: 28, speed: 0.024, color: 0x9ca3af },
+      { r: 2.2, dist: 42, speed: 0.018, color: 0xd97706 },
+      { r: 1.8, dist: 84, speed: 0.012, color: 0xd946ef },
+      { r: 5.5, dist: 115, speed: 0.008, color: 0xf59e0b },
+      { r: 4.5, dist: 150, speed: 0.006, color: 0xfde047, ring: true },
+      { r: 3.2, dist: 180, speed: 0.004, color: 0x38bdf8 }
+    ];
+
+    const planetMeshes = [];
+    planetSpecs.forEach(spec => {
+      const pPivot = new THREE.Group();
+      scene.add(pPivot);
+
+      const pMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(spec.r, 24, 24),
+        new THREE.MeshStandardMaterial({ color: spec.color, roughness: 0.7 })
+      );
+      pMesh.position.set(spec.dist, 0, 0);
+      pMesh.scale.setScalar(0.0001);
+      pPivot.add(pMesh);
+
+      if (spec.ring) {
+        const ringGeom = new THREE.RingGeometry(spec.r * 1.4, spec.r * 2.3, 32);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xc8a46e, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+        const ringMesh = new THREE.Mesh(ringGeom, ringMat);
+        ringMesh.rotation.x = Math.PI / 2.3;
+        pMesh.add(ringMesh);
+      }
+      planetMeshes.push({ pivot: pPivot, mesh: pMesh, speed: spec.speed });
+    });
+
+    // --- Earth & Moon System ---
+    const earthDist = 62;
+    const earthRadius = 5.0;
+    const earthPivot = new THREE.Group();
+    scene.add(earthPivot);
+
+    const earthGroup = new THREE.Group();
+    earthGroup.position.set(earthDist, 0, 0);
+    // সামান্য টিল্ট যাতে মেরু ও ভূখণ্ড পরিষ্কার দেখা যায়
+    earthGroup.rotation.z = 18 * (Math.PI / 180);
+    earthPivot.add(earthGroup);
+
+    const magmaTex = createMagmaTexture();
+    const moltenMat = new THREE.MeshStandardMaterial({
+      map: magmaTex,
+      emissive: new THREE.Color(0xff4400),
+      emissiveMap: magmaTex,
+      emissiveIntensity: 1.6,
+      roughness: 0.7
+    });
+    const moltenEarthMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius, 64, 64), moltenMat);
+    moltenEarthMesh.scale.setScalar(0.0001);
+    earthGroup.add(moltenEarthMesh);
+
+    // শীতল পৃথিবী (৭০% সাগর + সাদা মেরু, ৩০% স্পষ্ট মহাদেশ)
+    const modernMat = new THREE.MeshStandardMaterial({
+      map: createCooledEarthTexture(),
+      roughness: 0.45,
+      metalness: 0.08,
+      transparent: true,
+      opacity: 0
+    });
+    const modernEarthMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius, 64, 64), modernMat);
+    earthGroup.add(modernEarthMesh);
+
+    const cloudMat = new THREE.MeshStandardMaterial({
+      map: createCloudTexture(),
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending
+    });
+    const cloudMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius + 0.12, 48, 48), cloudMat);
+    earthGroup.add(cloudMesh);
+
+    const atmosMat = new THREE.MeshBasicMaterial({
+      color: 0xff3b00,
+      side: THREE.BackSide,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending
+    });
+    const atmosMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius + 0.45, 36, 36), atmosMat);
+    earthGroup.add(atmosMesh);
+
+    const moonPivot = new THREE.Group();
+    earthGroup.add(moonPivot);
+    const moonMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(1.1, 24, 24),
+      new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.9 })
+    );
+    moonMesh.position.set(14, 0, 0);
+    moonMesh.scale.setScalar(0.0001);
+    moonPivot.add(moonMesh);
+
+    // =========================================================
+    // SCENE 2: বাংলাদেশ মানচিত্র ও ময়মনসিংহ-নেত্রকোণা টার্গেট
+    // =========================================================
+    const bdSceneGroup = new THREE.Group();
+    scene.add(bdSceneGroup);
+    bdSceneGroup.position.set(0, -500, 0);
+    bdSceneGroup.visible = false;
+
+    const textureLoader = new THREE.TextureLoader();
+    const bdMapTex = textureLoader.load(
+      'bd-map.png',
+      undefined,
+      undefined,
+      () => {
+        bdMapTex.image.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Flag-map_of_Bangladesh.svg/1024px-Flag-map_of_Bangladesh.svg.png';
+      }
+    );
+
+    const bdPlaneGeom = new THREE.PlaneGeometry(64.4, 90);
+    const bdPlaneMat = new THREE.MeshBasicMaterial({
+      map: bdMapTex,
+      transparent: true,
+      opacity: 0,
+      side: THREE.DoubleSide
+    });
+    const bdMapMesh = new THREE.Mesh(bdPlaneGeom, bdPlaneMat);
+    bdMapMesh.rotation.x = -Math.PI / 2;
+    bdSceneGroup.add(bdMapMesh);
+
+    const impactTargetPos = new THREE.Vector3(1.2, 0, -19.2);
+
+    const ringGeom = new THREE.RingGeometry(1.4, 2.0, 32);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0
+    });
+    const targetRing = new THREE.Mesh(ringGeom, ringMat);
+    targetRing.rotation.x = -Math.PI / 2;
+    targetRing.position.copy(impactTargetPos);
+    bdSceneGroup.add(targetRing);
+
+    const gridHelper = new THREE.GridHelper(180, 45, 0x10b981, 0x064e3b);
+    gridHelper.position.y = -0.2;
+    gridHelper.material.transparent = true;
+    gridHelper.material.opacity = 0;
+    bdSceneGroup.add(gridHelper);
+
+    const blastRingGeom = new THREE.RingGeometry(0.1, 2.5, 64);
+    const blastRingMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0
+    });
+    const blastRing = new THREE.Mesh(blastRingGeom, blastRingMat);
+    blastRing.rotation.x = -Math.PI / 2;
+    blastRing.position.copy(impactTargetPos);
+    bdSceneGroup.add(blastRing);
+
+    const meteorGroup = new THREE.Group();
+    scene.add(meteorGroup);
+
+    const meteorCore = new THREE.Mesh(
+      new THREE.SphereGeometry(1.2, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0xffffff })
+    );
+    meteorGroup.add(meteorCore);
+
+    const TAIL_COUNT = 300;
+    const tailGeom = new THREE.BufferGeometry();
+    const tailPositions = new Float32Array(TAIL_COUNT * 3);
+    for (let i = 0; i < TAIL_COUNT * 3; i++) tailPositions[i] = 0;
+    tailGeom.setAttribute('position', new THREE.BufferAttribute(tailPositions, 3));
+    const tailMat = new THREE.PointsMaterial({
+      map: particleTex,
+      color: 0x38bdf8,
+      size: 4.5,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0.95
+    });
+    const meteorTail = new THREE.Points(tailGeom, tailMat);
+    meteorGroup.add(meteorTail);
+    meteorGroup.position.set(9999, 9999, 9999);
+    const tailHistory = [];
+
+    // --- Spiral Galaxy ---
+    const GALAXY_COUNT = 50000;
+    const galaxyGeom = new THREE.BufferGeometry();
+    const galaxyPos = new Float32Array(GALAXY_COUNT * 3);
+    const galaxyCols = new Float32Array(GALAXY_COUNT * 3);
+
+    const coreColor = new THREE.Color(0xffeedd);
+    const innerColor = new THREE.Color(0xffbb77);
+    const armBlueColor = new THREE.Color(0x70c5ff);
+    const nebulaePink = new THREE.Color(0xdf64ff);
+
+    for (let i = 0; i < GALAXY_COUNT; i++) {
+      let r, x, y, z, mixedColor;
+      if (Math.random() < 0.22) {
+        r = Math.pow(Math.random(), 2.5) * 85;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        x = r * Math.sin(phi) * Math.cos(theta);
+        y = r * Math.cos(phi) * 0.4;
+        z = r * Math.sin(phi) * Math.sin(theta);
+        mixedColor = coreColor.clone().lerp(innerColor, r / 85);
+      } else {
+        const arms = 4;
+        const armIndex = i % arms;
+        r = 45 + Math.pow(Math.random(), 1.35) * 600;
+        const spin = r * 0.016;
+        const armAngle = (armIndex * (2 * Math.PI / arms)) + spin;
+        const spreadR = (Math.random() - 0.5) * (r * 0.22);
+        const spreadTheta = (Math.random() - 0.5) * 0.35;
+        const finalAngle = armAngle + spreadTheta;
+        const finalR = r + spreadR;
+        x = Math.cos(finalAngle) * finalR;
+        y = (Math.random() - 0.5) * (36 * Math.exp(-r / 380));
+        z = Math.sin(finalAngle) * finalR;
+
+        if (Math.random() < 0.25) {
+          mixedColor = nebulaePink.clone().lerp(coreColor, Math.random() * 0.4);
+        } else {
+          mixedColor = innerColor.clone().lerp(armBlueColor, Math.min(1, r / 450));
+        }
+      }
+      galaxyPos[i * 3] = x;
+      galaxyPos[i * 3 + 1] = y;
+      galaxyPos[i * 3 + 2] = z;
+      galaxyCols[i * 3] = mixedColor.r;
+      galaxyCols[i * 3 + 1] = mixedColor.g;
+      galaxyCols[i * 3 + 2] = mixedColor.b;
+    }
+
+    galaxyGeom.setAttribute('position', new THREE.BufferAttribute(galaxyPos, 3));
+    galaxyGeom.setAttribute('color', new THREE.BufferAttribute(galaxyCols, 3));
+    const galaxyMat = new THREE.PointsMaterial({
+      map: particleTex,
+      size: 3.2,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false
+    });
+    const galaxyGroup = new THREE.Group();
+    galaxyGroup.add(new THREE.Points(galaxyGeom, galaxyMat));
+    scene.add(galaxyGroup);
+
+    // =========================================================
+    // SCENE 3: ৩ডি ডার্ক হ্যাকার রুম
+    // (চেয়ার পাশে সরানো হয়েছে যাতে মনিটর ১০০% স্পষ্ট দেখা যায়)
+    // =========================================================
+    const hackerRoomGroup = new THREE.Group();
+    scene.add(hackerRoomGroup);
+    hackerRoomGroup.position.set(0, -1000, 0);
+    hackerRoomGroup.visible = false;
+
+    // ১. প্রশস্ত রুম ফ্লোর ও দেয়াল
+    const roomFloor = new THREE.Mesh(
+      new THREE.PlaneGeometry(240, 240),
+      new THREE.MeshStandardMaterial({ color: 0x05070a, roughness: 0.9, metalness: 0.3 })
+    );
+    roomFloor.rotation.x = -Math.PI / 2;
+    hackerRoomGroup.add(roomFloor);
+
+    const backWall = new THREE.Mesh(
+      new THREE.PlaneGeometry(240, 140),
+      new THREE.MeshStandardMaterial({ color: 0x030508, roughness: 0.95 })
+    );
+    backWall.position.set(0, 70, -60);
+    hackerRoomGroup.add(backWall);
+
+    const leftWall = new THREE.Mesh(
+      new THREE.PlaneGeometry(240, 140),
+      new THREE.MeshStandardMaterial({ color: 0x020406, roughness: 0.95 })
+    );
+    leftWall.rotation.y = Math.PI / 2;
+    leftWall.position.set(-80, 70, 0);
+    hackerRoomGroup.add(leftWall);
+
+    const wallNeon = new THREE.Mesh(
+      new THREE.BoxGeometry(0.5, 0.4, 180),
+      new THREE.MeshBasicMaterial({ color: 0x00ffcc })
+    );
+    wallNeon.position.set(-79.5, 55, 0);
+    hackerRoomGroup.add(wallNeon);
+
+    // ২. কম্পিউটার ডেস্ক
+    const deskTop = new THREE.Mesh(
+      new THREE.BoxGeometry(55, 2.0, 28),
+      new THREE.MeshStandardMaterial({ color: 0x0a0e16, roughness: 0.4, metalness: 0.6 })
+    );
+    deskTop.position.set(0, 16, 0);
+    hackerRoomGroup.add(deskTop);
+
+    const deskLeg1 = new THREE.Mesh(
+      new THREE.BoxGeometry(2, 16, 26),
+      new THREE.MeshStandardMaterial({ color: 0x06080c, metalness: 0.8, roughness: 0.3 })
+    );
+    deskLeg1.position.set(-25, 8, 0);
+    hackerRoomGroup.add(deskLeg1);
+
+    const deskLeg2 = deskLeg1.clone();
+    deskLeg2.position.set(25, 8, 0);
+    hackerRoomGroup.add(deskLeg2);
+
+    // ৩. হ্যাকার/গেমিং চেয়ার [মনিটরের সামনে থেকে ডান পাশে সরানো হয়েছে]
+    const chairGroup = new THREE.Group();
+    // X: 11.5 দিয়ে ডান পাশে সরানো হলো এবং সামান্য কোণ করে ঘুরিয়ে দেওয়া হলো
+    chairGroup.position.set(11.5, 0, 15);
+    chairGroup.rotation.y = -0.42; 
+    hackerRoomGroup.add(chairGroup);
+
+    const chairSeat = new THREE.Mesh(
+      new THREE.BoxGeometry(11, 2.2, 11),
+      new THREE.MeshStandardMaterial({ color: 0x111622, roughness: 0.7 })
+    );
+    chairSeat.position.set(0, 11.5, 0);
+    chairGroup.add(chairSeat);
+
+    const chairBack = new THREE.Mesh(
+      new THREE.BoxGeometry(10, 17, 2),
+      new THREE.MeshStandardMaterial({ color: 0x0d121c, roughness: 0.6 })
+    );
+    chairBack.position.set(0, 19.5, 5);
+    chairGroup.add(chairBack);
+
+    const chairHead = new THREE.Mesh(
+      new THREE.BoxGeometry(7, 3.8, 2.6),
+      new THREE.MeshStandardMaterial({ color: 0x00ff88, roughness: 0.5 })
+    );
+    chairHead.position.set(0, 27, 5.2);
+    chairGroup.add(chairHead);
+
+    const chairPole = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.9, 0.9, 10, 16),
+      new THREE.MeshStandardMaterial({ color: 0x05070a, metalness: 0.9 })
+    );
+    chairPole.position.set(0, 5.5, 0);
+    chairGroup.add(chairPole);
+
+    const chairBase = new THREE.Mesh(
+      new THREE.CylinderGeometry(6, 6, 0.6, 5),
+      new THREE.MeshStandardMaterial({ color: 0x05070a, metalness: 0.8 })
+    );
+    chairBase.position.set(0, 0.5, 0);
+    chairGroup.add(chairBase);
+
+    // ৪. আল্ট্রা-ওয়াইড মনিটর (এখন পুরোপুরি দৃশ্যমান)
+    const monitorGroup = new THREE.Group();
+    monitorGroup.position.set(0, 25.5, -4);
+    hackerRoomGroup.add(monitorGroup);
+
+    const monitorFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(28, 16.5, 1.2),
+      new THREE.MeshStandardMaterial({ color: 0x090b0e, roughness: 0.3, metalness: 0.8 })
+    );
+    monitorGroup.add(monitorFrame);
+
+    const monitorStandNeck = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.8, 1.0, 9.5, 16),
+      new THREE.MeshStandardMaterial({ color: 0x151922, metalness: 0.8, roughness: 0.2 })
+    );
+    monitorStandNeck.position.set(0, -5.0, -1);
+    monitorGroup.add(monitorStandNeck);
+
+    const monitorStandBase = new THREE.Mesh(
+      new THREE.BoxGeometry(9, 0.6, 7),
+      new THREE.MeshStandardMaterial({ color: 0x151922, metalness: 0.8, roughness: 0.2 })
+    );
+    monitorStandBase.position.set(0, -9.2, 0);
+    monitorGroup.add(monitorStandBase);
+
+    // জলজল করা স্ক্রিন
+    const monitorScreen = new THREE.Mesh(
+      new THREE.PlaneGeometry(26.6, 15.2),
+      new THREE.MeshBasicMaterial({ map: hackerTex })
+    );
+    monitorScreen.position.set(0, 0, 0.65);
+    monitorGroup.add(monitorScreen);
+
+    // লাইটিং
+    const screenGlowLight = new THREE.PointLight(0x00ff88, 3.4, 60, 1.2);
+    screenGlowLight.position.set(0, 25.5, 3);
+    hackerRoomGroup.add(screenGlowLight);
+
+    const ambientHacker = new THREE.AmbientLight(0x040810, 1.8);
+    hackerRoomGroup.add(ambientHacker);
+
+    const roomCornerLight = new THREE.PointLight(0x38bdf8, 1.6, 120);
+    roomCornerLight.position.set(-60, 45, 10);
+    hackerRoomGroup.add(roomCornerLight);
+
+    // ৫. কিবোর্ড ও মাউস
+    const keyboard = new THREE.Mesh(
+      new THREE.BoxGeometry(15, 0.6, 5.5),
+      new THREE.MeshStandardMaterial({ color: 0x111622, roughness: 0.6 })
+    );
+    keyboard.position.set(0, 17.2, 4);
+    hackerRoomGroup.add(keyboard);
+
+    const kbLight = new THREE.Mesh(
+      new THREE.PlaneGeometry(14.5, 5.0),
+      new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.5 })
+    );
+    kbLight.rotation.x = -Math.PI / 2;
+    kbLight.position.set(0, 17.55, 4);
+    hackerRoomGroup.add(kbLight);
+
+    const mouse = new THREE.Mesh(
+      new THREE.BoxGeometry(2, 0.8, 3.2),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4 })
+    );
+    mouse.position.set(11.5, 17.3, 4);
+    hackerRoomGroup.add(mouse);
+
+    // ৬. পিসি গেমিং কেসিং (RGB ফ্যান সহ)
+    const pcCase = new THREE.Mesh(
+      new THREE.BoxGeometry(8, 17, 18),
+      new THREE.MeshStandardMaterial({ color: 0x080a0e, roughness: 0.5, metalness: 0.7 })
+    );
+    pcCase.position.set(-18, 25.5, 0);
+    hackerRoomGroup.add(pcCase);
+
+    const fan1 = new THREE.Mesh(
+      new THREE.RingGeometry(1.6, 2.3, 32),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, side: THREE.DoubleSide })
+    );
+    fan1.position.set(-18, 28.5, 9.05);
+    hackerRoomGroup.add(fan1);
+
+    const fan2 = fan1.clone();
+    fan2.position.set(-18, 22.5, 9.05);
+    hackerRoomGroup.add(fan2);
+
+    // --- Responsive Camera Offset ---
+    function getResponsiveEarthCamOffset() {
+      const aspect = camera.aspect;
+      const vFovRad = (camera.fov * Math.PI) / 180;
+      const targetCoverage = 0.62;
+      let dist;
+      if (aspect < 1.0) {
+        dist = earthRadius / (Math.tan(vFovRad / 2) * aspect * targetCoverage);
+      } else {
+        dist = earthRadius / (Math.tan(vFovRad / 2) * targetCoverage);
+      }
+      // সামান্য উপর থেকে অ্যাঙ্গেল (0.3, 0.35, 0.88) যাতে উত্তর মেরু ও মহাদেশগুলো ঘুরে যাওয়া দেখা যায়
+      return new THREE.Vector3(0.32, 0.36, 0.88).normalize().multiplyScalar(dist);
+    }
+
+    // ডার্ক রুমের ওয়াইড ক্যামেরা ভিউ (মনিটর প্রায় ২০% স্ক্রিনে, চেয়ার পাশে, বাকি ৮০% প্রশস্ত রুম)
+    function getWideRoomCameraPos() {
+      const aspect = camera.aspect;
+      if (aspect < 1.0) {
+        return new THREE.Vector3(0, 32, 68);
+      } else {
+        return new THREE.Vector3(0, 29, 52);
+      }
+    }
+
+    // --- Welcome Letters Collision Logic ---
+    const letters = document.querySelectorAll('.letter');
+    const container = document.getElementById('letterContainer');
+    let lettersCollided = false;
+
+    function triggerLetterCollision() {
+      if (lettersCollided) return;
+      lettersCollided = true;
+      const containerRect = container.getBoundingClientRect();
+      const centerX = containerRect.left + containerRect.width / 2;
+      const centerY = containerRect.top + containerRect.height / 2;
+
+      letters.forEach(letter => {
+        const rect = letter.getBoundingClientRect();
+        const letterX = rect.left + rect.width / 2;
+        const letterY = rect.top + rect.height / 2;
+        letter.style.transform = `translate(${centerX - letterX}px, ${centerY - letterY}px) scale(0.01) rotate(${(Math.random() - 0.5) * 720}deg)`;
+        letter.style.opacity = '0';
+        letter.style.filter = 'blur(14px) brightness(5)';
+      });
+    }
+
+    // --- DOM Elements & State ---
+    const startTime = performance.now();
+    const flashOverlay = document.getElementById('flash-overlay');
+    const hudText = document.getElementById('hud-text');
+    const hudTitle = document.getElementById('hud-title');
+    const hudSubtext = document.getElementById('hud-subtext');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const whiteoutScreen = document.getElementById('whiteout-screen');
+    const legendText = document.getElementById('legend-text');
+    const legendWrapper = document.getElementById('legendWrapper');
+    const eraserTool = document.getElementById('eraser-tool');
+
+    let isRedirectTriggered = false;
+
+    // --- Main Director Animation Loop ---
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const elapsed = (performance.now() - startTime) / 1000;
+
+      // Celestial rotations
+      cloudMesh.rotation.y += 0.016;
+      moonPivot.rotation.y += 0.018;
+      earthPivot.rotation.y += 0.004;
+      sunMesh.rotation.y += 0.003;
+      planetMeshes.forEach(p => p.pivot.rotation.y += p.speed);
+
+      // ====================================================
+      // SCENE 1: ACT 1 (0.0s -> 4.0s) Welcome Screen
+      // ====================================================
+      if (elapsed < 4.0) {
+        earthGroup.rotation.y += 0.009;
+        camPosTarget.set(0, 18, 160);
+        camLookTarget.set(0, 0, 0);
+        camera.position.lerp(camPosTarget, 0.03);
+        camCurrentLook.lerp(camLookTarget, 0.03);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 1: ACT 2 (4.0s -> 5.5s) Letters Collide
+      // ====================================================
+      else if (elapsed >= 4.0 && elapsed < 5.5) {
+        earthGroup.rotation.y += 0.009;
+        triggerLetterCollision();
+        camera.position.lerp(camPosTarget, 0.03);
+        camCurrentLook.lerp(camLookTarget, 0.03);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 1: ACT 3 (5.5s -> 9.0s) The Big Bang
+      // ====================================================
+      else if (elapsed >= 5.5 && elapsed < 9.0) {
+        earthGroup.rotation.y += 0.009;
+        welcomeScreen.style.display = 'none';
+        const t = elapsed - 5.5;
+
+        if (t < 0.25) flashOverlay.style.opacity = '1';
+        else flashOverlay.style.opacity = Math.max(0, 1 - (t - 0.25) * 1.5);
+
+        bangMat.opacity = Math.min(1, 0.95 * (1 - (t / 3.5)));
+        const bPos = bangPoints.geometry.attributes.position.array;
+        for (let i = 0; i < BANG_COUNT; i++) {
+          bPos[i * 3] += bangVelocities[i * 3] * 0.03;
+          bPos[i * 3 + 1] += bangVelocities[i * 3 + 1] * 0.03;
+          bPos[i * 3 + 2] += bangVelocities[i * 3 + 2] * 0.03;
+        }
+        bangPoints.geometry.attributes.position.needsUpdate = true;
+
+        camPosTarget.set(0, 50, 210);
+        camera.position.lerp(camPosTarget, 0.03);
+        camCurrentLook.lerp(camLookTarget, 0.03);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 1: ACT 4 (9.0s -> 15.0s) Sun Accretion
+      // ====================================================
+      else if (elapsed >= 9.0 && elapsed < 15.0) {
+        earthGroup.rotation.y += 0.009;
+        bangMat.opacity = 0;
+        const t = (elapsed - 9.0) / 6.0;
+
+        accreteMat.opacity = Math.sin(t * Math.PI) * 0.95;
+        const aPos = accretePoints.geometry.attributes.position.array;
+        for (let i = 0; i < ACCRETE_COUNT; i++) {
+          const factor = 1 - t;
+          aPos[i * 3] = accreteStartPos[i * 3] * factor + (Math.random() - 0.5) * 3;
+          aPos[i * 3 + 1] = accreteStartPos[i * 3 + 1] * factor + (Math.random() - 0.5) * 3;
+          aPos[i * 3 + 2] = accreteStartPos[i * 3 + 2] * factor + (Math.random() - 0.5) * 3;
+        }
+        accretePoints.geometry.attributes.position.needsUpdate = true;
+        accretePoints.rotation.y += 0.025;
+
+        if (t > 0.35) {
+          const sunP = (t - 0.35) / 0.65;
+          sunMesh.scale.setScalar(sunP);
+          sunGlowMat.opacity = sunP * 0.45;
+          sunLight.intensity = sunP * 2.4;
+        }
+
+        camPosTarget.set(Math.cos(t * 2) * 85, 35, Math.sin(t * 2) * 85);
+        camLookTarget.set(0, 0, 0);
+        camera.position.lerp(camPosTarget, 0.03);
+        camCurrentLook.lerp(camLookTarget, 0.03);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 1: ACT 5 (15.0s -> 21.0s) Planets, Earth, Moon
+      // ====================================================
+      else if (elapsed >= 15.0 && elapsed < 21.0) {
+        earthGroup.rotation.y += 0.009;
+        accreteMat.opacity = 0;
+        const t = (elapsed - 15.0) / 6.0;
+
+        planetMeshes.forEach((p, idx) => {
+          const delay = idx * 0.12;
+          if (t > delay) p.mesh.scale.setScalar(Math.min(1, (t - delay) * 3.5));
+        });
+
+        if (t > 0.65) {
+          const eScale = Math.min(1, (t - 0.65) * 4);
+          moltenEarthMesh.scale.setScalar(eScale);
+          atmosMat.opacity = eScale * 0.5;
+        }
+
+        if (t > 0.85) moonMesh.scale.setScalar(Math.min(1, (t - 0.85) * 4));
+
+        camPosTarget.set(135, 75, 175);
+        camLookTarget.set(20, 0, 0);
+        camera.position.lerp(camPosTarget, 0.03);
+        camCurrentLook.lerp(camLookTarget, 0.03);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 1: ACT 6 (21.0s -> 28.5s) Galaxy Rounding
+      // ====================================================
+      else if (elapsed >= 21.0 && elapsed < 28.5) {
+        earthGroup.rotation.y += 0.009;
+        const t = (elapsed - 21.0) / 7.5;
+        galaxyMat.opacity = Math.min(0.95, t * 1.6);
+        galaxyGroup.rotation.y += 0.007;
+
+        const orbitAngle = t * 0.45;
+        camPosTarget.set(Math.sin(orbitAngle) * 750, 520, Math.cos(orbitAngle) * 750);
+        camLookTarget.set(0, 0, 0);
+
+        camera.position.lerp(camPosTarget, 0.035);
+        camCurrentLook.lerp(camLookTarget, 0.035);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 1: ACT 7 (28.5s -> 42.0s) Focus Earth + পূর্ণ ৩৬০° ঘূর্ণন
+      // (যাতে দর্শক বরফে মোড়া দুই মেরু, নীল সাগর ও মহাদেশগুলো পুরোপুরি ঘুরে যেতে দেখতে পায়)
+      // ====================================================
+      else if (elapsed >= 28.5 && elapsed < 42.0) {
+        // সুষম ও আকর্ষণীয় ৩৬০ ডিগ্রি ঘূর্ণন
+        earthGroup.rotation.y += 0.013;
+
+        galaxyMat.opacity = Math.max(0, galaxyMat.opacity - 0.03);
+
+        const earthWorldPos = new THREE.Vector3();
+        earthGroup.getWorldPosition(earthWorldPos);
+
+        const camOrbitOffset = getResponsiveEarthCamOffset();
+        const desiredCamPos = earthWorldPos.clone().add(camOrbitOffset);
+
+        camera.position.lerp(desiredCamPos, 0.06);
+        camCurrentLook.lerp(earthWorldPos, 0.08);
+        camera.lookAt(camCurrentLook);
+
+        hudText.style.opacity = '1';
+
+        const t = (elapsed - 28.5) / 13.5;
+
+        moltenMat.emissiveIntensity = Math.max(0, 1.6 * (1 - t * 1.35));
+        modernMat.opacity = Math.min(1, t * 1.35);
+
+        if (t > 0.28) cloudMat.opacity = Math.min(0.85, (t - 0.28) * 1.4);
+        atmosMat.color.lerpColors(new THREE.Color(0xff3b00), new THREE.Color(0x38bdf8), t);
+        atmosMat.opacity = THREE.MathUtils.lerp(0.5, 0.32, t);
+
+        if (t < 0.65) {
+          const sub = t / 0.65;
+          const yr = Math.round(THREE.MathUtils.lerp(-4500000000, -100000, Math.pow(sub, 2.5)));
+          hudTitle.innerText = yr.toLocaleString();
+        } else if (t < 0.92) {
+          const sub = (t - 0.65) / 0.27;
+          const yr = Math.round(THREE.MathUtils.lerp(-100000, 2000, Math.pow(sub, 2)));
+          hudTitle.innerText = yr.toString();
+        } else {
+          const sub = (t - 0.92) / 0.08;
+          const yr = Math.round(THREE.MathUtils.lerp(2000, 2004, sub));
+          if (t < 0.985) hudTitle.innerText = yr.toString();
+          else hudTitle.innerText = "06-08-2004";
+        }
+      }
+
+      // ====================================================
+      // SCENE 1: ACT 8 (42.0s -> 46.5s) 06-08-2004 + Meteor Breaches
+      // ====================================================
+      else if (elapsed >= 42.0 && elapsed < 46.5) {
+        earthGroup.rotation.y += 0.009;
+        hudTitle.innerText = "06-08-2004";
+        hudText.style.opacity = '1';
+
+        moltenMat.emissiveIntensity = 0;
+        modernMat.opacity = 1;
+        cloudMat.opacity = 0.85;
+        atmosMat.color.setHex(0x38bdf8);
+
+        const earthWorldPos = new THREE.Vector3();
+        earthGroup.getWorldPosition(earthWorldPos);
+
+        const camOrbitOffset = getResponsiveEarthCamOffset();
+        camera.position.copy(earthWorldPos.clone().add(camOrbitOffset));
+        camera.lookAt(earthWorldPos);
+
+        const meteorT = (elapsed - 42.0) / 4.5;
+        const startMeteorPos = earthWorldPos.clone().add(new THREE.Vector3(45, 30, 60));
+        const impactPoint = earthWorldPos.clone().add(new THREE.Vector3(2.2, 1.0, 4.4));
+
+        const curMeteorPos = new THREE.Vector3().lerpVectors(startMeteorPos, impactPoint, Math.pow(meteorT, 2.2));
+        meteorGroup.position.copy(curMeteorPos);
+
+        tailHistory.unshift(curMeteorPos.clone());
+        if (tailHistory.length > TAIL_COUNT) tailHistory.pop();
+        const tPos = meteorTail.geometry.attributes.position.array;
+        for (let i = 0; i < tailHistory.length; i++) {
+          tPos[i * 3] = tailHistory[i].x - curMeteorPos.x;
+          tPos[i * 3 + 1] = tailHistory[i].y - curMeteorPos.y;
+          tPos[i * 3 + 2] = tailHistory[i].z - curMeteorPos.z;
+        }
+        meteorTail.geometry.attributes.position.needsUpdate = true;
+      }
+
+      // ====================================================
+      // SCENE 2: ACT 1 (46.5s -> 51.5s)
+      // বায়ুমণ্ডল ভেদ করে প্রবেশ + বাংলাদেশ মানচিত্র প্রকাশ
+      // ====================================================
+      else if (elapsed >= 46.5 && elapsed < 51.5) {
+        sunMesh.visible = false;
+        planetMeshes.forEach(p => p.pivot.visible = false);
+        earthPivot.visible = false;
+
+        bdSceneGroup.visible = true;
+        bdSceneGroup.position.set(0, 0, 0);
+
+        const t = (elapsed - 46.5) / 5.0;
+
+        hudTitle.innerText = "Bangladesh";
+        hudTitle.style.color = "#34d399";
+        hudTitle.style.textShadow = "0 0 20px rgba(52, 211, 153, 0.8)";
+        hudSubtext.innerText = "MYMENSINGH - NETROKONA";
+        hudSubtext.style.opacity = Math.min(1, t * 2);
+        hudText.style.opacity = Math.min(1, t * 2);
+
+        bdPlaneMat.opacity = Math.min(1.0, t * 1.5);
+        gridHelper.material.opacity = Math.min(0.25, t * 0.25);
+        ringMat.opacity = Math.min(0.9, t * 0.9);
+
+        targetRing.scale.setScalar(1 + Math.sin(elapsed * 5) * 0.1);
+
+        const camY = THREE.MathUtils.lerp(130, 75, Math.pow(t, 0.8));
+        const camZ = THREE.MathUtils.lerp(65, 45, Math.pow(t, 0.8));
+        camPosTarget.set(0, camY, camZ);
+        camLookTarget.set(0, 0, -5);
+
+        camera.position.lerp(camPosTarget, 0.04);
+        camCurrentLook.lerp(camLookTarget, 0.04);
+        camera.lookAt(camCurrentLook);
+
+        meteorGroup.position.set(0, 9999, 0);
+      }
+
+      // ====================================================
+      // SCENE 2: ACT 2 (51.5s -> 56.5s)
+      // উল্কাটি সোজা ময়মনসিংহ - নেত্রকোণা অঞ্চলে আঘাত করবে
+      // ====================================================
+      else if (elapsed >= 51.5 && elapsed < 56.5) {
+        const t = (elapsed - 51.5) / 5.0;
+
+        camPosTarget.set(1.2, 65, 30);
+        camLookTarget.set(impactTargetPos.x, 0, impactTargetPos.z);
+        camera.position.lerp(camPosTarget, 0.03);
+        camCurrentLook.lerp(camLookTarget, 0.03);
+        camera.lookAt(camCurrentLook);
+
+        targetRing.scale.setScalar(1 + Math.sin(elapsed * 7) * 0.16);
+
+        const startAirPos = new THREE.Vector3(30, 95, 35);
+        const groundTarget = impactTargetPos.clone();
+
+        const curMeteorPos = new THREE.Vector3().lerpVectors(startAirPos, groundTarget, Math.pow(t, 1.85));
+        meteorGroup.position.copy(curMeteorPos);
+
+        tailHistory.unshift(curMeteorPos.clone());
+        if (tailHistory.length > TAIL_COUNT) tailHistory.pop();
+        const tPos = meteorTail.geometry.attributes.position.array;
+        for (let i = 0; i < tailHistory.length; i++) {
+          tPos[i * 3] = tailHistory[i].x - curMeteorPos.x;
+          tPos[i * 3 + 1] = tailHistory[i].y - curMeteorPos.y;
+          tPos[i * 3 + 2] = tailHistory[i].z - curMeteorPos.z;
+        }
+        meteorTail.geometry.attributes.position.needsUpdate = true;
+      }
+
+      // ====================================================
+      // SCENE 2: ACT 3 (56.5s -> 59.0s) ব্লাস্ট ও হোয়াইটআউট
+      // ====================================================
+      else if (elapsed >= 56.5 && elapsed < 59.0) {
+        const blastT = (elapsed - 56.5) / 2.5;
+
+        meteorGroup.position.copy(impactTargetPos);
+
+        blastRingMat.opacity = Math.max(0, 1 - blastT);
+        const waveScale = THREE.MathUtils.lerp(1, 45, blastT);
+        blastRing.scale.set(waveScale, waveScale, 1);
+
+        const shake = (1 - blastT) * 0.45;
+        camera.position.x += (Math.random() - 0.5) * shake;
+        camera.position.y += (Math.random() - 0.5) * shake;
+
+        if (blastT > 0.35) {
+          const whiteT = (blastT - 0.35) / 0.65;
+          whiteoutScreen.style.opacity = Math.min(1, whiteT * 1.3);
+        }
+      }
+
+      // ====================================================
+      // SCENE 2 FINALE (59.0s -> 62.5s) 'A Legend Born' টেক্সট
+      // ====================================================
+      else if (elapsed >= 59.0 && elapsed < 62.5) {
+        whiteoutScreen.style.opacity = '1';
+        hudText.style.opacity = '0';
+        legendText.style.opacity = '1';
+
+        // ব্যাকগ্রাউন্ডের ম্যাপ পুরোপুরি সরিয়ে ফেলা হলো
+        bdSceneGroup.visible = false;
+        meteorGroup.visible = false;
+
+        // ডার্ক রুম চালু
+        hackerRoomGroup.visible = true;
+        hackerRoomGroup.position.set(0, 0, 0);
+
+        const roomCam = getWideRoomCameraPos();
+        camPosTarget.copy(roomCam);
+        camLookTarget.set(0, 25.5, -4);
+        camera.position.copy(roomCam);
+        camera.lookAt(camLookTarget);
+      }
+
+      // ====================================================
+      // SCENE 3: ACT 1 (62.5s -> 66.0s) কাঁপিয়ে কাঁপিয়ে মোছা
+      // ====================================================
+      else if (elapsed >= 62.5 && elapsed < 66.0) {
+        const eraseT = (elapsed - 62.5) / 3.5;
+
+        eraserTool.style.opacity = '1';
+
+        const shakeY = Math.sin(eraseT * 55) * 14;
+        const shakeRot = Math.sin(eraseT * 55) * 18 - 15;
+
+        const wrapperWidth = legendWrapper.offsetWidth || 400;
+        const curX = eraseT * (wrapperWidth + 90) - 50;
+
+        eraserTool.style.left = `${curX}px`;
+        eraserTool.style.transform = `translateY(calc(-50% + ${shakeY}px)) rotate(${shakeRot}deg)`;
+
+        const erasePercent = Math.min(100, Math.max(0, (eraseT * 115)));
+        legendText.style.clipPath = `polygon(${erasePercent}% 0%, 100% 0%, 100% 100%, ${erasePercent}% 100%)`;
+
+        if (eraseT > 0.70) {
+          const fadeT = (eraseT - 0.70) / 0.30;
+          whiteoutScreen.style.opacity = `${1 - fadeT}`;
+        }
+      }
+
+      // ====================================================
+      // SCENE 3: ACT 2 (66.0s -> 70.5s)
+      // দূর থেকে পুরো ডার্ক রুম, চেয়ার পাশে ও মনিটর ১০০% স্পষ্ট দেখা যাবে
+      // ====================================================
+      else if (elapsed >= 66.0 && elapsed < 70.5) {
+        whiteoutScreen.style.display = 'none';
+        eraserTool.style.opacity = '0';
+
+        updateHackerScreen(elapsed);
+
+        screenGlowLight.intensity = 3.2 + Math.sin(elapsed * 6) * 0.45;
+        fan1.rotation.z += 0.08;
+        fan2.rotation.z += 0.08;
+
+        const roomCam = getWideRoomCameraPos();
+        camPosTarget.copy(roomCam);
+        // সরাসরি মনিটরের সেন্টারে দৃষ্টি লক
+        camLookTarget.set(0, 25.5, -4);
+
+        camera.position.lerp(camPosTarget, 0.05);
+        camCurrentLook.lerp(camLookTarget, 0.05);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 3: ACT 3 (70.5s -> 74.5s) মনিটরে ডিপ জুম
+      // ====================================================
+      else if (elapsed >= 70.5 && elapsed < 74.5) {
+        updateHackerScreen(elapsed);
+        screenGlowLight.intensity = 3.6;
+        fan1.rotation.z += 0.08;
+        fan2.rotation.z += 0.08;
+
+        const zoomProgress = (elapsed - 70.5) / 4.0;
+
+        const roomCam = getWideRoomCameraPos();
+        const zoomCamPos = new THREE.Vector3(
+          THREE.MathUtils.lerp(roomCam.x, 0, Math.pow(zoomProgress, 1.5)),
+          THREE.MathUtils.lerp(roomCam.y, 25.5, Math.pow(zoomProgress, 1.5)),
+          THREE.MathUtils.lerp(roomCam.z, -3.1, Math.pow(zoomProgress, 2.2))
+        );
+
+        camPosTarget.copy(zoomCamPos);
+        camLookTarget.set(0, 25.5, -4);
+
+        camera.position.lerp(camPosTarget, 0.08);
+        camCurrentLook.lerp(camLookTarget, 0.08);
+        camera.lookAt(camCurrentLook);
+      }
+
+      // ====================================================
+      // SCENE 3: FINALE (74.5s+) ফুল স্ক্রিন ও রিডাইরেক্ট!
+      // ====================================================
+      else {
+        updateHackerScreen(elapsed);
+
+        camera.position.set(0, 25.5, -3.1);
+        camera.lookAt(0, 25.5, -4);
+
+        if (!isRedirectTriggered) {
+          isRedirectTriggered = true;
+          setTimeout(() => {
+            window.location.href = NEXT_PAGE_URL;
+          }, 350);
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // Window Resize Handling
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+  </script>
+</body>
+</html>

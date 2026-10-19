@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Md Al Shahreya Shifat - Vibe Coder & Full-Stack Architect</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #060911;
+      --card-bg: rgba(14, 21, 37, 0.72);
+      --card-border: rgba(56, 189, 248, 0.16);
+      --accent: #00ff88;
+      --accent-blue: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --app-height: 100vh;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: var(--app-height);
+      position: fixed;
+    }
+
+    /* Cyber Grid Ambient Background */
+    .bg-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.06) 0%, transparent 65%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 30px 30px, 30px 30px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* SVG Icon Style */
+    .icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+
+    /* Header & Progress Indicator */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: clamp(14px, 2.5vh, 24px) clamp(18px, 4vw, 40px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+      pointer-events: none;
+    }
+    .logo {
+      font-family: 'Space Grotesk', monospace;
+      font-weight: 700;
+      font-size: clamp(1rem, 3.5vw, 1.25rem);
+      letter-spacing: 2px;
+      color: #fff;
+    }
+    .logo span { color: var(--accent); }
+    
+    .slide-counter {
+      font-family: 'Space Grotesk', monospace;
+      font-size: clamp(0.85rem, 3vw, 1rem);
+      color: var(--accent-blue);
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    #progress-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 20%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-blue));
+      box-shadow: 0 0 12px var(--accent);
+      z-index: 60;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Desktop Side Dot Navigation */
+    .nav-dots {
+      position: fixed;
+      right: clamp(15px, 2.5vw, 30px);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 50;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: all 0.35s ease;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      transform: scale(1.4);
+      border-color: var(--accent);
+    }
+
+    /* Slider Architecture */
+    .slider-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: clamp(65px, 9vh, 90px) clamp(16px, 4vw, 40px) clamp(30px, 5vh, 40px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .slide.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .slide-inner {
+      max-width: 1100px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(14px, 2.2vh, 26px);
+      transition: transform 0.3s ease;
+    }
+
+    /* Section Typography */
+    .section-tag {
+      font-family: 'Space Grotesk', monospace;
+      font-size: clamp(0.7rem, 2vw, 0.85rem);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-tag::before {
+      content: '';
+      width: clamp(16px, 3vw, 24px);
+      height: 2px;
+      background: var(--accent);
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 5.5vw, 3.4rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.12;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Glass Cards */
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: clamp(14px, 2vw, 20px);
+      padding: clamp(16px, 2.2vh, 26px);
+      backdrop-filter: blur(14px);
+      transition: all 0.25s ease;
+    }
+    .glass-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.08);
+    }
+
+    /* ========================================================
+       SLIDE 1: HERO & BIO
+    ======================================================== */
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      align-items: center;
+      gap: clamp(20px, 4vw, 45px);
+    }
+    .hero-bio {
+      font-size: clamp(0.92rem, 2.4vw, 1.15rem);
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-top: clamp(6px, 1.2vh, 12px);
+    }
+    .meta-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(6px, 1.5vw, 10px);
+      margin-top: clamp(12px, 2vh, 22px);
+    }
+    .badge {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: clamp(6px, 1vh, 8px) clamp(10px, 2vw, 14px);
+      border-radius: 20px;
+      font-size: clamp(0.72rem, 1.8vw, 0.85rem);
+      font-family: 'Space Grotesk', monospace;
+      color: #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge.accent {
+      border-color: rgba(0, 255, 136, 0.4);
+      color: var(--accent);
+      background: rgba(0, 255, 136, 0.08);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: clamp(130px, 28vw, 280px);
+      height: clamp(150px, 32vw, 320px);
+      margin: 0 auto;
+    }
+    .avatar-frame {
+      width: 100%;
+      height: 100%;
+      border-radius: clamp(16px, 3vw, 24px);
+      border: 1px solid var(--card-border);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(0, 255, 136, 0.06));
+      backdrop-filter: blur(16px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(0, 255, 136, 0.12);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .avatar-placeholder {
+      font-size: clamp(3rem, 7vw, 4.8rem);
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .corner-decor {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--accent);
+    }
+    .corner-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+    .corner-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
+    /* ========================================================
+       SLIDE 2: EDUCATION & TRAINING
+    ======================================================== */
+    .edu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: clamp(10px, 1.6vh, 18px);
+    }
+    .card-year {
+      font-family: 'Space Grotesk', monospace;
+      font-size: clamp(0.7rem, 1.8vw, 0.78rem);
+      color: var(--accent-blue);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-title {
+      font-size: clamp(1.02rem, 2.4vw, 1.25rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .card-inst {
+      color: var(--text-muted);
+      font-size: clamp(0.78rem, 1.9vw, 0.88rem);
+      line-height: 1.45;
+    }
+
+    /* ========================================================
+       SLIDE 3: SKILLS & ECOSYSTEMS
+    ======================================================== */
+    .skills-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: clamp(10px, 1.6vh, 18px);
+    }
+    .skill-cat-title {
+      font-size: clamp(0.88rem, 2.2vw, 1rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .skill-cat-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .skill-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(5px, 0.9vw, 8px);
+    }
+    .chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: clamp(5px, 0.8vh, 7px) clamp(9px, 1.6vw, 12px);
+      border-radius: 9px;
+      font-size: clamp(0.72rem, 1.8vw, 0.82rem);
+      color: #e2e8f0;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ========================================================
+       SLIDE 4: FEATURED PROJECTS
+    ======================================================== */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: clamp(10px, 1.8vh, 20px);
+    }
+    .proj-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: clamp(14px, 2vw, 18px);
+      padding: clamp(16px, 2.2vh, 24px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .proj-desc {
+      font-size: clamp(0.78rem, 2vw, 0.88rem);
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 8px 0 14px;
+    }
+    .proj-link {
+      font-family: 'Space Grotesk', monospace;
+      font-size: clamp(0.75rem, 1.8vw, 0.84rem);
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    /* ========================================================
+       SLIDE 5: CONTACT & CONNECT
+    ======================================================== */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(16px, 3vw, 36px);
+      align-items: center;
+    }
+    .contact-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(10px, 1.5vh, 16px);
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: clamp(12px, 1.8vh, 18px) clamp(14px, 2vw, 20px);
+      border-radius: 14px;
+    }
+    .contact-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(56, 189, 248, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--accent-blue);
+    }
+    .contact-label {
+      font-size: clamp(0.68rem, 1.6vw, 0.75rem);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .contact-val {
+      font-size: clamp(0.88rem, 2.2vw, 1rem);
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: clamp(12px, 1.8vh, 16px) clamp(22px, 4vw, 32px);
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+      color: #060911;
+      font-weight: 700;
+      font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+      text-decoration: none;
+      letter-spacing: 1px;
+      box-shadow: 0 10px 25px rgba(0, 255, 136, 0.25);
+      cursor: pointer;
+      border: none;
+      width: 100%;
+    }
+
+    /* Mobile Swipe Hint */
+    .mobile-scroll-hint {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      font-family: 'Space Grotesk', monospace;
+      animation: bounce 2s infinite ease-in-out;
+      cursor: pointer;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 6px); }
+    }
+
+    /* Mobile Responsive Overrides */
+    @media (max-width: 768px) {
+      .hero-layout {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 16px;
+      }
+      .section-tag { justify-content: center; }
+      .meta-badges { justify-content: center; }
+      .avatar-wrapper { order: -1; }
+      
+      .contact-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .nav-dots { display: none; }
+      .mobile-scroll-hint { display: flex; }
+    }
+
+    @media (max-height: 650px) {
+      .slide-inner {
+        transform: scale(0.92);
+        transform-origin: center center;
+      }
+      .hero-bio { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div id="progress-line"></div>
+
+  <header>
+    <div class="logo">AL SHAHREYA<span>.</span></div>
+    <div class="slide-counter" id="slideNum">01 / 05</div>
+  </header>
+
+  <!-- Desktop Navigation Dots -->
+  <div class="nav-dots">
+    <div class="dot active" onclick="jumpToSlide(0)"></div>
+    <div class="dot" onclick="jumpToSlide(1)"></div>
+    <div class="dot" onclick="jumpToSlide(2)"></div>
+    <div class="dot" onclick="jumpToSlide(3)"></div>
+    <div class="dot" onclick="jumpToSlide(4)"></div>
+  </div>
+
+  <!-- Mobile Swipe Hint -->
+  <div class="mobile-scroll-hint" id="mobileHint" onclick="goToSlide(current + 1, 1)">
+    <span>SWIPE</span>
+    <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+
+  <main class="slider-container" id="sliderContainer">
+    
+    <!-- ================= SLIDE 1: HERO & VIBE CODER ================= -->
+    <section class="slide active" data-index="0">
+      <div class="slide-inner hero-layout">
+        <div class="hero-text-content">
+          <div class="section-tag morph-elem">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            VIBE CODER & AI ARCHITECT
+          </div>
+          <h1 class="section-title morph-elem">MD AL SHAHREYA SHIFAT</h1>
+          <p class="hero-bio morph-elem">
+            Dynamic Vibe Coder crafting modern web applications and solving complex digital engineering problems through AI acceleration. Combining core frontend and backend mastery with cutting-edge artificial intelligence workflows.
+          </p>
+          <div class="meta-badges morph-elem">
+            <span class="badge accent">
+              <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              AI Web Builder
+            </span>
+            <span class="badge">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              Born: 06-08-2004
+            </span>
+            <span class="badge">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              Mymensingh, BD
+            </span>
+            <span class="badge">
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              Linux & Terminal
+            </span>
+          </div>
+        </div>
+
+        <div class="avatar-wrapper morph-elem">
+          <div class="avatar-frame">
+            <div class="corner-decor corner-tl"></div>
+            <div class="corner-decor corner-br"></div>
+            <div class="avatar-placeholder">AS</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 2: EDUCATION (BBA, Govt AI, HSC, SSC) ================= -->
+    <section class="slide" data-index="1">
+      <div class="slide-inner">
+        <div>
+          <div class="section-tag morph-elem">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+            ACADEMIC & PROFESSIONAL CREDENTIALS
+          </div>
+          <h2 class="section-title morph-elem">Education & Training</h2>
+        </div>
+
+        <div class="edu-grid">
+          <div class="glass-card morph-elem">
+            <div class="card-year">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              ONGOING DEGREE
+            </div>
+            <h3 class="card-title">BBA (Bachelor of Business Administration)</h3>
+            <p class="card-inst">Institute of Science and Technology (IST) • Business Strategy, Technology Management & Leadership.</p>
+          </div>
+
+          <div class="glass-card morph-elem">
+            <div class="card-year">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              GOVT CERTIFICATION
+            </div>
+            <h3 class="card-title">AI Basic Course</h3>
+            <p class="card-inst">Department of Youth Development (DYD) • Artificial Intelligence Foundations, Machine Learning Models & Applied AI Tools.</p>
+          </div>
+
+          <div class="glass-card morph-elem">
+            <div class="card-year">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              GRADUATED 2022
+            </div>
+            <h3 class="card-title">Higher Secondary Certificate (HSC)</h3>
+            <p class="card-inst">College Level • Information and Communication Technology, Analytical Logic & Sciences.</p>
+          </div>
+
+          <div class="glass-card morph-elem">
+            <div class="card-year">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              GRADUATED 2020
+            </div>
+            <h3 class="card-title">Secondary School Certificate (SSC)</h3>
+            <p class="card-inst">Foundational Schooling • Core Mathematics, Computer Science Basics & Natural Sciences.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 3: SKILLS (JS All, CSS All, PHP All, CLI) ================= -->
+    <section class="slide" data-index="2">
+      <div class="slide-inner">
+        <div>
+          <div class="section-tag morph-elem">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            TECH ARSENAL & ECOSYSTEMS
+          </div>
+          <h2 class="section-title morph-elem">Skills & Expertise</h2>
+        </div>
+
+        <div class="skills-container">
+          <!-- JavaScript (All) -->
+          <div class="glass-card morph-elem">
+            <div class="skill-cat-title">
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              JavaScript Ecosystem (All)
+            </div>
+            <div class="skill-chips">
+              <span class="chip">Pure JavaScript (Vanilla)</span>
+              <span class="chip">Node.js</span>
+              <span class="chip">Three.js (3D WebGL)</span>
+              <span class="chip">GSAP 3</span>
+              <span class="chip">JS Libraries & Frameworks</span>
+              <span class="chip">Asynchronous APIs</span>
+            </div>
+          </div>
+
+          <!-- CSS Ecosystem (All) -->
+          <div class="glass-card morph-elem">
+            <div class="skill-cat-title">
+              <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              CSS & Styling (All)
+            </div>
+            <div class="skill-chips">
+              <span class="chip">Core CSS3</span>
+              <span class="chip">Tailwind CSS</span>
+              <span class="chip">Bootstrap</span>
+              <span class="chip">CSS Libraries</span>
+              <span class="chip">Keyframe Animations</span>
+              <span class="chip">Responsive Web Design</span>
+            </div>
+          </div>
+
+          <!-- PHP & WordPress Ecosystem -->
+          <div class="glass-card morph-elem">
+            <div class="skill-cat-title">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              PHP & CMS Architecture
+            </div>
+            <div class="skill-chips">
+              <span class="chip">Core PHP</span>
+              <span class="chip">PHP Fundamentals & OOP</span>
+              <span class="chip">WordPress CMS</span>
+              <span class="chip">Custom Themes & Plugins</span>
+              <span class="chip">Database Architecture</span>
+            </div>
+          </div>
+
+          <!-- CLI, Systems & AI -->
+          <div class="glass-card morph-elem">
+            <div class="skill-cat-title">
+              <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              Vibe Coding & Systems
+            </div>
+            <div class="skill-chips">
+              <span class="chip">Vibe Coding</span>
+              <span class="chip">AI-Driven Web Building</span>
+              <span class="chip">Linux Shell</span>
+              <span class="chip">Bash Scripting</span>
+              <span class="chip">Terminal CLI</span>
+              <span class="chip">Python (Basic)</span>
+              <span class="chip">C (Basic)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 4: FEATURED WORK ================= -->
+    <section class="slide" data-index="3">
+      <div class="slide-inner">
+        <div>
+          <div class="section-tag morph-elem">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            FEATURED CASE STUDIES
+          </div>
+          <h2 class="section-title morph-elem">Projects & Architecture</h2>
+        </div>
+
+        <div class="project-grid">
+          <div class="proj-card morph-elem">
+            <div>
+              <span class="badge accent">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>
+                Three.js & 3D WebGL
+              </span>
+              <h3 class="card-title" style="margin-top: 10px;">Cosmic Genesis</h3>
+              <p class="proj-desc">Interactive 3D simulation spanning the Big Bang, solar genesis, Earth cooling timelapse, and geographic trajectory mapping.</p>
+            </div>
+            <a href="#" class="proj-link">VIEW PROJECT →</a>
+          </div>
+
+          <div class="proj-card morph-elem">
+            <div>
+              <span class="badge">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path></svg>
+                PHP & Full-Stack
+              </span>
+              <h3 class="card-title" style="margin-top: 10px;">Custom CMS Solutions</h3>
+              <p class="proj-desc">High-performance WordPress platforms and backend services configured for speed, data security, and dynamic content management.</p>
+            </div>
+            <a href="#" class="proj-link">VIEW PROJECT →</a>
+          </div>
+
+          <div class="proj-card morph-elem">
+            <div>
+              <span class="badge">
+                <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                AI & Systems
+              </span>
+              <h3 class="card-title" style="margin-top: 10px;">AI Web Engineering</h3>
+              <p class="proj-desc">Modern web applications architected through rapid AI vibe coding, Bash terminal automation, and resilient JavaScript interfaces.</p>
+            </div>
+            <a href="#" class="proj-link">VIEW PROJECT →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 5: CONTACT & CONNECT ================= -->
+    <section class="slide" data-index="4">
+      <div class="slide-inner">
+        <div>
+          <div class="section-tag morph-elem">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            COLLABORATION & INQUIRIES
+          </div>
+          <h2 class="section-title morph-elem">Get In Touch</h2>
+        </div>
+
+        <div class="contact-layout">
+          <div class="contact-info-list morph-elem">
+            <div class="contact-item">
+              <div class="contact-icon-box">
+                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </div>
+              <div>
+                <div class="contact-label">Direct Email</div>
+                <div class="contact-val">alshahreya@gmail.com</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon-box">
+                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <div>
+                <div class="contact-label">Location Base</div>
+                <div class="contact-val">Mymensingh, Bangladesh</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon-box">
+                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              </div>
+              <div>
+                <div class="contact-label">Developer Profiles</div>
+                <div class="contact-val">GitHub • Linux Terminal • LinkedIn</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card morph-elem" style="text-align: center;">
+            <h3 class="card-title">Have a project or web challenge?</h3>
+            <p class="proj-desc" style="margin-bottom: 18px;">Available for AI-accelerated web architecture, full-stack development, and bespoke digital solutions.</p>
+            <a href="mailto:alshahreya@gmail.com" class="cta-btn">
+              <span>SEND INQUIRY</span>
+              <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================
+    // DYNAMIC SCREEN CALCULATION ENGINE (Android & Mobile Auto-Fit)
+    // =========================================================
+    function recalculateScreen() {
+      const actualHeight = window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${actualHeight}px`);
+
+      const activeSlideInner = document.querySelector('.slide.active .slide-inner');
+      if (activeSlideInner) {
+        const availableHeight = actualHeight - 120;
+        const contentHeight = activeSlideInner.scrollHeight;
+        
+        if (contentHeight > availableHeight && availableHeight > 300) {
+          const scaleFactor = availableHeight / contentHeight;
+          activeSlideInner.style.transform = `scale(${Math.min(1, scaleFactor)})`;
+          activeSlideInner.style.transformOrigin = 'center center';
+        } else {
+          activeSlideInner.style.transform = 'scale(1)';
+        }
+      }
+    }
+
+    window.addEventListener('resize', recalculateScreen);
+    window.addEventListener('orientationchange', recalculateScreen);
+    recalculateScreen();
+
+    // =========================================================
+    // GSAP SLIDE CONTROLLER (Wheel & Touch Morph Transitions)
+    // =========================================================
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const slideNum = document.getElementById('slideNum');
+    const progressLine = document.getElementById('progress-line');
+    const mobileHint = document.getElementById('mobileHint');
+
+    let current = 0;
+    let isAnimating = false;
+    const total = slides.length;
+
+    function goToSlide(nextIndex, direction = 1) {
+      if (isAnimating || nextIndex === current || nextIndex < 0 || nextIndex >= total) return;
+      isAnimating = true;
+
+      const currentSlide = slides[current];
+      const nextSlide = slides[nextIndex];
+
+      const currentElems = currentSlide.querySelectorAll('.morph-elem');
+      const nextElems = nextSlide.querySelectorAll('.morph-elem');
+
+      dots[current]?.classList.remove('active');
+      dots[nextIndex]?.classList.add('active');
+      slideNum.innerText = `0${nextIndex + 1} / 0${total}`;
+      progressLine.style.width = `${((nextIndex + 1) / total) * 100}%`;
+
+      if (nextIndex === total - 1) {
+        mobileHint.style.display = 'none';
+      } else if (window.innerWidth <= 768) {
+        mobileHint.style.display = 'flex';
+      }
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          currentSlide.classList.remove('active');
+          gsap.set(currentSlide, { visibility: 'hidden', opacity: 0 });
+          current = nextIndex;
+          recalculateScreen();
+          isAnimating = false;
+        }
+      });
+
+      tl.to(currentElems, {
+        y: direction > 0 ? -30 : 30,
+        opacity: 0,
+        stagger: 0.04,
+        duration: 0.35,
+        ease: 'power2.in'
+      })
+      .to(currentSlide, {
+        scale: 0.96,
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.in'
+      }, "-=0.15");
+
+      tl.set(nextSlide, {
+        visibility: 'visible',
+        opacity: 0,
+        scale: 1.04
+      })
+      .set(nextElems, {
+        y: direction > 0 ? 35 : -35,
+        opacity: 0
+      })
+      .to(nextSlide, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: 'power3.out',
+        onStart: () => nextSlide.classList.add('active')
+      })
+      .to(nextElems, {
+        y: 0,
+        opacity: 1,
+        stagger: 0.05,
+        duration: 0.45,
+        ease: 'power3.out'
+      }, "-=0.3");
+    }
+
+    function jumpToSlide(index) {
+      if (index === current) return;
+      goToSlide(index, index > current ? 1 : -1);
+    }
+
+    // Mouse Wheel Navigation
+    let wheelTimeout;
+    window.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (isAnimating) return;
+
+      clearTimeout(wheelTimeout);
+      wheelTimeout = setTimeout(() => {
+        if (e.deltaY > 25) {
+          goToSlide(current + 1, 1);
+        } else if (e.deltaY < -25) {
+          goToSlide(current - 1, -1);
+        }
+      }, 25);
+    }, { passive: false });
+
+    // Touch Swipe Navigation for Android & Mobile
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (isAnimating) return;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diffY = touchStartY - touchEndY;
+
+      if (Math.abs(diffY) > 35) {
+        if (diffY > 0) {
+          goToSlide(current + 1, 1);
+        } else {
+          goToSlide(current - 1, -1);
+        }
+      }
+    }, { passive: true });
+
+    // Keyboard Arrow Navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') goToSlide(current + 1, 1);
+      else if (e.key === 'ArrowUp' || e.key === 'PageUp') goToSlide(current - 1, -1);
+    });
+
+    // Initial Entrance Animation
+    gsap.from('.slide.active .morph-elem', {
+      y: 30,
+      opacity: 0,
+      stagger: 0.06,
+      duration: 0.65,
+      ease: 'power3.out',
+      delay: 0.1
+    });
+  </script>
+</body>
+</html>
