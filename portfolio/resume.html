@@ -43,7 +43,6 @@
   </script>
 
   <style>
-    /* ============ THEME TOKENS ============ */
     :root,
     [data-theme="dark"] {
       color-scheme: dark;
@@ -60,7 +59,6 @@
       --accent-soft: rgba(16, 217, 158, 0.1);
       --accent-blue: #38bdf8;
       --accent-blue-soft: rgba(56, 189, 248, 0.1);
-      --accent-purple: #a78bfa;
       --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
       --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
       --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
@@ -94,7 +92,6 @@
       --accent-soft: rgba(5, 150, 105, 0.08);
       --accent-blue: #0284c7;
       --accent-blue-soft: rgba(2, 132, 199, 0.08);
-      --accent-purple: #7c3aed;
       --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
       --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
       --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
@@ -123,10 +120,7 @@
 
     .contact-val, .hero-bio, .proj-desc, .modal-desc, .card-inst, .badge { user-select: text; }
 
-    html {
-      scroll-behavior: smooth;
-      --app-height: 100vh;
-    }
+    html { --app-height: 100vh; }
 
     body {
       background-color: var(--bg);
@@ -145,18 +139,13 @@
       border-radius: 6px;
     }
 
-    /* ============ BACKGROUND LAYERS ============ */
+    /* BACKGROUND */
     .bg-orbs {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-      transition: opacity 0.4s ease;
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0; overflow: hidden;
     }
     .orb {
-      position: absolute;
-      border-radius: 50%;
+      position: absolute; border-radius: 50%;
       filter: blur(90px);
       opacity: var(--orb-opacity);
       will-change: transform;
@@ -198,31 +187,26 @@
     }
 
     .bg-grid {
-      position: fixed;
-      top: 0; left: 0;
+      position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
       background-image:
         linear-gradient(var(--grid-line) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
         radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
       background-size: 40px 40px, 40px 40px, 80px 80px;
-      pointer-events: none;
-      z-index: 1;
+      pointer-events: none; z-index: 1;
       transition: background-image 0.4s ease;
       -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
       mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
     }
 
     .cursor-glow {
-      position: fixed;
-      top: 0; left: 0;
+      position: fixed; top: 0; left: 0;
       width: 380px; height: 380px;
       border-radius: 50%;
       background: radial-gradient(circle, var(--accent-soft) 0%, transparent 65%);
-      pointer-events: none;
-      z-index: 3;
+      pointer-events: none; z-index: 3;
       will-change: transform;
-      transition: opacity 0.4s ease;
     }
     [data-theme="dark"] .cursor-glow {
       mix-blend-mode: screen;
@@ -237,19 +221,14 @@
     .icon {
       display: inline-block;
       width: 16px; height: 16px;
-      stroke-width: 2;
-      stroke: currentColor;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      vertical-align: middle;
-      flex-shrink: 0;
+      stroke-width: 2; stroke: currentColor; fill: none;
+      stroke-linecap: round; stroke-linejoin: round;
+      vertical-align: middle; flex-shrink: 0;
     }
 
-    /* ============ HEADER ============ */
+    /* HEADER */
     header {
-      position: fixed;
-      top: 0; left: 0;
+      position: fixed; top: 0; left: 0;
       width: 100%;
       padding: clamp(14px, 2.4vh, 24px) clamp(18px, 4vw, 44px);
       display: flex;
@@ -269,9 +248,7 @@
     .logo span { color: var(--accent); transition: color 0.4s ease; }
 
     .header-right {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      display: flex; align-items: center; gap: 14px;
       pointer-events: auto;
     }
 
@@ -290,17 +267,14 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* THEME TOGGLE */
     .theme-toggle {
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       border-radius: 50%;
       background: var(--toggle-bg);
       border: 1px solid var(--toggle-border);
       color: var(--icon-color);
       cursor: pointer;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       position: relative;
       transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
       box-shadow: var(--shadow-sm);
@@ -311,51 +285,33 @@
       box-shadow: var(--shadow-md);
     }
     .theme-toggle:active { transform: translateY(0); }
-
     .theme-toggle svg {
       position: absolute;
-      width: 18px;
-      height: 18px;
+      width: 18px; height: 18px;
       stroke-width: 2;
       transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
     }
-    .theme-toggle .icon-sun {
-      opacity: 1;
-      transform: rotate(0deg) scale(1);
-    }
-    .theme-toggle .icon-moon {
-      opacity: 0;
-      transform: rotate(-90deg) scale(0.6);
-    }
-    [data-theme="dark"] .theme-toggle .icon-sun {
-      opacity: 0;
-      transform: rotate(90deg) scale(0.6);
-    }
-    [data-theme="dark"] .theme-toggle .icon-moon {
-      opacity: 1;
-      transform: rotate(0deg) scale(1);
-    }
+    .theme-toggle .icon-sun { opacity: 1; transform: rotate(0deg) scale(1); }
+    .theme-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+    [data-theme="dark"] .theme-toggle .icon-sun { opacity: 0; transform: rotate(90deg) scale(0.6); }
+    [data-theme="dark"] .theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
 
     #progress-line {
-      position: fixed;
-      top: 0; left: 0;
-      height: 2px;
-      width: 0%;
+      position: fixed; top: 0; left: 0;
+      height: 2px; width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--accent-blue));
       z-index: 60;
       transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       opacity: 0.9;
     }
 
-    /* ============ NAV DOTS ============ */
+    /* NAV DOTS */
     .nav-dots {
       position: fixed;
       right: clamp(15px, 2.5vw, 30px);
       top: 50%;
       transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      display: flex; flex-direction: column; gap: 14px;
       z-index: 50;
     }
     .dot {
@@ -376,8 +332,7 @@
     .dot::after {
       content: attr(data-label);
       position: absolute;
-      right: 22px;
-      top: 50%;
+      right: 22px; top: 50%;
       transform: translateY(-50%);
       background: var(--bg-elevated);
       border: 1px solid var(--card-border);
@@ -395,7 +350,11 @@
     }
     .dot:hover::after { opacity: 1; right: 26px; }
 
-    /* ============ SLIDER ============ */
+    /* ====================================================
+       SLIDER — THE KEY FIX
+       Default = overflow:hidden (not a scroll box)
+       .scrollable = overflow-y:auto (only when content too tall)
+    ==================================================== */
     .slider-container {
       position: relative;
       width: 100%; height: 100%;
@@ -406,19 +365,30 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      padding: clamp(70px, 9vh, 95px) clamp(16px, 4vw, 44px) clamp(25px, 4.5vh, 40px);
+      padding: clamp(56px, 7vh, 85px) clamp(16px, 4vw, 44px) clamp(24px, 3.5vh, 40px);
       display: flex;
       justify-content: center;
-      align-items: center;
       visibility: hidden;
       opacity: 0;
+      overflow: hidden;                 /* DEFAULT: no scroll box */
+      transition: opacity 0.3s ease;
+    }
+
+    /* Added by JS only when this slide's content exceeds its height */
+    .slide.scrollable {
       overflow-y: auto;
       overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
-      scrollbar-color: var(--text-muted) transparent;
+      scrollbar-color: var(--card-border) transparent;
     }
-    .slide::-webkit-scrollbar { width: 5px; }
-    .slide::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 3px; }
+    .slide.scrollable::-webkit-scrollbar { width: 5px; }
+    .slide.scrollable::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 3px;
+    }
+
     .slide.active { visibility: visible; opacity: 1; }
 
     .slide-inner {
@@ -427,27 +397,23 @@
       display: flex;
       flex-direction: column;
       gap: clamp(14px, 2vh, 24px);
-      transition: transform 0.3s ease;
-      margin: auto;
+      margin: auto;  /* centers when content fits, top-aligns when it overflows */
     }
 
-    /* ============ TYPOGRAPHY ============ */
+    /* TYPOGRAPHY */
     .section-tag {
       font-family: 'Space Grotesk', monospace;
       font-size: clamp(0.68rem, 1.7vw, 0.78rem);
       letter-spacing: 1.8px;
       text-transform: uppercase;
       color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      display: flex; align-items: center; gap: 10px;
       font-weight: 600;
       transition: color 0.4s ease;
     }
     .section-tag::before {
       content: '';
-      width: 22px;
-      height: 1.5px;
+      width: 22px; height: 1.5px;
       background: var(--accent);
       flex-shrink: 0;
       transition: background 0.4s ease;
@@ -467,7 +433,7 @@
       background-clip: text;
     }
 
-    /* ============ CARDS ============ */
+    /* CARDS */
     .glass-card, .proj-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -488,7 +454,7 @@
       transform: translateY(-2px);
     }
 
-    /* ============ SLIDE 1: HERO ============ */
+    /* HERO */
     .hero-layout {
       display: grid;
       grid-template-columns: 1.3fr 0.7fr;
@@ -505,9 +471,7 @@
     }
 
     .available-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      display: inline-flex; align-items: center; gap: 8px;
       padding: 6px 14px 6px 10px;
       background: var(--accent-soft);
       border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
@@ -537,9 +501,7 @@
     }
 
     .meta-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      display: flex; flex-wrap: wrap; gap: 8px;
       margin-top: clamp(14px, 2vh, 22px);
     }
     .badge {
@@ -550,9 +512,7 @@
       font-size: clamp(0.7rem, 1.7vw, 0.8rem);
       font-family: 'Space Grotesk', monospace;
       color: var(--text-soft);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      display: inline-flex; align-items: center; gap: 6px;
       text-decoration: none;
       transition: all 0.25s ease;
       font-weight: 500;
@@ -568,7 +528,6 @@
       background: var(--accent-soft);
     }
 
-    /* Avatar */
     .avatar-wrapper {
       position: relative;
       width: clamp(140px, 24vw, 240px);
@@ -585,10 +544,8 @@
       opacity: 0.35;
       animation: spinAura 10s linear infinite;
       z-index: -1;
-      will-change: transform;
     }
     @keyframes spinAura { to { transform: rotate(360deg); } }
-
     .avatar-frame {
       width: 100%; height: 100%;
       border-radius: 20px;
@@ -596,12 +553,8 @@
       background: var(--bg-elevated);
       box-shadow: var(--shadow-lg);
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-      transition: box-shadow 0.4s ease, background 0.4s ease, border-color 0.4s ease;
+      display: flex; justify-content: center; align-items: center;
+      position: relative; z-index: 1;
     }
     .avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .avatar-placeholder {
@@ -609,23 +562,19 @@
       font-weight: 800;
       font-family: 'Space Grotesk', sans-serif;
       color: var(--accent);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       width: 100%; height: 100%;
     }
     .corner-decor {
       position: absolute;
       width: 12px; height: 12px;
       border: 2px solid var(--accent);
-      z-index: 5;
-      opacity: 0.6;
-      transition: border-color 0.4s ease;
+      z-index: 5; opacity: 0.6;
     }
     .corner-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; border-radius: 3px 0 0 0; }
     .corner-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; border-radius: 0 0 3px 0; }
 
-    /* ============ SLIDE 2: EDUCATION ============ */
+    /* EDUCATION */
     .edu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -637,11 +586,8 @@
       color: var(--accent-blue);
       letter-spacing: 1.5px;
       margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; gap: 6px;
       font-weight: 600;
-      transition: color 0.4s ease;
     }
     .card-title {
       font-size: clamp(0.96rem, 2.2vw, 1.14rem);
@@ -649,16 +595,14 @@
       color: var(--text);
       margin-bottom: 4px;
       letter-spacing: -0.2px;
-      transition: color 0.4s ease;
     }
     .card-inst {
       color: var(--text-muted);
       font-size: clamp(0.75rem, 1.8vw, 0.84rem);
       line-height: 1.5;
-      transition: color 0.4s ease;
     }
 
-    /* ============ SLIDE 3: SKILLS ============ */
+    /* SKILLS */
     .skills-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -669,18 +613,11 @@
       font-weight: 700;
       color: var(--text);
       margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
       letter-spacing: -0.1px;
-      transition: color 0.4s ease;
     }
-    .skill-cat-title .icon { color: var(--accent); transition: color 0.4s ease; }
-    .skill-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .skill-cat-title .icon { color: var(--accent); }
+    .skill-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .chip {
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
@@ -689,9 +626,7 @@
       font-size: clamp(0.68rem, 1.6vw, 0.76rem);
       color: var(--text-soft);
       transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
+      display: inline-flex; align-items: center; gap: 4px;
       font-weight: 500;
     }
     .chip:hover {
@@ -700,23 +635,20 @@
       background: var(--accent-soft);
     }
 
-    /* ============ SLIDE 4: PROJECTS ============ */
+    /* PROJECTS */
     .project-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: clamp(10px, 1.6vh, 18px);
     }
     .proj-card {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      display: flex; flex-direction: column; justify-content: space-between;
     }
     .proj-desc {
       font-size: clamp(0.76rem, 1.8vw, 0.86rem);
       color: var(--text-muted);
       line-height: 1.55;
       margin: 8px 0 16px;
-      transition: color 0.4s ease;
     }
     .proj-btn {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -727,9 +659,7 @@
       padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      display: inline-flex; align-items: center; gap: 6px;
       font-weight: 600;
       width: fit-content;
       transition: all 0.25s ease;
@@ -741,7 +671,7 @@
       transform: translateY(-1px);
     }
 
-    /* ============ SLIDE 5: CONTACT ============ */
+    /* CONTACT */
     .contact-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -749,14 +679,11 @@
       align-items: center;
     }
     .contact-info-list {
-      display: flex;
-      flex-direction: column;
+      display: flex; flex-direction: column;
       gap: clamp(10px, 1.4vh, 14px);
     }
     .contact-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      display: flex; align-items: center; gap: 14px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       padding: clamp(12px, 1.6vh, 16px) clamp(14px, 1.8vw, 18px);
@@ -772,12 +699,9 @@
       width: 38px; height: 38px;
       border-radius: 10px;
       background: var(--accent-blue-soft);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       color: var(--accent-blue);
       flex-shrink: 0;
-      transition: all 0.4s ease;
     }
     .contact-label {
       font-size: clamp(0.64rem, 1.5vw, 0.7rem);
@@ -785,14 +709,12 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       font-weight: 600;
-      transition: color 0.4s ease;
     }
     .contact-val {
       font-size: clamp(0.82rem, 2vw, 0.94rem);
       font-weight: 600;
       color: var(--text);
       text-decoration: none;
-      transition: color 0.4s ease;
     }
     .quick-contact-grid {
       display: grid;
@@ -801,9 +723,7 @@
       margin-top: 8px;
     }
     .quick-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
       gap: 6px;
       padding: 11px 14px;
       background: var(--bg-subtle);
@@ -824,9 +744,7 @@
     }
 
     .cta-btn {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
+      display: inline-flex; justify-content: center; align-items: center;
       gap: 8px;
       padding: clamp(12px, 1.6vh, 15px) clamp(20px, 3.5vw, 28px);
       border-radius: 10px;
@@ -846,7 +764,6 @@
     .cta-btn:hover {
       transform: translateY(-2px);
       filter: brightness(1.05);
-      box-shadow: 0 12px 32px color-mix(in srgb, var(--accent) 35%, transparent);
     }
     .cta-btn.secondary {
       background: var(--bg-elevated);
@@ -860,20 +777,17 @@
       background: var(--accent-blue-soft);
     }
 
-    /* ============ MODAL ============ */
+    /* MODAL */
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0;
+      position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: var(--modal-overlay);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       z-index: 200;
       display: none;
-      justify-content: center;
-      align-items: center;
+      justify-content: center; align-items: center;
       padding: 20px;
-      transition: background 0.4s ease;
     }
     .modal-card {
       background: var(--modal-bg);
@@ -887,7 +801,6 @@
       padding: clamp(24px, 3.5vh, 32px);
       position: relative;
       box-shadow: var(--shadow-lg);
-      transition: background 0.4s ease, border-color 0.4s ease;
     }
     .modal-close {
       position: absolute;
@@ -897,49 +810,35 @@
       color: var(--text);
       width: 36px; height: 36px;
       border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .modal-close:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .modal-close:hover { border-color: var(--accent); color: var(--accent); }
     .modal-title {
       font-size: 1.4rem;
       font-weight: 700;
       margin: 10px 0 8px;
       color: var(--text);
       letter-spacing: -0.3px;
-      transition: color 0.4s ease;
     }
     .modal-desc {
       font-size: 0.92rem;
       line-height: 1.65;
       color: var(--text-muted);
       margin-bottom: 20px;
-      transition: color 0.4s ease;
     }
-    .modal-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 20px;
-    }
+    .modal-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
     .modal-actions { display: flex; gap: 10px; }
 
     .mobile-scroll-hint {
       position: fixed;
-      bottom: 14px;
-      left: 50%;
+      bottom: 14px; left: 50%;
       transform: translateX(-50%);
       z-index: 50;
       display: none;
       flex-direction: column;
-      align-items: center;
-      gap: 4px;
+      align-items: center; gap: 4px;
       color: var(--accent);
       font-size: 0.68rem;
       letter-spacing: 2px;
@@ -949,26 +848,48 @@
       background: transparent;
       border: none;
       font-weight: 600;
+      pointer-events: none;
     }
     @keyframes bounce {
       0%, 100% { transform: translate(-50%, 0); }
       50%      { transform: translate(-50%, 6px); }
     }
 
+    /* MOBILE */
     @media (max-width: 768px) {
+      .slide { padding: 68px 18px 88px; }
+      .slide-inner { gap: 14px; }
+
       .hero-layout {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 18px;
+        gap: 20px;
       }
       .section-tag { justify-content: center; }
       .meta-badges { justify-content: center; }
       .avatar-wrapper { order: -1; }
+
+      .edu-grid, .skills-container, .project-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .glass-card, .proj-card { padding: 16px; }
+      .chip { padding: 4px 9px; font-size: 0.72rem; }
+      .section-title { font-size: 1.75rem; }
+
       .contact-layout { grid-template-columns: 1fr; gap: 18px; }
       .nav-dots { display: none; }
-      .mobile-scroll-hint { display: flex; }
+      .mobile-scroll-hint { display: flex; pointer-events: auto; }
       .modal-actions { flex-direction: column; }
       .header-right { gap: 8px; }
+    }
+
+    @media (max-width: 420px) {
+      .slide { padding: 64px 14px 88px; }
+      .section-title { font-size: 1.55rem; }
+      .glass-card, .proj-card { padding: 14px; }
+      .header-right { gap: 6px; }
+      .theme-toggle { width: 36px; height: 36px; }
     }
 
     @media (max-height: 650px) {
@@ -992,7 +913,7 @@
   <div id="progress-line" aria-hidden="true"></div>
 
   <header>
-    <div class="logo">SHIFAT100<span>.</span></div>
+    <div class="logo">SHIFAT100</div>
     <div class="header-right">
       <div class="slide-counter" id="slideNum" aria-live="polite">01 / 05</div>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">
@@ -1010,7 +931,7 @@
   <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
 
   <button class="mobile-scroll-hint" id="mobileHint" type="button" aria-label="Next slide">
-    <span>SWIPE</span>
+    <span id="hintText">SWIPE</span>
     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
   </button>
 
@@ -1182,8 +1103,6 @@
               <span class="chip">MySQL</span>
               <span class="chip">Node.js</span>
               <span class="chip">REST APIs</span>
-              <span class="chip">CRUD Architecture</span>
-              <span class="chip">Sessions &amp; Auth</span>
               <span class="chip">phpMyAdmin</span>
             </div>
           </div>
@@ -1210,8 +1129,6 @@
               Desktop &amp; Cross-Platform
             </div>
             <div class="skill-chips">
-              <span class="chip">Electron.js</span>
-              <span class="chip">electron-builder</span>
               <span class="chip">Windows / macOS / Linux</span>
               <span class="chip">GitHub Actions CI</span>
               <span class="chip">GitHub Pages</span>
@@ -1226,14 +1143,12 @@
               OS &amp; Terminal
             </div>
             <div class="skill-chips">
-              <span class="chip">Penguins' eggs (Remastering)</span>
               <span class="chip">Kali Linux</span>
               <span class="chip">Ubuntu</span>
               <span class="chip">Bash Scripting</span>
               <span class="chip">PowerShell</span>
               <span class="chip">CMD</span>
               <span class="chip">Termux (CLI)</span>
-              <span class="chip">TouchRec</span>
             </div>
           </div>
 
@@ -1247,7 +1162,7 @@
               <span class="chip">AI Web Problem Solving</span>
               <span class="chip">Full Web Development</span>
               <span class="chip">ERP Software</span>
-              <span class="chip">MS Office (Word/Excel/PPT)</span>
+              <span class="chip">MS Office</span>
               <span class="chip">Adobe Photoshop</span>
               <span class="chip">Complex Problem Solving</span>
               <span class="chip">Communication Skills</span>
@@ -1271,12 +1186,12 @@
         <div class="project-grid">
           <div class="proj-card morph-elem">
             <div>
-              <span class="badge accent">KaiOS &amp; Cloud Phone</span>
-              <h3 class="card-title" style="margin-top: 10px;">KaiOS Smart Suite</h3>
-              <p class="proj-desc">Lightweight KaiOS + touch feature phone apps with cloud phone integration, offline caching, and native key navigation.</p>
+              <span class="badge accent">Feature Phones</span>
+              <h3 class="card-title" style="margin-top: 10px;">KaiOS</h3>
+              <p class="proj-desc">KaiOS feature phone apps with ads integration, offline caching, and native key navigation.</p>
             </div>
             <button class="proj-btn"
-              onclick="openProjectModal('KaiOS Smart Suite','Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.',['KaiOS','JavaScript','Cloud Phone','HTML5'],'https://github.com/shifat100')">
+              onclick="openProjectModal('KaiOS','Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.',['KaiOS','JavaScript','Cloud Phone','HTML5'],'https://shifat100.github.io/kaios/')">
               <span>VIEW PROJECT</span>
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
@@ -1395,22 +1310,20 @@
 
   <script>
     // =========================================================
-    // THEME TOGGLE — persists to localStorage, respects OS pref
+    // THEME
     // =========================================================
     (function initTheme() {
       const html = document.documentElement;
       const toggle = document.getElementById('themeToggle');
       const metaTheme = document.querySelector('meta[name="theme-color"]');
+      applyTheme(localStorage.getItem('theme') ||
+        (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 
-      const saved = localStorage.getItem('theme');
-      const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-      const initial = saved || (prefersLight ? 'light' : 'dark');
-
-      applyTheme(initial);
-
-      function applyTheme(theme) {
-        html.setAttribute('data-theme', theme);
-        if (metaTheme) metaTheme.setAttribute('content', theme === 'light' ? '#f8fafc' : '#0a0f1a');
+      function applyTheme(t) {
+        html.setAttribute('data-theme', t);
+        if (metaTheme) metaTheme.setAttribute('content', t === 'light' ? '#f8fafc' : '#0a0f1a');
+        // Theme change may shift layout (font metrics) — recheck scrollable
+        requestAnimationFrame(updateScrollableSlides);
       }
 
       toggle.addEventListener('click', () => {
@@ -1419,8 +1332,7 @@
         localStorage.setItem('theme', next);
       });
 
-      // Live-update if OS preference changes and user hasn't chosen manually
-      window.matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', e => {
+      matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', e => {
         if (localStorage.getItem('theme')) return;
         applyTheme(e.matches ? 'light' : 'dark');
       });
@@ -1429,7 +1341,7 @@
     // =========================================================
     // MOTION
     // =========================================================
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const MOTION = reduceMotion
       ? { dist: 8,  dur: 0.16, stagger: 0.015, scaleFrom: 1.00, scaleTo: 1.00, fade: 0.14 }
       : { dist: 28, dur: 0.45, stagger: 0.05,  scaleFrom: 1.03, scaleTo: 1.00, fade: 0.30 };
@@ -1438,19 +1350,17 @@
     // CURSOR GLOW
     // =========================================================
     (function initCursorGlow() {
-      if (!window.matchMedia('(pointer: fine)').matches) return;
+      if (!matchMedia('(pointer: fine)').matches) return;
       const glow = document.getElementById('cursorGlow');
       if (!glow) return;
-      let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-      let gx = mx, gy = my;
+      let mx = innerWidth / 2, my = innerHeight / 2, gx = mx, gy = my;
       document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-      function tick() {
+      (function tick() {
         gx += (mx - gx) * 0.15;
         gy += (my - gy) * 0.15;
         glow.style.transform = `translate3d(${gx}px, ${gy}px, 0) translate(-50%, -50%)`;
         requestAnimationFrame(tick);
-      }
-      tick();
+      })();
     })();
 
     // =========================================================
@@ -1462,6 +1372,7 @@
     const progressLine = document.getElementById('progress-line');
     const navDots = document.getElementById('navDots');
     const mobileHint = document.getElementById('mobileHint');
+    const hintText = document.getElementById('hintText');
 
     slides.forEach((s, i) => {
       const b = document.createElement('button');
@@ -1476,6 +1387,57 @@
     const dots = navDots.querySelectorAll('.dot');
     const pad = n => String(n).padStart(2, '0');
 
+    // =========================================================
+    // THE KEY FUNCTION — decide which slides are actually scrollable
+    // =========================================================
+    const SCROLL_THRESHOLD = 8; // px; ignore tiny sub-pixel overflow
+
+    function updateScrollableSlides() {
+      slides.forEach(s => {
+        // Reset to hidden so scrollHeight reflects natural content
+        s.classList.remove('scrollable');
+        // Force reflow so scrollHeight/clientHeight are accurate
+        void s.offsetHeight;
+
+        const overflowing = s.scrollHeight - s.clientHeight > SCROLL_THRESHOLD;
+        if (overflowing) s.classList.add('scrollable');
+      });
+      updateMobileHint();
+    }
+
+    function isSlideScrollable(s) {
+      return s.classList.contains('scrollable');
+    }
+    function isSlideAtBottom(s) {
+      return s.scrollTop + s.clientHeight >= s.scrollHeight - 4;
+    }
+    function isSlideAtTop(s) {
+      return s.scrollTop <= 2;
+    }
+
+    // =========================================================
+    // MOBILE HINT (SCROLL vs SWIPE)
+    // =========================================================
+    function updateMobileHint() {
+      if (innerWidth > 768 || current === total - 1) {
+        mobileHint.style.display = 'none';
+        return;
+      }
+      mobileHint.style.display = 'flex';
+
+      const s = slides[current];
+      const scrollable = isSlideScrollable(s);
+      const atBottom = !scrollable || isSlideAtBottom(s);
+
+      hintText.textContent = atBottom ? 'SWIPE' : 'SCROLL';
+      mobileHint.style.animation = atBottom ? 'bounce 2s infinite ease-in-out' : 'none';
+    }
+
+    // Track in-slide scroll to update hint
+    slides.forEach(s => s.addEventListener('scroll', () => {
+      if (slides[current] === s) updateMobileHint();
+    }, { passive: true }));
+
     function updateChrome(index) {
       slideNum.innerText = `${pad(index + 1)} / ${pad(total)}`;
       slideNum.classList.remove('flip');
@@ -1487,50 +1449,24 @@
         if (i === index) d.setAttribute('aria-current', 'true');
         else d.removeAttribute('aria-current');
       });
-      if (index === total - 1) mobileHint.style.display = 'none';
-      else if (window.innerWidth <= 768) mobileHint.style.display = 'flex';
+      updateMobileHint();
     }
     updateChrome(0);
 
     // =========================================================
-    // AUTO-FIT
+    // APP HEIGHT + SCROLL DETECTION
     // =========================================================
-    const MIN_SCALE = 0.78;
     function recalculateScreen() {
-      const actualHeight = window.innerHeight;
-      document.documentElement.style.setProperty('--app-height', `${actualHeight}px`);
-
-      const headerH = document.querySelector('header')?.offsetHeight || 70;
-      const activeSlide = document.querySelector('.slide.active');
-      const inner = activeSlide?.querySelector('.slide-inner');
-      if (!activeSlide || !inner) return;
-
-      const availableHeight = actualHeight - headerH - 40;
-      const contentHeight = inner.scrollHeight;
-
-      activeSlide.style.overflowY = '';
-      activeSlide.style.alignItems = '';
-
-      if (contentHeight > availableHeight && availableHeight > 280) {
-        const raw = availableHeight / contentHeight;
-        const scale = Math.max(MIN_SCALE, Math.min(1, raw));
-        inner.style.transform = `scale(${scale})`;
-        inner.style.transformOrigin = 'top center';
-        if (raw < MIN_SCALE) {
-          activeSlide.style.overflowY = 'auto';
-          activeSlide.style.alignItems = 'flex-start';
-        }
-      } else {
-        inner.style.transform = 'scale(1)';
-      }
+      document.documentElement.style.setProperty('--app-height', `${innerHeight}px`);
+      updateScrollableSlides();
     }
-
-    window.addEventListener('resize', recalculateScreen);
-    window.addEventListener('orientationchange', recalculateScreen);
+    addEventListener('resize', recalculateScreen);
+    addEventListener('orientationchange', recalculateScreen);
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(recalculateScreen);
+      document.fonts.ready.then(updateScrollableSlides);
     }
-    recalculateScreen();
+    // Initial detection — run once after layout
+    requestAnimationFrame(() => requestAnimationFrame(updateScrollableSlides));
 
     // =========================================================
     // MODAL
@@ -1559,10 +1495,10 @@
 
       modalChips.innerHTML = '';
       (tags || []).forEach(t => {
-        const s = document.createElement('span');
-        s.className = 'chip';
-        s.innerText = t;
-        modalChips.appendChild(s);
+        const el = document.createElement('span');
+        el.className = 'chip';
+        el.innerText = t;
+        modalChips.appendChild(el);
       });
 
       projectModal.style.display = 'flex';
@@ -1586,9 +1522,7 @@
       });
     }
 
-    function closeModalOnBg(e) {
-      if (e.target === projectModal) closeProjectModal();
-    }
+    function closeModalOnBg(e) { if (e.target === projectModal) closeProjectModal(); }
 
     projectModal.addEventListener('keydown', (e) => {
       if (e.key !== 'Tab') return;
@@ -1615,6 +1549,7 @@
       const currentSlide = slides[current];
       const nextSlide = slides[nextIndex];
       currentSlide.scrollTop = 0;
+      nextSlide.scrollTop = 0;
 
       const currentElems = currentSlide.querySelectorAll('.morph-elem');
       const nextElems = nextSlide.querySelectorAll('.morph-elem');
@@ -1626,7 +1561,8 @@
           currentSlide.classList.remove('active');
           gsap.set(currentSlide, { visibility: 'hidden', opacity: 0 });
           current = nextIndex;
-          recalculateScreen();
+          // Re-check scrollability after activation (fonts / layout may have changed)
+          requestAnimationFrame(updateScrollableSlides);
           isAnimating = false;
         }
       });
@@ -1639,8 +1575,7 @@
         ease: 'power2.in'
       })
       .to(currentSlide, {
-        scale: 0.97,
-        opacity: 0,
+        scale: 0.97, opacity: 0,
         duration: MOTION.fade,
         ease: 'power2.in'
       }, "<0.05");
@@ -1648,15 +1583,13 @@
       tl.set(nextSlide, { visibility: 'visible', opacity: 0, scale: MOTION.scaleFrom })
         .set(nextElems, { y: direction > 0 ? MOTION.dist + 5 : -(MOTION.dist + 5), opacity: 0 })
         .to(nextSlide, {
-          opacity: 1,
-          scale: MOTION.scaleTo,
+          opacity: 1, scale: MOTION.scaleTo,
           duration: MOTION.dur + 0.1,
           ease: 'power3.out',
           onStart: () => nextSlide.classList.add('active')
         })
         .to(nextElems, {
-          y: 0,
-          opacity: 1,
+          y: 0, opacity: 1,
           stagger: MOTION.stagger,
           duration: MOTION.dur,
           ease: 'power3.out'
@@ -1668,21 +1601,20 @@
       goToSlide(index, index > current ? 1 : -1);
     }
 
-    // Wheel
+    // =========================================================
+    // WHEEL — let slide scroll if scrollable & not at boundary
+    // =========================================================
     let wheelTimeout;
     window.addEventListener('wheel', (e) => {
-      if (isModalOpen()) return;
-      e.preventDefault();
-      if (isAnimating) return;
+      if (isModalOpen() || isAnimating) return;
 
-      const activeSlide = slides[current];
-      if (activeSlide.style.overflowY === 'auto') {
-        const atTop = activeSlide.scrollTop <= 0;
-        const atBottom = activeSlide.scrollTop + activeSlide.clientHeight >= activeSlide.scrollHeight - 2;
-        if (e.deltaY > 0 && !atBottom) return;
-        if (e.deltaY < 0 && !atTop) return;
+      const s = slides[current];
+      if (isSlideScrollable(s)) {
+        if (e.deltaY > 0 && !isSlideAtBottom(s)) return;  // native scroll
+        if (e.deltaY < 0 && !isSlideAtTop(s)) return;
       }
 
+      e.preventDefault();
       clearTimeout(wheelTimeout);
       wheelTimeout = setTimeout(() => {
         if (e.deltaY > 25) goToSlide(current + 1, 1);
@@ -1690,36 +1622,76 @@
       }, 25);
     }, { passive: false });
 
-    // Touch
+    // =========================================================
+    // TOUCH — only switch slides when scrollable slide is at boundary
+    // =========================================================
     let touchStartY = 0;
+    let touchStartScrollTop = 0;
+    let touchStartedScrollable = false;
+
     window.addEventListener('touchstart', (e) => {
       if (isModalOpen()) return;
       touchStartY = e.touches[0].clientY;
+      const s = slides[current];
+      touchStartScrollTop = s.scrollTop;
+      touchStartedScrollable = isSlideScrollable(s);
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
       if (isAnimating || isModalOpen()) return;
       const diffY = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(diffY) > 35) {
-        if (diffY > 0) goToSlide(current + 1, 1);
-        else goToSlide(current - 1, -1);
+      if (Math.abs(diffY) < 35) return;
+
+      const s = slides[current];
+      const atBottom = isSlideAtBottom(s);
+      const atTop = isSlideAtTop(s);
+
+      if (touchStartedScrollable) {
+        const startedAtBottom = touchStartScrollTop + s.clientHeight >= s.scrollHeight - 4;
+        const startedAtTop = touchStartScrollTop <= 2;
+        if (diffY > 0 && !(startedAtBottom && atBottom)) return;
+        if (diffY < 0 && !(startedAtTop && atTop)) return;
       }
+
+      if (diffY > 0) goToSlide(current + 1, 1);
+      else goToSlide(current - 1, -1);
     }, { passive: true });
 
-    // Keyboard
+    // =========================================================
+    // KEYBOARD
+    // =========================================================
     window.addEventListener('keydown', (e) => {
       if (isModalOpen()) {
         if (e.key === 'Escape') closeProjectModal();
         return;
       }
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') goToSlide(current + 1, 1);
-      else if (e.key === 'ArrowUp' || e.key === 'PageUp') goToSlide(current - 1, -1);
+      const s = slides[current];
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        if (isSlideScrollable(s) && !isSlideAtBottom(s)) {
+          s.scrollBy({ top: 120, behavior: 'smooth' });
+          return;
+        }
+        goToSlide(current + 1, 1);
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        if (isSlideScrollable(s) && !isSlideAtTop(s)) {
+          s.scrollBy({ top: -120, behavior: 'smooth' });
+          return;
+        }
+        goToSlide(current - 1, -1);
+      }
     });
 
-    mobileHint.addEventListener('click', () => goToSlide(current + 1, 1));
+    mobileHint.addEventListener('click', () => {
+      const s = slides[current];
+      if (isSlideScrollable(s) && !isSlideAtBottom(s)) {
+        s.scrollBy({ top: s.clientHeight * 0.8, behavior: 'smooth' });
+        return;
+      }
+      goToSlide(current + 1, 1);
+    });
 
     // =========================================================
-    // INITIAL ANIMATION
+    // INITIAL
     // =========================================================
     gsap.from('.slide.active .morph-elem', {
       y: MOTION.dist,
