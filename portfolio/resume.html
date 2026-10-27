@@ -2,27 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Md Al Shahreya Shifat - Vibe Coder</title>
-  
-  <!-- Google Fonts -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Md Al Shahreya Shifat — Full-Stack Developer & Vibe Coder</title>
+
+  <meta name="description" content="Md Al Shahreya Shifat (shifat100) — Full-Stack Developer building PHP/MySQL/Node backends, KaiOS & feature phone apps, cloud phone systems, and custom Linux distros.">
+  <meta name="author" content="Md Al Shahreya Shifat">
+  <meta name="theme-color" content="#f8fafc">
+  <link rel="canonical" href="https://shifat100.github.io/">
+
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="Md Al Shahreya Shifat — Full-Stack Developer & Vibe Coder">
+  <meta property="og:description" content="Full-stack developer (PHP · MySQL · Node.js) specializing in KaiOS apps, cloud phone systems, and Linux remastering.">
+  <meta property="og:url" content="https://shifat100.github.io/">
+  <meta property="og:image" content="og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Md Al Shahreya Shifat — Full-Stack Developer & Vibe Coder">
+  <meta name="twitter:description" content="Full-stack developer (PHP · MySQL · Node.js) specializing in KaiOS apps, cloud phone systems, and Linux remastering.">
+  <meta name="twitter:image" content="og-image.png">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2310b981'/%3E%3Ctext x='50' y='72' font-size='64' font-family='monospace' font-weight='800' text-anchor='middle' fill='%23ffffff'%3ES%3C/text%3E%3C/svg%3E">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  
-  <!-- GSAP CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Md Al Shahreya Shifat",
+    "alternateName": "shifat100",
+    "jobTitle": "Full-Stack Developer",
+    "url": "https://shifat100.github.io/",
+    "sameAs": ["https://github.com/shifat100"],
+    "knowsAbout": ["HTML","CSS","JavaScript","Node.js","PHP","MySQL","KaiOS App Development","Feature Phone Apps","Electron.js","Linux Remastering","GitHub Actions","Cloud Phone Systems"],
+    "address": { "@type": "PostalAddress", "addressLocality": "Mymensingh", "addressCountry": "BD" }
+  }
+  </script>
+
   <style>
-    :root {
-      --bg: #060911;
-      --card-bg: rgba(14, 21, 37, 0.74);
-      --card-border: rgba(56, 189, 248, 0.16);
-      --accent: #00ff88;
-      --accent-blue: #38bdf8;
-      --text: #f8fafc;
+    /* ============ THEME TOKENS ============ */
+    :root,
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0a0f1a;
+      --bg-subtle: #0f1523;
+      --bg-elevated: #131a2a;
+      --card-bg: rgba(19, 26, 42, 0.72);
+      --card-border: rgba(148, 163, 184, 0.14);
+      --card-border-hover: rgba(16, 185, 129, 0.55);
+      --text: #f1f5f9;
+      --text-soft: #cbd5e1;
       --text-muted: #94a3b8;
-      --app-height: 100vh;
+      --accent: #10d99e;
+      --accent-soft: rgba(16, 217, 158, 0.1);
+      --accent-blue: #38bdf8;
+      --accent-blue-soft: rgba(56, 189, 248, 0.1);
+      --accent-purple: #a78bfa;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+      --shadow-accent: 0 8px 28px rgba(16, 217, 158, 0.18);
+      --orb-1: #10d99e;
+      --orb-2: #38bdf8;
+      --orb-3: #a78bfa;
+      --orb-opacity: 0.28;
+      --grid-line: rgba(148, 163, 184, 0.05);
+      --grid-dot: rgba(16, 217, 158, 0.1);
+      --nav-dot: rgba(148, 163, 184, 0.35);
+      --toggle-bg: rgba(255, 255, 255, 0.06);
+      --toggle-border: rgba(255, 255, 255, 0.12);
+      --icon-color: #f1f5f9;
+      --modal-bg: #131a2a;
+      --modal-overlay: rgba(5, 9, 17, 0.72);
+    }
+
+    [data-theme="light"] {
+      color-scheme: light;
+      --bg: #f8fafc;
+      --bg-subtle: #f1f5f9;
+      --bg-elevated: #ffffff;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --card-border-hover: #10b981;
+      --text: #0f172a;
+      --text-soft: #334155;
+      --text-muted: #64748b;
+      --accent: #059669;
+      --accent-soft: rgba(5, 150, 105, 0.08);
+      --accent-blue: #0284c7;
+      --accent-blue-soft: rgba(2, 132, 199, 0.08);
+      --accent-purple: #7c3aed;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
+      --shadow-accent: 0 8px 24px rgba(5, 150, 105, 0.15);
+      --orb-1: #a7f3d0;
+      --orb-2: #bae6fd;
+      --orb-3: #ddd6fe;
+      --orb-opacity: 0.5;
+      --grid-line: rgba(15, 23, 42, 0.035);
+      --grid-dot: rgba(5, 150, 105, 0.06);
+      --nav-dot: rgba(100, 116, 139, 0.4);
+      --toggle-bg: #ffffff;
+      --toggle-border: #e2e8f0;
+      --icon-color: #0f172a;
+      --modal-bg: #ffffff;
+      --modal-overlay: rgba(15, 23, 42, 0.4);
     }
 
     * {
@@ -33,37 +121,122 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    .contact-val, .hero-bio, .proj-desc, .modal-desc, .card-inst, .badge { user-select: text; }
+
+    html {
+      scroll-behavior: smooth;
+      --app-height: 100vh;
+    }
+
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       overflow: hidden;
       width: 100vw;
       height: var(--app-height);
       position: fixed;
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
 
-    /* Cyber Grid Background */
+    button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    /* ============ BACKGROUND LAYERS ============ */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      transition: opacity 0.4s ease;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: var(--orb-opacity);
+      will-change: transform;
+      transition: opacity 0.4s ease, background 0.4s ease;
+    }
+    .orb-1 {
+      width: 460px; height: 460px;
+      background: radial-gradient(circle, var(--orb-1) 0%, transparent 70%);
+      top: -14%; left: -12%;
+      animation: drift1 24s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, var(--orb-2) 0%, transparent 70%);
+      bottom: -18%; right: -14%;
+      animation: drift2 30s ease-in-out infinite;
+    }
+    .orb-3 {
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, var(--orb-3) 0%, transparent 70%);
+      top: 48%; left: 58%;
+      animation: drift3 34s ease-in-out infinite;
+    }
+    @keyframes drift1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%      { transform: translate(16%, 20%) scale(1.12); }
+    }
+    @keyframes drift2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%      { transform: translate(-14%, -16%) scale(1.08); }
+    }
+    @keyframes drift3 {
+      0%, 100% { transform: translate(-10%, 0) scale(1); }
+      50%      { transform: translate(10%, -12%) scale(0.92); }
+    }
+    @media (max-width: 640px) {
+      .orb { filter: blur(60px); }
+      .orb-3 { display: none; }
+    }
+
     .bg-grid {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.06) 0%, transparent 65%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 30px 30px, 30px 30px;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
+      background-size: 40px 40px, 40px 40px, 80px 80px;
       pointer-events: none;
       z-index: 1;
+      transition: background-image 0.4s ease;
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+      mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
     }
 
-    /* SVG Icon Style */
+    .cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 3;
+      will-change: transform;
+      transition: opacity 0.4s ease;
+    }
+    [data-theme="dark"] .cursor-glow {
+      mix-blend-mode: screen;
+      background: radial-gradient(circle, rgba(16, 217, 158, 0.14) 0%, rgba(56, 189, 248, 0.05) 40%, transparent 70%);
+    }
+    [data-theme="light"] .cursor-glow {
+      opacity: 0.5;
+      background: radial-gradient(circle, rgba(5, 150, 105, 0.12) 0%, transparent 60%);
+    }
+    @media (pointer: coarse) { .cursor-glow { display: none; } }
+
     .icon {
       display: inline-block;
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       stroke-width: 2;
       stroke: currentColor;
       fill: none;
@@ -73,13 +246,12 @@
       flex-shrink: 0;
     }
 
-    /* Header & Progress Indicator */
+    /* ============ HEADER ============ */
     header {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: 100%;
-      padding: clamp(12px, 2.2vh, 22px) clamp(18px, 4vw, 40px);
+      padding: clamp(14px, 2.4vh, 24px) clamp(18px, 4vw, 44px);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -89,33 +261,93 @@
     .logo {
       font-family: 'Space Grotesk', monospace;
       font-weight: 700;
-      font-size: clamp(0.95rem, 3.2vw, 1.25rem);
-      letter-spacing: 2px;
-      color: #fff;
+      font-size: clamp(0.95rem, 3.2vw, 1.2rem);
+      letter-spacing: 1.5px;
+      color: var(--text);
+      transition: color 0.4s ease;
     }
-    .logo span { color: var(--accent); }
-    
+    .logo span { color: var(--accent); transition: color 0.4s ease; }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      pointer-events: auto;
+    }
+
     .slide-counter {
       font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.85rem, 3vw, 1rem);
-      color: var(--accent-blue);
+      font-size: clamp(0.8rem, 2.8vw, 0.92rem);
+      color: var(--text-muted);
       letter-spacing: 2px;
-      font-weight: 700;
+      font-weight: 600;
+      transition: color 0.4s ease;
+      display: inline-block;
+    }
+    .slide-counter.flip { animation: flipIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes flipIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* THEME TOGGLE */
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--toggle-bg);
+      border: 1px solid var(--toggle-border);
+      color: var(--icon-color);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      position: relative;
+      transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    .theme-toggle:active { transform: translateY(0); }
+
+    .theme-toggle svg {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+    .theme-toggle .icon-sun {
+      opacity: 1;
+      transform: rotate(0deg) scale(1);
+    }
+    .theme-toggle .icon-moon {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.6);
+    }
+    [data-theme="dark"] .theme-toggle .icon-sun {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.6);
+    }
+    [data-theme="dark"] .theme-toggle .icon-moon {
+      opacity: 1;
+      transform: rotate(0deg) scale(1);
     }
 
     #progress-line {
       position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      width: 20%;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--accent-blue));
-      box-shadow: 0 0 12px var(--accent);
       z-index: 60;
-      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0.9;
     }
 
-    /* Desktop Navigation Dots */
+    /* ============ NAV DOTS ============ */
     .nav-dots {
       position: fixed;
       right: clamp(15px, 2.5vw, 30px);
@@ -127,384 +359,468 @@
       z-index: 50;
     }
     .dot {
-      width: 9px;
-      height: 9px;
+      width: 8px; height: 8px;
+      padding: 0;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: var(--nav-dot);
+      border: none;
       cursor: pointer;
-      transition: all 0.35s ease;
+      transition: all 0.3s ease;
+      position: relative;
     }
     .dot.active {
       background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-      transform: scale(1.4);
-      border-color: var(--accent);
+      transform: scale(1.5);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
+    .dot::after {
+      content: attr(data-label);
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-elevated);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-family: 'Space Grotesk', monospace;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      box-shadow: var(--shadow-md);
+    }
+    .dot:hover::after { opacity: 1; right: 26px; }
 
-    /* Slider Container */
+    /* ============ SLIDER ============ */
     .slider-container {
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       z-index: 10;
     }
 
     .slide {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      padding: clamp(60px, 8.5vh, 85px) clamp(16px, 4vw, 40px) clamp(25px, 4.5vh, 35px);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      padding: clamp(70px, 9vh, 95px) clamp(16px, 4vw, 44px) clamp(25px, 4.5vh, 40px);
       display: flex;
       justify-content: center;
       align-items: center;
       visibility: hidden;
       opacity: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--text-muted) transparent;
     }
-    .slide.active {
-      visibility: visible;
-      opacity: 1;
-    }
+    .slide::-webkit-scrollbar { width: 5px; }
+    .slide::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 3px; }
+    .slide.active { visibility: visible; opacity: 1; }
 
     .slide-inner {
-      max-width: 1100px;
+      max-width: 1120px;
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: clamp(12px, 1.8vh, 22px);
+      gap: clamp(14px, 2vh, 24px);
       transition: transform 0.3s ease;
+      margin: auto;
     }
 
-    /* Typography */
+    /* ============ TYPOGRAPHY ============ */
     .section-tag {
       font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.68rem, 1.8vw, 0.82rem);
-      letter-spacing: 2px;
+      font-size: clamp(0.68rem, 1.7vw, 0.78rem);
+      letter-spacing: 1.8px;
       text-transform: uppercase;
       color: var(--accent);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      font-weight: 600;
+      transition: color 0.4s ease;
     }
     .section-tag::before {
       content: '';
-      width: clamp(16px, 3vw, 24px);
-      height: 2px;
+      width: 22px;
+      height: 1.5px;
       background: var(--accent);
+      flex-shrink: 0;
+      transition: background 0.4s ease;
     }
     .section-title {
-      font-size: clamp(1.6rem, 4.8vw, 3.2rem);
+      font-size: clamp(1.6rem, 4.6vw, 3rem);
       font-weight: 800;
-      letter-spacing: -0.5px;
-      line-height: 1.1;
-      background: linear-gradient(135deg, #ffffff 40%, var(--accent-blue) 100%);
+      letter-spacing: -0.8px;
+      line-height: 1.08;
+      color: var(--text);
+      transition: color 0.4s ease;
+    }
+    [data-theme="dark"] .section-title {
+      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    /* Glass Cards */
-    .glass-card {
+    /* ============ CARDS ============ */
+    .glass-card, .proj-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: clamp(12px, 1.8vw, 18px);
-      padding: clamp(14px, 2vh, 22px);
-      backdrop-filter: blur(14px);
-      transition: all 0.25s ease;
+      border-radius: 16px;
+      padding: clamp(16px, 2.2vh, 22px);
+      transition:
+        background 0.4s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
-    .glass-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.08);
+    .glass-card:hover, .proj-card:hover {
+      border-color: var(--card-border-hover);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
 
-    /* ========================================================
-       SLIDE 1: HERO & BIO
-    ======================================================== */
+    /* ============ SLIDE 1: HERO ============ */
     .hero-layout {
       display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
+      grid-template-columns: 1.3fr 0.7fr;
       align-items: center;
-      gap: clamp(18px, 3.5vw, 40px);
+      gap: clamp(24px, 4vw, 48px);
     }
     .hero-bio {
-      font-size: clamp(0.88rem, 2.2vw, 1.08rem);
-      line-height: 1.55;
+      font-size: clamp(0.92rem, 2.2vw, 1.06rem);
+      line-height: 1.65;
       color: var(--text-muted);
-      margin-top: clamp(4px, 1vh, 10px);
+      margin-top: clamp(6px, 1.2vh, 12px);
+      max-width: 56ch;
+      transition: color 0.4s ease;
     }
+
+    .available-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px 6px 10px;
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-radius: 100px;
+      font-size: 0.68rem;
+      font-family: 'Space Grotesk', monospace;
+      color: var(--accent);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 14px;
+      width: fit-content;
+      transition: all 0.4s ease;
+    }
+    .available-pill .pulse {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.85); }
+    }
+    @media (max-width: 768px) {
+      .available-pill { margin-left: auto; margin-right: auto; }
+    }
+
     .meta-badges {
       display: flex;
       flex-wrap: wrap;
-      gap: clamp(6px, 1.2vw, 9px);
-      margin-top: clamp(10px, 1.6vh, 18px);
+      gap: 8px;
+      margin-top: clamp(14px, 2vh, 22px);
     }
     .badge {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--bg-subtle);
       border: 1px solid var(--card-border);
-      padding: clamp(5px, 0.8vh, 7px) clamp(9px, 1.8vw, 13px);
-      border-radius: 20px;
-      font-size: clamp(0.7rem, 1.7vw, 0.82rem);
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: clamp(0.7rem, 1.7vw, 0.8rem);
       font-family: 'Space Grotesk', monospace;
-      color: #cbd5e1;
+      color: var(--text-soft);
       display: inline-flex;
       align-items: center;
       gap: 6px;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
+      font-weight: 500;
     }
     .badge:hover {
       border-color: var(--accent-blue);
-      color: #fff;
+      color: var(--text);
+      transform: translateY(-1px);
     }
     .badge.accent {
-      border-color: rgba(0, 255, 136, 0.4);
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
       color: var(--accent);
-      background: rgba(0, 255, 136, 0.08);
+      background: var(--accent-soft);
     }
 
-    /* Avatar with Image & Fallback */
+    /* Avatar */
     .avatar-wrapper {
       position: relative;
-      width: clamp(130px, 26vw, 260px);
-      height: clamp(150px, 30vw, 300px);
+      width: clamp(140px, 24vw, 240px);
+      height: clamp(160px, 28vw, 280px);
       margin: 0 auto;
     }
+    [data-theme="dark"] .avatar-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 28%;
+      background: conic-gradient(from 0deg, #10d99e, #38bdf8, #a78bfa, #10d99e);
+      filter: blur(28px);
+      opacity: 0.35;
+      animation: spinAura 10s linear infinite;
+      z-index: -1;
+      will-change: transform;
+    }
+    @keyframes spinAura { to { transform: rotate(360deg); } }
+
     .avatar-frame {
-      width: 100%;
-      height: 100%;
-      border-radius: clamp(16px, 3vw, 24px);
+      width: 100%; height: 100%;
+      border-radius: 20px;
       border: 1px solid var(--card-border);
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(0, 255, 136, 0.06));
-      backdrop-filter: blur(16px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(0, 255, 136, 0.12);
+      background: var(--bg-elevated);
+      box-shadow: var(--shadow-lg);
       overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
+      z-index: 1;
+      transition: box-shadow 0.4s ease, background 0.4s ease, border-color 0.4s ease;
     }
-    .avatar-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .avatar-placeholder {
-      font-size: clamp(3rem, 7vw, 4.5rem);
+      font-size: clamp(3rem, 7vw, 4.2rem);
       font-weight: 800;
       font-family: 'Space Grotesk', sans-serif;
-      background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--accent);
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
     }
     .corner-decor {
       position: absolute;
-      width: 12px;
-      height: 12px;
+      width: 12px; height: 12px;
       border: 2px solid var(--accent);
       z-index: 5;
+      opacity: 0.6;
+      transition: border-color 0.4s ease;
     }
-    .corner-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
-    .corner-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+    .corner-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; border-radius: 3px 0 0 0; }
+    .corner-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; border-radius: 0 0 3px 0; }
 
-    /* ========================================================
-       SLIDE 2: EDUCATION & CREDENTIALS
-    ======================================================== */
+    /* ============ SLIDE 2: EDUCATION ============ */
     .edu-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: clamp(9px, 1.4vh, 16px);
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: clamp(10px, 1.6vh, 16px);
     }
     .card-year {
       font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.68rem, 1.7vw, 0.76rem);
+      font-size: clamp(0.66rem, 1.6vw, 0.74rem);
       color: var(--accent-blue);
       letter-spacing: 1.5px;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
       gap: 6px;
+      font-weight: 600;
+      transition: color 0.4s ease;
     }
     .card-title {
-      font-size: clamp(0.98rem, 2.2vw, 1.18rem);
+      font-size: clamp(0.96rem, 2.2vw, 1.14rem);
       font-weight: 700;
-      color: #fff;
-      margin-bottom: 3px;
+      color: var(--text);
+      margin-bottom: 4px;
+      letter-spacing: -0.2px;
+      transition: color 0.4s ease;
     }
     .card-inst {
       color: var(--text-muted);
       font-size: clamp(0.75rem, 1.8vw, 0.84rem);
-      line-height: 1.4;
+      line-height: 1.5;
+      transition: color 0.4s ease;
     }
 
-    /* ========================================================
-       SLIDE 3: SKILLS & ECOSYSTEMS
-    ======================================================== */
+    /* ============ SLIDE 3: SKILLS ============ */
     .skills-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: clamp(9px, 1.4vh, 16px);
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: clamp(10px, 1.6vh, 16px);
     }
     .skill-cat-title {
-      font-size: clamp(0.85rem, 2vw, 0.96rem);
+      font-size: clamp(0.85rem, 2vw, 0.94rem);
       font-weight: 700;
-      color: #fff;
-      margin-bottom: 8px;
+      color: var(--text);
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 8px;
+      letter-spacing: -0.1px;
+      transition: color 0.4s ease;
     }
-    .skill-cat-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.1);
-    }
+    .skill-cat-title .icon { color: var(--accent); transition: color 0.4s ease; }
     .skill-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: clamp(4px, 0.8vw, 7px);
+      gap: 6px;
     }
     .chip {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: clamp(4px, 0.6vh, 6px) clamp(8px, 1.4vw, 11px);
-      border-radius: 8px;
-      font-size: clamp(0.68rem, 1.6vw, 0.78rem);
-      color: #e2e8f0;
+      background: var(--bg-subtle);
+      border: 1px solid var(--card-border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: clamp(0.68rem, 1.6vw, 0.76rem);
+      color: var(--text-soft);
       transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      font-weight: 500;
     }
     .chip:hover {
       border-color: var(--accent);
       color: var(--accent);
+      background: var(--accent-soft);
     }
 
-    /* ========================================================
-       SLIDE 4: FEATURED PROJECTS
-    ======================================================== */
+    /* ============ SLIDE 4: PROJECTS ============ */
     .project-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: clamp(10px, 1.6vh, 18px);
     }
     .proj-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: clamp(14px, 2vw, 18px);
-      padding: clamp(14px, 2vh, 22px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
     .proj-desc {
-      font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+      font-size: clamp(0.76rem, 1.8vw, 0.86rem);
       color: var(--text-muted);
-      line-height: 1.45;
-      margin: 7px 0 12px;
+      line-height: 1.55;
+      margin: 8px 0 16px;
+      transition: color 0.4s ease;
     }
     .proj-btn {
-      font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.72rem, 1.7vw, 0.82rem);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(0.74rem, 1.7vw, 0.82rem);
       color: var(--accent);
       background: transparent;
-      border: 1px solid rgba(0, 255, 136, 0.3);
-      padding: 6px 12px;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-weight: 700;
+      font-weight: 600;
       width: fit-content;
       transition: all 0.25s ease;
+      letter-spacing: 0.2px;
     }
     .proj-btn:hover {
-      background: rgba(0, 255, 136, 0.12);
+      background: var(--accent-soft);
       border-color: var(--accent);
+      transform: translateY(-1px);
     }
 
-    /* ========================================================
-       SLIDE 5: CONTACT & CV DOWNLOAD
-    ======================================================== */
+    /* ============ SLIDE 5: CONTACT ============ */
     .contact-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(14px, 2.5vw, 30px);
+      gap: clamp(16px, 2.5vw, 32px);
       align-items: center;
     }
     .contact-info-list {
       display: flex;
       flex-direction: column;
-      gap: clamp(8px, 1.3vh, 14px);
+      gap: clamp(10px, 1.4vh, 14px);
     }
     .contact-item {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      padding: clamp(10px, 1.5vh, 16px) clamp(12px, 1.8vw, 18px);
+      padding: clamp(12px, 1.6vh, 16px) clamp(14px, 1.8vw, 18px);
       border-radius: 12px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-item:hover {
+      border-color: var(--card-border-hover);
+      box-shadow: var(--shadow-md);
     }
     .contact-icon-box {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(56, 189, 248, 0.1);
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--accent-blue-soft);
       display: flex;
       justify-content: center;
       align-items: center;
       color: var(--accent-blue);
       flex-shrink: 0;
+      transition: all 0.4s ease;
     }
     .contact-label {
-      font-size: clamp(0.65rem, 1.5vw, 0.72rem);
+      font-size: clamp(0.64rem, 1.5vw, 0.7rem);
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
+      font-weight: 600;
+      transition: color 0.4s ease;
     }
     .contact-val {
-      font-size: clamp(0.82rem, 2vw, 0.95rem);
+      font-size: clamp(0.82rem, 2vw, 0.94rem);
       font-weight: 600;
-      color: #fff;
+      color: var(--text);
       text-decoration: none;
+      transition: color 0.4s ease;
     }
-
-    /* Easy Quick Action Grid */
     .quick-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
     .quick-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.05);
+      padding: 11px 14px;
+      background: var(--bg-subtle);
       border: 1px solid var(--card-border);
       border-radius: 10px;
-      color: #cbd5e1;
+      color: var(--text-soft);
       font-size: 0.78rem;
-      font-family: 'Space Grotesk', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
       text-decoration: none;
       transition: all 0.2s ease;
     }
     .quick-btn:hover {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(0, 255, 136, 0.08);
+      background: var(--accent-soft);
+      transform: translateY(-1px);
     }
 
     .cta-btn {
@@ -512,15 +828,15 @@
       justify-content: center;
       align-items: center;
       gap: 8px;
-      padding: clamp(11px, 1.6vh, 15px) clamp(20px, 3.5vw, 28px);
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-      color: #060911;
+      padding: clamp(12px, 1.6vh, 15px) clamp(20px, 3.5vw, 28px);
+      border-radius: 10px;
+      background: var(--accent);
+      color: #ffffff;
       font-weight: 700;
-      font-size: clamp(0.82rem, 2vw, 0.92rem);
+      font-size: clamp(0.82rem, 2vw, 0.9rem);
       text-decoration: none;
-      letter-spacing: 1px;
-      box-shadow: 0 10px 25px rgba(0, 255, 136, 0.25);
+      letter-spacing: 0.3px;
+      box-shadow: var(--shadow-accent);
       cursor: pointer;
       border: none;
       width: 100%;
@@ -529,74 +845,82 @@
     }
     .cta-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 255, 136, 0.35);
+      filter: brightness(1.05);
+      box-shadow: 0 12px 32px color-mix(in srgb, var(--accent) 35%, transparent);
     }
     .cta-btn.secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
+      background: var(--bg-elevated);
+      color: var(--text);
       border: 1px solid var(--card-border);
-      box-shadow: none;
+      box-shadow: var(--shadow-sm);
     }
     .cta-btn.secondary:hover {
       border-color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      background: var(--accent-blue-soft);
     }
 
-    /* ========================================================
-       PROJECT MODAL POPUP
-    ======================================================== */
+    /* ============ MODAL ============ */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(4, 8, 16, 0.85);
-      backdrop-filter: blur(12px);
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: var(--modal-overlay);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       z-index: 200;
       display: none;
       justify-content: center;
       align-items: center;
       padding: 20px;
+      transition: background 0.4s ease;
     }
     .modal-card {
-      background: #0d1527;
+      background: var(--modal-bg);
       border: 1px solid var(--card-border);
       border-radius: 20px;
       max-width: 580px;
       width: 100%;
       max-height: 85vh;
       overflow-y: auto;
-      padding: clamp(20px, 3.5vh, 32px);
+      overscroll-behavior: contain;
+      padding: clamp(24px, 3.5vh, 32px);
       position: relative;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.15);
+      box-shadow: var(--shadow-lg);
+      transition: background 0.4s ease, border-color 0.4s ease;
     }
     .modal-close {
       position: absolute;
-      top: 16px;
-      right: 16px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      width: 32px;
-      height: 32px;
+      top: 16px; right: 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      width: 36px; height: 36px;
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-close:hover {
+      border-color: var(--accent);
+      color: var(--accent);
     }
     .modal-title {
       font-size: 1.4rem;
       font-weight: 700;
-      margin: 10px 0 6px;
-      color: #fff;
+      margin: 10px 0 8px;
+      color: var(--text);
+      letter-spacing: -0.3px;
+      transition: color 0.4s ease;
     }
     .modal-desc {
-      font-size: 0.9rem;
-      line-height: 1.6;
+      font-size: 0.92rem;
+      line-height: 1.65;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+      transition: color 0.4s ease;
     }
     .modal-chips {
       display: flex;
@@ -604,12 +928,8 @@
       gap: 6px;
       margin-bottom: 20px;
     }
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-    }
+    .modal-actions { display: flex; gap: 10px; }
 
-    /* Mobile Swipe Hint */
     .mobile-scroll-hint {
       position: fixed;
       bottom: 14px;
@@ -621,239 +941,262 @@
       align-items: center;
       gap: 4px;
       color: var(--accent);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       letter-spacing: 2px;
       font-family: 'Space Grotesk', monospace;
       animation: bounce 2s infinite ease-in-out;
       cursor: pointer;
+      background: transparent;
+      border: none;
+      font-weight: 600;
     }
     @keyframes bounce {
       0%, 100% { transform: translate(-50%, 0); }
-      50% { transform: translate(-50%, 6px); }
+      50%      { transform: translate(-50%, 6px); }
     }
 
-    /* Mobile Overrides */
     @media (max-width: 768px) {
       .hero-layout {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 14px;
+        gap: 18px;
       }
       .section-tag { justify-content: center; }
       .meta-badges { justify-content: center; }
       .avatar-wrapper { order: -1; }
-      
-      .contact-layout {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
+      .contact-layout { grid-template-columns: 1fr; gap: 18px; }
       .nav-dots { display: none; }
       .mobile-scroll-hint { display: flex; }
       .modal-actions { flex-direction: column; }
+      .header-right { gap: 8px; }
     }
 
     @media (max-height: 650px) {
-      .slide-inner {
-        transform: scale(0.92);
-        transform-origin: center center;
+      .hero-bio {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
-      .hero-bio { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     }
   </style>
 </head>
 <body>
-  <div class="bg-grid"></div>
-  <div id="progress-line"></div>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+  <div id="progress-line" aria-hidden="true"></div>
 
   <header>
     <div class="logo">SHIFAT100<span>.</span></div>
-    <div class="slide-counter" id="slideNum">01 / 05</div>
+    <div class="header-right">
+      <div class="slide-counter" id="slideNum" aria-live="polite">01 / 05</div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
   </header>
 
-  <!-- Desktop Navigation Dots -->
-  <div class="nav-dots">
-    <div class="dot active" onclick="jumpToSlide(0)"></div>
-    <div class="dot" onclick="jumpToSlide(1)"></div>
-    <div class="dot" onclick="jumpToSlide(2)"></div>
-    <div class="dot" onclick="jumpToSlide(3)"></div>
-    <div class="dot" onclick="jumpToSlide(4)"></div>
-  </div>
+  <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
 
-  <!-- Mobile Swipe Hint -->
-  <div class="mobile-scroll-hint" id="mobileHint" onclick="goToSlide(current + 1, 1)">
+  <button class="mobile-scroll-hint" id="mobileHint" type="button" aria-label="Next slide">
     <span>SWIPE</span>
-    <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-  </div>
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </button>
 
-  <!-- Interactive Project Modal Popup -->
-  <div id="projectModal" class="modal-overlay" onclick="closeModalOnBg(event)">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeProjectModal()">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  <div id="projectModal" class="modal-overlay" role="dialog" aria-modal="true"
+       aria-labelledby="modalTitle" aria-describedby="modalDesc"
+       onclick="closeModalOnBg(event)">
+    <div class="modal-card" role="document">
+      <button class="modal-close" onclick="closeProjectModal()" aria-label="Close project details">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
-      <div class="section-tag" id="modalTag">PROJECT SHOWCASE</div>
+      <div class="section-tag">PROJECT SHOWCASE</div>
       <h3 class="modal-title" id="modalTitle">Project Title</h3>
-      <p class="modal-desc" id="modalDesc">Project description goes here...</p>
+      <p class="modal-desc" id="modalDesc">Project description goes here…</p>
       <div class="modal-chips" id="modalChips"></div>
       <div class="modal-actions">
-        <a id="modalGithubLink" href="https://github.com/shifat100" target="_blank" class="cta-btn secondary">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-          <span>GitHub: shifat100</span>
+        <a id="modalGithubLink" href="https://github.com/shifat100" target="_blank" rel="noopener" class="cta-btn secondary">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          <span>View Source on GitHub</span>
         </a>
-        <a id="modalLiveLink" href="https://github.com/shifat100" target="_blank" class="cta-btn">
-          <span>Live Demo / Details</span>
-          <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        <a id="modalLiveLink" href="#" target="_blank" rel="noopener" class="cta-btn" style="display:none;">
+          <span>Live Demo</span>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </a>
       </div>
     </div>
   </div>
 
   <main class="slider-container" id="sliderContainer">
-    
-    <!-- ================= SLIDE 1: HERO & BIO ================= -->
-    <section class="slide active" data-index="0">
+
+    <!-- SLIDE 1 -->
+    <section class="slide active" data-index="0" data-label="Hero & Biography">
       <div class="slide-inner hero-layout">
         <div class="hero-text-content">
+          <div class="available-pill morph-elem">
+            <span class="pulse"></span>
+            AVAILABLE FOR WORK
+          </div>
           <div class="section-tag morph-elem">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            VIBE CODER & SYSTEMS ARCHITECT
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            FULL-STACK DEVELOPER · VIBE CODER
           </div>
           <h1 class="section-title morph-elem">MD AL SHAHREYA SHIFAT</h1>
           <p class="hero-bio morph-elem">
-            Proactive Vibe Coder specializing in rapid AI-accelerated web architecture, KaiOS & touch feature phone applications, cloud phone virtualization, and custom Linux remastering. Combining clean code with modern AI toolchains.
+            Full-stack developer &amp; vibe coder building PHP + MySQL + Node.js backends, AI-accelerated web apps,
+            KaiOS &amp; touch feature phone applications, cloud phone systems, and custom Linux remasters.
+            Hands-on across the whole stack — from the database schema to the shipped binary.
           </p>
           <div class="meta-badges morph-elem">
             <span class="badge accent">
-              <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              KaiOS & Cloud Phone
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              PHP · MySQL · Node.js
             </span>
-            <a href="https://github.com/shifat100" target="_blank" class="badge">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            <a href="https://github.com/shifat100" target="_blank" rel="noopener" class="badge">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
               GitHub: @shifat100
             </a>
             <span class="badge">
-              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-              Born: 06-08-2004
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              KaiOS &amp; Cloud Phone
             </span>
             <span class="badge">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               Mymensingh, BD
             </span>
           </div>
         </div>
 
-        <!-- Avatar Image with Monogram Fallback -->
         <div class="avatar-wrapper morph-elem">
           <div class="avatar-frame">
-            <div class="corner-decor corner-tl"></div>
-            <div class="corner-decor corner-br"></div>
-            <!-- Tries profile.jpg; falls back to AS monogram if image isn't loaded -->
-            <img 
-              id="avatarImg" 
-              src="profile.png" 
-              alt="Md Al Shahreya Shifat" 
-              class="avatar-img" 
+            <div class="corner-decor corner-tl" aria-hidden="true"></div>
+            <div class="corner-decor corner-br" aria-hidden="true"></div>
+            <img
+              id="avatarImg"
+              src="profile.png"
+              alt="Portrait of Md Al Shahreya Shifat"
+              class="avatar-img"
               onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';"
             >
-            <div id="avatarFallback" class="avatar-placeholder" style="display: none;">AS</div>
+            <div id="avatarFallback" class="avatar-placeholder" style="display: none;" aria-hidden="true">AS</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= SLIDE 2: EDUCATION & CREDENTIALS ================= -->
-    <section class="slide" data-index="1">
+    <!-- SLIDE 2 -->
+    <section class="slide" data-index="1" data-label="Education & Credentials">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
-            ACADEMIC & PROFESSIONAL CREDENTIALS
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+            ACADEMIC &amp; PROFESSIONAL CREDENTIALS
           </div>
-          <h2 class="section-title morph-elem">Education & Training</h2>
+          <h2 class="section-title morph-elem">Education &amp; Training</h2>
         </div>
 
         <div class="edu-grid">
           <div class="glass-card morph-elem">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               CURRENT DEGREE
             </div>
-            <h3 class="card-title">BBA (Bachelor of Business Administration)</h3>
-            <p class="card-inst">Institute of Science and Technology (IST) • Business Strategy, ERP Systems & Technology Leadership.</p>
+            <h3 class="card-title">BBA — Business Administration</h3>
+            <p class="card-inst">Institute of Science and Technology (IST) • Business Strategy, ERP Systems &amp; Technology Leadership.</p>
           </div>
-
           <div class="glass-card morph-elem">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               GOVT CERTIFICATION
             </div>
             <h3 class="card-title">AI Basic Course</h3>
-            <p class="card-inst">Department of Youth Development (DYD) • Artificial Intelligence Foundations, Prompt Systems & AI Workflows.</p>
+            <p class="card-inst">Department of Youth Development (DYD) • AI Foundations, Prompt Systems &amp; AI Workflows.</p>
           </div>
-
           <div class="glass-card morph-elem">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               COMPLETED 2022
             </div>
             <h3 class="card-title">Higher Secondary Certificate (HSC)</h3>
-            <p class="card-inst">College Level • Information & Communication Technology, Analytical Logic & Natural Sciences.</p>
+            <p class="card-inst">College Level • ICT, Analytical Logic &amp; Natural Sciences.</p>
           </div>
-
           <div class="glass-card morph-elem">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               COMPLETED 2020
             </div>
             <h3 class="card-title">Secondary School Certificate (SSC)</h3>
-            <p class="card-inst">School Level • Core Mathematics, Computer Science Fundamentals & Science.</p>
+            <p class="card-inst">School Level • Core Mathematics, Computer Science &amp; Science.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= SLIDE 3: SKILLS & ECOSYSTEMS ================= -->
-    <section class="slide" data-index="2">
+    <!-- SLIDE 3 -->
+    <section class="slide" data-index="2" data-label="Skills & Ecosystems">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
-            <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            TECH ARSENAL & PROFICIENCIES
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            TECH ARSENAL &amp; PROFICIENCIES
           </div>
-          <h2 class="section-title morph-elem">Skills & Ecosystems</h2>
+          <h2 class="section-title morph-elem">Skills &amp; Ecosystems</h2>
         </div>
 
         <div class="skills-container">
-          <!-- Web & Core Scripting -->
           <div class="glass-card morph-elem">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-              Web & Core Scripting
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              Web &amp; Core Scripting
             </div>
             <div class="skill-chips">
               <span class="chip">HTML5 / CSS3</span>
+              <span class="chip">Vanilla JS (All)</span>
               <span class="chip">Tailwind CSS</span>
               <span class="chip">Bootstrap</span>
-              <span class="chip">Vanilla JS (All)</span>
-              <span class="chip">Node.js</span>
-              <span class="chip">Three.js</span>
               <span class="chip">GSAP 3</span>
-              <span class="chip">PHP Core & OOP</span>
+              <span class="chip">Three.js</span>
               <span class="chip">WordPress CMS</span>
+              <span class="chip">Web Design / UI-UX</span>
             </div>
           </div>
 
-          <!-- KaiOS, Apps & Cloud Phone -->
           <div class="glass-card morph-elem">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-              KaiOS, Desktop & Mobile
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path></svg>
+              Backend &amp; Data
+            </div>
+            <div class="skill-chips">
+              <span class="chip">PHP Core &amp; OOP</span>
+              <span class="chip">MySQL</span>
+              <span class="chip">Node.js</span>
+              <span class="chip">REST APIs</span>
+              <span class="chip">CRUD Architecture</span>
+              <span class="chip">Sessions &amp; Auth</span>
+              <span class="chip">phpMyAdmin</span>
+            </div>
+          </div>
+
+          <div class="glass-card morph-elem">
+            <div class="skill-cat-title">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              KaiOS, Mobile &amp; Cloud
             </div>
             <div class="skill-chips">
               <span class="chip">KaiOS App Dev (Pro)</span>
               <span class="chip">Touch Feature Phone Apps</span>
               <span class="chip">Cloud Phone Systems</span>
-              <span class="chip">Electron.js</span>
               <span class="chip">Construct Engine</span>
               <span class="chip">Sketchware</span>
               <span class="chip">Python (Basic)</span>
@@ -861,35 +1204,51 @@
             </div>
           </div>
 
-          <!-- Linux, Customization & Android CLI -->
           <div class="glass-card morph-elem">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line></svg>
-              Linux & Android CLI
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              Desktop &amp; Cross-Platform
+            </div>
+            <div class="skill-chips">
+              <span class="chip">Electron.js</span>
+              <span class="chip">electron-builder</span>
+              <span class="chip">Windows / macOS / Linux</span>
+              <span class="chip">GitHub Actions CI</span>
+              <span class="chip">GitHub Pages</span>
+              <span class="chip">GitHub Releases</span>
+              <span class="chip">APK Builds</span>
+            </div>
+          </div>
+
+          <div class="glass-card morph-elem">
+            <div class="skill-cat-title">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line></svg>
+              OS &amp; Terminal
             </div>
             <div class="skill-chips">
               <span class="chip">Penguins' eggs (Remastering)</span>
               <span class="chip">Kali Linux</span>
               <span class="chip">Ubuntu</span>
               <span class="chip">Bash Scripting</span>
+              <span class="chip">PowerShell</span>
+              <span class="chip">CMD</span>
               <span class="chip">Termux (CLI)</span>
               <span class="chip">TouchRec</span>
-              <span class="chip">Vibe Coding</span>
-              <span class="chip">AI Web Problem Solving</span>
             </div>
           </div>
 
-          <!-- Enterprise, Office & Creative -->
           <div class="glass-card morph-elem">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-              Enterprise & Creative
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              Vibe Coding &amp; Creative
             </div>
             <div class="skill-chips">
-              <span class="chip">ERP Software</span>
-              <span class="chip">Microsoft Office (Word/Excel/PPT)</span>
-              <span class="chip">Adobe Photoshop</span>
+              <span class="chip">Vibe Coding</span>
+              <span class="chip">AI Web Problem Solving</span>
               <span class="chip">Full Web Development</span>
+              <span class="chip">ERP Software</span>
+              <span class="chip">MS Office (Word/Excel/PPT)</span>
+              <span class="chip">Adobe Photoshop</span>
               <span class="chip">Complex Problem Solving</span>
               <span class="chip">Communication Skills</span>
             </div>
@@ -898,130 +1257,134 @@
       </div>
     </section>
 
-    <!-- ================= SLIDE 4: FEATURED WORK ================= -->
-    <section class="slide" data-index="3">
+    <!-- SLIDE 4 -->
+    <section class="slide" data-index="3" data-label="Featured Work">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-            PROJECT ARCHITECTURE & REPOSITORIES
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            PROJECT ARCHITECTURE &amp; REPOSITORIES
           </div>
           <h2 class="section-title morph-elem">Featured Work</h2>
         </div>
 
         <div class="project-grid">
-          <!-- Project 1 -->
           <div class="proj-card morph-elem">
             <div>
-              <span class="badge accent">KaiOS & Cloud Phone</span>
-              <h3 class="card-title" style="margin-top: 8px;">KaiOS Smart Suite</h3>
-              <p class="proj-desc">Custom optimized apps built for KaiOS and touch feature phones with low-memory footprint and cloud synchronization.</p>
+              <span class="badge accent">KaiOS &amp; Cloud Phone</span>
+              <h3 class="card-title" style="margin-top: 10px;">KaiOS Smart Suite</h3>
+              <p class="proj-desc">Lightweight KaiOS + touch feature phone apps with cloud phone integration, offline caching, and native key navigation.</p>
             </div>
-            <button class="proj-btn" onclick="openProjectModal('KaiOS Smart Suite', 'Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.', ['KaiOS', 'JavaScript', 'Cloud Phone', 'HTML5'], 'https://github.com/shifat100')">
+            <button class="proj-btn"
+              onclick="openProjectModal('KaiOS Smart Suite','Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.',['KaiOS','JavaScript','Cloud Phone','HTML5'],'https://github.com/shifat100')">
               <span>VIEW PROJECT</span>
-              <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
 
-          <!-- Project 2 -->
           <div class="proj-card morph-elem">
             <div>
-              <span class="badge">Linux & Penguins' Eggs</span>
-              <h3 class="card-title" style="margin-top: 8px;">Penguin OS Remaster</h3>
-              <p class="proj-desc">Customized Debian/Ubuntu Linux distributions remastered using Penguins' eggs CLI with integrated developer utilities.</p>
+              <span class="badge">Linux &amp; Penguins' eggs</span>
+              <h3 class="card-title" style="margin-top: 10px;">Penguin OS Remaster</h3>
+              <p class="proj-desc">Customized Debian/Ubuntu remastered with Penguins' eggs CLI, bundled dev utilities, and Kali security tooling.</p>
             </div>
-            <button class="proj-btn" onclick="openProjectModal('Penguin OS Remaster', 'Tailored Linux ISO built using Penguins\' eggs, featuring automated developer packages, Kali security tools, and lightweight XFCE environments.', ['Penguins\' eggs', 'Debian', 'Bash', 'Kali Tools'], 'https://github.com/shifat100')">
+            <button class="proj-btn"
+              onclick="openProjectModal('Penguin OS Remaster','Tailored Linux ISO built using Penguins eggs, featuring automated developer packages, Kali security tools, and a lightweight XFCE environment.',['Penguins eggs','Debian','Bash','Kali Tools'],'https://github.com/shifat100')">
               <span>VIEW PROJECT</span>
-              <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
 
-          <!-- Project 3 -->
           <div class="proj-card morph-elem">
             <div>
-              <span class="badge">Desktop & CLI</span>
-              <h3 class="card-title" style="margin-top: 8px;">Electron & Termux Tools</h3>
-              <p class="proj-desc">Cross-platform desktop utilities engineered with Electron.js along with Android Termux automation workflows and scripts.</p>
+              <span class="badge">Desktop &amp; CLI</span>
+              <h3 class="card-title" style="margin-top: 10px;">Electron &amp; Termux Tools</h3>
+              <p class="proj-desc">Cross-platform desktop utilities built with Electron.js, paired with Termux automation workflows for mobile/desktop harmony.</p>
             </div>
-            <button class="proj-btn" onclick="openProjectModal('Electron & Termux Tools', 'Cross-platform productivity tools with Electron.js frontends and Termux headless background scripts for mobile/desktop harmony.', ['Electron.js', 'Termux', 'Node.js', 'TouchRec'], 'https://github.com/shifat100')">
+            <button class="proj-btn"
+              onclick="openProjectModal('Electron & Termux Tools','Cross-platform productivity tools with Electron.js frontends and Termux headless background scripts.',['Electron.js','Termux','Node.js','TouchRec'],'https://github.com/shifat100')">
               <span>VIEW PROJECT</span>
-              <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+          <div class="proj-card morph-elem">
+            <div>
+              <span class="badge accent">PHP + MySQL</span>
+              <h3 class="card-title" style="margin-top: 10px;">PHP CRUD Dashboard</h3>
+              <p class="proj-desc">Full-stack PHP + MySQL admin panel with session auth, prepared-statement CRUD, and a lightweight Tailwind front-end.</p>
+            </div>
+            <button class="proj-btn"
+              onclick="openProjectModal('PHP CRUD Dashboard','Full-stack PHP + MySQL admin panel: session-based login, prepared-statement CRUD, pagination, and a Tailwind-styled dashboard. Deployed on shared hosting with phpMyAdmin schema.',['PHP','MySQL','Sessions','Tailwind','CRUD'],'https://github.com/shifat100')">
+              <span>VIEW PROJECT</span>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= SLIDE 5: CONTACT & CV ================= -->
-    <section class="slide" data-index="4">
+    <!-- SLIDE 5 -->
+    <section class="slide" data-index="4" data-label="Contact">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            COLLABORATION & INQUIRIES
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            COLLABORATION &amp; INQUIRIES
           </div>
           <h2 class="section-title morph-elem">Get In Touch</h2>
         </div>
 
         <div class="contact-layout">
-          <!-- Information List & Easy Quick Contact -->
           <div class="contact-info-list morph-elem">
             <div class="contact-item">
               <div class="contact-icon-box">
-                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               </div>
               <div>
-                <div class="contact-label">Email Address</div>
+                <div class="contact-label">Email</div>
                 <a href="mailto:alshahreya@gmail.com" class="contact-val">alshahreya@gmail.com</a>
               </div>
             </div>
-
             <div class="contact-item">
               <div class="contact-icon-box">
-                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               </div>
               <div>
-                <div class="contact-label">Location Base</div>
+                <div class="contact-label">Location</div>
                 <div class="contact-val">Mymensingh, Bangladesh</div>
               </div>
             </div>
-
-            <!-- Easy Quick Action Grid -->
             <div class="quick-contact-grid">
-              <a href="https://wa.me/8801743393670" target="_blank" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              <a href="https://wa.me/8801743393670" target="_blank" rel="noopener" class="quick-btn">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 <span>WhatsApp</span>
               </a>
               <a href="tel:+8801743393670" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                 <span>Direct Call</span>
               </a>
-              <a href="https://github.com/shifat100" target="_blank" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                <span>Shifat100</span>
+              <a href="https://github.com/shifat100" target="_blank" rel="noopener" class="quick-btn">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                <span>shifat100</span>
               </a>
               <a href="mailto:alshahreya@gmail.com" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
                 <span>Quick Mail</span>
               </a>
             </div>
           </div>
 
-          <!-- CV Download & Message Card -->
           <div class="glass-card morph-elem" style="text-align: center;">
-            <h3 class="card-title">Curriculum Vitae & Hire</h3>
-            <p class="proj-desc" style="margin-bottom: 14px;">Available for AI web building, KaiOS development, Linux remastering, and software engineering roles.</p>
-            
-            <!-- Download CV Button -->
-            <a href="resume.pdf" download="CV.pdf" class="cta-btn secondary" style="margin-bottom: 8px;">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <h3 class="card-title">Curriculum Vitae &amp; Hire</h3>
+            <p class="proj-desc" style="margin-bottom: 14px;">Open to full-stack (PHP/MySQL/Node), KaiOS, Linux remastering, and cross-platform desktop roles.</p>
+            <a href="resume.pdf" download="Md_Al_Shahreya_Shifat_CV.pdf" class="cta-btn secondary" style="margin-bottom: 8px;">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>DOWNLOAD CV (PDF)</span>
             </a>
-
-            <!-- Send Message Button -->
             <a href="mailto:alshahreya@gmail.com" class="cta-btn">
               <span>SEND INQUIRY</span>
-              <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </a>
           </div>
         </div>
@@ -1032,68 +1395,194 @@
 
   <script>
     // =========================================================
-    // DYNAMIC SCREEN CALCULATION ENGINE (Android Auto-Fit)
+    // THEME TOGGLE — persists to localStorage, respects OS pref
     // =========================================================
+    (function initTheme() {
+      const html = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+
+      const saved = localStorage.getItem('theme');
+      const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      const initial = saved || (prefersLight ? 'light' : 'dark');
+
+      applyTheme(initial);
+
+      function applyTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        if (metaTheme) metaTheme.setAttribute('content', theme === 'light' ? '#f8fafc' : '#0a0f1a');
+      }
+
+      toggle.addEventListener('click', () => {
+        const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+
+      // Live-update if OS preference changes and user hasn't chosen manually
+      window.matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', e => {
+        if (localStorage.getItem('theme')) return;
+        applyTheme(e.matches ? 'light' : 'dark');
+      });
+    })();
+
+    // =========================================================
+    // MOTION
+    // =========================================================
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const MOTION = reduceMotion
+      ? { dist: 8,  dur: 0.16, stagger: 0.015, scaleFrom: 1.00, scaleTo: 1.00, fade: 0.14 }
+      : { dist: 28, dur: 0.45, stagger: 0.05,  scaleFrom: 1.03, scaleTo: 1.00, fade: 0.30 };
+
+    // =========================================================
+    // CURSOR GLOW
+    // =========================================================
+    (function initCursorGlow() {
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+      const glow = document.getElementById('cursorGlow');
+      if (!glow) return;
+      let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+      let gx = mx, gy = my;
+      document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+      function tick() {
+        gx += (mx - gx) * 0.15;
+        gy += (my - gy) * 0.15;
+        glow.style.transform = `translate3d(${gx}px, ${gy}px, 0) translate(-50%, -50%)`;
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // =========================================================
+    // SLIDE CHROME
+    // =========================================================
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    const slideNum = document.getElementById('slideNum');
+    const progressLine = document.getElementById('progress-line');
+    const navDots = document.getElementById('navDots');
+    const mobileHint = document.getElementById('mobileHint');
+
+    slides.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dot' + (i === 0 ? ' active' : '');
+      b.setAttribute('data-label', s.dataset.label || '');
+      b.setAttribute('aria-label', `Go to slide ${i + 1}: ${s.dataset.label || ''}`);
+      if (i === 0) b.setAttribute('aria-current', 'true');
+      b.addEventListener('click', () => jumpToSlide(i));
+      navDots.appendChild(b);
+    });
+    const dots = navDots.querySelectorAll('.dot');
+    const pad = n => String(n).padStart(2, '0');
+
+    function updateChrome(index) {
+      slideNum.innerText = `${pad(index + 1)} / ${pad(total)}`;
+      slideNum.classList.remove('flip');
+      void slideNum.offsetWidth;
+      slideNum.classList.add('flip');
+      progressLine.style.width = `${((index + 1) / total) * 100}%`;
+      dots.forEach((d, i) => {
+        d.classList.toggle('active', i === index);
+        if (i === index) d.setAttribute('aria-current', 'true');
+        else d.removeAttribute('aria-current');
+      });
+      if (index === total - 1) mobileHint.style.display = 'none';
+      else if (window.innerWidth <= 768) mobileHint.style.display = 'flex';
+    }
+    updateChrome(0);
+
+    // =========================================================
+    // AUTO-FIT
+    // =========================================================
+    const MIN_SCALE = 0.78;
     function recalculateScreen() {
       const actualHeight = window.innerHeight;
       document.documentElement.style.setProperty('--app-height', `${actualHeight}px`);
 
-      const activeSlideInner = document.querySelector('.slide.active .slide-inner');
-      if (activeSlideInner) {
-        const availableHeight = actualHeight - 110;
-        const contentHeight = activeSlideInner.scrollHeight;
-        
-        if (contentHeight > availableHeight && availableHeight > 280) {
-          const scaleFactor = availableHeight / contentHeight;
-          activeSlideInner.style.transform = `scale(${Math.min(1, scaleFactor)})`;
-          activeSlideInner.style.transformOrigin = 'center center';
-        } else {
-          activeSlideInner.style.transform = 'scale(1)';
+      const headerH = document.querySelector('header')?.offsetHeight || 70;
+      const activeSlide = document.querySelector('.slide.active');
+      const inner = activeSlide?.querySelector('.slide-inner');
+      if (!activeSlide || !inner) return;
+
+      const availableHeight = actualHeight - headerH - 40;
+      const contentHeight = inner.scrollHeight;
+
+      activeSlide.style.overflowY = '';
+      activeSlide.style.alignItems = '';
+
+      if (contentHeight > availableHeight && availableHeight > 280) {
+        const raw = availableHeight / contentHeight;
+        const scale = Math.max(MIN_SCALE, Math.min(1, raw));
+        inner.style.transform = `scale(${scale})`;
+        inner.style.transformOrigin = 'top center';
+        if (raw < MIN_SCALE) {
+          activeSlide.style.overflowY = 'auto';
+          activeSlide.style.alignItems = 'flex-start';
         }
+      } else {
+        inner.style.transform = 'scale(1)';
       }
     }
 
     window.addEventListener('resize', recalculateScreen);
     window.addEventListener('orientationchange', recalculateScreen);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(recalculateScreen);
+    }
     recalculateScreen();
 
     // =========================================================
-    // PROJECT MODAL CONTROLLER
+    // MODAL
     // =========================================================
     const projectModal = document.getElementById('projectModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalDesc = document.getElementById('modalDesc');
     const modalChips = document.getElementById('modalChips');
     const modalGithubLink = document.getElementById('modalGithubLink');
+    const modalLiveLink = document.getElementById('modalLiveLink');
+    let lastFocusedEl = null;
+    const isModalOpen = () => projectModal.style.display === 'flex';
 
-    function openProjectModal(title, description, tags, githubUrl) {
+    function openProjectModal(title, description, tags, githubUrl, liveUrl) {
+      lastFocusedEl = document.activeElement;
       modalTitle.innerText = title;
       modalDesc.innerText = description;
-      modalGithubLink.href = githubUrl || "https://github.com/shifat100";
-      
-      modalChips.innerHTML = '';
-      if (tags && tags.length) {
-        tags.forEach(t => {
-          const s = document.createElement('span');
-          s.className = 'chip';
-          s.innerText = t;
-          modalChips.appendChild(s);
-        });
+      modalGithubLink.href = githubUrl || 'https://github.com/shifat100';
+
+      if (liveUrl) {
+        modalLiveLink.href = liveUrl;
+        modalLiveLink.style.display = 'inline-flex';
+      } else {
+        modalLiveLink.style.display = 'none';
       }
-      
+
+      modalChips.innerHTML = '';
+      (tags || []).forEach(t => {
+        const s = document.createElement('span');
+        s.className = 'chip';
+        s.innerText = t;
+        modalChips.appendChild(s);
+      });
+
       projectModal.style.display = 'flex';
-      gsap.fromTo('.modal-card', { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' });
+      gsap.fromTo('.modal-card',
+        { scale: 0.94, opacity: 0 },
+        { scale: 1, opacity: 1, duration: reduceMotion ? 0.15 : 0.28, ease: 'power2.out' });
+      requestAnimationFrame(() => document.querySelector('.modal-close')?.focus());
     }
 
     function closeProjectModal() {
+      if (!isModalOpen()) return;
+      const finish = () => {
+        projectModal.style.display = 'none';
+        if (lastFocusedEl && typeof lastFocusedEl.focus === 'function') lastFocusedEl.focus();
+      };
       gsap.to('.modal-card', {
-        scale: 0.9,
-        opacity: 0,
-        duration: 0.2,
+        scale: 0.94, opacity: 0,
+        duration: reduceMotion ? 0.12 : 0.18,
         ease: 'power2.in',
-        onComplete: () => {
-          projectModal.style.display = 'none';
-        }
+        onComplete: finish
       });
     }
 
@@ -1101,18 +1590,23 @@
       if (e.target === projectModal) closeProjectModal();
     }
 
-    // =========================================================
-    // GSAP SLIDE CONTROLLER (Wheel & Touch Morph Transitions)
-    // =========================================================
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-    const slideNum = document.getElementById('slideNum');
-    const progressLine = document.getElementById('progress-line');
-    const mobileHint = document.getElementById('mobileHint');
+    projectModal.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      const focusables = projectModal.querySelectorAll(
+        'button:not([style*="display: none"]), a[href]:not([style*="display: none"]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
 
+    // =========================================================
+    // SLIDE CONTROLLER
+    // =========================================================
     let current = 0;
     let isAnimating = false;
-    const total = slides.length;
 
     function goToSlide(nextIndex, direction = 1) {
       if (isAnimating || nextIndex === current || nextIndex < 0 || nextIndex >= total) return;
@@ -1120,20 +1614,12 @@
 
       const currentSlide = slides[current];
       const nextSlide = slides[nextIndex];
+      currentSlide.scrollTop = 0;
 
       const currentElems = currentSlide.querySelectorAll('.morph-elem');
       const nextElems = nextSlide.querySelectorAll('.morph-elem');
 
-      dots[current]?.classList.remove('active');
-      dots[nextIndex]?.classList.add('active');
-      slideNum.innerText = `0${nextIndex + 1} / 0${total}`;
-      progressLine.style.width = `${((nextIndex + 1) / total) * 100}%`;
-
-      if (nextIndex === total - 1) {
-        mobileHint.style.display = 'none';
-      } else if (window.innerWidth <= 768) {
-        mobileHint.style.display = 'flex';
-      }
+      updateChrome(nextIndex);
 
       const tl = gsap.timeline({
         onComplete: () => {
@@ -1146,42 +1632,35 @@
       });
 
       tl.to(currentElems, {
-        y: direction > 0 ? -30 : 30,
+        y: direction > 0 ? -MOTION.dist : MOTION.dist,
         opacity: 0,
-        stagger: 0.04,
-        duration: 0.35,
+        stagger: MOTION.stagger,
+        duration: MOTION.dur,
         ease: 'power2.in'
       })
       .to(currentSlide, {
-        scale: 0.96,
+        scale: 0.97,
         opacity: 0,
-        duration: 0.3,
+        duration: MOTION.fade,
         ease: 'power2.in'
-      }, "-=0.15");
+      }, "<0.05");
 
-      tl.set(nextSlide, {
-        visibility: 'visible',
-        opacity: 0,
-        scale: 1.04
-      })
-      .set(nextElems, {
-        y: direction > 0 ? 35 : -35,
-        opacity: 0
-      })
-      .to(nextSlide, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.5,
-        ease: 'power3.out',
-        onStart: () => nextSlide.classList.add('active')
-      })
-      .to(nextElems, {
-        y: 0,
-        opacity: 1,
-        stagger: 0.05,
-        duration: 0.45,
-        ease: 'power3.out'
-      }, "-=0.3");
+      tl.set(nextSlide, { visibility: 'visible', opacity: 0, scale: MOTION.scaleFrom })
+        .set(nextElems, { y: direction > 0 ? MOTION.dist + 5 : -(MOTION.dist + 5), opacity: 0 })
+        .to(nextSlide, {
+          opacity: 1,
+          scale: MOTION.scaleTo,
+          duration: MOTION.dur + 0.1,
+          ease: 'power3.out',
+          onStart: () => nextSlide.classList.add('active')
+        })
+        .to(nextElems, {
+          y: 0,
+          opacity: 1,
+          stagger: MOTION.stagger,
+          duration: MOTION.dur,
+          ease: 'power3.out'
+        }, "<0.05");
     }
 
     function jumpToSlide(index) {
@@ -1189,55 +1668,64 @@
       goToSlide(index, index > current ? 1 : -1);
     }
 
-    // Wheel Scroll
+    // Wheel
     let wheelTimeout;
     window.addEventListener('wheel', (e) => {
+      if (isModalOpen()) return;
       e.preventDefault();
       if (isAnimating) return;
 
+      const activeSlide = slides[current];
+      if (activeSlide.style.overflowY === 'auto') {
+        const atTop = activeSlide.scrollTop <= 0;
+        const atBottom = activeSlide.scrollTop + activeSlide.clientHeight >= activeSlide.scrollHeight - 2;
+        if (e.deltaY > 0 && !atBottom) return;
+        if (e.deltaY < 0 && !atTop) return;
+      }
+
       clearTimeout(wheelTimeout);
       wheelTimeout = setTimeout(() => {
-        if (e.deltaY > 25) {
-          goToSlide(current + 1, 1);
-        } else if (e.deltaY < -25) {
-          goToSlide(current - 1, -1);
-        }
+        if (e.deltaY > 25) goToSlide(current + 1, 1);
+        else if (e.deltaY < -25) goToSlide(current - 1, -1);
       }, 25);
     }, { passive: false });
 
-    // Touch Swipe for Mobile
+    // Touch
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => {
+      if (isModalOpen()) return;
       touchStartY = e.touches[0].clientY;
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
-      if (isAnimating) return;
-      const touchEndY = e.changedTouches[0].clientY;
-      const diffY = touchStartY - touchEndY;
-
+      if (isAnimating || isModalOpen()) return;
+      const diffY = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(diffY) > 35) {
-        if (diffY > 0) {
-          goToSlide(current + 1, 1);
-        } else {
-          goToSlide(current - 1, -1);
-        }
+        if (diffY > 0) goToSlide(current + 1, 1);
+        else goToSlide(current - 1, -1);
       }
     }, { passive: true });
 
-    // Keyboard Arrow Keys
+    // Keyboard
     window.addEventListener('keydown', (e) => {
+      if (isModalOpen()) {
+        if (e.key === 'Escape') closeProjectModal();
+        return;
+      }
       if (e.key === 'ArrowDown' || e.key === 'PageDown') goToSlide(current + 1, 1);
       else if (e.key === 'ArrowUp' || e.key === 'PageUp') goToSlide(current - 1, -1);
-      else if (e.key === 'Escape') closeProjectModal();
     });
 
-    // Initial Appearance
+    mobileHint.addEventListener('click', () => goToSlide(current + 1, 1));
+
+    // =========================================================
+    // INITIAL ANIMATION
+    // =========================================================
     gsap.from('.slide.active .morph-elem', {
-      y: 30,
+      y: MOTION.dist,
       opacity: 0,
-      stagger: 0.06,
-      duration: 0.65,
+      stagger: MOTION.stagger + 0.02,
+      duration: MOTION.dur + 0.2,
       ease: 'power3.out',
       delay: 0.1
     });
