@@ -7,7 +7,7 @@
 
   <meta name="description" content="Md Al Shahreya Shifat (shifat100) — Full-Stack Developer building PHP/MySQL/Node backends, KaiOS & feature phone apps, cloud phone systems, and custom Linux distros.">
   <meta name="author" content="Md Al Shahreya Shifat">
-  <meta name="theme-color" content="#f8fafc">
+  <meta name="theme-color" content="#0a0f1a">
   <link rel="canonical" href="https://shifat100.github.io/">
 
   <meta property="og:type" content="profile">
@@ -120,7 +120,10 @@
 
     .contact-val, .hero-bio, .proj-desc, .modal-desc, .card-inst, .badge { user-select: text; }
 
-    html { --app-height: 100vh; }
+    html {
+      --app-height: 100vh;
+      height: 100%;
+    }
 
     body {
       background-color: var(--bg);
@@ -129,7 +132,9 @@
       overflow: hidden;
       width: 100vw;
       height: var(--app-height);
+      height: 100dvh;
       position: fixed;
+      touch-action: none; /* Prevents Android pull-to-refresh & allows clean swipe */
       transition: background-color 0.4s ease, color 0.4s ease;
     }
 
@@ -230,7 +235,7 @@
     header {
       position: fixed; top: 0; left: 0;
       width: 100%;
-      padding: clamp(14px, 2.4vh, 24px) clamp(18px, 4vw, 44px);
+      padding: clamp(14px, 2vh, 22px) clamp(18px, 4vw, 44px);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -305,7 +310,7 @@
       opacity: 0.9;
     }
 
-    /* NAV DOTS */
+    /* NAV DOTS (VERTICAL FOR SLIDES) */
     .nav-dots {
       position: fixed;
       right: clamp(15px, 2.5vw, 30px);
@@ -350,43 +355,24 @@
     }
     .dot:hover::after { opacity: 1; right: 26px; }
 
-    /* ====================================================
-       SLIDER — THE KEY FIX
-       Default = overflow:hidden (not a scroll box)
-       .scrollable = overflow-y:auto (only when content too tall)
-    ==================================================== */
+    /* SLIDER CONTAINER */
     .slider-container {
       position: relative;
       width: 100%; height: 100%;
       z-index: 10;
+      touch-action: none;
     }
 
     .slide {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      padding: clamp(56px, 7vh, 85px) clamp(16px, 4vw, 44px) clamp(24px, 3.5vh, 40px);
+      padding: clamp(52px, 6.5vh, 76px) clamp(16px, 4vw, 44px) clamp(22px, 3vh, 36px);
       display: flex;
       justify-content: center;
       visibility: hidden;
       opacity: 0;
-      overflow: hidden;                 /* DEFAULT: no scroll box */
-      transition: opacity 0.3s ease;
-    }
-
-    /* Added by JS only when this slide's content exceeds its height */
-    .slide.scrollable {
-      overflow-y: auto;
-      overflow-x: hidden;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      scrollbar-color: var(--card-border) transparent;
-    }
-    .slide.scrollable::-webkit-scrollbar { width: 5px; }
-    .slide.scrollable::-webkit-scrollbar-thumb {
-      background: var(--card-border);
-      border-radius: 3px;
+      overflow: hidden;
     }
 
     .slide.active { visibility: visible; opacity: 1; }
@@ -396,8 +382,8 @@
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: clamp(14px, 2vh, 24px);
-      margin: auto;  /* centers when content fits, top-aligns when it overflows */
+      gap: clamp(10px, 1.6vh, 18px);
+      margin: auto;
     }
 
     /* TYPOGRAPHY */
@@ -419,10 +405,10 @@
       transition: background 0.4s ease;
     }
     .section-title {
-      font-size: clamp(1.6rem, 4.6vw, 3rem);
+      font-size: clamp(1.45rem, 4.2vw, 2.7rem);
       font-weight: 800;
       letter-spacing: -0.8px;
-      line-height: 1.08;
+      line-height: 1.1;
       color: var(--text);
       transition: color 0.4s ease;
     }
@@ -438,7 +424,7 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: clamp(16px, 2.2vh, 22px);
+      padding: clamp(14px, 2vh, 20px);
       transition:
         background 0.4s ease,
         border-color 0.3s ease,
@@ -459,13 +445,13 @@
       display: grid;
       grid-template-columns: 1.3fr 0.7fr;
       align-items: center;
-      gap: clamp(24px, 4vw, 48px);
+      gap: clamp(20px, 3.5vw, 44px);
     }
     .hero-bio {
-      font-size: clamp(0.92rem, 2.2vw, 1.06rem);
-      line-height: 1.65;
+      font-size: clamp(0.88rem, 2vw, 1.04rem);
+      line-height: 1.6;
       color: var(--text-muted);
-      margin-top: clamp(6px, 1.2vh, 12px);
+      margin-top: clamp(4px, 1vh, 10px);
       max-width: 56ch;
       transition: color 0.4s ease;
     }
@@ -482,7 +468,7 @@
       letter-spacing: 1.2px;
       text-transform: uppercase;
       font-weight: 700;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       width: fit-content;
       transition: all 0.4s ease;
     }
@@ -502,14 +488,14 @@
 
     .meta-badges {
       display: flex; flex-wrap: wrap; gap: 8px;
-      margin-top: clamp(14px, 2vh, 22px);
+      margin-top: clamp(10px, 1.8vh, 18px);
     }
     .badge {
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
-      padding: 6px 12px;
+      padding: 5px 11px;
       border-radius: 100px;
-      font-size: clamp(0.7rem, 1.7vw, 0.8rem);
+      font-size: clamp(0.68rem, 1.6vw, 0.78rem);
       font-family: 'Space Grotesk', monospace;
       color: var(--text-soft);
       display: inline-flex; align-items: center; gap: 6px;
@@ -530,8 +516,8 @@
 
     .avatar-wrapper {
       position: relative;
-      width: clamp(140px, 24vw, 240px);
-      height: clamp(160px, 28vw, 280px);
+      width: clamp(130px, 22vw, 220px);
+      height: clamp(150px, 26vw, 260px);
       margin: 0 auto;
     }
     [data-theme="dark"] .avatar-wrapper::before {
@@ -558,7 +544,7 @@
     }
     .avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .avatar-placeholder {
-      font-size: clamp(3rem, 7vw, 4.2rem);
+      font-size: clamp(2.8rem, 6.5vw, 4rem);
       font-weight: 800;
       font-family: 'Space Grotesk', sans-serif;
       color: var(--accent);
@@ -574,23 +560,24 @@
     .corner-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; border-radius: 3px 0 0 0; }
     .corner-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; border-radius: 0 0 3px 0; }
 
-    /* EDUCATION */
+    /* DEFAULT DESKTOP/WIDE GRIDS (All items shown normally) */
     .edu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: clamp(10px, 1.6vh, 16px);
+      gap: clamp(8px, 1.5vh, 16px);
+      width: 100%;
     }
     .card-year {
       font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.66rem, 1.6vw, 0.74rem);
+      font-size: clamp(0.64rem, 1.5vw, 0.72rem);
       color: var(--accent-blue);
       letter-spacing: 1.5px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       display: flex; align-items: center; gap: 6px;
       font-weight: 600;
     }
     .card-title {
-      font-size: clamp(0.96rem, 2.2vw, 1.14rem);
+      font-size: clamp(0.92rem, 2vw, 1.08rem);
       font-weight: 700;
       color: var(--text);
       margin-bottom: 4px;
@@ -598,21 +585,21 @@
     }
     .card-inst {
       color: var(--text-muted);
-      font-size: clamp(0.75rem, 1.8vw, 0.84rem);
-      line-height: 1.5;
+      font-size: clamp(0.72rem, 1.7vw, 0.82rem);
+      line-height: 1.45;
     }
 
-    /* SKILLS */
     .skills-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: clamp(10px, 1.6vh, 16px);
+      gap: clamp(8px, 1.5vh, 16px);
+      width: 100%;
     }
     .skill-cat-title {
-      font-size: clamp(0.85rem, 2vw, 0.94rem);
+      font-size: clamp(0.82rem, 1.9vw, 0.92rem);
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       display: flex; align-items: center; gap: 8px;
       letter-spacing: -0.1px;
     }
@@ -621,9 +608,9 @@
     .chip {
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
-      padding: 5px 10px;
+      padding: 4px 9px;
       border-radius: 6px;
-      font-size: clamp(0.68rem, 1.6vw, 0.76rem);
+      font-size: clamp(0.66rem, 1.5vw, 0.74rem);
       color: var(--text-soft);
       transition: all 0.2s ease;
       display: inline-flex; align-items: center; gap: 4px;
@@ -635,28 +622,28 @@
       background: var(--accent-soft);
     }
 
-    /* PROJECTS */
     .project-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: clamp(10px, 1.6vh, 18px);
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: clamp(8px, 1.5vh, 16px);
+      width: 100%;
     }
     .proj-card {
       display: flex; flex-direction: column; justify-content: space-between;
     }
     .proj-desc {
-      font-size: clamp(0.76rem, 1.8vw, 0.86rem);
+      font-size: clamp(0.76rem, 1.7vw, 0.86rem);
       color: var(--text-muted);
-      line-height: 1.55;
-      margin: 8px 0 16px;
+      line-height: 1.5;
+      margin: 8px 0 14px;
     }
     .proj-btn {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(0.74rem, 1.7vw, 0.82rem);
+      font-size: clamp(0.72rem, 1.6vw, 0.8rem);
       color: var(--accent);
       background: transparent;
       border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-      padding: 8px 14px;
+      padding: 7px 14px;
       border-radius: 8px;
       cursor: pointer;
       display: inline-flex; align-items: center; gap: 6px;
@@ -671,22 +658,81 @@
       transform: translateY(-1px);
     }
 
+    /* DYNAMIC HORIZONTAL SLIDER & TABS (Created ONLY if overflow occurs) */
+    .dyn-slider-container {
+      width: 100%;
+      position: relative;
+    }
+    .dyn-tab-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .dyn-tab-pills {
+      display: flex;
+      gap: 6px;
+    }
+    .dyn-tab-btn {
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dyn-tab-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .dyn-swipe-hint {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      opacity: 0.85;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+    }
+    .dyn-viewport {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    .dyn-track {
+      display: flex;
+      width: 100%;
+      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+    .dyn-page {
+      min-width: 100%;
+      width: 100%;
+      flex-shrink: 0;
+      display: grid;
+      gap: 8px;
+    }
+
     /* CONTACT */
     .contact-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(16px, 2.5vw, 32px);
+      gap: clamp(14px, 2.2vw, 28px);
       align-items: center;
     }
     .contact-info-list {
       display: flex; flex-direction: column;
-      gap: clamp(10px, 1.4vh, 14px);
+      gap: clamp(8px, 1.2vh, 12px);
     }
     .contact-item {
-      display: flex; align-items: center; gap: 14px;
+      display: flex; align-items: center; gap: 12px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      padding: clamp(12px, 1.6vh, 16px) clamp(14px, 1.8vw, 18px);
+      padding: clamp(10px, 1.4vh, 14px) clamp(12px, 1.6vw, 16px);
       border-radius: 12px;
       transition: all 0.3s ease;
       box-shadow: var(--shadow-sm);
@@ -696,7 +742,7 @@
       box-shadow: var(--shadow-md);
     }
     .contact-icon-box {
-      width: 38px; height: 38px;
+      width: 36px; height: 36px;
       border-radius: 10px;
       background: var(--accent-blue-soft);
       display: flex; justify-content: center; align-items: center;
@@ -704,14 +750,14 @@
       flex-shrink: 0;
     }
     .contact-label {
-      font-size: clamp(0.64rem, 1.5vw, 0.7rem);
+      font-size: 0.65rem;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
       font-weight: 600;
     }
     .contact-val {
-      font-size: clamp(0.82rem, 2vw, 0.94rem);
+      font-size: clamp(0.8rem, 1.8vw, 0.92rem);
       font-weight: 600;
       color: var(--text);
       text-decoration: none;
@@ -720,17 +766,17 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .quick-btn {
       display: inline-flex; align-items: center; justify-content: center;
       gap: 6px;
-      padding: 11px 14px;
+      padding: 9px 12px;
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
       border-radius: 10px;
       color: var(--text-soft);
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 600;
       text-decoration: none;
@@ -746,19 +792,19 @@
     .cta-btn {
       display: inline-flex; justify-content: center; align-items: center;
       gap: 8px;
-      padding: clamp(12px, 1.6vh, 15px) clamp(20px, 3.5vw, 28px);
+      padding: clamp(10px, 1.4vh, 13px) clamp(18px, 3vw, 24px);
       border-radius: 10px;
       background: var(--accent);
       color: #ffffff;
       font-weight: 700;
-      font-size: clamp(0.82rem, 2vw, 0.9rem);
+      font-size: clamp(0.8rem, 1.8vw, 0.88rem);
       text-decoration: none;
       letter-spacing: 0.3px;
       box-shadow: var(--shadow-accent);
       cursor: pointer;
       border: none;
       width: 100%;
-      margin-top: 10px;
+      margin-top: 8px;
       transition: all 0.25s ease;
     }
     .cta-btn:hover {
@@ -788,6 +834,7 @@
       display: none;
       justify-content: center; align-items: center;
       padding: 20px;
+      touch-action: pan-y;
     }
     .modal-card {
       background: var(--modal-bg);
@@ -798,7 +845,7 @@
       max-height: 85vh;
       overflow-y: auto;
       overscroll-behavior: contain;
-      padding: clamp(24px, 3.5vh, 32px);
+      padding: clamp(22px, 3vh, 30px);
       position: relative;
       box-shadow: var(--shadow-lg);
     }
@@ -816,54 +863,30 @@
     }
     .modal-close:hover { border-color: var(--accent); color: var(--accent); }
     .modal-title {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 700;
       margin: 10px 0 8px;
       color: var(--text);
       letter-spacing: -0.3px;
     }
     .modal-desc {
-      font-size: 0.92rem;
-      line-height: 1.65;
+      font-size: 0.9rem;
+      line-height: 1.6;
       color: var(--text-muted);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
-    .modal-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .modal-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
     .modal-actions { display: flex; gap: 10px; }
 
-    .mobile-scroll-hint {
-      position: fixed;
-      bottom: 14px; left: 50%;
-      transform: translateX(-50%);
-      z-index: 50;
-      display: none;
-      flex-direction: column;
-      align-items: center; gap: 4px;
-      color: var(--accent);
-      font-size: 0.68rem;
-      letter-spacing: 2px;
-      font-family: 'Space Grotesk', monospace;
-      animation: bounce 2s infinite ease-in-out;
-      cursor: pointer;
-      background: transparent;
-      border: none;
-      font-weight: 600;
-      pointer-events: none;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: translate(-50%, 0); }
-      50%      { transform: translate(-50%, 6px); }
-    }
-
-    /* MOBILE */
+    /* MOBILE BREAKPOINTS */
     @media (max-width: 768px) {
-      .slide { padding: 68px 18px 88px; }
-      .slide-inner { gap: 14px; }
+      .slide { padding: 62px 14px 44px; }
+      .slide-inner { gap: 12px; }
 
       .hero-layout {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 20px;
+        gap: 14px;
       }
       .section-tag { justify-content: center; }
       .meta-badges { justify-content: center; }
@@ -871,34 +894,24 @@
 
       .edu-grid, .skills-container, .project-grid {
         grid-template-columns: 1fr;
-        gap: 10px;
+        gap: 8px;
       }
-      .glass-card, .proj-card { padding: 16px; }
-      .chip { padding: 4px 9px; font-size: 0.72rem; }
-      .section-title { font-size: 1.75rem; }
+      .glass-card, .proj-card { padding: 14px; }
+      .chip { padding: 4px 8px; font-size: 0.7rem; }
+      .section-title { font-size: 1.55rem; }
 
-      .contact-layout { grid-template-columns: 1fr; gap: 18px; }
+      .contact-layout { grid-template-columns: 1fr; gap: 14px; }
       .nav-dots { display: none; }
-      .mobile-scroll-hint { display: flex; pointer-events: auto; }
       .modal-actions { flex-direction: column; }
       .header-right { gap: 8px; }
     }
 
     @media (max-width: 420px) {
-      .slide { padding: 64px 14px 88px; }
-      .section-title { font-size: 1.55rem; }
-      .glass-card, .proj-card { padding: 14px; }
+      .slide { padding: 58px 12px 40px; }
+      .section-title { font-size: 1.45rem; }
+      .glass-card, .proj-card { padding: 12px; }
       .header-right { gap: 6px; }
       .theme-toggle { width: 36px; height: 36px; }
-    }
-
-    @media (max-height: 650px) {
-      .hero-bio {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
     }
   </style>
 </head>
@@ -930,11 +943,6 @@
 
   <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
 
-  <button class="mobile-scroll-hint" id="mobileHint" type="button" aria-label="Next slide">
-    <span id="hintText">SWIPE</span>
-    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
-  </button>
-
   <div id="projectModal" class="modal-overlay" role="dialog" aria-modal="true"
        aria-labelledby="modalTitle" aria-describedby="modalDesc"
        onclick="closeModalOnBg(event)">
@@ -961,7 +969,7 @@
 
   <main class="slider-container" id="sliderContainer">
 
-    <!-- SLIDE 1 -->
+    <!-- SLIDE 1: HERO -->
     <section class="slide active" data-index="0" data-label="Hero & Biography">
       <div class="slide-inner hero-layout">
         <div class="hero-text-content">
@@ -1016,7 +1024,7 @@
       </div>
     </section>
 
-    <!-- SLIDE 2 -->
+    <!-- SLIDE 2: EDUCATION (AUTO DYNAMIC OVERFLOW DETECTION) -->
     <section class="slide" data-index="1" data-label="Education & Credentials">
       <div class="slide-inner">
         <div>
@@ -1027,34 +1035,34 @@
           <h2 class="section-title morph-elem">Education &amp; Training</h2>
         </div>
 
-        <div class="edu-grid">
-          <div class="glass-card morph-elem">
+        <div class="edu-grid dynamic-chunkable" data-per-page="2" data-grid-class="edu-grid">
+          <div class="glass-card">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               CURRENT DEGREE
             </div>
             <h3 class="card-title">BBA — Business Administration</h3>
             <p class="card-inst">Institute of Science and Technology (IST) • Business Strategy, ERP Systems &amp; Technology Leadership.</p>
           </div>
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               GOVT CERTIFICATION
             </div>
             <h3 class="card-title">AI Basic Course</h3>
             <p class="card-inst">Department of Youth Development (DYD) • AI Foundations, Prompt Systems &amp; AI Workflows.</p>
           </div>
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               COMPLETED 2022
             </div>
             <h3 class="card-title">Higher Secondary Certificate (HSC)</h3>
             <p class="card-inst">College Level • ICT, Analytical Logic &amp; Natural Sciences.</p>
           </div>
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="card-year">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               COMPLETED 2020
             </div>
             <h3 class="card-title">Secondary School Certificate (SSC)</h3>
@@ -1064,7 +1072,7 @@
       </div>
     </section>
 
-    <!-- SLIDE 3 -->
+    <!-- SLIDE 3: SKILLS (AUTO DYNAMIC OVERFLOW DETECTION) -->
     <section class="slide" data-index="2" data-label="Skills & Ecosystems">
       <div class="slide-inner">
         <div>
@@ -1075,104 +1083,92 @@
           <h2 class="section-title morph-elem">Skills &amp; Ecosystems</h2>
         </div>
 
-        <div class="skills-container">
-          <div class="glass-card morph-elem">
+        <div class="skills-container dynamic-chunkable" data-per-page="2" data-grid-class="skills-container">
+          <div class="glass-card">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
               Web &amp; Core Scripting
             </div>
             <div class="skill-chips">
               <span class="chip">HTML5 / CSS3</span>
-              <span class="chip">Vanilla JS (All)</span>
+              <span class="chip">Vanilla JS</span>
               <span class="chip">Tailwind CSS</span>
               <span class="chip">Bootstrap</span>
               <span class="chip">GSAP 3</span>
               <span class="chip">Three.js</span>
               <span class="chip">WordPress CMS</span>
-              <span class="chip">Web Design / UI-UX</span>
             </div>
           </div>
-
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path></svg>
+              <svg class="icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
               Backend &amp; Data
             </div>
             <div class="skill-chips">
-              <span class="chip">PHP Core &amp; OOP</span>
+              <span class="chip">PHP OOP</span>
               <span class="chip">MySQL</span>
               <span class="chip">Node.js</span>
               <span class="chip">REST APIs</span>
               <span class="chip">phpMyAdmin</span>
             </div>
           </div>
-
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline></svg>
               KaiOS, Mobile &amp; Cloud
             </div>
             <div class="skill-chips">
-              <span class="chip">KaiOS App Dev (Pro)</span>
+              <span class="chip">KaiOS App Dev</span>
               <span class="chip">Touch Feature Phone Apps</span>
               <span class="chip">Cloud Phone Systems</span>
               <span class="chip">Construct Engine</span>
               <span class="chip">Sketchware</span>
-              <span class="chip">Python (Basic)</span>
-              <span class="chip">C (Basic)</span>
             </div>
           </div>
-
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-              Desktop &amp; Cross-Platform
+              <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line></svg>
+              Desktop &amp; CI/CD
             </div>
             <div class="skill-chips">
-              <span class="chip">Windows / macOS / Linux</span>
+              <span class="chip">Windows / Linux / macOS</span>
               <span class="chip">GitHub Actions CI</span>
+              <span class="chip">Electron.js</span>
               <span class="chip">GitHub Pages</span>
-              <span class="chip">GitHub Releases</span>
               <span class="chip">APK Builds</span>
             </div>
           </div>
-
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line></svg>
+              <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="9" y1="9" x2="9" y2="9"></line></svg>
               OS &amp; Terminal
             </div>
             <div class="skill-chips">
               <span class="chip">Kali Linux</span>
-              <span class="chip">Ubuntu</span>
+              <span class="chip">Ubuntu Remaster</span>
               <span class="chip">Bash Scripting</span>
               <span class="chip">PowerShell</span>
-              <span class="chip">CMD</span>
               <span class="chip">Termux (CLI)</span>
             </div>
           </div>
-
-          <div class="glass-card morph-elem">
+          <div class="glass-card">
             <div class="skill-cat-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
               Vibe Coding &amp; Creative
             </div>
             <div class="skill-chips">
               <span class="chip">Vibe Coding</span>
               <span class="chip">AI Web Problem Solving</span>
-              <span class="chip">Full Web Development</span>
               <span class="chip">ERP Software</span>
-              <span class="chip">MS Office</span>
-              <span class="chip">Adobe Photoshop</span>
-              <span class="chip">Complex Problem Solving</span>
-              <span class="chip">Communication Skills</span>
+              <span class="chip">Photoshop</span>
+              <span class="chip">Complex Logic</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 4 -->
+    <!-- SLIDE 4: PROJECTS (AUTO DYNAMIC OVERFLOW DETECTION) -->
     <section class="slide" data-index="3" data-label="Featured Work">
       <div class="slide-inner">
         <div>
@@ -1183,63 +1179,63 @@
           <h2 class="section-title morph-elem">Featured Work</h2>
         </div>
 
-        <div class="project-grid">
-          <div class="proj-card morph-elem">
+        <div class="project-grid dynamic-chunkable" data-per-page="2" data-grid-class="project-grid">
+          <div class="proj-card">
             <div>
-              <span class="badge accent">Feature Phones</span>
-              <h3 class="card-title" style="margin-top: 10px;">KaiOS</h3>
-              <p class="proj-desc">KaiOS feature phone apps with ads integration, offline caching, and native key navigation.</p>
+              <span class="badge accent">Feature Phones &amp; Cloud</span>
+              <h3 class="card-title" style="margin-top: 8px;">KaiOS Feature Phone Ecosystem</h3>
+              <p class="proj-desc">Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.</p>
             </div>
             <button class="proj-btn"
-              onclick="openProjectModal('KaiOS','Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.',['KaiOS','JavaScript','Cloud Phone','HTML5'],'https://shifat100.github.io/kaios/')">
+              onclick="openProjectModal('KaiOS','Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.',['KaiOS','JavaScript','Cloud Phone','HTML5'],'https://github.com/shifat100','https://shifat100.github.io/kaios/')">
               <span>VIEW PROJECT</span>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
 
-          <div class="proj-card morph-elem">
+          <div class="proj-card">
             <div>
               <span class="badge">Linux &amp; Penguins' eggs</span>
-              <h3 class="card-title" style="margin-top: 10px;">Penguin OS Remaster</h3>
-              <p class="proj-desc">Customized Debian/Ubuntu remastered with Penguins' eggs CLI, bundled dev utilities, and Kali security tooling.</p>
+              <h3 class="card-title" style="margin-top: 8px;">Penguin OS Remaster</h3>
+              <p class="proj-desc">Customized Debian/Ubuntu remastered with Penguins' eggs CLI, bundled dev utilities, Kali security tooling, and ultra-lean resource consumption.</p>
             </div>
             <button class="proj-btn"
               onclick="openProjectModal('Penguin OS Remaster','Tailored Linux ISO built using Penguins eggs, featuring automated developer packages, Kali security tools, and a lightweight XFCE environment.',['Penguins eggs','Debian','Bash','Kali Tools'],'https://github.com/shifat100')">
               <span>VIEW PROJECT</span>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
 
-          <div class="proj-card morph-elem">
+          <div class="proj-card">
             <div>
               <span class="badge">Desktop &amp; CLI</span>
-              <h3 class="card-title" style="margin-top: 10px;">Electron &amp; Termux Tools</h3>
-              <p class="proj-desc">Cross-platform desktop utilities built with Electron.js, paired with Termux automation workflows for mobile/desktop harmony.</p>
+              <h3 class="card-title" style="margin-top: 8px;">Electron &amp; Termux Utilities</h3>
+              <p class="proj-desc">Cross-platform desktop utilities built with Electron.js, paired with Termux automation workflows for seamless mobile and desktop harmony.</p>
             </div>
             <button class="proj-btn"
               onclick="openProjectModal('Electron & Termux Tools','Cross-platform productivity tools with Electron.js frontends and Termux headless background scripts.',['Electron.js','Termux','Node.js','TouchRec'],'https://github.com/shifat100')">
               <span>VIEW PROJECT</span>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
 
-          <div class="proj-card morph-elem">
+          <div class="proj-card">
             <div>
               <span class="badge accent">PHP + MySQL</span>
-              <h3 class="card-title" style="margin-top: 10px;">PHP CRUD Dashboard</h3>
-              <p class="proj-desc">Full-stack PHP + MySQL admin panel with session auth, prepared-statement CRUD, and a lightweight Tailwind front-end.</p>
+              <h3 class="card-title" style="margin-top: 8px;">PHP CRUD Dashboard</h3>
+              <p class="proj-desc">Full-stack PHP + MySQL admin panel with secure session authentication, prepared-statement CRUD operations, and a Tailwind dashboard interface.</p>
             </div>
             <button class="proj-btn"
               onclick="openProjectModal('PHP CRUD Dashboard','Full-stack PHP + MySQL admin panel: session-based login, prepared-statement CRUD, pagination, and a Tailwind-styled dashboard. Deployed on shared hosting with phpMyAdmin schema.',['PHP','MySQL','Sessions','Tailwind','CRUD'],'https://github.com/shifat100')">
               <span>VIEW PROJECT</span>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 5 -->
+    <!-- SLIDE 5: CONTACT -->
     <section class="slide" data-index="4" data-label="Contact">
       <div class="slide-inner">
         <div>
@@ -1254,7 +1250,7 @@
           <div class="contact-info-list morph-elem">
             <div class="contact-item">
               <div class="contact-icon-box">
-                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               </div>
               <div>
                 <div class="contact-label">Email</div>
@@ -1263,7 +1259,7 @@
             </div>
             <div class="contact-item">
               <div class="contact-icon-box">
-                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               </div>
               <div>
                 <div class="contact-label">Location</div>
@@ -1272,19 +1268,19 @@
             </div>
             <div class="quick-contact-grid">
               <a href="https://wa.me/8801743393670" target="_blank" rel="noopener" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 <span>WhatsApp</span>
               </a>
               <a href="tel:+8801743393670" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                 <span>Direct Call</span>
               </a>
               <a href="https://github.com/shifat100" target="_blank" rel="noopener" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
                 <span>shifat100</span>
               </a>
               <a href="mailto:alshahreya@gmail.com" class="quick-btn">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
                 <span>Quick Mail</span>
               </a>
             </div>
@@ -1292,14 +1288,14 @@
 
           <div class="glass-card morph-elem" style="text-align: center;">
             <h3 class="card-title">Curriculum Vitae &amp; Hire</h3>
-            <p class="proj-desc" style="margin-bottom: 14px;">Open to full-stack (PHP/MySQL/Node), KaiOS, Linux remastering, and cross-platform desktop roles.</p>
+            <p class="proj-desc" style="margin-bottom: 12px;">Open to full-stack (PHP/MySQL/Node), KaiOS, Linux remastering, and cross-platform desktop roles.</p>
             <a href="resume.pdf" download="Md_Al_Shahreya_Shifat_CV.pdf" class="cta-btn secondary" style="margin-bottom: 8px;">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>DOWNLOAD CV (PDF)</span>
             </a>
             <a href="mailto:alshahreya@gmail.com" class="cta-btn">
               <span>SEND INQUIRY</span>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </a>
           </div>
         </div>
@@ -1310,7 +1306,7 @@
 
   <script>
     // =========================================================
-    // THEME
+    // THEME SYSTEM
     // =========================================================
     (function initTheme() {
       const html = document.documentElement;
@@ -1322,8 +1318,6 @@
       function applyTheme(t) {
         html.setAttribute('data-theme', t);
         if (metaTheme) metaTheme.setAttribute('content', t === 'light' ? '#f8fafc' : '#0a0f1a');
-        // Theme change may shift layout (font metrics) — recheck scrollable
-        requestAnimationFrame(updateScrollableSlides);
       }
 
       toggle.addEventListener('click', () => {
@@ -1339,7 +1333,7 @@
     })();
 
     // =========================================================
-    // MOTION
+    // MOTION SETTINGS
     // =========================================================
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const MOTION = reduceMotion
@@ -1364,15 +1358,14 @@
     })();
 
     // =========================================================
-    // SLIDE CHROME
+    // SLIDE CHROME & VERTICAL DOTS
     // =========================================================
     const slides = document.querySelectorAll('.slide');
     const total = slides.length;
     const slideNum = document.getElementById('slideNum');
     const progressLine = document.getElementById('progress-line');
     const navDots = document.getElementById('navDots');
-    const mobileHint = document.getElementById('mobileHint');
-    const hintText = document.getElementById('hintText');
+    const pad = n => String(n).padStart(2, '0');
 
     slides.forEach((s, i) => {
       const b = document.createElement('button');
@@ -1385,58 +1378,6 @@
       navDots.appendChild(b);
     });
     const dots = navDots.querySelectorAll('.dot');
-    const pad = n => String(n).padStart(2, '0');
-
-    // =========================================================
-    // THE KEY FUNCTION — decide which slides are actually scrollable
-    // =========================================================
-    const SCROLL_THRESHOLD = 8; // px; ignore tiny sub-pixel overflow
-
-    function updateScrollableSlides() {
-      slides.forEach(s => {
-        // Reset to hidden so scrollHeight reflects natural content
-        s.classList.remove('scrollable');
-        // Force reflow so scrollHeight/clientHeight are accurate
-        void s.offsetHeight;
-
-        const overflowing = s.scrollHeight - s.clientHeight > SCROLL_THRESHOLD;
-        if (overflowing) s.classList.add('scrollable');
-      });
-      updateMobileHint();
-    }
-
-    function isSlideScrollable(s) {
-      return s.classList.contains('scrollable');
-    }
-    function isSlideAtBottom(s) {
-      return s.scrollTop + s.clientHeight >= s.scrollHeight - 4;
-    }
-    function isSlideAtTop(s) {
-      return s.scrollTop <= 2;
-    }
-
-    // =========================================================
-    // MOBILE HINT (SCROLL vs SWIPE)
-    // =========================================================
-    function updateMobileHint() {
-      if (innerWidth > 768 || current === total - 1) {
-        mobileHint.style.display = 'none';
-        return;
-      }
-      mobileHint.style.display = 'flex';
-
-      const s = slides[current];
-      const scrollable = isSlideScrollable(s);
-      const atBottom = !scrollable || isSlideAtBottom(s);
-
-      hintText.textContent = atBottom ? 'SWIPE' : 'SCROLL';
-      mobileHint.style.animation = atBottom ? 'bounce 2s infinite ease-in-out' : 'none';
-    }
-
-    // Track in-slide scroll to update hint
-    slides.forEach(s => s.addEventListener('scroll', () => {
-      if (slides[current] === s) updateMobileHint();
-    }, { passive: true }));
 
     function updateChrome(index) {
       slideNum.innerText = `${pad(index + 1)} / ${pad(total)}`;
@@ -1449,24 +1390,140 @@
         if (i === index) d.setAttribute('aria-current', 'true');
         else d.removeAttribute('aria-current');
       });
-      updateMobileHint();
     }
     updateChrome(0);
 
     // =========================================================
-    // APP HEIGHT + SCROLL DETECTION
+    // SCREEN HEIGHT SIZING
     // =========================================================
     function recalculateScreen() {
       document.documentElement.style.setProperty('--app-height', `${innerHeight}px`);
-      updateScrollableSlides();
+      setupDynamicSliders();
     }
     addEventListener('resize', recalculateScreen);
     addEventListener('orientationchange', recalculateScreen);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(updateScrollableSlides);
+
+    // =========================================================
+    // DYNAMIC AUTO-CALCULATION & TAB SLIDER INJECTION
+    // (If content fits on screen -> NORMAL GRID with everything)
+    // (If content overflows -> INJECTS TABS & HORIZONTAL SLIDER)
+    // =========================================================
+    const dynamicGroups = document.querySelectorAll('.dynamic-chunkable');
+    const storedOriginals = new Map();
+
+    dynamicGroups.forEach(el => {
+      // Save original cards
+      storedOriginals.set(el, Array.from(el.children));
+    });
+
+    function setupDynamicSliders() {
+      dynamicGroups.forEach(container => {
+        const originalCards = storedOriginals.get(container);
+        const slide = container.closest('.slide');
+        const perPage = parseInt(container.dataset.perPage || '2', 10);
+        const gridClass = container.dataset.gridClass;
+
+        // 1. First, restore to default full grid (everything shown)
+        container.innerHTML = '';
+        container.className = `${gridClass} dynamic-chunkable`;
+        originalCards.forEach(c => container.appendChild(c));
+
+        // 2. Measure if slide overflows viewport height
+        const isOverflowing = slide.scrollHeight - slide.clientHeight > 14;
+
+        // 3. If it does not overflow (Desktop/large screen) -> KEEP ALL VISIBLE
+        if (!isOverflowing) {
+          container.removeAttribute('data-active-slider');
+          return;
+        }
+
+        // 4. Content overflows! Calculate pages and inject horizontal slider & tabs
+        container.setAttribute('data-active-slider', 'true');
+        container.innerHTML = '';
+        container.className = 'dyn-slider-container dynamic-chunkable';
+
+        const totalPages = Math.ceil(originalCards.length / perPage);
+
+        // Header with Tab buttons
+        const tabHeader = document.createElement('div');
+        tabHeader.className = 'dyn-tab-header';
+
+        const pillsBox = document.createElement('div');
+        pillsBox.className = 'dyn-tab-pills';
+
+        for (let i = 0; i < totalPages; i++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `dyn-tab-btn ${i === 0 ? 'active' : ''}`;
+          btn.innerText = `Tab ${i + 1}`;
+          btn.onclick = () => setDynSlidePage(container, i);
+          pillsBox.appendChild(btn);
+        }
+
+        const hint = document.createElement('span');
+        hint.className = 'dyn-swipe-hint';
+        hint.innerText = '↔ SWIPE';
+
+        tabHeader.appendChild(pillsBox);
+        tabHeader.appendChild(hint);
+
+        // Viewport & Track
+        const viewport = document.createElement('div');
+        viewport.className = 'dyn-viewport';
+
+        const track = document.createElement('div');
+        track.className = 'dyn-track';
+        track.dataset.page = '0';
+
+        // Chunk cards into horizontal pages
+        for (let i = 0; i < totalPages; i++) {
+          const page = document.createElement('div');
+          page.className = 'dyn-page';
+          const chunk = originalCards.slice(i * perPage, (i + 1) * perPage);
+          chunk.forEach(c => page.appendChild(c));
+          track.appendChild(page);
+        }
+
+        viewport.appendChild(track);
+        container.appendChild(tabHeader);
+        container.appendChild(viewport);
+      });
     }
-    // Initial detection — run once after layout
-    requestAnimationFrame(() => requestAnimationFrame(updateScrollableSlides));
+
+    function setDynSlidePage(container, pageIndex) {
+      const track = container.querySelector('.dyn-track');
+      const btns = container.querySelectorAll('.dyn-tab-btn');
+      const totalPages = container.querySelectorAll('.dyn-page').length;
+
+      if (pageIndex < 0) pageIndex = 0;
+      if (pageIndex >= totalPages) pageIndex = totalPages - 1;
+
+      track.dataset.page = pageIndex;
+      track.style.transform = `translateX(-${pageIndex * 100}%)`;
+      btns.forEach((b, idx) => b.classList.toggle('active', idx === pageIndex));
+    }
+
+    function swapActiveDynamicSlider(direction) {
+      const activeSlide = slides[current];
+      const slider = activeSlide.querySelector('.dyn-slider-container[data-active-slider="true"]');
+      if (!slider) return false;
+
+      const track = slider.querySelector('.dyn-track');
+      const currentPage = parseInt(track.dataset.page || '0', 10);
+      const totalPages = slider.querySelectorAll('.dyn-page').length;
+      const targetPage = currentPage + direction;
+
+      if (targetPage >= 0 && targetPage < totalPages) {
+        setDynSlidePage(slider, targetPage);
+        return true;
+      }
+      return false;
+    }
+
+    // Run dynamic setup on init
+    requestAnimationFrame(() => {
+      setupDynamicSliders();
+    });
 
     // =========================================================
     // MODAL
@@ -1526,18 +1583,25 @@
 
     projectModal.addEventListener('keydown', (e) => {
       if (e.key !== 'Tab') return;
-      const focusables = projectModal.querySelectorAll(
-        'button:not([style*="display: none"]), a[href]:not([style*="display: none"]), [tabindex]:not([tabindex="-1"])'
-      );
+      const focusables = Array.from(projectModal.querySelectorAll(
+        'button, a[href], [tabindex]:not([tabindex="-1"])'
+      )).filter(el => el.offsetParent !== null && !el.disabled);
+
       if (!focusables.length) return;
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     });
 
     // =========================================================
-    // SLIDE CONTROLLER
+    // VERTICAL SLIDE CONTROLLER
     // =========================================================
     let current = 0;
     let isAnimating = false;
@@ -1548,8 +1612,6 @@
 
       const currentSlide = slides[current];
       const nextSlide = slides[nextIndex];
-      currentSlide.scrollTop = 0;
-      nextSlide.scrollTop = 0;
 
       const currentElems = currentSlide.querySelectorAll('.morph-elem');
       const nextElems = nextSlide.querySelectorAll('.morph-elem');
@@ -1561,8 +1623,6 @@
           currentSlide.classList.remove('active');
           gsap.set(currentSlide, { visibility: 'hidden', opacity: 0 });
           current = nextIndex;
-          // Re-check scrollability after activation (fonts / layout may have changed)
-          requestAnimationFrame(updateScrollableSlides);
           isAnimating = false;
         }
       });
@@ -1602,96 +1662,105 @@
     }
 
     // =========================================================
-    // WHEEL — let slide scroll if scrollable & not at boundary
+    // DUAL-AXIS TOUCH SWAPPING (ANDROID + IPHONE FIXED)
     // =========================================================
-    let wheelTimeout;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchCurrentX = 0;
+    let touchCurrentY = 0;
+    let isTouching = false;
+
+    window.addEventListener('touchstart', (e) => {
+      if (isModalOpen() || isAnimating) return;
+      if (e.touches.length !== 1) return;
+
+      const t = e.touches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+      touchCurrentX = t.clientX;
+      touchCurrentY = t.clientY;
+      isTouching = true;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isTouching || e.touches.length !== 1) return;
+      touchCurrentX = e.touches[0].clientX;
+      touchCurrentY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      if (!isTouching) return;
+      isTouching = false;
+      if (isAnimating || isModalOpen()) return;
+
+      const diffX = touchStartX - touchCurrentX;
+      const diffY = touchStartY - touchCurrentY;
+      const absX = Math.abs(diffX);
+      const absY = Math.abs(diffY);
+      const SWIPE_THRESHOLD = 30;
+
+      if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+      if (absX > absY) {
+        // HORIZONTAL SWIPE: Swaps dynamic tabs/cards if slider is active
+        if (diffX > 0) {
+          swapActiveDynamicSlider(1);  // Swipe Left -> Next Tab
+        } else {
+          swapActiveDynamicSlider(-1); // Swipe Right -> Prev Tab
+        }
+      } else {
+        // VERTICAL SWIPE: Swaps main sections (Slides 1 to 5)
+        if (diffY > 0) {
+          goToSlide(current + 1, 1);  // Swipe Up -> Next Slide
+        } else {
+          goToSlide(current - 1, -1); // Swipe Down -> Prev Slide
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchcancel', () => {
+      isTouching = false;
+    });
+
+    // =========================================================
+    // MOUSE WHEEL
+    // =========================================================
+    let wheelCooldown = false;
     window.addEventListener('wheel', (e) => {
       if (isModalOpen() || isAnimating) return;
-
-      const s = slides[current];
-      if (isSlideScrollable(s)) {
-        if (e.deltaY > 0 && !isSlideAtBottom(s)) return;  // native scroll
-        if (e.deltaY < 0 && !isSlideAtTop(s)) return;
-      }
-
       e.preventDefault();
-      clearTimeout(wheelTimeout);
-      wheelTimeout = setTimeout(() => {
-        if (e.deltaY > 25) goToSlide(current + 1, 1);
-        else if (e.deltaY < -25) goToSlide(current - 1, -1);
-      }, 25);
+      if (wheelCooldown) return;
+
+      if (Math.abs(e.deltaY) > 20) {
+        wheelCooldown = true;
+        if (e.deltaY > 0) goToSlide(current + 1, 1);
+        else goToSlide(current - 1, -1);
+        setTimeout(() => { wheelCooldown = false; }, 600);
+      }
     }, { passive: false });
 
     // =========================================================
-    // TOUCH — only switch slides when scrollable slide is at boundary
-    // =========================================================
-    let touchStartY = 0;
-    let touchStartScrollTop = 0;
-    let touchStartedScrollable = false;
-
-    window.addEventListener('touchstart', (e) => {
-      if (isModalOpen()) return;
-      touchStartY = e.touches[0].clientY;
-      const s = slides[current];
-      touchStartScrollTop = s.scrollTop;
-      touchStartedScrollable = isSlideScrollable(s);
-    }, { passive: true });
-
-    window.addEventListener('touchend', (e) => {
-      if (isAnimating || isModalOpen()) return;
-      const diffY = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(diffY) < 35) return;
-
-      const s = slides[current];
-      const atBottom = isSlideAtBottom(s);
-      const atTop = isSlideAtTop(s);
-
-      if (touchStartedScrollable) {
-        const startedAtBottom = touchStartScrollTop + s.clientHeight >= s.scrollHeight - 4;
-        const startedAtTop = touchStartScrollTop <= 2;
-        if (diffY > 0 && !(startedAtBottom && atBottom)) return;
-        if (diffY < 0 && !(startedAtTop && atTop)) return;
-      }
-
-      if (diffY > 0) goToSlide(current + 1, 1);
-      else goToSlide(current - 1, -1);
-    }, { passive: true });
-
-    // =========================================================
-    // KEYBOARD
+    // KEYBOARD NAVIGATION
     // =========================================================
     window.addEventListener('keydown', (e) => {
       if (isModalOpen()) {
         if (e.key === 'Escape') closeProjectModal();
         return;
       }
-      const s = slides[current];
+
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-        if (isSlideScrollable(s) && !isSlideAtBottom(s)) {
-          s.scrollBy({ top: 120, behavior: 'smooth' });
-          return;
-        }
         goToSlide(current + 1, 1);
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-        if (isSlideScrollable(s) && !isSlideAtTop(s)) {
-          s.scrollBy({ top: -120, behavior: 'smooth' });
-          return;
-        }
         goToSlide(current - 1, -1);
+      } else if (e.key === 'ArrowRight') {
+        swapActiveDynamicSlider(1);
+      } else if (e.key === 'ArrowLeft') {
+        swapActiveDynamicSlider(-1);
       }
-    });
-
-    mobileHint.addEventListener('click', () => {
-      const s = slides[current];
-      if (isSlideScrollable(s) && !isSlideAtBottom(s)) {
-        s.scrollBy({ top: s.clientHeight * 0.8, behavior: 'smooth' });
-        return;
-      }
-      goToSlide(current + 1, 1);
     });
 
     // =========================================================
-    // INITIAL
+    // INITIAL LOAD ANIMATION
     // =========================================================
     gsap.from('.slide.active .morph-elem', {
       y: MOTION.dist,
