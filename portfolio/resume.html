@@ -49,32 +49,33 @@
       --bg: #0a0f1a;
       --bg-subtle: #0f1523;
       --bg-elevated: #131a2a;
-      --card-bg: rgba(19, 26, 42, 0.72);
-      --card-border: rgba(148, 163, 184, 0.14);
-      --card-border-hover: rgba(16, 185, 129, 0.55);
+      --card-bg: rgba(19, 26, 42, 0.70);
+      --card-border: rgba(148, 163, 184, 0.12);
+      --card-border-hover: rgba(16, 217, 158, 0.45);
       --text: #f1f5f9;
       --text-soft: #cbd5e1;
       --text-muted: #94a3b8;
       --accent: #10d99e;
+      --mark: #10d99e;
       --accent-soft: rgba(16, 217, 158, 0.1);
       --accent-blue: #38bdf8;
       --accent-blue-soft: rgba(56, 189, 248, 0.1);
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
-      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
       --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
-      --shadow-accent: 0 8px 28px rgba(16, 217, 158, 0.18);
+      --shadow-accent: 0 8px 24px rgba(16, 217, 158, 0.2);
       --orb-1: #10d99e;
       --orb-2: #38bdf8;
       --orb-3: #a78bfa;
-      --orb-opacity: 0.28;
-      --grid-line: rgba(148, 163, 184, 0.05);
-      --grid-dot: rgba(16, 217, 158, 0.1);
+      --orb-opacity: 0.25;
+      --grid-line: rgba(148, 163, 184, 0.04);
+      --grid-dot: rgba(16, 217, 158, 0.08);
       --nav-dot: rgba(148, 163, 184, 0.35);
       --toggle-bg: rgba(255, 255, 255, 0.06);
       --toggle-border: rgba(255, 255, 255, 0.12);
       --icon-color: #f1f5f9;
       --modal-bg: #131a2a;
-      --modal-overlay: rgba(5, 9, 17, 0.72);
+      --modal-overlay: rgba(5, 9, 17, 0.75);
     }
 
     [data-theme="light"] {
@@ -82,24 +83,25 @@
       --bg: #f8fafc;
       --bg-subtle: #f1f5f9;
       --bg-elevated: #ffffff;
-      --card-bg: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.88);
       --card-border: #e2e8f0;
       --card-border-hover: #10b981;
       --text: #0f172a;
       --text-soft: #334155;
       --text-muted: #64748b;
       --accent: #059669;
+      --mark: #059669;
       --accent-soft: rgba(5, 150, 105, 0.08);
       --accent-blue: #0284c7;
       --accent-blue-soft: rgba(2, 132, 199, 0.08);
-      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.06);
       --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
       --shadow-accent: 0 8px 24px rgba(5, 150, 105, 0.15);
       --orb-1: #a7f3d0;
       --orb-2: #bae6fd;
       --orb-3: #ddd6fe;
-      --orb-opacity: 0.5;
+      --orb-opacity: 0.45;
       --grid-line: rgba(15, 23, 42, 0.035);
       --grid-dot: rgba(5, 150, 105, 0.06);
       --nav-dot: rgba(100, 116, 139, 0.4);
@@ -107,35 +109,112 @@
       --toggle-border: #e2e8f0;
       --icon-color: #0f172a;
       --modal-bg: #ffffff;
-      --modal-overlay: rgba(15, 23, 42, 0.4);
+      --modal-overlay: rgba(15, 23, 42, 0.45);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .contact-val, .hero-bio, .proj-desc, .modal-desc, .card-inst, .badge { user-select: text; }
+    /* TEXT SELECTION & ANDROID SYSTEM CURSOR SUPPORT */
+    p, h1, h2, h3, h4, span, a, code, pre,
+    .contact-val, .hero-bio, .proj-desc, .modal-desc, .card-inst, .badge, .chip {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+
+    ::selection {
+      background: color-mix(in srgb, var(--accent) 35%, transparent);
+      color: var(--text);
+    }
 
     html {
-      --app-height: 100vh;
-      height: 100%;
+      scroll-behavior: smooth;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      overflow: hidden;
-      width: 100vw;
-      height: var(--app-height);
-      height: 100dvh;
-      position: fixed;
-      touch-action: none; /* Prevents Android pull-to-refresh & allows clean swipe */
       transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* =========================================================
+       CUSTOM PODTS CURSOR SYSTEM (DESKTOP FINE POINTER ONLY)
+       ========================================================= */
+    @media (pointer: fine) {
+      *, *::before, *::after {
+        cursor: none !important;
+      }
+
+      .podts-cursor {
+        position: fixed;
+        top: 0; left: 0;
+        width: 10px; height: 10px;
+        background: var(--text);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        transition:
+          width   0.2s cubic-bezier(0.4,0,0.2,1),
+          height  0.2s cubic-bezier(0.4,0,0.2,1),
+          opacity 0.2s ease,
+          background 0.2s ease;
+        will-change: transform;
+      }
+
+      .podts-cursor-ring {
+        position: fixed;
+        top: 0; left: 0;
+        width: 32px; height: 32px;
+        border: 1.5px solid var(--text);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99998;
+        transform: translate(-50%, -50%);
+        opacity: 0.25;
+        transition:
+          width   0.35s cubic-bezier(0.4,0,0.2,1),
+          height  0.35s cubic-bezier(0.4,0,0.2,1),
+          opacity 0.35s ease,
+          border-color 0.3s ease;
+        will-change: transform;
+      }
+
+      body.cursor-hover .podts-cursor {
+        width: 18px; height: 18px;
+        opacity: 0.7;
+        background: var(--accent);
+      }
+      body.cursor-hover .podts-cursor-ring {
+        width: 14px; height: 14px;
+        opacity: 0;
+      }
+
+      body.cursor-click .podts-cursor {
+        width: 22px; height: 22px;
+        opacity: 0.9;
+        background: var(--mark);
+      }
+
+      body.cursor-out .podts-cursor,
+      body.cursor-out .podts-cursor-ring {
+        opacity: 0;
+      }
+    }
+
+    /* ON TOUCH / ANDROID: KEEP NATIVE SYSTEM CURSOR & SELECTION HANDLES */
+    @media (pointer: coarse) {
+      *, *::before, *::after {
+        cursor: auto !important;
+      }
+      .podts-cursor, .podts-cursor-ring {
+        display: none !important;
+      }
     }
 
     button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
@@ -151,44 +230,40 @@
     }
     .orb {
       position: absolute; border-radius: 50%;
-      filter: blur(90px);
+      filter: blur(100px);
       opacity: var(--orb-opacity);
       will-change: transform;
       transition: opacity 0.4s ease, background 0.4s ease;
     }
     .orb-1 {
-      width: 460px; height: 460px;
+      width: 650px; height: 650px;
       background: radial-gradient(circle, var(--orb-1) 0%, transparent 70%);
-      top: -14%; left: -12%;
+      top: -10%; left: -10%;
       animation: drift1 24s ease-in-out infinite;
     }
     .orb-2 {
-      width: 520px; height: 520px;
+      width: 750px; height: 750px;
       background: radial-gradient(circle, var(--orb-2) 0%, transparent 70%);
-      bottom: -18%; right: -14%;
+      bottom: -15%; right: -10%;
       animation: drift2 30s ease-in-out infinite;
     }
     .orb-3 {
-      width: 360px; height: 360px;
+      width: 500px; height: 500px;
       background: radial-gradient(circle, var(--orb-3) 0%, transparent 70%);
-      top: 48%; left: 58%;
+      top: 45%; left: 55%;
       animation: drift3 34s ease-in-out infinite;
     }
     @keyframes drift1 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      50%      { transform: translate(16%, 20%) scale(1.12); }
+      50%      { transform: translate(14%, 18%) scale(1.1); }
     }
     @keyframes drift2 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      50%      { transform: translate(-14%, -16%) scale(1.08); }
+      50%      { transform: translate(-12%, -14%) scale(1.08); }
     }
     @keyframes drift3 {
       0%, 100% { transform: translate(-10%, 0) scale(1); }
-      50%      { transform: translate(10%, -12%) scale(0.92); }
-    }
-    @media (max-width: 640px) {
-      .orb { filter: blur(60px); }
-      .orb-3 { display: none; }
+      50%      { transform: translate(8%, -10%) scale(0.94); }
     }
 
     .bg-grid {
@@ -200,14 +275,13 @@
         radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
       background-size: 40px 40px, 40px 40px, 80px 80px;
       pointer-events: none; z-index: 1;
-      transition: background-image 0.4s ease;
-      -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
-      mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 40%, transparent 85%);
+      mask-image: radial-gradient(ellipse at center, #000 40%, transparent 85%);
     }
 
     .cursor-glow {
       position: fixed; top: 0; left: 0;
-      width: 380px; height: 380px;
+      width: 440px; height: 440px;
       border-radius: 50%;
       background: radial-gradient(circle, var(--accent-soft) 0%, transparent 65%);
       pointer-events: none; z-index: 3;
@@ -215,7 +289,7 @@
     }
     [data-theme="dark"] .cursor-glow {
       mix-blend-mode: screen;
-      background: radial-gradient(circle, rgba(16, 217, 158, 0.14) 0%, rgba(56, 189, 248, 0.05) 40%, transparent 70%);
+      background: radial-gradient(circle, rgba(16, 217, 158, 0.15) 0%, rgba(56, 189, 248, 0.06) 40%, transparent 70%);
     }
     [data-theme="light"] .cursor-glow {
       opacity: 0.5;
@@ -225,7 +299,7 @@
 
     .icon {
       display: inline-block;
-      width: 16px; height: 16px;
+      width: 17px; height: 17px;
       stroke-width: 2; stroke: currentColor; fill: none;
       stroke-linecap: round; stroke-linejoin: round;
       vertical-align: middle; flex-shrink: 0;
@@ -235,35 +309,109 @@
     header {
       position: fixed; top: 0; left: 0;
       width: 100%;
-      padding: clamp(14px, 2vh, 22px) clamp(18px, 4vw, 44px);
+      padding: clamp(12px, 2vh, 18px) clamp(18px, 4.5vw, 64px);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 50;
-      pointer-events: none;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(10, 15, 26, 0.45);
+      border-bottom: 1px solid var(--card-border);
+      transition: background 0.3s ease;
+    }
+    [data-theme="light"] header {
+      background: rgba(248, 250, 252, 0.75);
     }
     .logo {
       font-family: 'Space Grotesk', monospace;
       font-weight: 700;
-      font-size: clamp(0.95rem, 3.2vw, 1.2rem);
-      letter-spacing: 1.5px;
+      font-size: 1.15rem;
+      letter-spacing: 2px;
       color: var(--text);
-      transition: color 0.4s ease;
     }
-    .logo span { color: var(--accent); transition: color 0.4s ease; }
+    .logo span { color: var(--accent); }
+
+    /* DESKTOP NAV LINKS (IN SOLID VIEW) */
+    .desktop-nav {
+      display: none;
+      align-items: center;
+      gap: 26px;
+      list-style: none;
+    }
+    body.view-solid .desktop-nav {
+      display: flex;
+    }
+    .desktop-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.25s ease;
+      position: relative;
+    }
+    .desktop-nav a:hover, .desktop-nav a.active {
+      color: var(--accent);
+    }
+    .desktop-nav a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 0; width: 100%; height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
 
     .header-right {
       display: flex; align-items: center; gap: 14px;
-      pointer-events: auto;
+    }
+
+    /* DESKTOP VIEW SWITCHER BUTTON */
+    .desktop-view-switcher {
+      display: none;
+      align-items: center;
+      background: var(--toggle-bg);
+      border: 1px solid var(--toggle-border);
+      border-radius: 100px;
+      padding: 3px;
+      gap: 3px;
+    }
+    @media (min-width: 1025px) {
+      .desktop-view-switcher { display: flex; }
+    }
+    .view-mode-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+    .view-mode-btn svg { width: 14px; height: 14px; }
+    .view-mode-btn.active {
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      color: var(--accent);
+    }
+    .view-mode-btn:hover:not(.active) {
+      color: var(--text);
     }
 
     .slide-counter {
       font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.8rem, 2.8vw, 0.92rem);
+      font-size: 0.85rem;
       color: var(--text-muted);
       letter-spacing: 2px;
       font-weight: 600;
-      transition: color 0.4s ease;
       display: inline-block;
     }
     .slide-counter.flip { animation: flipIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -273,23 +421,19 @@
     }
 
     .theme-toggle {
-      width: 40px; height: 40px;
+      width: 38px; height: 38px;
       border-radius: 50%;
       background: var(--toggle-bg);
       border: 1px solid var(--toggle-border);
       color: var(--icon-color);
-      cursor: pointer;
       display: grid; place-items: center;
       position: relative;
-      transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
     }
     .theme-toggle:hover {
       border-color: var(--accent);
       transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
     }
-    .theme-toggle:active { transform: translateY(0); }
     .theme-toggle svg {
       position: absolute;
       width: 18px; height: 18px;
@@ -303,31 +447,38 @@
 
     #progress-line {
       position: fixed; top: 0; left: 0;
-      height: 2px; width: 0%;
+      height: 3px; width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--accent-blue));
-      z-index: 60;
-      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      opacity: 0.9;
+      z-index: 110;
+      transition: width 0.1s ease-out;
     }
 
-    /* NAV DOTS (VERTICAL FOR SLIDES) */
+    /* NAV DOTS */
     .nav-dots {
       position: fixed;
-      right: clamp(15px, 2.5vw, 30px);
+      right: clamp(14px, 2.5vw, 32px);
       top: 50%;
       transform: translateY(-50%);
-      display: flex; flex-direction: column; gap: 14px;
-      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 60;
     }
+    body.view-solid .nav-dots {
+      display: none !important; /* NO DOTS IN SOLID VIEW */
+    }
+    body.view-slide .nav-dots {
+      display: flex !important; /* YES DOTS IN SLIDE VIEW */
+    }
+
     .dot {
-      width: 8px; height: 8px;
+      width: 9px; height: 9px;
       padding: 0;
       border-radius: 50%;
       background: var(--nav-dot);
       border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
       position: relative;
+      transition: all 0.25s ease;
     }
     .dot.active {
       background: var(--accent);
@@ -342,138 +493,103 @@
       background: var(--bg-elevated);
       border: 1px solid var(--card-border);
       color: var(--text);
-      padding: 5px 11px;
+      padding: 5px 12px;
       border-radius: 6px;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-family: 'Space Grotesk', monospace;
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.2s;
+      transition: opacity 0.2s ease, right 0.2s ease;
       letter-spacing: 0.5px;
       box-shadow: var(--shadow-md);
     }
-    .dot:hover::after { opacity: 1; right: 26px; }
-
-    /* SLIDER CONTAINER */
-    .slider-container {
-      position: relative;
-      width: 100%; height: 100%;
-      z-index: 10;
-      touch-action: none;
-    }
-
-    .slide {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      padding: clamp(52px, 6.5vh, 76px) clamp(16px, 4vw, 44px) clamp(22px, 3vh, 36px);
-      display: flex;
-      justify-content: center;
-      visibility: hidden;
-      opacity: 0;
-      overflow: hidden;
-    }
-
-    .slide.active { visibility: visible; opacity: 1; }
-
-    .slide-inner {
-      max-width: 1120px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: clamp(10px, 1.6vh, 18px);
-      margin: auto;
-    }
-
-    /* TYPOGRAPHY */
-    .section-tag {
-      font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.68rem, 1.7vw, 0.78rem);
-      letter-spacing: 1.8px;
-      text-transform: uppercase;
-      color: var(--accent);
-      display: flex; align-items: center; gap: 10px;
-      font-weight: 600;
-      transition: color 0.4s ease;
-    }
-    .section-tag::before {
-      content: '';
-      width: 22px; height: 1.5px;
-      background: var(--accent);
-      flex-shrink: 0;
-      transition: background 0.4s ease;
-    }
-    .section-title {
-      font-size: clamp(1.45rem, 4.2vw, 2.7rem);
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      line-height: 1.1;
-      color: var(--text);
-      transition: color 0.4s ease;
-    }
-    [data-theme="dark"] .section-title {
-      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .dot:hover::after {
+      opacity: 1;
+      right: 26px;
     }
 
     /* CARDS */
     .glass-card, .proj-card {
       background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: clamp(14px, 2vh, 20px);
-      transition:
-        background 0.4s ease,
-        border-color 0.3s ease,
-        box-shadow 0.3s ease,
-        transform 0.25s ease;
+      border-radius: 18px;
+      padding: clamp(18px, 2.4vw, 30px);
+      transition: all 0.28s ease;
       position: relative;
-      overflow: hidden;
       box-shadow: var(--shadow-sm);
     }
     .glass-card:hover, .proj-card:hover {
       border-color: var(--card-border-hover);
       box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
     }
 
-    /* HERO */
+    /* TYPOGRAPHY */
+    .section-tag {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .section-tag::before {
+      content: '';
+      width: 24px; height: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3.2vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    [data-theme="dark"] .section-title {
+      background: linear-gradient(135deg, #ffffff 45%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* HERO LAYOUT DEFAULT (USED IN SOLID VIEW ON PC) */
     .hero-layout {
       display: grid;
-      grid-template-columns: 1.3fr 0.7fr;
+      grid-template-columns: 1.35fr 0.65fr;
       align-items: center;
-      gap: clamp(20px, 3.5vw, 44px);
+      gap: clamp(30px, 4.5vw, 64px);
     }
     .hero-bio {
-      font-size: clamp(0.88rem, 2vw, 1.04rem);
-      line-height: 1.6;
+      font-size: clamp(0.96rem, 1.3vw, 1.15rem);
+      line-height: 1.7;
       color: var(--text-muted);
-      margin-top: clamp(4px, 1vh, 10px);
-      max-width: 56ch;
-      transition: color 0.4s ease;
+      margin-top: 14px;
+      max-width: 62ch;
     }
-
     .available-pill {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 14px 6px 10px;
+      padding: 7px 16px 7px 12px;
       background: var(--accent-soft);
       border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
       border-radius: 100px;
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       font-family: 'Space Grotesk', monospace;
       color: var(--accent);
-      letter-spacing: 1.2px;
+      letter-spacing: 1.4px;
       text-transform: uppercase;
       font-weight: 700;
       margin-bottom: 12px;
       width: fit-content;
-      transition: all 0.4s ease;
     }
     .available-pill .pulse {
-      width: 7px; height: 7px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--accent);
       animation: pulseDot 2s ease-in-out infinite;
@@ -482,23 +598,19 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50%      { opacity: 0.5; transform: scale(0.85); }
     }
-    @media (max-width: 768px) {
-      .available-pill { margin-left: auto; margin-right: auto; }
-    }
-
     .meta-badges {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      margin-top: clamp(10px, 1.8vh, 18px);
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 22px;
     }
     .badge {
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
-      padding: 5px 11px;
+      padding: 6px 15px;
       border-radius: 100px;
-      font-size: clamp(0.68rem, 1.6vw, 0.78rem);
+      font-size: 0.78rem;
       font-family: 'Space Grotesk', monospace;
       color: var(--text-soft);
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex; align-items: center; gap: 8px;
       text-decoration: none;
       transition: all 0.25s ease;
       font-weight: 500;
@@ -506,7 +618,7 @@
     .badge:hover {
       border-color: var(--accent-blue);
       color: var(--text);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
     .badge.accent {
       border-color: color-mix(in srgb, var(--accent) 35%, transparent);
@@ -516,25 +628,25 @@
 
     .avatar-wrapper {
       position: relative;
-      width: clamp(130px, 22vw, 220px);
-      height: clamp(150px, 26vw, 260px);
+      width: clamp(170px, 19vw, 270px);
+      height: clamp(190px, 23vw, 310px);
       margin: 0 auto;
     }
     [data-theme="dark"] .avatar-wrapper::before {
       content: '';
       position: absolute;
-      inset: -14px;
+      inset: -16px;
       border-radius: 28%;
       background: conic-gradient(from 0deg, #10d99e, #38bdf8, #a78bfa, #10d99e);
-      filter: blur(28px);
-      opacity: 0.35;
+      filter: blur(34px);
+      opacity: 0.38;
       animation: spinAura 10s linear infinite;
       z-index: -1;
     }
     @keyframes spinAura { to { transform: rotate(360deg); } }
     .avatar-frame {
       width: 100%; height: 100%;
-      border-radius: 20px;
+      border-radius: 22px;
       border: 1px solid var(--card-border);
       background: var(--bg-elevated);
       box-shadow: var(--shadow-lg);
@@ -544,7 +656,7 @@
     }
     .avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .avatar-placeholder {
-      font-size: clamp(2.8rem, 6.5vw, 4rem);
+      font-size: 4.5rem;
       font-weight: 800;
       font-family: 'Space Grotesk', sans-serif;
       color: var(--accent);
@@ -553,67 +665,68 @@
     }
     .corner-decor {
       position: absolute;
-      width: 12px; height: 12px;
+      width: 14px; height: 14px;
       border: 2px solid var(--accent);
-      z-index: 5; opacity: 0.6;
+      z-index: 5; opacity: 0.65;
     }
-    .corner-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; border-radius: 3px 0 0 0; }
-    .corner-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; border-radius: 0 0 3px 0; }
+    .corner-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; border-radius: 4px 0 0 0; }
+    .corner-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; border-radius: 0 0 4px 0; }
 
-    /* DEFAULT DESKTOP/WIDE GRIDS (All items shown normally) */
+    /* EDUCATION GRID */
     .edu-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: clamp(8px, 1.5vh, 16px);
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
       width: 100%;
+      margin-top: 12px;
     }
     .card-year {
       font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.64rem, 1.5vw, 0.72rem);
+      font-size: 0.76rem;
       color: var(--accent-blue);
       letter-spacing: 1.5px;
-      margin-bottom: 4px;
-      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 8px;
       font-weight: 600;
     }
     .card-title {
-      font-size: clamp(0.92rem, 2vw, 1.08rem);
+      font-size: 1.12rem;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 4px;
-      letter-spacing: -0.2px;
+      margin-bottom: 6px;
     }
     .card-inst {
       color: var(--text-muted);
-      font-size: clamp(0.72rem, 1.7vw, 0.82rem);
-      line-height: 1.45;
+      font-size: 0.86rem;
+      line-height: 1.6;
     }
 
+    /* SKILLS CONTAINER */
     .skills-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: clamp(8px, 1.5vh, 16px);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
       width: 100%;
+      margin-top: 12px;
     }
     .skill-cat-title {
-      font-size: clamp(0.82rem, 1.9vw, 0.92rem);
+      font-size: 1.02rem;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px;
-      letter-spacing: -0.1px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 10px;
     }
-    .skill-cat-title .icon { color: var(--accent); }
-    .skill-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-cat-title .icon { color: var(--accent); width: 18px; height: 18px; }
+    .skill-chips { display: flex; flex-wrap: wrap; gap: 7px; }
     .chip {
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
-      padding: 4px 9px;
-      border-radius: 6px;
-      font-size: clamp(0.66rem, 1.5vw, 0.74rem);
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 0.76rem;
       color: var(--text-soft);
       transition: all 0.2s ease;
-      display: inline-flex; align-items: center; gap: 4px;
+      display: inline-flex; align-items: center; gap: 5px;
       font-weight: 500;
     }
     .chip:hover {
@@ -622,142 +735,83 @@
       background: var(--accent-soft);
     }
 
+    /* PROJECTS GRID */
     .project-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: clamp(8px, 1.5vh, 16px);
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
       width: 100%;
+      margin-top: 12px;
     }
     .proj-card {
       display: flex; flex-direction: column; justify-content: space-between;
     }
     .proj-desc {
-      font-size: clamp(0.76rem, 1.7vw, 0.86rem);
+      font-size: 0.9rem;
       color: var(--text-muted);
-      line-height: 1.5;
-      margin: 8px 0 14px;
+      line-height: 1.65;
+      margin: 10px 0 18px;
     }
     .proj-btn {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(0.72rem, 1.6vw, 0.8rem);
+      font-size: 0.8rem;
       color: var(--accent);
       background: transparent;
       border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-      padding: 7px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      border-radius: 9px;
+      display: inline-flex; align-items: center; gap: 8px;
       font-weight: 600;
       width: fit-content;
       transition: all 0.25s ease;
-      letter-spacing: 0.2px;
     }
     .proj-btn:hover {
       background: var(--accent-soft);
       border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    /* DYNAMIC HORIZONTAL SLIDER & TABS (Created ONLY if overflow occurs) */
-    .dyn-slider-container {
-      width: 100%;
-      position: relative;
-    }
-    .dyn-tab-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .dyn-tab-pills {
-      display: flex;
-      gap: 6px;
-    }
-    .dyn-tab-btn {
-      padding: 4px 10px;
-      border-radius: 100px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      font-family: 'Space Grotesk', monospace;
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .dyn-tab-btn.active {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .dyn-swipe-hint {
-      font-family: 'Space Grotesk', monospace;
-      font-size: 0.65rem;
-      color: var(--accent);
-      opacity: 0.85;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-    }
-    .dyn-viewport {
-      width: 100%;
-      overflow: hidden;
-      position: relative;
-    }
-    .dyn-track {
-      display: flex;
-      width: 100%;
-      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: transform;
-    }
-    .dyn-page {
-      min-width: 100%;
-      width: 100%;
-      flex-shrink: 0;
-      display: grid;
-      gap: 8px;
+      transform: translateY(-2px);
     }
 
     /* CONTACT */
     .contact-layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: clamp(14px, 2.2vw, 28px);
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
       align-items: center;
+      margin-top: 12px;
     }
     .contact-info-list {
       display: flex; flex-direction: column;
-      gap: clamp(8px, 1.2vh, 12px);
+      gap: 14px;
     }
     .contact-item {
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; gap: 16px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      padding: clamp(10px, 1.4vh, 14px) clamp(12px, 1.6vw, 16px);
-      border-radius: 12px;
+      padding: 16px 20px;
+      border-radius: 14px;
       transition: all 0.3s ease;
-      box-shadow: var(--shadow-sm);
     }
     .contact-item:hover {
       border-color: var(--card-border-hover);
       box-shadow: var(--shadow-md);
     }
     .contact-icon-box {
-      width: 36px; height: 36px;
-      border-radius: 10px;
+      width: 42px; height: 42px;
+      border-radius: 12px;
       background: var(--accent-blue-soft);
       display: flex; justify-content: center; align-items: center;
       color: var(--accent-blue);
       flex-shrink: 0;
     }
     .contact-label {
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       font-weight: 600;
     }
     .contact-val {
-      font-size: clamp(0.8rem, 1.8vw, 0.92rem);
+      font-size: 1.02rem;
       font-weight: 600;
       color: var(--text);
       text-decoration: none;
@@ -765,18 +819,18 @@
     .quick-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
       margin-top: 6px;
     }
     .quick-btn {
       display: inline-flex; align-items: center; justify-content: center;
-      gap: 6px;
-      padding: 9px 12px;
+      gap: 8px;
+      padding: 11px 14px;
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
+      border-radius: 11px;
       color: var(--text-soft);
-      font-size: 0.74rem;
+      font-size: 0.82rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 600;
       text-decoration: none;
@@ -786,25 +840,24 @@
       border-color: var(--accent);
       color: var(--accent);
       background: var(--accent-soft);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
 
     .cta-btn {
       display: inline-flex; justify-content: center; align-items: center;
       gap: 8px;
-      padding: clamp(10px, 1.4vh, 13px) clamp(18px, 3vw, 24px);
-      border-radius: 10px;
+      padding: 12px 22px;
+      border-radius: 11px;
       background: var(--accent);
       color: #ffffff;
       font-weight: 700;
-      font-size: clamp(0.8rem, 1.8vw, 0.88rem);
+      font-size: 0.88rem;
       text-decoration: none;
       letter-spacing: 0.3px;
       box-shadow: var(--shadow-accent);
-      cursor: pointer;
       border: none;
       width: 100%;
-      margin-top: 8px;
+      margin-top: 10px;
       transition: all 0.25s ease;
     }
     .cta-btn:hover {
@@ -834,88 +887,216 @@
       display: none;
       justify-content: center; align-items: center;
       padding: 20px;
-      touch-action: pan-y;
     }
     .modal-card {
       background: var(--modal-bg);
       border: 1px solid var(--card-border);
       border-radius: 20px;
-      max-width: 580px;
+      max-width: 600px;
       width: 100%;
       max-height: 85vh;
       overflow-y: auto;
-      overscroll-behavior: contain;
-      padding: clamp(22px, 3vh, 30px);
+      padding: 32px;
       position: relative;
       box-shadow: var(--shadow-lg);
     }
     .modal-close {
       position: absolute;
-      top: 16px; right: 16px;
+      top: 18px; right: 18px;
       background: var(--bg-subtle);
       border: 1px solid var(--card-border);
       color: var(--text);
-      width: 36px; height: 36px;
+      width: 38px; height: 38px;
       border-radius: 50%;
       display: flex; justify-content: center; align-items: center;
-      cursor: pointer;
       transition: all 0.2s;
     }
     .modal-close:hover { border-color: var(--accent); color: var(--accent); }
     .modal-title {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: 700;
-      margin: 10px 0 8px;
+      margin: 12px 0 10px;
       color: var(--text);
-      letter-spacing: -0.3px;
     }
     .modal-desc {
-      font-size: 0.9rem;
-      line-height: 1.6;
+      font-size: 0.95rem;
+      line-height: 1.65;
       color: var(--text-muted);
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
-    .modal-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
-    .modal-actions { display: flex; gap: 10px; }
+    .modal-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 22px; }
+    .modal-actions { display: flex; gap: 12px; }
 
-    /* MOBILE BREAKPOINTS */
-    @media (max-width: 768px) {
-      .slide { padding: 62px 14px 44px; }
-      .slide-inner { gap: 12px; }
+    /* =========================================================================
+       LAYOUT MODE 1: SLIDE VIEW (PC & MOBILE SLIDE DECK)
+       ========================================================================= */
+    body.view-slide {
+      overflow: hidden;
+      width: 100vw;
+      height: 100dvh;
+      position: fixed;
+      touch-action: none;
+    }
+    body.view-slide .slider-container {
+      position: relative;
+      width: 100%; height: 100%;
+      touch-action: none;
+    }
+    body.view-slide .slide {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      padding: clamp(66px, 8vh, 92px) clamp(20px, 5vw, 76px) clamp(24px, 4vh, 48px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      overflow: hidden;
+    }
+    body.view-slide .slide.active {
+      visibility: visible;
+      opacity: 1;
+    }
+    body.view-slide .slide-inner {
+      max-width: 1280px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(14px, 2.4vh, 28px);
+      margin: auto;
+    }
 
-      .hero-layout {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 14px;
+    /* SLIDE VIEW PC: PROFILE PICTURE ABOVE DETAILS (TOP-CENTERED) */
+    body.view-slide .hero-layout {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: clamp(10px, 1.8vh, 18px);
+      justify-items: center;
+    }
+    body.view-slide .avatar-wrapper {
+      order: -1; /* Picture goes on top */
+      width: clamp(125px, 15vh, 175px);
+      height: clamp(145px, 17.5vh, 200px);
+      margin: 0 auto 4px;
+    }
+    body.view-slide .hero-text-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    body.view-slide .section-tag {
+      justify-content: center;
+    }
+    body.view-slide .meta-badges {
+      justify-content: center;
+    }
+    body.view-slide .hero-bio {
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    /* =========================================================================
+       LAYOUT MODE 2: SOLID VIEW (DESKTOP ALL-IN-ONE SCROLLABLE PAGE)
+       ========================================================================= */
+    body.view-solid {
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      position: static !important;
+      height: auto !important;
+      touch-action: auto !important;
+    }
+    body.view-solid .slide-counter {
+      display: none;
+    }
+    body.view-solid .slider-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      position: static;
+    }
+    body.view-solid .slide {
+      position: relative !important;
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 8vw 90px;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    }
+    body.view-solid .slide-inner {
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* LAPTOP BALANCED SCALING FOR SLIDE VIEW */
+    @media (min-width: 1025px) and (max-height: 840px) {
+      body.view-slide .slide-inner {
+        transform: scale(0.92);
+        transform-origin: center center;
       }
+    }
+    @media (min-width: 1025px) and (max-height: 720px) {
+      body.view-slide .slide-inner {
+        transform: scale(0.85);
+      }
+    }
+
+    /* =========================================================================
+       RESPONSIVE & MOBILE BREAKPOINTS (TOUCH / SMALL SCREENS)
+       ========================================================================= */
+    @media (max-width: 1024px) {
+      .desktop-view-switcher { display: none !important; }
+      .desktop-nav { display: none !important; }
+
+      .slide { padding: 66px 16px 44px; }
+      .slide-inner { max-width: 580px; gap: 12px; }
+      .hero-layout { grid-template-columns: 1fr; text-align: center; gap: 14px; }
       .section-tag { justify-content: center; }
       .meta-badges { justify-content: center; }
-      .avatar-wrapper { order: -1; }
-
+      .avatar-wrapper { order: -1; width: 140px; height: 160px; }
       .edu-grid, .skills-container, .project-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
         gap: 8px;
       }
       .glass-card, .proj-card { padding: 14px; }
-      .chip { padding: 4px 8px; font-size: 0.7rem; }
-      .section-title { font-size: 1.55rem; }
-
+      .chip { padding: 4px 8px; font-size: 0.72rem; }
+      .section-title { font-size: 1.65rem; }
       .contact-layout { grid-template-columns: 1fr; gap: 14px; }
-      .nav-dots { display: none; }
       .modal-actions { flex-direction: column; }
-      .header-right { gap: 8px; }
-    }
 
-    @media (max-width: 420px) {
-      .slide { padding: 58px 12px 40px; }
-      .section-title { font-size: 1.45rem; }
-      .glass-card, .proj-card { padding: 12px; }
-      .header-right { gap: 6px; }
-      .theme-toggle { width: 36px; height: 36px; }
+      /* Mobile Part-Tabs */
+      .dyn-slider-container { width: 100%; position: relative; }
+      .dyn-tab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+      .dyn-tab-pills { display: flex; gap: 6px; }
+      .dyn-tab-btn {
+        padding: 5px 12px; border-radius: 100px; background: var(--bg-subtle);
+        border: 1px solid var(--card-border); color: var(--text-muted);
+        font-family: 'Space Grotesk', monospace; font-size: 0.72rem; font-weight: 600;
+      }
+      .dyn-tab-btn.active {
+        background: var(--accent-soft); border-color: var(--accent); color: var(--accent);
+      }
+      .dyn-swipe-hint {
+        font-family: 'Space Grotesk', monospace; font-size: 0.68rem; color: var(--accent);
+        opacity: 0.85; font-weight: 600;
+      }
+      .dyn-viewport { width: 100%; overflow: hidden; position: relative; }
+      .dyn-track { display: flex; width: 100%; transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+      .dyn-page { min-width: 100%; width: 100%; flex-shrink: 0; display: grid; gap: 8px; }
     }
   </style>
 </head>
-<body>
+<body class="view-slide">
+  <!-- PODTS CUSTOM CURSOR -->
+  <div class="podts-cursor" id="podtsCursor" aria-hidden="true"></div>
+  <div class="podts-cursor-ring" id="podtsCursorRing" aria-hidden="true"></div>
+
   <div class="bg-orbs" aria-hidden="true">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
@@ -926,9 +1107,34 @@
   <div id="progress-line" aria-hidden="true"></div>
 
   <header>
-    <div class="logo">SHIFAT100</div>
+    <a href="#hero" class="logo" style="text-decoration:none;">SHIFAT<span>100</span></a>
+
+    <!-- PC Navigation Bar (Active in Solid View) -->
+    <nav aria-label="Desktop Navigation">
+      <ul class="desktop-nav">
+        <li><a href="#hero" class="nav-link active">About</a></li>
+        <li><a href="#education" class="nav-link">Education</a></li>
+        <li><a href="#skills" class="nav-link">Skills</a></li>
+        <li><a href="#projects" class="nav-link">Featured Work</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+
     <div class="header-right">
+      <!-- DESKTOP VIEW TOGGLER (Slide vs Solid) -->
+      <div class="desktop-view-switcher" id="desktopViewSwitcher" aria-label="Desktop Layout Switcher">
+        <button type="button" class="view-mode-btn active" id="btnSlideView" title="Slide Deck View (First Version)">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+          <span>Slide View</span>
+        </button>
+        <button type="button" class="view-mode-btn" id="btnSolidView" title="Solid All-in-One View (Continuous Scroll)">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span>Solid View</span>
+        </button>
+      </div>
+
       <div class="slide-counter" id="slideNum" aria-live="polite">01 / 05</div>
+
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4"></circle>
@@ -941,8 +1147,10 @@
     </div>
   </header>
 
+  <!-- CIRCLE SYSTEM (NAV DOTS WITH HOVER TITLE POPUP) -->
   <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
 
+  <!-- MODAL -->
   <div id="projectModal" class="modal-overlay" role="dialog" aria-modal="true"
        aria-labelledby="modalTitle" aria-describedby="modalDesc"
        onclick="closeModalOnBg(event)">
@@ -955,11 +1163,11 @@
       <p class="modal-desc" id="modalDesc">Project description goes here…</p>
       <div class="modal-chips" id="modalChips"></div>
       <div class="modal-actions">
-        <a id="modalGithubLink" href="https://github.com/shifat100" target="_blank" rel="noopener" class="cta-btn secondary">
+        <a id="modalGithubLink" href="https://github.com/shifat100" target="_blank" rel="noopener noreferrer" class="cta-btn secondary">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
           <span>View Source on GitHub</span>
         </a>
-        <a id="modalLiveLink" href="#" target="_blank" rel="noopener" class="cta-btn" style="display:none;">
+        <a id="modalLiveLink" href="#" target="_blank" rel="noopener noreferrer" class="cta-btn" style="display:none;">
           <span>Live Demo</span>
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </a>
@@ -970,7 +1178,7 @@
   <main class="slider-container" id="sliderContainer">
 
     <!-- SLIDE 1: HERO -->
-    <section class="slide active" data-index="0" data-label="Hero & Biography">
+    <section class="slide active" id="hero" data-index="0" data-label="Hero & Biography">
       <div class="slide-inner hero-layout">
         <div class="hero-text-content">
           <div class="available-pill morph-elem">
@@ -992,7 +1200,7 @@
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
               PHP · MySQL · Node.js
             </span>
-            <a href="https://github.com/shifat100" target="_blank" rel="noopener" class="badge">
+            <a href="https://github.com/shifat100" target="_blank" rel="noopener noreferrer" class="badge">
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
               GitHub: @shifat100
             </a>
@@ -1018,14 +1226,14 @@
               class="avatar-img"
               onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';"
             >
-            <div id="avatarFallback" class="avatar-placeholder" style="display: none;" aria-hidden="true">AS</div>
+            <div id="avatarFallback" class="avatar-placeholder" style="display: none;" aria-hidden="true">AIS</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 2: EDUCATION (AUTO DYNAMIC OVERFLOW DETECTION) -->
-    <section class="slide" data-index="1" data-label="Education & Credentials">
+    <!-- SLIDE 2: EDUCATION -->
+    <section class="slide" id="education" data-index="1" data-label="Education & Credentials">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
@@ -1072,8 +1280,8 @@
       </div>
     </section>
 
-    <!-- SLIDE 3: SKILLS (AUTO DYNAMIC OVERFLOW DETECTION) -->
-    <section class="slide" data-index="2" data-label="Skills & Ecosystems">
+    <!-- SLIDE 3: SKILLS -->
+    <section class="slide" id="skills" data-index="2" data-label="Skills & Ecosystems">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
@@ -1087,7 +1295,7 @@
           <div class="glass-card">
             <div class="skill-cat-title">
               <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-              Web &amp; Core Scripting
+              Web &amp; Scripting
             </div>
             <div class="skill-chips">
               <span class="chip">HTML5 / CSS3</span>
@@ -1096,7 +1304,7 @@
               <span class="chip">Bootstrap</span>
               <span class="chip">GSAP 3</span>
               <span class="chip">Three.js</span>
-              <span class="chip">WordPress CMS</span>
+              <span class="chip">WordPress</span>
             </div>
           </div>
           <div class="glass-card">
@@ -1115,12 +1323,12 @@
           <div class="glass-card">
             <div class="skill-cat-title">
               <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline></svg>
-              KaiOS, Mobile &amp; Cloud
+              KaiOS &amp; Mobile
             </div>
             <div class="skill-chips">
               <span class="chip">KaiOS App Dev</span>
-              <span class="chip">Touch Feature Phone Apps</span>
-              <span class="chip">Cloud Phone Systems</span>
+              <span class="chip">Touch Feature Phone</span>
+              <span class="chip">Cloud Phone</span>
               <span class="chip">Construct Engine</span>
               <span class="chip">Sketchware</span>
             </div>
@@ -1131,8 +1339,8 @@
               Desktop &amp; CI/CD
             </div>
             <div class="skill-chips">
-              <span class="chip">Windows / Linux / macOS</span>
-              <span class="chip">GitHub Actions CI</span>
+              <span class="chip">Win / Linux / Mac</span>
+              <span class="chip">GitHub Actions</span>
               <span class="chip">Electron.js</span>
               <span class="chip">GitHub Pages</span>
               <span class="chip">APK Builds</span>
@@ -1154,11 +1362,11 @@
           <div class="glass-card">
             <div class="skill-cat-title">
               <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-              Vibe Coding &amp; Creative
+              Creative &amp; AI
             </div>
             <div class="skill-chips">
               <span class="chip">Vibe Coding</span>
-              <span class="chip">AI Web Problem Solving</span>
+              <span class="chip">AI Problem Solving</span>
               <span class="chip">ERP Software</span>
               <span class="chip">Photoshop</span>
               <span class="chip">Complex Logic</span>
@@ -1168,8 +1376,8 @@
       </div>
     </section>
 
-    <!-- SLIDE 4: PROJECTS (AUTO DYNAMIC OVERFLOW DETECTION) -->
-    <section class="slide" data-index="3" data-label="Featured Work">
+    <!-- SLIDE 4: PROJECTS -->
+    <section class="slide" id="projects" data-index="3" data-label="Featured Work">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
@@ -1183,7 +1391,7 @@
           <div class="proj-card">
             <div>
               <span class="badge accent">Feature Phones &amp; Cloud</span>
-              <h3 class="card-title" style="margin-top: 8px;">KaiOS Feature Phone Ecosystem</h3>
+              <h3 class="card-title" style="margin-top: 10px;">KaiOS Feature Phone Ecosystem</h3>
               <p class="proj-desc">Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.</p>
             </div>
             <button class="proj-btn"
@@ -1196,7 +1404,7 @@
           <div class="proj-card">
             <div>
               <span class="badge">Linux &amp; Penguins' eggs</span>
-              <h3 class="card-title" style="margin-top: 8px;">Penguin OS Remaster</h3>
+              <h3 class="card-title" style="margin-top: 10px;">Penguin OS Remaster</h3>
               <p class="proj-desc">Customized Debian/Ubuntu remastered with Penguins' eggs CLI, bundled dev utilities, Kali security tooling, and ultra-lean resource consumption.</p>
             </div>
             <button class="proj-btn"
@@ -1209,7 +1417,7 @@
           <div class="proj-card">
             <div>
               <span class="badge">Desktop &amp; CLI</span>
-              <h3 class="card-title" style="margin-top: 8px;">Electron &amp; Termux Utilities</h3>
+              <h3 class="card-title" style="margin-top: 10px;">Electron &amp; Termux Utilities</h3>
               <p class="proj-desc">Cross-platform desktop utilities built with Electron.js, paired with Termux automation workflows for seamless mobile and desktop harmony.</p>
             </div>
             <button class="proj-btn"
@@ -1222,7 +1430,7 @@
           <div class="proj-card">
             <div>
               <span class="badge accent">PHP + MySQL</span>
-              <h3 class="card-title" style="margin-top: 8px;">PHP CRUD Dashboard</h3>
+              <h3 class="card-title" style="margin-top: 10px;">PHP CRUD Dashboard</h3>
               <p class="proj-desc">Full-stack PHP + MySQL admin panel with secure session authentication, prepared-statement CRUD operations, and a Tailwind dashboard interface.</p>
             </div>
             <button class="proj-btn"
@@ -1236,7 +1444,7 @@
     </section>
 
     <!-- SLIDE 5: CONTACT -->
-    <section class="slide" data-index="4" data-label="Contact">
+    <section class="slide" id="contact" data-index="4" data-label="Contact">
       <div class="slide-inner">
         <div>
           <div class="section-tag morph-elem">
@@ -1250,7 +1458,7 @@
           <div class="contact-info-list morph-elem">
             <div class="contact-item">
               <div class="contact-icon-box">
-                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <svg class="icon" style="width:22px;height:22px;" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               </div>
               <div>
                 <div class="contact-label">Email</div>
@@ -1259,7 +1467,7 @@
             </div>
             <div class="contact-item">
               <div class="contact-icon-box">
-                <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <svg class="icon" style="width:22px;height:22px;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               </div>
               <div>
                 <div class="contact-label">Location</div>
@@ -1267,7 +1475,7 @@
               </div>
             </div>
             <div class="quick-contact-grid">
-              <a href="https://wa.me/8801743393670" target="_blank" rel="noopener" class="quick-btn">
+              <a href="https://wa.me/8801743393670" target="_blank" rel="noopener noreferrer" class="quick-btn">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 <span>WhatsApp</span>
               </a>
@@ -1275,7 +1483,7 @@
                 <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                 <span>Direct Call</span>
               </a>
-              <a href="https://github.com/shifat100" target="_blank" rel="noopener" class="quick-btn">
+              <a href="https://github.com/shifat100" target="_blank" rel="noopener noreferrer" class="quick-btn">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
                 <span>shifat100</span>
               </a>
@@ -1288,8 +1496,8 @@
 
           <div class="glass-card morph-elem" style="text-align: center;">
             <h3 class="card-title">Curriculum Vitae &amp; Hire</h3>
-            <p class="proj-desc" style="margin-bottom: 12px;">Open to full-stack (PHP/MySQL/Node), KaiOS, Linux remastering, and cross-platform desktop roles.</p>
-            <a href="resume.pdf" download="Md_Al_Shahreya_Shifat_CV.pdf" class="cta-btn secondary" style="margin-bottom: 8px;">
+            <p class="proj-desc" style="margin-bottom: 16px;">Open to full-stack (PHP/MySQL/Node), KaiOS, Linux remastering, and cross-platform desktop roles.</p>
+            <a href="resume.pdf" download="Md_Al_Shahreya_Shifat_CV.pdf" class="cta-btn secondary" style="margin-bottom: 10px;">
               <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>DOWNLOAD CV (PDF)</span>
             </a>
@@ -1306,7 +1514,7 @@
 
   <script>
     // =========================================================
-    // THEME SYSTEM
+    // 1. THEME SYSTEM
     // =========================================================
     (function initTheme() {
       const html = document.documentElement;
@@ -1320,131 +1528,346 @@
         if (metaTheme) metaTheme.setAttribute('content', t === 'light' ? '#f8fafc' : '#0a0f1a');
       }
 
-      toggle.addEventListener('click', () => {
+      toggle?.addEventListener('click', () => {
         const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         applyTheme(next);
         localStorage.setItem('theme', next);
       });
+    })();
 
-      matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', e => {
-        if (localStorage.getItem('theme')) return;
-        applyTheme(e.matches ? 'light' : 'dark');
+    // =========================================================
+    // 2. PODTS CUSTOM CURSOR (DOT + TRAILING RING + HOVER)
+    // =========================================================
+    (function initPodtsCursor() {
+      if (!matchMedia('(pointer: fine)').matches) return;
+
+      const cursor = document.getElementById('podtsCursor');
+      const ring = document.getElementById('podtsCursorRing');
+      const glow = document.getElementById('cursorGlow');
+      if (!cursor || !ring) return;
+
+      let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+      let ringX = mouseX, ringY = mouseY;
+      let glowX = mouseX, glowY = mouseY;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        document.body.classList.remove('cursor-out');
+        cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+      });
+
+      (function render() {
+        ringX += (mouseX - ringX) * 0.22;
+        ringY += (mouseY - ringY) * 0.22;
+        ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+
+        if (glow) {
+          glowX += (mouseX - glowX) * 0.12;
+          glowY += (mouseY - glowY) * 0.12;
+          glow.style.transform = `translate3d(${glowX}px, ${glowY}px, 0) translate(-50%, -50%)`;
+        }
+
+        requestAnimationFrame(render);
+      })();
+
+      window.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
+      window.addEventListener('mouseup', () => document.body.classList.remove('cursor-click'));
+      document.addEventListener('mouseleave', () => document.body.classList.add('cursor-out'));
+      document.addEventListener('mouseenter', () => document.body.classList.remove('cursor-out'));
+
+      const interactiveSelector = 'a, button, input, textarea, [role="button"], .dot, .dyn-tab-btn, .theme-toggle, .view-mode-btn, .chip, .badge, .proj-btn, .cta-btn, .quick-btn';
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.closest(interactiveSelector)) document.body.classList.add('cursor-hover');
+      });
+      document.addEventListener('mouseout', (e) => {
+        if (e.target.closest(interactiveSelector)) document.body.classList.remove('cursor-hover');
       });
     })();
 
     // =========================================================
-    // MOTION SETTINGS
+    // 3. CORE DOM SELECTIONS & STATE
     // =========================================================
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const MOTION = reduceMotion
-      ? { dist: 8,  dur: 0.16, stagger: 0.015, scaleFrom: 1.00, scaleTo: 1.00, fade: 0.14 }
-      : { dist: 28, dur: 0.45, stagger: 0.05,  scaleFrom: 1.03, scaleTo: 1.00, fade: 0.30 };
-
-    // =========================================================
-    // CURSOR GLOW
-    // =========================================================
-    (function initCursorGlow() {
-      if (!matchMedia('(pointer: fine)').matches) return;
-      const glow = document.getElementById('cursorGlow');
-      if (!glow) return;
-      let mx = innerWidth / 2, my = innerHeight / 2, gx = mx, gy = my;
-      document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-      (function tick() {
-        gx += (mx - gx) * 0.15;
-        gy += (my - gy) * 0.15;
-        glow.style.transform = `translate3d(${gx}px, ${gy}px, 0) translate(-50%, -50%)`;
-        requestAnimationFrame(tick);
-      })();
-    })();
-
-    // =========================================================
-    // SLIDE CHROME & VERTICAL DOTS
-    // =========================================================
+    const isDesktop = () => window.innerWidth > 1024;
     const slides = document.querySelectorAll('.slide');
     const total = slides.length;
     const slideNum = document.getElementById('slideNum');
     const progressLine = document.getElementById('progress-line');
     const navDots = document.getElementById('navDots');
-    const pad = n => String(n).padStart(2, '0');
+    const desktopLinks = document.querySelectorAll('.desktop-nav a');
+    const btnSlideView = document.getElementById('btnSlideView');
+    const btnSolidView = document.getElementById('btnSolidView');
 
+    let current = 0;
+    let isAnimating = false;
+    let currentLayoutMode = 'slide'; // 'slide' or 'solid'
+
+    // =========================================================
+    // 4. CIRCLE SYSTEM (BUILD DOTS FIRST SO 'dots' IS INITIALIZED)
+    // =========================================================
     slides.forEach((s, i) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'dot' + (i === 0 ? ' active' : '');
-      b.setAttribute('data-label', s.dataset.label || '');
-      b.setAttribute('aria-label', `Go to slide ${i + 1}: ${s.dataset.label || ''}`);
-      if (i === 0) b.setAttribute('aria-current', 'true');
-      b.addEventListener('click', () => jumpToSlide(i));
+      b.setAttribute('data-label', s.dataset.label || `Slide ${i + 1}`);
+      b.setAttribute('aria-label', `Navigate to ${s.dataset.label || `Slide ${i + 1}`}`);
+      
+      b.addEventListener('click', () => {
+        if (isDesktop() && currentLayoutMode === 'solid') {
+          s.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          jumpToSlide(i);
+        }
+      });
       navDots.appendChild(b);
     });
     const dots = navDots.querySelectorAll('.dot');
 
-    function updateChrome(index) {
-      slideNum.innerText = `${pad(index + 1)} / ${pad(total)}`;
-      slideNum.classList.remove('flip');
-      void slideNum.offsetWidth;
-      slideNum.classList.add('flip');
-      progressLine.style.width = `${((index + 1) / total) * 100}%`;
-      dots.forEach((d, i) => {
-        d.classList.toggle('active', i === index);
-        if (i === index) d.setAttribute('aria-current', 'true');
-        else d.removeAttribute('aria-current');
+    // =========================================================
+    // 5. PROGRESS & CHROME UPDATERS
+    // =========================================================
+    function updateSlideChrome(index) {
+      if (slideNum) {
+        slideNum.innerText = `0${index + 1} / 0${total}`;
+        slideNum.classList.remove('flip');
+        void slideNum.offsetWidth;
+        slideNum.classList.add('flip');
+      }
+      if (progressLine) {
+        progressLine.style.width = `${((index + 1) / total) * 100}%`;
+      }
+      dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    function updateScrollProgress() {
+      if (!isDesktop() || currentLayoutMode !== 'solid') return;
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalScroll > 0 ? (window.scrollY / totalScroll) * 100 : 0;
+      if (progressLine) {
+        progressLine.style.width = `${progress}%`;
+      }
+
+      let activeSectionIndex = 0;
+      slides.forEach((s, i) => {
+        const rect = s.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.45 && rect.bottom >= window.innerHeight * 0.45) {
+          activeSectionIndex = i;
+        }
+      });
+
+      dots.forEach((d, i) => d.classList.toggle('active', i === activeSectionIndex));
+      desktopLinks.forEach((l, i) => l.classList.toggle('active', i === activeSectionIndex));
+    }
+
+    window.addEventListener('scroll', updateScrollProgress);
+
+    // =========================================================
+    // 6. LAYOUT MODE CONTROLLER (SLIDE vs SOLID)
+    // =========================================================
+    function setDesktopLayoutMode(mode) {
+      currentLayoutMode = mode;
+      localStorage.setItem('portfolio_desktop_view', mode);
+
+      if (mode === 'solid') {
+        document.body.classList.remove('view-slide');
+        document.body.classList.add('view-solid');
+        btnSolidView?.classList.add('active');
+        btnSlideView?.classList.remove('active');
+        slides.forEach(s => {
+          s.style.visibility = 'visible';
+          s.style.opacity = '1';
+        });
+        updateScrollProgress();
+      } else {
+        document.body.classList.remove('view-solid');
+        document.body.classList.add('view-slide');
+        btnSlideView?.classList.add('active');
+        btnSolidView?.classList.remove('active');
+        slides.forEach((s, idx) => {
+          if (idx === current) {
+            s.classList.add('active');
+            s.style.visibility = 'visible';
+            s.style.opacity = '1';
+          } else {
+            s.classList.remove('active');
+            s.style.visibility = 'hidden';
+            s.style.opacity = '0';
+          }
+        });
+        updateSlideChrome(current);
+      }
+    }
+
+    btnSlideView?.addEventListener('click', () => setDesktopLayoutMode('slide'));
+    btnSolidView?.addEventListener('click', () => setDesktopLayoutMode('solid'));
+
+    // =========================================================
+    // 7. SLIDE TRANSITIONS (GSAP)
+    // =========================================================
+    function goToSlide(nextIndex, direction = 1) {
+      if (isAnimating || nextIndex === current || nextIndex < 0 || nextIndex >= total) return;
+      if (isDesktop() && currentLayoutMode === 'solid') {
+        slides[nextIndex].scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      isAnimating = true;
+      const currentSlide = slides[current];
+      const nextSlide = slides[nextIndex];
+
+      updateSlideChrome(nextIndex);
+
+      gsap.to(currentSlide, {
+        opacity: 0,
+        scale: 0.96,
+        duration: 0.28,
+        ease: 'power2.in',
+        onComplete: () => {
+          currentSlide.classList.remove('active');
+          currentSlide.style.visibility = 'hidden';
+          nextSlide.style.visibility = 'visible';
+          nextSlide.classList.add('active');
+
+          gsap.fromTo(nextSlide, 
+            { opacity: 0, scale: 1.04 },
+            { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out', onComplete: () => {
+              current = nextIndex;
+              isAnimating = false;
+            }}
+          );
+        }
       });
     }
-    updateChrome(0);
 
-    // =========================================================
-    // SCREEN HEIGHT SIZING
-    // =========================================================
-    function recalculateScreen() {
-      document.documentElement.style.setProperty('--app-height', `${innerHeight}px`);
-      setupDynamicSliders();
+    function jumpToSlide(index) {
+      if (index === current) return;
+      goToSlide(index, index > current ? 1 : -1);
     }
-    addEventListener('resize', recalculateScreen);
-    addEventListener('orientationchange', recalculateScreen);
 
     // =========================================================
-    // DYNAMIC AUTO-CALCULATION & TAB SLIDER INJECTION
-    // (If content fits on screen -> NORMAL GRID with everything)
-    // (If content overflows -> INJECTS TABS & HORIZONTAL SLIDER)
+    // 8. MOUSE WHEEL & KEYBOARD NAVIGATION
+    // =========================================================
+    let wheelCooldown = false;
+    window.addEventListener('wheel', (e) => {
+      if (isModalOpen()) return;
+
+      // In desktop solid view, allow natural native scrolling
+      if (isDesktop() && currentLayoutMode === 'solid') return;
+
+      e.preventDefault();
+      if (wheelCooldown || isAnimating) return;
+
+      if (Math.abs(e.deltaY) > 20) {
+        wheelCooldown = true;
+        if (e.deltaY > 0) goToSlide(current + 1, 1);
+        else goToSlide(current - 1, -1);
+        setTimeout(() => { wheelCooldown = false; }, 550);
+      }
+    }, { passive: false });
+
+    window.addEventListener('keydown', (e) => {
+      if (isModalOpen()) {
+        if (e.key === 'Escape') closeProjectModal();
+        return;
+      }
+
+      const inSlideMode = (!isDesktop() || currentLayoutMode === 'slide');
+
+      if (inSlideMode) {
+        if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+          e.preventDefault();
+          goToSlide(current + 1, 1);
+        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+          e.preventDefault();
+          goToSlide(current - 1, -1);
+        } else if (e.key === 'ArrowRight') {
+          swapActiveDynamicSlider(1);
+        } else if (e.key === 'ArrowLeft') {
+          swapActiveDynamicSlider(-1);
+        }
+      }
+    });
+
+    // =========================================================
+    // 9. TOUCH GESTURES (WITH ANDROID TEXT SELECTION SAFETY)
+    // =========================================================
+    let touchStartX = 0, touchStartY = 0, touchCurrentX = 0, touchCurrentY = 0, isTouching = false;
+
+    window.addEventListener('touchstart', (e) => {
+      if (isModalOpen() || isAnimating) return;
+      if (isDesktop() && currentLayoutMode === 'solid') return;
+      if (e.touches.length !== 1) return;
+
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchCurrentX = touchStartX;
+      touchCurrentY = touchStartY;
+      isTouching = true;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isTouching) return;
+      touchCurrentX = e.touches[0].clientX;
+      touchCurrentY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      if (!isTouching) return;
+      isTouching = false;
+
+      // Android text selection protection: don't swipe slides if text is actively selected
+      const activeSelection = window.getSelection ? window.getSelection().toString() : '';
+      if (activeSelection && activeSelection.trim().length > 0) {
+        return;
+      }
+
+      const diffX = touchStartX - touchCurrentX;
+      const diffY = touchStartY - touchCurrentY;
+      const absX = Math.abs(diffX);
+      const absY = Math.abs(diffY);
+      const SWIPE_THRESHOLD = 32;
+
+      if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+      if (absX > absY) {
+        if (diffX > 0) swapActiveDynamicSlider(1);
+        else swapActiveDynamicSlider(-1);
+      } else {
+        if (diffY > 0) goToSlide(current + 1, 1);
+        else goToSlide(current - 1, -1);
+      }
+    }, { passive: true });
+
+    // =========================================================
+    // 10. DYNAMIC CHUNKER (PART 1 & PART 2 TABS ON MOBILE)
     // =========================================================
     const dynamicGroups = document.querySelectorAll('.dynamic-chunkable');
     const storedOriginals = new Map();
-
-    dynamicGroups.forEach(el => {
-      // Save original cards
-      storedOriginals.set(el, Array.from(el.children));
-    });
+    dynamicGroups.forEach(el => storedOriginals.set(el, Array.from(el.children)));
 
     function setupDynamicSliders() {
+      const isMobile = window.innerWidth <= 1024;
+
+      if (!isMobile) {
+        dynamicGroups.forEach(container => {
+          const originalCards = storedOriginals.get(container);
+          container.innerHTML = '';
+          container.className = `${container.dataset.gridClass} dynamic-chunkable`;
+          originalCards.forEach(c => container.appendChild(c));
+          container.removeAttribute('data-active-slider');
+        });
+        return;
+      }
+
       dynamicGroups.forEach(container => {
         const originalCards = storedOriginals.get(container);
-        const slide = container.closest('.slide');
         const perPage = parseInt(container.dataset.perPage || '2', 10);
-        const gridClass = container.dataset.gridClass;
 
-        // 1. First, restore to default full grid (everything shown)
-        container.innerHTML = '';
-        container.className = `${gridClass} dynamic-chunkable`;
-        originalCards.forEach(c => container.appendChild(c));
-
-        // 2. Measure if slide overflows viewport height
-        const isOverflowing = slide.scrollHeight - slide.clientHeight > 14;
-
-        // 3. If it does not overflow (Desktop/large screen) -> KEEP ALL VISIBLE
-        if (!isOverflowing) {
-          container.removeAttribute('data-active-slider');
-          return;
-        }
-
-        // 4. Content overflows! Calculate pages and inject horizontal slider & tabs
         container.setAttribute('data-active-slider', 'true');
         container.innerHTML = '';
         container.className = 'dyn-slider-container dynamic-chunkable';
 
         const totalPages = Math.ceil(originalCards.length / perPage);
-
-        // Header with Tab buttons
         const tabHeader = document.createElement('div');
         tabHeader.className = 'dyn-tab-header';
 
@@ -1455,7 +1878,7 @@
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = `dyn-tab-btn ${i === 0 ? 'active' : ''}`;
-          btn.innerText = `Tab ${i + 1}`;
+          btn.innerText = `Part ${i + 1}`;
           btn.onclick = () => setDynSlidePage(container, i);
           pillsBox.appendChild(btn);
         }
@@ -1467,15 +1890,13 @@
         tabHeader.appendChild(pillsBox);
         tabHeader.appendChild(hint);
 
-        // Viewport & Track
         const viewport = document.createElement('div');
         viewport.className = 'dyn-viewport';
 
         const track = document.createElement('div');
-        track.className = 'dyn-track';
         track.dataset.page = '0';
+        track.className = 'dyn-track';
 
-        // Chunk cards into horizontal pages
         for (let i = 0; i < totalPages; i++) {
           const page = document.createElement('div');
           page.className = 'dyn-page';
@@ -1494,7 +1915,6 @@
       const track = container.querySelector('.dyn-track');
       const btns = container.querySelectorAll('.dyn-tab-btn');
       const totalPages = container.querySelectorAll('.dyn-page').length;
-
       if (pageIndex < 0) pageIndex = 0;
       if (pageIndex >= totalPages) pageIndex = totalPages - 1;
 
@@ -1520,13 +1940,28 @@
       return false;
     }
 
-    // Run dynamic setup on init
-    requestAnimationFrame(() => {
+    // =========================================================
+    // 11. INITIALIZATION ON LOAD & RESIZE
+    // =========================================================
+    if (isDesktop()) {
+      const savedMode = localStorage.getItem('portfolio_desktop_view') || 'slide';
+      setDesktopLayoutMode(savedMode);
+    } else {
+      setDesktopLayoutMode('slide');
+    }
+
+    window.addEventListener('resize', () => {
       setupDynamicSliders();
+      if (!isDesktop()) {
+        setDesktopLayoutMode('slide');
+      } else {
+        setDesktopLayoutMode(currentLayoutMode);
+      }
     });
+    requestAnimationFrame(setupDynamicSliders);
 
     // =========================================================
-    // MODAL
+    // 12. MODAL DIALOG
     // =========================================================
     const projectModal = document.getElementById('projectModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -1534,11 +1969,9 @@
     const modalChips = document.getElementById('modalChips');
     const modalGithubLink = document.getElementById('modalGithubLink');
     const modalLiveLink = document.getElementById('modalLiveLink');
-    let lastFocusedEl = null;
-    const isModalOpen = () => projectModal.style.display === 'flex';
+    const isModalOpen = () => projectModal?.style.display === 'flex';
 
     function openProjectModal(title, description, tags, githubUrl, liveUrl) {
-      lastFocusedEl = document.activeElement;
       modalTitle.innerText = title;
       modalDesc.innerText = description;
       modalGithubLink.href = githubUrl || 'https://github.com/shifat100';
@@ -1559,217 +1992,17 @@
       });
 
       projectModal.style.display = 'flex';
-      gsap.fromTo('.modal-card',
-        { scale: 0.94, opacity: 0 },
-        { scale: 1, opacity: 1, duration: reduceMotion ? 0.15 : 0.28, ease: 'power2.out' });
-      requestAnimationFrame(() => document.querySelector('.modal-close')?.focus());
+      gsap.fromTo('.modal-card', { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25 });
     }
 
     function closeProjectModal() {
       if (!isModalOpen()) return;
-      const finish = () => {
+      gsap.to('.modal-card', { scale: 0.94, opacity: 0, duration: 0.18, onComplete: () => {
         projectModal.style.display = 'none';
-        if (lastFocusedEl && typeof lastFocusedEl.focus === 'function') lastFocusedEl.focus();
-      };
-      gsap.to('.modal-card', {
-        scale: 0.94, opacity: 0,
-        duration: reduceMotion ? 0.12 : 0.18,
-        ease: 'power2.in',
-        onComplete: finish
-      });
+      }});
     }
 
     function closeModalOnBg(e) { if (e.target === projectModal) closeProjectModal(); }
-
-    projectModal.addEventListener('keydown', (e) => {
-      if (e.key !== 'Tab') return;
-      const focusables = Array.from(projectModal.querySelectorAll(
-        'button, a[href], [tabindex]:not([tabindex="-1"])'
-      )).filter(el => el.offsetParent !== null && !el.disabled);
-
-      if (!focusables.length) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    });
-
-    // =========================================================
-    // VERTICAL SLIDE CONTROLLER
-    // =========================================================
-    let current = 0;
-    let isAnimating = false;
-
-    function goToSlide(nextIndex, direction = 1) {
-      if (isAnimating || nextIndex === current || nextIndex < 0 || nextIndex >= total) return;
-      isAnimating = true;
-
-      const currentSlide = slides[current];
-      const nextSlide = slides[nextIndex];
-
-      const currentElems = currentSlide.querySelectorAll('.morph-elem');
-      const nextElems = nextSlide.querySelectorAll('.morph-elem');
-
-      updateChrome(nextIndex);
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          currentSlide.classList.remove('active');
-          gsap.set(currentSlide, { visibility: 'hidden', opacity: 0 });
-          current = nextIndex;
-          isAnimating = false;
-        }
-      });
-
-      tl.to(currentElems, {
-        y: direction > 0 ? -MOTION.dist : MOTION.dist,
-        opacity: 0,
-        stagger: MOTION.stagger,
-        duration: MOTION.dur,
-        ease: 'power2.in'
-      })
-      .to(currentSlide, {
-        scale: 0.97, opacity: 0,
-        duration: MOTION.fade,
-        ease: 'power2.in'
-      }, "<0.05");
-
-      tl.set(nextSlide, { visibility: 'visible', opacity: 0, scale: MOTION.scaleFrom })
-        .set(nextElems, { y: direction > 0 ? MOTION.dist + 5 : -(MOTION.dist + 5), opacity: 0 })
-        .to(nextSlide, {
-          opacity: 1, scale: MOTION.scaleTo,
-          duration: MOTION.dur + 0.1,
-          ease: 'power3.out',
-          onStart: () => nextSlide.classList.add('active')
-        })
-        .to(nextElems, {
-          y: 0, opacity: 1,
-          stagger: MOTION.stagger,
-          duration: MOTION.dur,
-          ease: 'power3.out'
-        }, "<0.05");
-    }
-
-    function jumpToSlide(index) {
-      if (index === current) return;
-      goToSlide(index, index > current ? 1 : -1);
-    }
-
-    // =========================================================
-    // DUAL-AXIS TOUCH SWAPPING (ANDROID + IPHONE FIXED)
-    // =========================================================
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchCurrentX = 0;
-    let touchCurrentY = 0;
-    let isTouching = false;
-
-    window.addEventListener('touchstart', (e) => {
-      if (isModalOpen() || isAnimating) return;
-      if (e.touches.length !== 1) return;
-
-      const t = e.touches[0];
-      touchStartX = t.clientX;
-      touchStartY = t.clientY;
-      touchCurrentX = t.clientX;
-      touchCurrentY = t.clientY;
-      isTouching = true;
-    }, { passive: true });
-
-    window.addEventListener('touchmove', (e) => {
-      if (!isTouching || e.touches.length !== 1) return;
-      touchCurrentX = e.touches[0].clientX;
-      touchCurrentY = e.touches[0].clientY;
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => {
-      if (!isTouching) return;
-      isTouching = false;
-      if (isAnimating || isModalOpen()) return;
-
-      const diffX = touchStartX - touchCurrentX;
-      const diffY = touchStartY - touchCurrentY;
-      const absX = Math.abs(diffX);
-      const absY = Math.abs(diffY);
-      const SWIPE_THRESHOLD = 30;
-
-      if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
-
-      if (absX > absY) {
-        // HORIZONTAL SWIPE: Swaps dynamic tabs/cards if slider is active
-        if (diffX > 0) {
-          swapActiveDynamicSlider(1);  // Swipe Left -> Next Tab
-        } else {
-          swapActiveDynamicSlider(-1); // Swipe Right -> Prev Tab
-        }
-      } else {
-        // VERTICAL SWIPE: Swaps main sections (Slides 1 to 5)
-        if (diffY > 0) {
-          goToSlide(current + 1, 1);  // Swipe Up -> Next Slide
-        } else {
-          goToSlide(current - 1, -1); // Swipe Down -> Prev Slide
-        }
-      }
-    }, { passive: true });
-
-    window.addEventListener('touchcancel', () => {
-      isTouching = false;
-    });
-
-    // =========================================================
-    // MOUSE WHEEL
-    // =========================================================
-    let wheelCooldown = false;
-    window.addEventListener('wheel', (e) => {
-      if (isModalOpen() || isAnimating) return;
-      e.preventDefault();
-      if (wheelCooldown) return;
-
-      if (Math.abs(e.deltaY) > 20) {
-        wheelCooldown = true;
-        if (e.deltaY > 0) goToSlide(current + 1, 1);
-        else goToSlide(current - 1, -1);
-        setTimeout(() => { wheelCooldown = false; }, 600);
-      }
-    }, { passive: false });
-
-    // =========================================================
-    // KEYBOARD NAVIGATION
-    // =========================================================
-    window.addEventListener('keydown', (e) => {
-      if (isModalOpen()) {
-        if (e.key === 'Escape') closeProjectModal();
-        return;
-      }
-
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-        goToSlide(current + 1, 1);
-      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-        goToSlide(current - 1, -1);
-      } else if (e.key === 'ArrowRight') {
-        swapActiveDynamicSlider(1);
-      } else if (e.key === 'ArrowLeft') {
-        swapActiveDynamicSlider(-1);
-      }
-    });
-
-    // =========================================================
-    // INITIAL LOAD ANIMATION
-    // =========================================================
-    gsap.from('.slide.active .morph-elem', {
-      y: MOTION.dist,
-      opacity: 0,
-      stagger: MOTION.stagger + 0.02,
-      duration: MOTION.dur + 0.2,
-      ease: 'power3.out',
-      delay: 0.1
-    });
   </script>
 </body>
 </html>
