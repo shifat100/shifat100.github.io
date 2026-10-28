@@ -26,7 +26,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- GSAP with defer for non-blocking load -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
 
   <script type="application/ld+json">
   {
@@ -207,7 +208,6 @@
       }
     }
 
-    /* ON TOUCH / ANDROID: KEEP NATIVE SYSTEM CURSOR & SELECTION HANDLES */
     @media (pointer: coarse) {
       *, *::before, *::after {
         cursor: auto !important;
@@ -465,10 +465,10 @@
       z-index: 60;
     }
     body.view-solid .nav-dots {
-      display: none !important; /* NO DOTS IN SOLID VIEW */
+      display: none !important;
     }
     body.view-slide .nav-dots {
-      display: flex !important; /* YES DOTS IN SLIDE VIEW */
+      display: flex !important;
     }
 
     .dot {
@@ -967,7 +967,6 @@
       margin: auto;
     }
 
-    /* SLIDE VIEW PC: PROFILE PICTURE ABOVE DETAILS (TOP-CENTERED) */
     body.view-slide .hero-layout {
       grid-template-columns: 1fr;
       text-align: center;
@@ -975,7 +974,7 @@
       justify-items: center;
     }
     body.view-slide .avatar-wrapper {
-      order: -1; /* Picture goes on top */
+      order: -1;
       width: clamp(125px, 15vh, 175px);
       height: clamp(145px, 17.5vh, 200px);
       margin: 0 auto 4px;
@@ -1070,21 +1069,84 @@
       .contact-layout { grid-template-columns: 1fr; gap: 14px; }
       .modal-actions { flex-direction: column; }
 
-      /* Mobile Part-Tabs */
+      /* Mobile Carousel Header & Buttons */
       .dyn-slider-container { width: 100%; position: relative; }
-      .dyn-tab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-      .dyn-tab-pills { display: flex; gap: 6px; }
-      .dyn-tab-btn {
-        padding: 5px 12px; border-radius: 100px; background: var(--bg-subtle);
-        border: 1px solid var(--card-border); color: var(--text-muted);
-        font-family: 'Space Grotesk', monospace; font-size: 0.72rem; font-weight: 600;
+      .dyn-tab-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
       }
-      .dyn-tab-btn.active {
-        background: var(--accent-soft); border-color: var(--accent); color: var(--accent);
+      .dyn-carousel-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-subtle);
+        border: 1px solid var(--card-border);
+        border-radius: 100px;
+        padding: 4px 9px;
+      }
+      .dyn-nav-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 0;
+      }
+      .dyn-nav-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+      .dyn-nav-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+      .dyn-nav-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      .dyn-carousel-dots {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .dyn-carousel-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--nav-dot);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+      .dyn-carousel-dot.active {
+        width: 18px;
+        border-radius: 10px;
+        background: var(--accent);
+      }
+      .dyn-carousel-counter {
+        font-family: 'Space Grotesk', monospace;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent);
+        letter-spacing: 0.5px;
       }
       .dyn-swipe-hint {
-        font-family: 'Space Grotesk', monospace; font-size: 0.68rem; color: var(--accent);
-        opacity: 0.85; font-weight: 600;
+        font-family: 'Space Grotesk', monospace;
+        font-size: 0.68rem;
+        color: var(--accent);
+        opacity: 0.85;
+        font-weight: 600;
       }
       .dyn-viewport { width: 100%; overflow: hidden; position: relative; }
       .dyn-track { display: flex; width: 100%; transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
@@ -1224,6 +1286,8 @@
               src="profile.png"
               alt="Portrait of Md Al Shahreya Shifat"
               class="avatar-img"
+              loading="lazy"
+              decoding="async"
               onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';"
             >
             <div id="avatarFallback" class="avatar-placeholder" style="display: none;" aria-hidden="true">AIS</div>
@@ -1576,7 +1640,7 @@
       document.addEventListener('mouseleave', () => document.body.classList.add('cursor-out'));
       document.addEventListener('mouseenter', () => document.body.classList.remove('cursor-out'));
 
-      const interactiveSelector = 'a, button, input, textarea, [role="button"], .dot, .dyn-tab-btn, .theme-toggle, .view-mode-btn, .chip, .badge, .proj-btn, .cta-btn, .quick-btn';
+      const interactiveSelector = 'a, button, input, textarea, [role="button"], .dot, .dyn-nav-btn, .dyn-carousel-dot, .theme-toggle, .view-mode-btn, .chip, .badge, .proj-btn, .cta-btn, .quick-btn';
       document.addEventListener('mouseover', (e) => {
         if (e.target.closest(interactiveSelector)) document.body.classList.add('cursor-hover');
       });
@@ -1600,10 +1664,10 @@
 
     let current = 0;
     let isAnimating = false;
-    let currentLayoutMode = 'slide'; // 'slide' or 'solid'
+    let currentLayoutMode = 'slide';
 
     // =========================================================
-    // 4. CIRCLE SYSTEM (BUILD DOTS FIRST SO 'dots' IS INITIALIZED)
+    // 4. CIRCLE SYSTEM
     // =========================================================
     slides.forEach((s, i) => {
       const b = document.createElement('button');
@@ -1717,26 +1781,38 @@
 
       updateSlideChrome(nextIndex);
 
-      gsap.to(currentSlide, {
-        opacity: 0,
-        scale: 0.96,
-        duration: 0.28,
-        ease: 'power2.in',
-        onComplete: () => {
-          currentSlide.classList.remove('active');
-          currentSlide.style.visibility = 'hidden';
-          nextSlide.style.visibility = 'visible';
-          nextSlide.classList.add('active');
+      if (window.gsap) {
+        gsap.to(currentSlide, {
+          opacity: 0,
+          scale: 0.96,
+          duration: 0.28,
+          ease: 'power2.in',
+          onComplete: () => {
+            currentSlide.classList.remove('active');
+            currentSlide.style.visibility = 'hidden';
+            nextSlide.style.visibility = 'visible';
+            nextSlide.classList.add('active');
 
-          gsap.fromTo(nextSlide, 
-            { opacity: 0, scale: 1.04 },
-            { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out', onComplete: () => {
-              current = nextIndex;
-              isAnimating = false;
-            }}
-          );
-        }
-      });
+            gsap.fromTo(nextSlide, 
+              { opacity: 0, scale: 1.04 },
+              { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out', onComplete: () => {
+                current = nextIndex;
+                isAnimating = false;
+              }}
+            );
+          }
+        });
+      } else {
+        currentSlide.classList.remove('active');
+        currentSlide.style.visibility = 'hidden';
+        currentSlide.style.opacity = '0';
+
+        nextSlide.style.visibility = 'visible';
+        nextSlide.style.opacity = '1';
+        nextSlide.classList.add('active');
+        current = nextIndex;
+        isAnimating = false;
+      }
     }
 
     function jumpToSlide(index) {
@@ -1750,8 +1826,6 @@
     let wheelCooldown = false;
     window.addEventListener('wheel', (e) => {
       if (isModalOpen()) return;
-
-      // In desktop solid view, allow natural native scrolling
       if (isDesktop() && currentLayoutMode === 'solid') return;
 
       e.preventDefault();
@@ -1789,7 +1863,7 @@
     });
 
     // =========================================================
-    // 9. TOUCH GESTURES (WITH ANDROID TEXT SELECTION SAFETY)
+    // 9. TOUCH GESTURES (WITH SELECTION SAFETY)
     // =========================================================
     let touchStartX = 0, touchStartY = 0, touchCurrentX = 0, touchCurrentY = 0, isTouching = false;
 
@@ -1815,7 +1889,6 @@
       if (!isTouching) return;
       isTouching = false;
 
-      // Android text selection protection: don't swipe slides if text is actively selected
       const activeSelection = window.getSelection ? window.getSelection().toString() : '';
       if (activeSelection && activeSelection.trim().length > 0) {
         return;
@@ -1839,7 +1912,7 @@
     }, { passive: true });
 
     // =========================================================
-    // 10. DYNAMIC CHUNKER (PART 1 & PART 2 TABS ON MOBILE)
+    // 10. DYNAMIC CHUNKER & CAROUSEL BUTTONS CONTROLLER
     // =========================================================
     const dynamicGroups = document.querySelectorAll('.dynamic-chunkable');
     const storedOriginals = new Map();
@@ -1868,28 +1941,64 @@
         container.className = 'dyn-slider-container dynamic-chunkable';
 
         const totalPages = Math.ceil(originalCards.length / perPage);
-        const tabHeader = document.createElement('div');
-        tabHeader.className = 'dyn-tab-header';
 
-        const pillsBox = document.createElement('div');
-        pillsBox.className = 'dyn-tab-pills';
+        // Header containing Carousel Prev/Next & Indicators
+        const header = document.createElement('div');
+        header.className = 'dyn-tab-header';
+
+        const controls = document.createElement('div');
+        controls.className = 'dyn-carousel-controls';
+
+        // Prev Button
+        const prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.className = 'dyn-nav-btn dyn-prev';
+        prevBtn.setAttribute('aria-label', 'Previous items');
+        prevBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+        prevBtn.onclick = () => {
+          const track = container.querySelector('.dyn-track');
+          const page = parseInt(track.dataset.page || '0', 10);
+          setDynSlidePage(container, page - 1);
+        };
+
+        // Dots container
+        const dotsBox = document.createElement('div');
+        dotsBox.className = 'dyn-carousel-dots';
 
         for (let i = 0; i < totalPages; i++) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = `dyn-tab-btn ${i === 0 ? 'active' : ''}`;
-          btn.innerText = `Part ${i + 1}`;
-          btn.onclick = () => setDynSlidePage(container, i);
-          pillsBox.appendChild(btn);
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = `dyn-carousel-dot ${i === 0 ? 'active' : ''}`;
+          dot.setAttribute('aria-label', `Go to page ${i + 1}`);
+          dot.onclick = () => setDynSlidePage(container, i);
+          dotsBox.appendChild(dot);
         }
 
-        const hint = document.createElement('span');
-        hint.className = 'dyn-swipe-hint';
-        hint.innerText = '↔ SWIPE';
+        // Next Button
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = 'dyn-nav-btn dyn-next';
+        nextBtn.setAttribute('aria-label', 'Next items');
+        nextBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+        nextBtn.onclick = () => {
+          const track = container.querySelector('.dyn-track');
+          const page = parseInt(track.dataset.page || '0', 10);
+          setDynSlidePage(container, page + 1);
+        };
 
-        tabHeader.appendChild(pillsBox);
-        tabHeader.appendChild(hint);
+        controls.appendChild(prevBtn);
+        controls.appendChild(dotsBox);
+        controls.appendChild(nextBtn);
 
+        // Counter text indicator (e.g., "1 / 2")
+        const counter = document.createElement('div');
+        counter.className = 'dyn-carousel-counter';
+        counter.innerText = `01 / 0${totalPages}`;
+
+        header.appendChild(controls);
+        header.appendChild(counter);
+
+        // Viewport and track
         const viewport = document.createElement('div');
         viewport.className = 'dyn-viewport';
 
@@ -1906,21 +2015,32 @@
         }
 
         viewport.appendChild(track);
-        container.appendChild(tabHeader);
+        container.appendChild(header);
         container.appendChild(viewport);
+
+        setDynSlidePage(container, 0);
       });
     }
 
     function setDynSlidePage(container, pageIndex) {
       const track = container.querySelector('.dyn-track');
-      const btns = container.querySelectorAll('.dyn-tab-btn');
+      const dots = container.querySelectorAll('.dyn-carousel-dot');
+      const prevBtn = container.querySelector('.dyn-prev');
+      const nextBtn = container.querySelector('.dyn-next');
+      const counter = container.querySelector('.dyn-carousel-counter');
       const totalPages = container.querySelectorAll('.dyn-page').length;
+
       if (pageIndex < 0) pageIndex = 0;
       if (pageIndex >= totalPages) pageIndex = totalPages - 1;
 
       track.dataset.page = pageIndex;
       track.style.transform = `translateX(-${pageIndex * 100}%)`;
-      btns.forEach((b, idx) => b.classList.toggle('active', idx === pageIndex));
+
+      dots.forEach((dot, idx) => dot.classList.toggle('active', idx === pageIndex));
+
+      if (prevBtn) prevBtn.disabled = (pageIndex === 0);
+      if (nextBtn) nextBtn.disabled = (pageIndex === totalPages - 1);
+      if (counter) counter.innerText = `0${pageIndex + 1} / 0${totalPages}`;
     }
 
     function swapActiveDynamicSlider(direction) {
@@ -1958,7 +2078,9 @@
         setDesktopLayoutMode(currentLayoutMode);
       }
     });
-    requestAnimationFrame(setupDynamicSliders);
+
+    document.addEventListener('DOMContentLoaded', setupDynamicSliders);
+    window.addEventListener('load', setupDynamicSliders);
 
     // =========================================================
     // 12. MODAL DIALOG
@@ -1992,14 +2114,20 @@
       });
 
       projectModal.style.display = 'flex';
-      gsap.fromTo('.modal-card', { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25 });
+      if (window.gsap) {
+        gsap.fromTo('.modal-card', { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25 });
+      }
     }
 
     function closeProjectModal() {
       if (!isModalOpen()) return;
-      gsap.to('.modal-card', { scale: 0.94, opacity: 0, duration: 0.18, onComplete: () => {
+      if (window.gsap) {
+        gsap.to('.modal-card', { scale: 0.94, opacity: 0, duration: 0.18, onComplete: () => {
+          projectModal.style.display = 'none';
+        }});
+      } else {
         projectModal.style.display = 'none';
-      }});
+      }
     }
 
     function closeModalOnBg(e) { if (e.target === projectModal) closeProjectModal(); }

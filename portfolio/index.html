@@ -10,20 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   
-  <!-- Three.js & GSAP CDNs -->
+  <!-- Three.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
   <style>
     :root {
       --bg: #060911;
-      --card-bg: rgba(14, 21, 37, 0.74);
-      --card-border: rgba(56, 189, 248, 0.16);
       --accent: #00ff88;
       --accent-blue: #38bdf8;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --app-height: 100vh;
     }
 
     * {
@@ -37,16 +33,14 @@
     body {
       background-color: #000;
       color: var(--text);
-      font-family: 'Courier New', Courier, monospace;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
       overflow: hidden;
       width: 100vw;
-      height: var(--app-height);
+      height: 100vh;
       position: fixed;
+      transition: opacity 0.6s ease;
     }
 
-    /* ========================================================
-       CINEMATIC 3D INTRO STYLES
-    ======================================================== */
     #cinematic-container {
       position: absolute;
       top: 0;
@@ -54,7 +48,6 @@
       width: 100vw;
       height: 100vh;
       z-index: 20;
-      transition: opacity 0.8s ease;
     }
 
     #canvas-container {
@@ -92,6 +85,19 @@
       border-color: var(--accent);
       color: var(--accent);
       box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    }
+
+    .icon {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+      flex-shrink: 0;
     }
 
     /* Scene 1: Welcome Overlay */
@@ -217,635 +223,17 @@
       pointer-events: none;
       transform-origin: center center;
     }
-
-    /* ========================================================
-       PORTFOLIO APP (DATAS.HTML MERGED) STYLES
-    ======================================================== */
-    #portfolio-app {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: var(--app-height);
-      background-color: var(--bg);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      z-index: 150;
-      overflow: hidden;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-      transform: scale(0.97);
-    }
-    #portfolio-app.active-app {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-      transform: scale(1);
-    }
-
-    .bg-grid {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.06) 0%, transparent 65%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 30px 30px, 30px 30px;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .icon {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      stroke-width: 2;
-      stroke: currentColor;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      vertical-align: middle;
-      flex-shrink: 0;
-    }
-
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: clamp(12px, 2.2vh, 22px) clamp(18px, 4vw, 40px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 50;
-      pointer-events: none;
-    }
-    .logo {
-      font-family: 'Space Grotesk', monospace;
-      font-weight: 700;
-      font-size: clamp(0.95rem, 3.2vw, 1.25rem);
-      letter-spacing: 2px;
-      color: #fff;
-    }
-    .logo span { color: var(--accent); }
-    
-    .slide-counter {
-      font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.85rem, 3vw, 1rem);
-      color: var(--accent-blue);
-      letter-spacing: 2px;
-      font-weight: 700;
-    }
-
-    #progress-line {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      width: 20%;
-      background: linear-gradient(90deg, var(--accent), var(--accent-blue));
-      box-shadow: 0 0 12px var(--accent);
-      z-index: 60;
-      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .nav-dots {
-      position: fixed;
-      right: clamp(15px, 2.5vw, 30px);
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      z-index: 50;
-    }
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      cursor: pointer;
-      transition: all 0.35s ease;
-    }
-    .dot.active {
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-      transform: scale(1.4);
-      border-color: var(--accent);
-    }
-
-    .slider-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-    }
-
-    .slide {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      padding: clamp(60px, 8.5vh, 85px) clamp(16px, 4vw, 40px) clamp(25px, 4.5vh, 35px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      visibility: hidden;
-      opacity: 0;
-    }
-    .slide.active {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .slide-inner {
-      max-width: 1100px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: clamp(12px, 1.8vh, 22px);
-      transition: transform 0.3s ease;
-    }
-
-    .section-tag {
-      font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.68rem, 1.8vw, 0.82rem);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-tag::before {
-      content: '';
-      width: clamp(16px, 3vw, 24px);
-      height: 2px;
-      background: var(--accent);
-    }
-    .section-title {
-      font-size: clamp(1.6rem, 4.8vw, 3.2rem);
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      line-height: 1.1;
-      background: linear-gradient(135deg, #ffffff 40%, var(--accent-blue) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .glass-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: clamp(12px, 1.8vw, 18px);
-      padding: clamp(14px, 2vh, 22px);
-      backdrop-filter: blur(14px);
-      transition: all 0.25s ease;
-    }
-    .glass-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.08);
-    }
-
-    .hero-layout {
-      display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
-      align-items: center;
-      gap: clamp(18px, 3.5vw, 40px);
-    }
-    .hero-bio {
-      font-size: clamp(0.88rem, 2.2vw, 1.08rem);
-      line-height: 1.55;
-      color: var(--text-muted);
-      margin-top: clamp(4px, 1vh, 10px);
-    }
-    .meta-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: clamp(6px, 1.2vw, 9px);
-      margin-top: clamp(10px, 1.6vh, 18px);
-    }
-    .badge {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      padding: clamp(5px, 0.8vh, 7px) clamp(9px, 1.8vw, 13px);
-      border-radius: 20px;
-      font-size: clamp(0.7rem, 1.7vw, 0.82rem);
-      font-family: 'Space Grotesk', monospace;
-      color: #cbd5e1;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .badge:hover {
-      border-color: var(--accent-blue);
-      color: #fff;
-    }
-    .badge.accent {
-      border-color: rgba(0, 255, 136, 0.4);
-      color: var(--accent);
-      background: rgba(0, 255, 136, 0.08);
-    }
-
-    .avatar-wrapper {
-      position: relative;
-      width: clamp(130px, 26vw, 260px);
-      height: clamp(150px, 30vw, 300px);
-      margin: 0 auto;
-    }
-    .avatar-frame {
-      width: 100%;
-      height: 100%;
-      border-radius: clamp(16px, 3vw, 24px);
-      border: 1px solid var(--card-border);
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(0, 255, 136, 0.06));
-      backdrop-filter: blur(16px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(0, 255, 136, 0.12);
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-    .avatar-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .avatar-placeholder {
-      font-size: clamp(3rem, 7vw, 4.5rem);
-      font-weight: 800;
-      font-family: 'Space Grotesk', sans-serif;
-      background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-    }
-    .corner-decor {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      border: 2px solid var(--accent);
-      z-index: 5;
-    }
-    .corner-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
-    .corner-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
-
-    .edu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: clamp(9px, 1.4vh, 16px);
-    }
-    .card-year {
-      font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.68rem, 1.7vw, 0.76rem);
-      color: var(--accent-blue);
-      letter-spacing: 1.5px;
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .card-title {
-      font-size: clamp(0.98rem, 2.2vw, 1.18rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 3px;
-    }
-    .card-inst {
-      color: var(--text-muted);
-      font-size: clamp(0.75rem, 1.8vw, 0.84rem);
-      line-height: 1.4;
-    }
-
-    .skills-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: clamp(9px, 1.4vh, 16px);
-    }
-    .skill-cat-title {
-      font-size: clamp(0.85rem, 2vw, 0.96rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .skill-cat-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.1);
-    }
-    .skill-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: clamp(4px, 0.8vw, 7px);
-    }
-    .chip {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: clamp(4px, 0.6vh, 6px) clamp(8px, 1.4vw, 11px);
-      border-radius: 8px;
-      font-size: clamp(0.68rem, 1.6vw, 0.78rem);
-      color: #e2e8f0;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .chip:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: clamp(10px, 1.6vh, 18px);
-    }
-    .proj-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: clamp(14px, 2vw, 18px);
-      padding: clamp(14px, 2vh, 22px);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .proj-desc {
-      font-size: clamp(0.75rem, 1.8vw, 0.85rem);
-      color: var(--text-muted);
-      line-height: 1.45;
-      margin: 7px 0 12px;
-    }
-    .proj-btn {
-      font-family: 'Space Grotesk', monospace;
-      font-size: clamp(0.72rem, 1.7vw, 0.82rem);
-      color: var(--accent);
-      background: transparent;
-      border: 1px solid rgba(0, 255, 136, 0.3);
-      padding: 6px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 700;
-      width: fit-content;
-      transition: all 0.25s ease;
-    }
-    .proj-btn:hover {
-      background: rgba(0, 255, 136, 0.12);
-      border-color: var(--accent);
-    }
-
-    .contact-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: clamp(14px, 2.5vw, 30px);
-      align-items: center;
-    }
-    .contact-info-list {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(8px, 1.3vh, 14px);
-    }
-    .contact-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: clamp(10px, 1.5vh, 16px) clamp(12px, 1.8vw, 18px);
-      border-radius: 12px;
-    }
-    .contact-icon-box {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(56, 189, 248, 0.1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--accent-blue);
-      flex-shrink: 0;
-    }
-    .contact-label {
-      font-size: clamp(0.65rem, 1.5vw, 0.72rem);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .contact-val {
-      font-size: clamp(0.82rem, 2vw, 0.95rem);
-      font-weight: 600;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .quick-contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .quick-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      color: #cbd5e1;
-      font-size: 0.78rem;
-      font-family: 'Space Grotesk', monospace;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .quick-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(0, 255, 136, 0.08);
-    }
-
-    .cta-btn {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      padding: clamp(11px, 1.6vh, 15px) clamp(20px, 3.5vw, 28px);
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-      color: #060911;
-      font-weight: 700;
-      font-size: clamp(0.82rem, 2vw, 0.92rem);
-      text-decoration: none;
-      letter-spacing: 1px;
-      box-shadow: 0 10px 25px rgba(0, 255, 136, 0.25);
-      cursor: pointer;
-      border: none;
-      width: 100%;
-      margin-top: 10px;
-      transition: all 0.25s ease;
-    }
-    .cta-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 255, 136, 0.35);
-    }
-    .cta-btn.secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      border: 1px solid var(--card-border);
-      box-shadow: none;
-    }
-    .cta-btn.secondary:hover {
-      border-color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.15);
-    }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(4, 8, 16, 0.85);
-      backdrop-filter: blur(12px);
-      z-index: 200;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .modal-card {
-      background: #0d1527;
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      max-width: 580px;
-      width: 100%;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: clamp(20px, 3.5vh, 32px);
-      position: relative;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.15);
-    }
-    .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-    }
-    .modal-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin: 10px 0 6px;
-      color: #fff;
-    }
-    .modal-desc {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-    .modal-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 20px;
-    }
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .mobile-scroll-hint {
-      position: fixed;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 50;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: var(--accent);
-      font-size: 0.72rem;
-      letter-spacing: 2px;
-      font-family: 'Space Grotesk', monospace;
-      animation: bounce 2s infinite ease-in-out;
-      cursor: pointer;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: translate(-50%, 0); }
-      50% { transform: translate(-50%, 6px); }
-    }
-
-    @media (max-width: 768px) {
-      .hero-layout {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 14px;
-      }
-      .section-tag { justify-content: center; }
-      .meta-badges { justify-content: center; }
-      .avatar-wrapper { order: -1; }
-      
-      .contact-layout {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-      .nav-dots { display: none; }
-      .mobile-scroll-hint { display: flex; }
-      .modal-actions { flex-direction: column; }
-    }
-
-    @media (max-height: 650px) {
-      .slide-inner {
-        transform: scale(0.92);
-        transform-origin: center center;
-      }
-      .hero-bio { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    }
   </style>
 </head>
 <body>
 
-  <!-- ========================================================
-       SKIP INTRO CONTROLLER
-  ======================================================== -->
-  <button id="skip-intro-btn" onclick="transitionToPortfolio()">
+  <!-- SKIP INTRO BUTTON -->
+  <button id="skip-intro-btn" onclick="transitionToResume()">
     <span>SKIP INTRO</span>
     <svg class="icon" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
   </button>
 
-  <!-- ========================================================
-       STAGE 1: CINEMATIC 3D JOURNEY (ORIGINALLY INDEX.HTML)
-  ======================================================== -->
+  <!-- 3D CINEMATIC INTRO -->
   <div id="cinematic-container">
     <div id="welcome-screen">
       <div class="letter-container" id="letterContainer">
@@ -875,366 +263,21 @@
     <div id="canvas-container"></div>
   </div>
 
-  <!-- ========================================================
-       STAGE 2: INTERACTIVE PORTFOLIO (ORIGINALLY DATAS.HTML)
-  ======================================================== -->
-  <div id="portfolio-app">
-    <div class="bg-grid"></div>
-    <div id="progress-line"></div>
-
-    <header>
-      <div class="logo">SHIFAT100<span>.</span></div>
-      <div class="slide-counter" id="slideNum">01 / 05</div>
-    </header>
-
-    <div class="nav-dots">
-      <div class="dot active" onclick="jumpToSlide(0)"></div>
-      <div class="dot" onclick="jumpToSlide(1)"></div>
-      <div class="dot" onclick="jumpToSlide(2)"></div>
-      <div class="dot" onclick="jumpToSlide(3)"></div>
-      <div class="dot" onclick="jumpToSlide(4)"></div>
-    </div>
-
-    <div class="mobile-scroll-hint" id="mobileHint" onclick="goToSlide(current + 1, 1)">
-      <span>SWIPE</span>
-      <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    </div>
-
-    <!-- Interactive Project Modal Popup -->
-    <div id="projectModal" class="modal-overlay" onclick="closeModalOnBg(event)">
-      <div class="modal-card">
-        <button class="modal-close" onclick="closeProjectModal()">
-          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-        <div class="section-tag" id="modalTag">PROJECT SHOWCASE</div>
-        <h3 class="modal-title" id="modalTitle">Project Title</h3>
-        <p class="modal-desc" id="modalDesc">Project description goes here...</p>
-        <div class="modal-chips" id="modalChips"></div>
-        <div class="modal-actions">
-          <a id="modalGithubLink" href="https://github.com/shifat100" target="_blank" class="cta-btn secondary">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-            <span>GitHub: shifat100</span>
-          </a>
-          <a id="modalLiveLink" href="https://github.com/shifat100" target="_blank" class="cta-btn">
-            <span>Live Demo / Details</span>
-            <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <main class="slider-container" id="sliderContainer">
-      <!-- Slide 1: Hero & Bio -->
-      <section class="slide active" data-index="0">
-        <div class="slide-inner hero-layout">
-          <div class="hero-text-content">
-            <div class="section-tag morph-elem">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              VIBE CODER & SYSTEMS ARCHITECT
-            </div>
-            <h1 class="section-title morph-elem">MD AL SHAHREYA SHIFAT</h1>
-            <p class="hero-bio morph-elem">
-              Proactive Vibe Coder specializing in rapid AI-accelerated web architecture, KaiOS & touch feature phone applications, cloud phone virtualization, and custom Linux remastering. Combining clean code with modern AI toolchains.
-            </p>
-            <div class="meta-badges morph-elem">
-              <span class="badge accent">
-                <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                KaiOS & Cloud Phone
-              </span>
-              <a href="https://github.com/shifat100" target="_blank" class="badge">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                GitHub: @shifat100
-              </a>
-              <span class="badge">
-                <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                Born: 06-08-2004
-              </span>
-              <span class="badge">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                Mymensingh, BD
-              </span>
-            </div>
-          </div>
-
-          <div class="avatar-wrapper morph-elem">
-            <div class="avatar-frame">
-              <div class="corner-decor corner-tl"></div>
-              <div class="corner-decor corner-br"></div>
-              <img 
-                id="avatarImg" 
-                src="profile.png" 
-                alt="Md Al Shahreya Shifat" 
-                class="avatar-img" 
-                onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';"
-              >
-              <div id="avatarFallback" class="avatar-placeholder" style="display: none;">AS</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Slide 2: Education -->
-      <section class="slide" data-index="1">
-        <div class="slide-inner">
-          <div>
-            <div class="section-tag morph-elem">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
-              ACADEMIC & PROFESSIONAL CREDENTIALS
-            </div>
-            <h2 class="section-title morph-elem">Education & Training</h2>
-          </div>
-
-          <div class="edu-grid">
-            <div class="glass-card morph-elem">
-              <div class="card-year">
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                CURRENT DEGREE
-              </div>
-              <h3 class="card-title">BBA (Bachelor of Business Administration)</h3>
-              <p class="card-inst">Institute of Science and Technology (IST) • Business Strategy, ERP Systems & Technology Leadership.</p>
-            </div>
-
-            <div class="glass-card morph-elem">
-              <div class="card-year">
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                GOVT CERTIFICATION
-              </div>
-              <h3 class="card-title">AI Basic Course</h3>
-              <p class="card-inst">Department of Youth Development (DYD) • Artificial Intelligence Foundations, Prompt Systems & AI Workflows.</p>
-            </div>
-
-            <div class="glass-card morph-elem">
-              <div class="card-year">
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                COMPLETED 2022
-              </div>
-              <h3 class="card-title">Higher Secondary Certificate (HSC)</h3>
-              <p class="card-inst">College Level • Information & Communication Technology, Analytical Logic & Natural Sciences.</p>
-            </div>
-
-            <div class="glass-card morph-elem">
-              <div class="card-year">
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                COMPLETED 2020
-              </div>
-              <h3 class="card-title">Secondary School Certificate (SSC)</h3>
-              <p class="card-inst">School Level • Core Mathematics, Computer Science Fundamentals & Science.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Slide 3: Skills -->
-      <section class="slide" data-index="2">
-        <div class="slide-inner">
-          <div>
-            <div class="section-tag morph-elem">
-              <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-              TECH ARSENAL & PROFICIENCIES
-            </div>
-            <h2 class="section-title morph-elem">Skills & Ecosystems</h2>
-          </div>
-
-          <div class="skills-container">
-            <div class="glass-card morph-elem">
-              <div class="skill-cat-title">
-                <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                Web & Core Scripting
-              </div>
-              <div class="skill-chips">
-                <span class="chip">HTML5 / CSS3</span>
-                <span class="chip">Tailwind CSS</span>
-                <span class="chip">Bootstrap</span>
-                <span class="chip">Vanilla JS (All)</span>
-                <span class="chip">Node.js</span>
-                <span class="chip">Three.js</span>
-                <span class="chip">GSAP 3</span>
-                <span class="chip">PHP Core & OOP</span>
-                <span class="chip">WordPress CMS</span>
-              </div>
-            </div>
-
-            <div class="glass-card morph-elem">
-              <div class="skill-cat-title">
-                <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                KaiOS, Desktop & Mobile
-              </div>
-              <div class="skill-chips">
-                <span class="chip">KaiOS App Dev (Pro)</span>
-                <span class="chip">Touch Feature Phone Apps</span>
-                <span class="chip">Cloud Phone Systems</span>
-                <span class="chip">Electron.js</span>
-                <span class="chip">Construct Engine</span>
-                <span class="chip">Sketchware</span>
-                <span class="chip">Python (Basic)</span>
-                <span class="chip">C (Basic)</span>
-              </div>
-            </div>
-
-            <div class="glass-card morph-elem">
-              <div class="skill-cat-title">
-                <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line></svg>
-                Linux & Android CLI
-              </div>
-              <div class="skill-chips">
-                <span class="chip">Penguins' eggs (Remastering)</span>
-                <span class="chip">Kali Linux</span>
-                <span class="chip">Ubuntu</span>
-                <span class="chip">Bash Scripting</span>
-                <span class="chip">Termux (CLI)</span>
-                <span class="chip">TouchRec</span>
-                <span class="chip">Vibe Coding</span>
-                <span class="chip">AI Web Problem Solving</span>
-              </div>
-            </div>
-
-            <div class="glass-card morph-elem">
-              <div class="skill-cat-title">
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                Enterprise & Creative
-              </div>
-              <div class="skill-chips">
-                <span class="chip">ERP Software</span>
-                <span class="chip">Microsoft Office (Word/Excel/PPT)</span>
-                <span class="chip">Adobe Photoshop</span>
-                <span class="chip">Full Web Development</span>
-                <span class="chip">Complex Problem Solving</span>
-                <span class="chip">Communication Skills</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Slide 4: Projects -->
-      <section class="slide" data-index="3">
-        <div class="slide-inner">
-          <div>
-            <div class="section-tag morph-elem">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-              PROJECT ARCHITECTURE & REPOSITORIES
-            </div>
-            <h2 class="section-title morph-elem">Featured Work</h2>
-          </div>
-
-          <div class="project-grid">
-            <div class="proj-card morph-elem">
-              <div>
-                <span class="badge accent">KaiOS & Cloud Phone</span>
-                <h3 class="card-title" style="margin-top: 8px;">KaiOS Smart Suite</h3>
-                <p class="proj-desc">Custom optimized apps built for KaiOS and touch feature phones with low-memory footprint and cloud synchronization.</p>
-              </div>
-              <button class="proj-btn" onclick="openProjectModal('KaiOS Smart Suite', 'Custom lightweight feature phone apps designed for KaiOS and touch devices. Includes cloud phone integration, offline caching, and native key navigation.', ['KaiOS', 'JavaScript', 'Cloud Phone', 'HTML5'], 'https://github.com/shifat100')">
-                <span>VIEW PROJECT</span>
-                <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
-            </div>
-
-            <div class="proj-card morph-elem">
-              <div>
-                <span class="badge">Linux & Penguins' Eggs</span>
-                <h3 class="card-title" style="margin-top: 8px;">Penguin OS Remaster</h3>
-                <p class="proj-desc">Customized Debian/Ubuntu Linux distributions remastered using Penguins\' eggs CLI with integrated developer utilities.</p>
-              </div>
-              <button class="proj-btn" onclick="openProjectModal('Penguin OS Remaster', 'Tailored Linux ISO built using Penguins\' eggs, featuring automated developer packages, Kali security tools, and lightweight XFCE environments.', ['Penguins\' eggs', 'Debian', 'Bash', 'Kali Tools'], 'https://github.com/shifat100')">
-                <span>VIEW PROJECT</span>
-                <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
-            </div>
-
-            <div class="proj-card morph-elem">
-              <div>
-                <span class="badge">Desktop & CLI</span>
-                <h3 class="card-title" style="margin-top: 8px;">Electron & Termux Tools</h3>
-                <p class="proj-desc">Cross-platform desktop utilities engineered with Electron.js along with Android Termux automation workflows and scripts.</p>
-              </div>
-              <button class="proj-btn" onclick="openProjectModal('Electron & Termux Tools', 'Cross-platform productivity tools with Electron.js frontends and Termux headless background scripts for mobile/desktop harmony.', ['Electron.js', 'Termux', 'Node.js', 'TouchRec'], 'https://github.com/shifat100')">
-                <span>VIEW PROJECT</span>
-                <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Slide 5: Contact -->
-      <section class="slide" data-index="4">
-        <div class="slide-inner">
-          <div>
-            <div class="section-tag morph-elem">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-              COLLABORATION & INQUIRIES
-            </div>
-            <h2 class="section-title morph-elem">Get In Touch</h2>
-          </div>
-
-          <div class="contact-layout">
-            <div class="contact-info-list morph-elem">
-              <div class="contact-item">
-                <div class="contact-icon-box">
-                  <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                </div>
-                <div>
-                  <div class="contact-label">Email Address</div>
-                  <a href="mailto:alshahreya@gmail.com" class="contact-val">alshahreya@gmail.com</a>
-                </div>
-              </div>
-
-              <div class="contact-item">
-                <div class="contact-icon-box">
-                  <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                </div>
-                <div>
-                  <div class="contact-label">Location Base</div>
-                  <div class="contact-val">Mymensingh, Bangladesh</div>
-                </div>
-              </div>
-
-              <div class="quick-contact-grid">
-                <a href="https://wa.me/8801700000000" target="_blank" class="quick-btn">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                  <span>WhatsApp</span>
-                </a>
-                <a href="tel:+8801700000000" class="quick-btn">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                  <span>Direct Call</span>
-                </a>
-                <a href="https://github.com/shifat100" target="_blank" class="quick-btn">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                  <span>Shifat100</span>
-                </a>
-                <a href="mailto:alshahreya@gmail.com" class="quick-btn">
-                  <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="1.05" y1="12" x2="7" y2="12"></line><line x1="17.01" y1="12" x2="22.96" y2="12"></line></svg>
-                  <span>Quick Mail</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="glass-card morph-elem" style="text-align: center;">
-              <h3 class="card-title">Curriculum Vitae & Hire</h3>
-              <p class="proj-desc" style="margin-bottom: 14px;">Available for AI web building, KaiOS development, Linux remastering, and software engineering roles.</p>
-              
-              <a href="resume.pdf" download="CV.pdf" class="cta-btn secondary" style="margin-bottom: 8px;">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span>DOWNLOAD CV (PDF)</span>
-              </a>
-
-              <a href="mailto:alshahreya@gmail.com" class="cta-btn">
-                <span>SEND INQUIRY</span>
-                <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- ========================================================
-       UNIFIED JAVASCRIPT ENGINE
-  ======================================================== -->
   <script>
-    // --- Soft Glow Texture ---
+    // --- REDIRECT LOGIC ---
+    let isTransitioning = false;
+    function transitionToResume() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      // Smooth fade out of the screen
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        window.location.href = 'resume.html';
+      }, 500);
+    }
+
+    // --- PROCEDURAL TEXTURES ---
     function createGlowPointTexture() {
       const c = document.createElement('canvas');
       c.width = 64; c.height = 64;
@@ -1250,7 +293,6 @@
     }
     const particleTex = createGlowPointTexture();
 
-    // --- Magma Texture ---
     function createMagmaTexture() {
       const c = document.createElement('canvas');
       c.width = 1024; c.height = 512;
@@ -1273,7 +315,6 @@
       return new THREE.CanvasTexture(c);
     }
 
-    // --- Cooled Earth Texture (70% Ocean + Poles + 30% Land) ---
     function createCooledEarthTexture() {
       const c = document.createElement('canvas');
       c.width = 2048; c.height = 1024;
@@ -1355,7 +396,7 @@
       return new THREE.CanvasTexture(c);
     }
 
-    // --- Dynamic Terminal Display Texture ---
+    // --- TERMINAL DISPLAY TEXTURE ---
     const hackerCanvas = document.createElement('canvas');
     hackerCanvas.width = 1280;
     hackerCanvas.height = 720;
@@ -1424,7 +465,7 @@
       hackerTex.needsUpdate = true;
     }
 
-    // --- Three.js Setup ---
+    // --- THREE.JS SCENE SETUP ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 14000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -1523,7 +564,7 @@
     const accretePoints = new THREE.Points(accreteGeom, accreteMat);
     scene.add(accretePoints);
 
-    // The Sun
+    // Sun
     const sunGeom = new THREE.SphereGeometry(15, 48, 48);
     const sunMat = new THREE.MeshBasicMaterial({ color: 0xff8c00 });
     const sunMesh = new THREE.Mesh(sunGeom, sunMat);
@@ -1987,7 +1028,7 @@
       }
     }
 
-    // Letters Collision
+    // Letters Collision Trigger
     const letters = document.querySelectorAll('.letter');
     const container = document.getElementById('letterContainer');
     let lettersCollided = false;
@@ -2009,7 +1050,7 @@
       });
     }
 
-    // DOM & State
+    // DOM References
     const startTime = performance.now();
     const flashOverlay = document.getElementById('flash-overlay');
     const hudText = document.getElementById('hud-text');
@@ -2020,47 +1061,11 @@
     const legendText = document.getElementById('legend-text');
     const legendWrapper = document.getElementById('legendWrapper');
     const eraserTool = document.getElementById('eraser-tool');
-    const skipIntroBtn = document.getElementById('skip-intro-btn');
-    const cinematicContainer = document.getElementById('cinematic-container');
-    const portfolioApp = document.getElementById('portfolio-app');
 
-    let isIntroFinished = false;
-    let animFrameId = null;
-
-    // --- TRANSITION FROM 3D CINEMATIC TO PORTFOLIO ---
-    function transitionToPortfolio() {
-      if (isIntroFinished) return;
-      isIntroFinished = true;
-
-      // Hide skip button
-      skipIntroBtn.style.opacity = '0';
-      skipIntroBtn.style.pointerEvents = 'none';
-
-      // Fade out cinematic container & fade in portfolio app
-      cinematicContainer.style.opacity = '0';
-      setTimeout(() => {
-        cinematicContainer.style.display = 'none';
-        if (animFrameId) cancelAnimationFrame(animFrameId);
-      }, 850);
-
-      portfolioApp.classList.add('active-app');
-      recalculateScreen();
-
-      // Trigger GSAP entrance
-      gsap.from('.slide.active .morph-elem', {
-        y: 30,
-        opacity: 0,
-        stagger: 0.06,
-        duration: 0.65,
-        ease: 'power3.out',
-        delay: 0.2
-      });
-    }
-
-    // --- 3D Animation Loop ---
+    // --- ANIMATION LOOP ---
     function animate() {
-      if (isIntroFinished) return;
-      animFrameId = requestAnimationFrame(animate);
+      if (isTransitioning) return;
+      requestAnimationFrame(animate);
 
       const elapsed = (performance.now() - startTime) / 1000;
 
@@ -2256,7 +1261,7 @@
         }
         meteorTail.geometry.attributes.position.needsUpdate = true;
       }
-      // Bangladesh Intro
+      // Act 9: Bangladesh Map Intro
       else if (elapsed >= 46.5 && elapsed < 51.5) {
         sunMesh.visible = false;
         planetMeshes.forEach(p => p.pivot.visible = false);
@@ -2291,7 +1296,7 @@
 
         meteorGroup.position.set(0, 9999, 0);
       }
-      // Impact Approach
+      // Act 10: Impact Approach
       else if (elapsed >= 51.5 && elapsed < 56.5) {
         const t = (elapsed - 51.5) / 5.0;
 
@@ -2319,7 +1324,7 @@
         }
         meteorTail.geometry.attributes.position.needsUpdate = true;
       }
-      // Blast & Whiteout
+      // Act 11: Blast & Whiteout
       else if (elapsed >= 56.5 && elapsed < 59.0) {
         const blastT = (elapsed - 56.5) / 2.5;
 
@@ -2338,7 +1343,7 @@
           whiteoutScreen.style.opacity = Math.min(1, whiteT * 1.3);
         }
       }
-      // A Legend Born
+      // Act 12: A Legend Born Text
       else if (elapsed >= 59.0 && elapsed < 62.5) {
         whiteoutScreen.style.opacity = '1';
         hudText.style.opacity = '0';
@@ -2356,7 +1361,7 @@
         camera.position.copy(roomCam);
         camera.lookAt(camLookTarget);
       }
-      // Eraser Animation
+      // Act 13: Eraser Animation
       else if (elapsed >= 62.5 && elapsed < 66.0) {
         const eraseT = (elapsed - 62.5) / 3.5;
 
@@ -2379,7 +1384,7 @@
           whiteoutScreen.style.opacity = `${1 - fadeT}`;
         }
       }
-      // Hacker Room View
+      // Act 14: Hacker Room Setup
       else if (elapsed >= 66.0 && elapsed < 70.5) {
         whiteoutScreen.style.display = 'none';
         eraserTool.style.opacity = '0';
@@ -2398,7 +1403,7 @@
         camCurrentLook.lerp(camLookTarget, 0.05);
         camera.lookAt(camCurrentLook);
       }
-      // Deep Zoom to Screen
+      // Act 15: Deep Zoom to Terminal Screen
       else if (elapsed >= 70.5 && elapsed < 74.5) {
         updateHackerScreen(elapsed);
         screenGlowLight.intensity = 3.6;
@@ -2421,226 +1426,34 @@
         camCurrentLook.lerp(camLookTarget, 0.08);
         camera.lookAt(camCurrentLook);
       }
-      // Finale: Switch Directly to Portfolio App
+      // Finale: Transition to resume.html
       else {
         updateHackerScreen(elapsed);
         camera.position.set(0, 25.5, -3.1);
         camera.lookAt(0, 25.5, -4);
 
-        transitionToPortfolio();
+        transitionToResume();
       }
 
       renderer.render(scene, camera);
     }
 
+    // Window Resize Handler
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      recalculateScreen();
     });
 
-    animate();
-
-    // =========================================================
-    // PORTFOLIO LOGIC (SLIDER, MODALS & GSAP)
-    // =========================================================
-    function recalculateScreen() {
-      const actualHeight = window.innerHeight;
-      document.documentElement.style.setProperty('--app-height', `${actualHeight}px`);
-
-      const activeSlideInner = document.querySelector('.slide.active .slide-inner');
-      if (activeSlideInner) {
-        const availableHeight = actualHeight - 110;
-        const contentHeight = activeSlideInner.scrollHeight;
-        
-        if (contentHeight > availableHeight && availableHeight > 280) {
-          const scaleFactor = availableHeight / contentHeight;
-          activeSlideInner.style.transform = `scale(${Math.min(1, scaleFactor)})`;
-          activeSlideInner.style.transformOrigin = 'center center';
-        } else {
-          activeSlideInner.style.transform = 'scale(1)';
-        }
-      }
-    }
-
-    window.addEventListener('orientationchange', recalculateScreen);
-
-    // Project Modal
-    const projectModal = document.getElementById('projectModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDesc = document.getElementById('modalDesc');
-    const modalChips = document.getElementById('modalChips');
-    const modalGithubLink = document.getElementById('modalGithubLink');
-
-    function openProjectModal(title, description, tags, githubUrl) {
-      modalTitle.innerText = title;
-      modalDesc.innerText = description;
-      modalGithubLink.href = githubUrl || "https://github.com/shifat100";
-      
-      modalChips.innerHTML = '';
-      if (tags && tags.length) {
-        tags.forEach(t => {
-          const s = document.createElement('span');
-          s.className = 'chip';
-          s.innerText = t;
-          modalChips.appendChild(s);
-        });
-      }
-      
-      projectModal.style.display = 'flex';
-      gsap.fromTo('.modal-card', { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' });
-    }
-
-    function closeProjectModal() {
-      gsap.to('.modal-card', {
-        scale: 0.9,
-        opacity: 0,
-        duration: 0.2,
-        ease: 'power2.in',
-        onComplete: () => {
-          projectModal.style.display = 'none';
-        }
-      });
-    }
-
-    function closeModalOnBg(e) {
-      if (e.target === projectModal) closeProjectModal();
-    }
-
-    // GSAP Slider Controller
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-    const slideNum = document.getElementById('slideNum');
-    const progressLine = document.getElementById('progress-line');
-    const mobileHint = document.getElementById('mobileHint');
-
-    let current = 0;
-    let isAnimating = false;
-    const total = slides.length;
-
-    function goToSlide(nextIndex, direction = 1) {
-      if (isAnimating || nextIndex === current || nextIndex < 0 || nextIndex >= total) return;
-      isAnimating = true;
-
-      const currentSlide = slides[current];
-      const nextSlide = slides[nextIndex];
-
-      const currentElems = currentSlide.querySelectorAll('.morph-elem');
-      const nextElems = nextSlide.querySelectorAll('.morph-elem');
-
-      dots[current]?.classList.remove('active');
-      dots[nextIndex]?.classList.add('active');
-      slideNum.innerText = `0${nextIndex + 1} / 0${total}`;
-      progressLine.style.width = `${((nextIndex + 1) / total) * 100}%`;
-
-      if (nextIndex === total - 1) {
-        mobileHint.style.display = 'none';
-      } else if (window.innerWidth <= 768) {
-        mobileHint.style.display = 'flex';
-      }
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          currentSlide.classList.remove('active');
-          gsap.set(currentSlide, { visibility: 'hidden', opacity: 0 });
-          current = nextIndex;
-          recalculateScreen();
-          isAnimating = false;
-        }
-      });
-
-      tl.to(currentElems, {
-        y: direction > 0 ? -30 : 30,
-        opacity: 0,
-        stagger: 0.04,
-        duration: 0.35,
-        ease: 'power2.in'
-      })
-      .to(currentSlide, {
-        scale: 0.96,
-        opacity: 0,
-        duration: 0.3,
-        ease: 'power2.in'
-      }, "-=0.15");
-
-      tl.set(nextSlide, {
-        visibility: 'visible',
-        opacity: 0,
-        scale: 1.04
-      })
-      .set(nextElems, {
-        y: direction > 0 ? 35 : -35,
-        opacity: 0
-      })
-      .to(nextSlide, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.5,
-        ease: 'power3.out',
-        onStart: () => nextSlide.classList.add('active')
-      })
-      .to(nextElems, {
-        y: 0,
-        opacity: 1,
-        stagger: 0.05,
-        duration: 0.45,
-        ease: 'power3.out'
-      }, "-=0.3");
-    }
-
-    function jumpToSlide(index) {
-      if (index === current) return;
-      goToSlide(index, index > current ? 1 : -1);
-    }
-
-    // Wheel Event
-    let wheelTimeout;
-    window.addEventListener('wheel', (e) => {
-      if (!isIntroFinished) return;
-      e.preventDefault();
-      if (isAnimating) return;
-
-      clearTimeout(wheelTimeout);
-      wheelTimeout = setTimeout(() => {
-        if (e.deltaY > 25) {
-          goToSlide(current + 1, 1);
-        } else if (e.deltaY < -25) {
-          goToSlide(current - 1, -1);
-        }
-      }, 25);
-    }, { passive: false });
-
-    // Touch Event
-    let touchStartY = 0;
-    window.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    window.addEventListener('touchend', (e) => {
-      if (!isIntroFinished || isAnimating) return;
-      const touchEndY = e.changedTouches[0].clientY;
-      const diffY = touchStartY - touchEndY;
-
-      if (Math.abs(diffY) > 35) {
-        if (diffY > 0) {
-          goToSlide(current + 1, 1);
-        } else {
-          goToSlide(current - 1, -1);
-        }
-      }
-    }, { passive: true });
-
-    // Keyboard Shortcuts
+    // Keyboard Shortcuts (Skip on Escape / Space)
     window.addEventListener('keydown', (e) => {
-      if (!isIntroFinished) {
-        if (e.key === 'Escape' || e.key === ' ') transitionToPortfolio();
-        return;
+      if (e.key === 'Escape' || e.key === ' ') {
+        transitionToResume();
       }
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') goToSlide(current + 1, 1);
-      else if (e.key === 'ArrowUp' || e.key === 'PageUp') goToSlide(current - 1, -1);
-      else if (e.key === 'Escape') closeProjectModal();
     });
+
+    // Start Animation Loop
+    animate();
   </script>
 </body>
 </html>
