@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dubai Model Research Ultimate</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --primary-hover: #004494;
+            --bg-color: #f4f7f6;
+            --card-bg: #fff;
+            --text-dark: #333;
+            --text-light: #777;
+            --border-color: #ddd;
+            --danger-color: #dc3545;
+            --danger-hover: #a71d2a;
+            --success-color: #28a745;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; color: var(--text-dark); }
+        h1, h2 { color: var(--primary-color); text-align: center; margin-top: 10px;}
+        
+        /* Utility Classes */
+        .flex-row { display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto 15px auto; flex-wrap: wrap; gap: 10px;}
+        
+        /* Input Section */
+        .container { max-width: 800px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 0.9em;}
+        input[type="text"], input[type="url"], textarea, select { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 1em;}
+        textarea { height: 80px; resize: vertical; }
+        
+        /* Buttons */
+        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 600; transition: background 0.2s; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #5a6268; }
+
+        /* Search & Stats */
+        #search-bar { padding: 10px; width: 100%; max-width: 400px; border: 1px solid var(--border-color); border-radius: 4px; }
+        .stats-bar { font-size: 0.9em; color: var(--text-light); background: #e9ecef; padding: 5px 10px; border-radius: 4px;}
+
+        /* Data List Section */
+        #data-list { max-width: 800px; margin: 0 auto; padding-bottom: 50px;}
+        .research-card { background: var(--card-bg); padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid var(--primary-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; word-wrap: break-word; animation: fadeIn 0.3s ease;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .research-card h3 { margin: 0 0 5px 0; color: var(--primary-color); padding-right: 30px; font-size: 1.2em;}
+        .research-card p { margin: 5px 0; line-height: 1.5; font-size: 0.95em;}
+        .research-card .category { display: inline-block; background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; color: #495057; font-weight: bold; text-transform: uppercase;}
+        .research-card .url { color: var(--success-color); font-size: 0.85em; word-break: break-all; display: block; margin-top: 8px; padding: 5px; background: #f8f9fa; border-radius: 4px; border: 1px solid #eee;}
+        .research-card .url a { color: inherit; text-decoration: none;}
+        .research-card .url a:hover { text-decoration: underline;}
+        
+        .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;}
+        .action-btn { background: none; border: none; cursor: pointer; padding: 0; color: var(--text-light); transition: color 0.2s;}
+        .action-btn:hover { color: var(--danger-color);}
+        .delete-btn { font-size: 1.4em; line-height: 1; color: #dc3545;}
+
+        .meta-info {font-size: 0.7em; color: var(--text-light); margin-top: 8px; border-top: 1px solid #eee; padding-top: 4px; text-align: right;}
+
+        /* Edit Modal (hidden by default) */
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        #edit-modal { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;}
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .flex-row { flex-direction: column; align-items: stretch; }
+            #search-bar { max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Dubai Research Ultimate</h1>
+
+    <!-- Input Form -->
+    <div class="container">
+        <h2>Log New Research</h2>
+        <form id="researchForm">
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" required>
+                    <option value="" disabled selected>Select or define a category...</option>
+                    <option value="Vision">Leadership & Vision</option>
+                    <option value="Economy">Economic Diversification</option>
+                    <option value="Infrastructure">Infrastructure & Urban</option>
+                    <option value="Tourism">Tourism & Hospitality</option>
+                    <option value="Business">Ease of Business/Laws</option>
+                    <option value="Tech">Smart City & Tech</option>
+                    <option value="Logistics">Logistics & Free Zones</option>
+                    <option value="Social">Social Development</option>
+                    <option value="General">General Notes</option>
+                </select>
+                <!-- Allow custom typing in category -->
+                <input type="text" id="customCategory" placeholder="Or type new category here..." style="margin-top: 5px; display: none;">
+                <small style="color:blue; cursor:pointer;" onclick="toggleCustomCat()" id="cat-toggle-text">Define new category</small>
+            </div>
+            <div class="form-group">
+                <label for="title">Title / Key Point</label>
+                <input type="text" id="title" placeholder="Brief summary" required>
+            </div>
+            <div class="form-group">
+                <label for="content">Detailed Data / Quote / Summary</label>
+                <textarea id="content" placeholder="Paste unlimited text here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="reference">Source URL / Reference</label>
+                <input type="url" id="reference" placeholder="https://..." required>
+            </div>
+            <div style="margin-top: 15px; display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex-grow: 1;">Save to Database</button>
+                <button type="button" class="btn btn-danger" id="clearBtn">Reset ALL Data</button>
+            </div>
+        </form>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; max-width: 800px; margin: 20px auto;">
+
+    <!-- Controls & Stats -->
+    <div class="flex-row">
+        <input type="text" id="search-bar" placeholder="Search titles, content, categories..." onkeyup="filterData()">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <span id="stat-count" class="stats-bar">0 records</span>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" onclick="toggleExportMenu()" style="position: relative;">Export Data ▼</button>
+                <div id="export-menu" style="display: none; position: absolute; background: white; border: 1px solid #ccc; border-radius: 4px; z-index: 100; margin-top: 5px;">
+                    <button class="btn" onclick="exportJSON()" style="width: 100%; text-align: left; border-bottom: 1px solid #eee;">Download as JSON</button>
+                    <button class="btn" onclick="exportCSV()" style="width: 100%; text-align: left;">Download as CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Display Area -->
+    <div id="data-list">
+        <p style="text-align: center; color: var(--text-light);">Opening database...</p>
+    </div>
+
+    <!-- Edit Modal HTML -->
+    <div id="modal-overlay">
+        <div id="edit-modal">
+            <h2>Edit Entry</h2>
+            <form id="editForm">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="edit-category" required>
+                </div>
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="edit-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Details</label>
+                    <textarea id="edit-content"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Reference</label>
+                    <input type="url" id="edit-reference" required>
+                </div>
+                <div style="margin-top: 15px; display:flex; gap:10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const DB_NAME = "DubaiResearchUltimateDB";
+        const DB_VERSION = 1; 
+        const STORE_NAME = "researchEntries";
+
+        let db;
+        let currentData = []; // Store loaded data in memory for searching/exporting
+
+        // --- Initialization ---
+        document.addEventListener("DOMContentLoaded", () => {
+            openDB();
+            setupFormListeners();
+        });
+
+        function openDB() {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onerror = (event) => {
+                console.error("Database error: ", event.target.error);
+                document.getElementById('data-list').innerHTML = '<p style="color:red; text-align:center;">Database Error. Check console.</p>';
+            };
+
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    // Create store with autoIncrement key
+                    const store = db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                    // Indexes for searching
+                    store.createIndex("category", "category", { unique: false });
+                    store.createIndex("title", "title", { unique: false });
+                    console.log("Database created");
+                }
+            };
+
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                loadData(); // Load data into memory and UI
+            };
+        }
+
+        // --- Form Interactions ---
+        function setupFormListeners() {
+            const form = document.getElementById("researchForm");
+            const clearBtn = document.getElementById("clearBtn");
+            const editForm = document.getElementById("editForm");
+
+            form.addEventListener("submit", addEntry);
+            editForm.addEventListener("submit", saveEditedEntry);
+
+            clearBtn.addEventListener("click", () => {
+                if(prompt("WARNING: This cannot be undone. Type 'DELETE' to confirm permanent erasure of ALL data.") === 'DELETE') {
+                    clearAllData();
+                }
+            });
+        }
+
+        // Toggle custom category input
+        function toggleCustomCat() {
+            const select = document.getElementById('category');
+            const customInput = document.getElementById('customCategory');
+            const toggleText = document.getElementById('cat-toggle-text');
+
+            if (customInput.style.display === 'none') {
+                select.required = false;
+                select.style.display = 'none';
+                customInput.style.display = 'block';
+                customInput.required = true;
+                toggleText.innerText = "▲ Use predefined list";
+            } else {
+                select.required = true;
+                select.style.display = 'block';
+                customInput.style.display = 'none';
+                customInput.required = false;
+                customInput.value = ""; // Clear value
+                toggleText.innerText = "Define new category";
+            }
+        }
+
+        // --- Database Operations (Write) ---
+        function addEntry(event) {
+            event.preventDefault();
+
+            let category = document.getElementById('category').value;
+            const customCategory = document.getElementById('customCategory').value;
+            
+            // Use custom category if provided and visible
+            if (customCategory && customCategory.trim() !== "") {
+                category = customCategory;
+            }
+
+            const entry = {
+                category: category.trim(),
+                title: document.getElementById("title").value.trim(),
+                content: document.getElementById("content").value.trim(),
+                reference: document.getElementById("reference").value.trim(),
+                dateAdded: new Date()
+            };
+
+            const transaction = db.transaction([STORE_NAME], "readwrite");
