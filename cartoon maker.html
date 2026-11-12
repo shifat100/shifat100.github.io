@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>স্টিকম্যান স্টুডিও v6.5 - প্রো মোশন ও ন্যাচারাল লিপ-সিং</title>
+<title>স্টিকম্যান স্টুডিও v7.0 - প্রো রিগিং ও রিয়েলিস্টিক মোশন</title>
 <style>
 :root{
   --bg:#0f111a;--panel:#181a24;--card:#202332;--card2:#27293d;
@@ -34,21 +34,26 @@ h1{font-size:14px;color:var(--primary);display:flex;align-items:center;gap:6px}
 .header-actions button:hover{background:var(--border2)}
 .header-actions button:disabled{opacity:.35;cursor:not-allowed}
 
-/* MAIN LAYOUT */
-main{flex:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
-  gap:6px;padding:6px;overflow:hidden;min-height:0}
+/* 3-COLUMN DESKTOP LAYOUT (কোনো ট্যাব নেই — সব সেকশন একসাথে দেখা যায়) */
+.layout{flex:1;display:grid;grid-template-columns:300px minmax(0,1fr) 330px;
+  grid-template-areas:"l c r";gap:6px;padding:6px;overflow:hidden;min-height:0}
+.side{display:flex;flex-direction:column;gap:6px;overflow-y:auto;min-height:0;min-width:0;padding-right:3px}
+.side.left{grid-area:l}.side.right{grid-area:r}
+.center{grid-area:c;display:flex;flex-direction:column;gap:5px;min-height:0;min-width:0}
+.side::-webkit-scrollbar{width:6px}
+.side::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-/* VIEWPORT COL */
-.viewport-col{display:flex;flex-direction:column;gap:4px;min-height:0;min-width:0}
 .viewport-box{flex:1;background:var(--vbg);border-radius:8px;
   border:1px solid var(--border);position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;min-height:0}
 canvas#stage{max-width:100%;max-height:100%;width:auto;height:auto;
-  display:block;background:#fff;border-radius:4px;box-shadow:0 2px 15px rgba(0,0,0,.4)}
+  display:block;background:#fff;border-radius:4px;box-shadow:0 2px 15px rgba(0,0,0,.4);cursor:move}
 canvas#stage:fullscreen{max-width:100vw;max-height:100vh;border-radius:0}
 .overlay-tools{position:absolute;top:6px;right:6px;display:flex;gap:3px;z-index:5}
 .overlay-tools button{background:rgba(20,22,30,.75);border:1px solid var(--border2);
   color:#fff;padding:3px 6px;border-radius:4px;cursor:pointer;font-size:11px;line-height:1}
+.hint-tag{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:10px;color:#fff;
+  background:rgba(0,0,0,.5);padding:2px 10px;border-radius:8px;pointer-events:none;z-index:3;opacity:.8}
 .rec-ind{position:absolute;top:6px;left:6px;background:rgba(235,77,75,.95);
   color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:bold;
   display:none;gap:5px;align-items:center;z-index:5}
@@ -72,16 +77,19 @@ canvas#stage:fullscreen{max-width:100vw;max-height:100vh;border-radius:0}
   padding:0 6px;gap:6px;flex-shrink:0}
 .volume-meter label{font-size:11px;color:var(--dim)}
 .volume-meter canvas{flex:1;height:14px;border-radius:2px;display:block}
+.dock{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0}
 
-/* CONTROLS */
-.controls-grid{display:flex;gap:6px;min-height:0;overflow:hidden}
-.col{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;justify-content:flex-start;overflow-y:auto;padding-right:2px}
-.panel{background:var(--card);border-radius:6px;padding:5px 7px;
-  border-left:2px solid var(--primary);display:flex;flex-direction:column;
-  gap:3px;flex:0 0 auto;min-width:0}
-.panel-title{font-size:9px;font-weight:bold;color:var(--accent);
-  text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px;display:flex;justify-content:space-between;align-items:center}
+/* SECTIONS */
+.sec{background:var(--card);border-radius:6px;padding:6px 8px;
+  border-left:3px solid var(--primary);display:flex;flex-direction:column;
+  gap:4px;flex:0 0 auto;min-width:0}
+.sec-title{font-size:10px;font-weight:bold;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between;align-items:center}
+.sec-title small{color:var(--dim);font-weight:normal;text-transform:none;letter-spacing:0}
+.sub{font-size:9px;color:var(--dim);margin-top:3px;border-bottom:1px dashed var(--border2);padding-bottom:1px}
 .row{display:flex;gap:3px;align-items:center;flex-wrap:wrap;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:3px}
+.grid.sm{grid-template-columns:repeat(auto-fill,minmax(40px,1fr))}
 button{background:var(--card2);color:var(--text);border:1px solid var(--border2);
   padding:3px 6px;border-radius:3px;cursor:pointer;font-size:10px;
   white-space:nowrap;transition:.1s;line-height:1.3;min-height:22px}
@@ -97,20 +105,27 @@ input[type=text],input[type=file],select,input[type=number]{
   background:var(--input);border:1px solid var(--border2);border-radius:3px;
   color:var(--text);padding:2px 5px;font-size:10px;height:22px;min-width:0}
 input[type=file]{padding:1px 3px;font-size:9px}
-input[type=color]{width:22px;height:22px;padding:0;border-radius:3px;
+input[type=color]{width:24px;height:22px;padding:0;border-radius:3px;
   cursor:pointer;border:1px solid var(--border2);background:var(--input)}
 input[type=range]{width:100%;height:14px;accent-color:var(--primary)}
-input[type=checkbox]{accent-color:var(--primary);width:11px;height:11px;cursor:pointer}
-label.mini{display:flex;gap:2px;align-items:center;font-size:9px;
+input[type=checkbox]{accent-color:var(--primary);width:12px;height:12px;cursor:pointer}
+label.mini{display:flex;gap:3px;align-items:center;font-size:10px;
   color:var(--dim);cursor:pointer;white-space:nowrap}
 label.mini span{color:var(--text)}
+.rs{display:grid;grid-template-columns:70px 1fr 34px;gap:4px;align-items:center;font-size:10px;color:var(--dim)}
+.rs span.v{text-align:right;color:var(--text);font-family:monospace;font-size:9px}
+.chips{display:flex;gap:3px;flex-wrap:wrap;min-height:22px}
+.chip{display:flex;border:1px solid var(--border2);border-radius:3px;overflow:hidden}
+.chip button{border:none;border-radius:0;min-height:20px}
+.chip.cur{outline:2px solid var(--primary)}
+kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;padding:0 4px;font-size:10px}
 
 /* MODAL */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;
   align-items:center;justify-content:center;z-index:100;padding:15px}
 .modal.show{display:flex}
 .modal-box{background:var(--panel);border-radius:10px;padding:18px;
-  max-width:500px;width:100%;max-height:85vh;overflow-y:auto;
+  max-width:520px;width:100%;max-height:85vh;overflow-y:auto;
   border:1px solid var(--border2);box-shadow:0 10px 40px rgba(0,0,0,.6)}
 .modal-box h2{font-size:15px;color:var(--primary);margin-bottom:10px}
 .modal-box p{font-size:12px;line-height:1.6;margin-bottom:6px}
@@ -121,44 +136,110 @@ label.mini span{color:var(--text)}
 .modal-box video{width:100%;border-radius:6px;margin:8px 0;background:#000}
 .modal-box .actions{display:flex;gap:6px;margin-top:12px;justify-content:flex-end;flex-wrap:wrap}
 .modal-box .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-.rig-slider-group{display:grid;grid-template-columns:100px 1fr 40px;gap:6px;align-items:center;margin-bottom:5px;font-size:11px}
 
 /* RESPONSIVE */
-@media(max-width:900px){
+@media(max-width:1180px){
   html,body{overflow:auto;height:auto}
-  main{grid-template-columns:1fr;overflow:visible;height:auto}
-  .viewport-col{height:auto}
-  .viewport-box{height:50vh;min-height:220px;flex:none}
-  .controls-grid{flex-direction:column;overflow:visible}
-  .col{overflow:visible}
-  button{padding:6px 10px;font-size:11px;min-height:30px}
-  input[type=text],input[type=file],select{height:28px;font-size:11px}
-  input[type=color]{width:28px;height:28px}
-  .pip-video{width:100px;height:75px}
+  body{min-height:100vh}
+  .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"c c" "l r";overflow:visible}
+  .side{overflow:visible}
+  .viewport-box{height:58vh;min-height:240px;flex:none}
   header{height:auto;flex-wrap:wrap;padding:6px 8px}
+}
+@media(max-width:760px){
+  .layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"c" "l" "r"}
+  .dock{grid-template-columns:1fr}
+  button{padding:6px 10px;font-size:11px;min-height:30px}
+  .pip-video{width:100px;height:75px}
 }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🎭 স্টিকম্যান স্টুডিও <span class="badge">v6.5 PRO MOTION</span></h1>
+  <h1>🎭 স্টিকম্যান স্টুডিও <span class="badge">v7.0 PRO RIG</span></h1>
   <div class="header-actions">
     <button id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)">↶</button>
     <button id="redoBtn" onclick="redo()" title="Redo (Ctrl+Y)">↷</button>
     <button id="themeBtn" onclick="toggleTheme()" title="থিম">🌙</button>
-    <button onclick="openModal('rigManualModal')" title="ম্যানুয়াল জয়েন্ট রিগিং">🎛️ রিগ টিউনিং</button>
-    <button onclick="openModal('tutorialModal')" title="সহায়তা">❓</button>
+    <button onclick="openModal('tutorialModal')" title="সহায়তা ও শর্টকাট">❓ শর্টকাট</button>
     <button onclick="exportJSON()" title="এক্সপোর্ট">📤</button>
     <button onclick="document.getElementById('importInput').click()" title="ইমপোর্ট">📥</button>
   </div>
 </header>
 
-<main>
-  <!-- ========== VIEWPORT ========== -->
-  <div class="viewport-col">
+<main class="layout">
+
+  <!-- ================= LEFT: ক্যারেক্টার ও রিগ ================= -->
+  <aside class="side left">
+
+    <div class="sec">
+      <div class="sec-title"><span>🎭 ক্যারেক্টার ও পেশা</span><small>১২+ পেশা</small></div>
+      <div class="row">
+        <button id="char1Btn" class="active icon" onclick="setActiveChar(0)" title="ক্যারেক্টার ১">১</button>
+        <button id="char2Btn" class="icon" onclick="setActiveChar(1)" title="ক্যারেক্টার ২">২</button>
+        <button id="multiCharBtn" class="icon" onclick="toggleMultiChar()" title="দ্বিতীয় ক্যারেক্টার চালু/বন্ধ">+২য়</button>
+        <button onclick="toggleFlip()" title="মুখ ফেরান (F)">🔄 ফ্লিপ</button>
+      </div>
+      <select id="professionSelect" onchange="setProfession(this.value)" style="width:100%;font-weight:bold;color:var(--primary)">
+        <option value="classic">👔 সাধারণ (Classic)</option>
+        <option value="doctor">🩺 ডাক্তার (Doctor)</option>
+        <option value="police">👮 পুলিশ (Police Officer)</option>
+        <option value="chef">👨‍🍳 শেফ / বাবুর্চি (Chef)</option>
+        <option value="teacher">👨‍🏫 শিক্ষক (Teacher)</option>
+        <option value="engineer">👷 ইঞ্জিনিয়ার (Engineer)</option>
+        <option value="scientist">🧪 বিজ্ঞানী (Scientist)</option>
+        <option value="detective">🕵️ গোয়েন্দা (Detective)</option>
+        <option value="astronaut">👨‍🚀 নভোচারী (Astronaut)</option>
+        <option value="farmer">🌾 কৃষক (Farmer)</option>
+        <option value="lawyer">⚖️ আইনজীবী (Lawyer / Judge)</option>
+        <option value="firefighter">🧑‍🚒 দমকলকর্মী (Firefighter)</option>
+      </select>
+      <div class="row">
+        <label class="mini" title="শরীর"><input type="color" id="cBody" value="#2c3e50" oninput="updateColor('body',this.value)"></label>
+        <label class="mini" title="পোশাক/টাই"><input type="color" id="cTie" value="#e74c3c" oninput="updateColor('tie',this.value)"></label>
+        <label class="mini" title="টুপি"><input type="color" id="cHat" value="#1e272e" oninput="updateColor('hat',this.value)"></label>
+        <label class="mini" title="মুখ"><input type="color" id="cMouth" value="#c0392b" oninput="updateColor('mouth',this.value)"></label>
+        <span style="color:var(--dim);font-size:9px">শরীর·পোশাক·টুপি·ঠোঁট</span>
+      </div>
+      <div class="row">
+        <input type="text" id="bubbleInput" placeholder="বাবল টেক্সট…" style="flex:1;min-width:70px" oninput="updateBubble(this.value)">
+        <button id="bubbleToggle" class="off icon" onclick="toggleBubble()" title="বাবল চালু/বন্ধ (B)">💬</button>
+        <button onclick="clearBubble()" class="icon" title="বাবল মুছুন">🗑️</button>
+        <button onclick="openModal('bubblePresetModal')" class="icon" title="বাবল প্রিসেট">📝</button>
+      </div>
+    </div>
+
+    <div class="sec" style="border-left-color:#ff9ff3">
+      <div class="sec-title"><span>🦴 স্কেলিটাল রিগ টিউনিং</span><small>ডাবল-ক্লিকে রিসেট</small></div>
+      <div class="row">
+        <label class="mini" title="পা সবসময় মাটি ছোঁয়, বসা/উবু/হাঁটায় স্বাভাবিক উচ্চতা"><input type="checkbox" id="optGround" checked onchange="setOpt('groundLock',this.checked)"> <span>🦶 গ্রাউন্ড লক</span></label>
+        <label class="mini" title="শ্বাস, ওজন-স্থানান্তর, ছোট দুলুনি"><input type="checkbox" id="optIdle" checked onchange="setOpt('idleLife',this.checked)"> <span>🌬️ প্রাণবন্ত আইডল</span></label>
+      </div>
+      <div class="row">
+        <label class="mini" title="চোখ ও মাথা মাউস কার্সরের দিকে তাকায়"><input type="checkbox" id="optEye" checked onchange="setOpt('eyeFollow',this.checked)"> <span>👀 কার্সর অনুসরণ</span></label>
+        <label class="mini" title="জয়েন্টগুলো দেখান"><input type="checkbox" id="optRig" onchange="setOpt('showRig',this.checked)"> <span>🦴 স্কেলিটন দেখান</span></label>
+      </div>
+      <div id="rigSliders" style="display:flex;flex-direction:column;gap:2px"></div>
+      <div class="row" style="margin-top:3px">
+        <button onclick="mirrorPose()" title="বাম-ডান উল্টে দিন (সিমেট্রি)">↔️ মিরর</button>
+        <button onclick="copyPoseToOther()" title="অন্য ক্যারেক্টারে কপি">📋 কপি→অন্য</button>
+        <button onclick="setPose('idle')" title="রিগ রিসেট">♻️ রিসেট</button>
+      </div>
+    </div>
+
+    <div class="sec" style="border-left-color:#feca57">
+      <div class="sec-title"><span>📏 বডি প্রপোরশন</span><small>চরিত্র আলাদা করুন</small></div>
+      <div id="propSliders" style="display:flex;flex-direction:column;gap:2px"></div>
+      <div class="row"><button onclick="resetProps()">♻️ প্রপোরশন রিসেট</button></div>
+    </div>
+  </aside>
+
+  <!-- ================= CENTER: ভিউপোর্ট + রেকর্ড + সিকোয়েন্সার ================= -->
+  <section class="center">
     <div class="viewport-box" id="viewportBox">
       <canvas id="stage" width="1280" height="720"></canvas>
+      <div class="hint-tag">ক্যারেক্টার ড্র্যাগ করে সরান · স্ক্রল=জুম · Shift+স্ক্রল=সাইজ</div>
       <div class="overlay-tools">
         <button onclick="toggleFullscreen()" title="ফুলস্ক্রিন">⛶</button>
         <button onclick="takeSnapshot()" title="স্ক্রিনশট">📸</button>
@@ -176,196 +257,18 @@ label.mini span{color:var(--text)}
       <label>🎤</label>
       <canvas id="volumeCanvas" width="300" height="14"></canvas>
     </div>
-  </div>
 
-  <!-- ========== CONTROLS ========== -->
-  <div class="controls-grid">
-
-    <!-- COLUMN 1 -->
-    <div class="col">
-
-      <!-- CHARACTER & PROFESSIONS -->
-      <div class="panel">
-        <div class="panel-title">
-          <span>🎭 ক্যারেক্টার ও পেশা</span>
-          <span style="color:var(--dim);font-weight:normal">১২+ চরিত্র ও পেশা</span>
-        </div>
-        <div class="row">
-          <button id="char1Btn" class="active icon" onclick="setActiveChar(0)" title="ক্যারেক্টার ১">১</button>
-          <button id="char2Btn" class="icon" onclick="setActiveChar(1)" title="ক্যারেক্টার ২">২</button>
-          <button id="multiCharBtn" class="icon" onclick="toggleMultiChar()" title="দ্বিতীয় ক্যারেক্টার">+২য়</button>
-          <button onclick="toggleFlip()" title="মুখ ফেরান">🔄 ফ্লিপ</button>
-          <button id="bubbleToggle" class="off icon" onclick="toggleBubble()" title="বাবল">💬 বাবল</button>
-          <button onclick="clearBubble()" title="বাবল মুছুন">🗑️</button>
-        </div>
-
-        <!-- PROFESSION SELECT -->
-        <div class="row" style="margin-top:2px">
-          <label class="mini"><span>👔 পেশা:</span></label>
-          <select id="professionSelect" onchange="setProfession(this.value)" style="flex:1;min-width:130px;font-weight:bold;color:var(--primary)">
-            <option value="classic">👔 সাধারণ (Classic)</option>
-            <option value="doctor">🩺 ডাক্তার (Doctor)</option>
-            <option value="police">👮 পুলিশ (Police Officer)</option>
-            <option value="chef">👨‍🍳 শেফ / বাবুর্চি (Chef)</option>
-            <option value="teacher">👨‍🏫 শিক্ষক (Teacher)</option>
-            <option value="engineer">👷 ইঞ্জিনিয়ার (Engineer)</option>
-            <option value="scientist">🧪 বিজ্ঞানী (Scientist)</option>
-            <option value="detective">🕵️ গোয়েন্দা (Detective)</option>
-            <option value="astronaut">👨‍🚀 নভোচারী (Astronaut)</option>
-            <option value="farmer">🌾 কৃষক (Farmer)</option>
-            <option value="lawyer">⚖️ আইনজীবী (Lawyer / Judge)</option>
-            <option value="firefighter">🧑‍🚒 দমকলকর্মী (Firefighter)</option>
-          </select>
-        </div>
-
-        <div class="row">
-          <input type="color" id="cBody" value="#2c3e50" title="শরীর" oninput="updateColor('body',this.value)">
-          <input type="color" id="cTie" value="#e74c3c" title="পোশাক/টাই/কোট" oninput="updateColor('tie',this.value)">
-          <input type="color" id="cHat" value="#1e272e" title="টুপি/আনুষঙ্গিক" oninput="updateColor('hat',this.value)">
-          <input type="color" id="cMouth" value="#c0392b" title="মুখ" oninput="updateColor('mouth',this.value)">
-          <input type="text" id="bubbleInput" placeholder="বাবল টেক্সট…" style="flex:1;min-width:70px" oninput="updateBubble(this.value)">
-        </div>
-
-        <!-- ANIMATION & LOOPS -->
-        <div class="panel-title" style="margin-top:4px">
-          <span>🔄 অ্যানিমেশন ও মোশন লুপ</span>
-          <span style="color:var(--accent);font-weight:normal">লাইভ লুপ</span>
-        </div>
-        <div class="row">
-          <button data-pose="idle" class="icon" onclick="setPose('idle',this)" title="স্বাভাবিক">🧍 স্থির</button>
-          <button data-pose="walk" class="icon" onclick="setPose('walk',this)" title="হাঁটার লুপ">🚶 হাঁটা (Loop)</button>
-          <button data-pose="run" class="icon" onclick="setPose('run',this)" title="দৌড়ানোর লুপ">🏃 দৌড় (Loop)</button>
-          <button data-pose="wave" class="icon" onclick="setPose('wave',this)" title="হাত নাড়ানো">👋 হাত নাড়া</button>
-          <button data-pose="dance" class="icon" onclick="setPose('dance',this)" title="নাচ">💃 নাচ (Loop)</button>
-          <button data-pose="point" class="icon" onclick="setPose('point',this)" title="ইঙ্গিত">👉 ইঙ্গিত</button>
-          <button data-pose="bothUp" class="icon" onclick="setPose('bothUp',this)" title="দুই হাত উপরে">🙌 উল্লাস</button>
-          <button data-pose="leftUp" class="icon" onclick="setPose('leftUp',this)" title="বাম হাত">🙋 বাম হাত</button>
-          <button data-pose="rightUp" class="icon" onclick="setPose('rightUp',this)" title="ডান হাত">🙋‍♂️ ডান হাত</button>
-          <button data-pose="think" class="icon" onclick="setPose('think',this)" title="চিন্তা">🤔 চিন্তা</button>
-          <button data-pose="crossArms" class="icon" onclick="setPose('crossArms',this)" title="হাত ভাঁজ">🤝 হাত ভাঁজ</button>
-          <button data-pose="salute" class="icon" onclick="setPose('salute',this)" title="স্যালুট">🫡 স্যালুট</button>
-          <button data-pose="handsOnHip" class="icon" onclick="setPose('handsOnHip',this)" title="কোমরে হাত">🧍‍♀️ কোমর</button>
-          <button data-pose="sit" class="icon" onclick="setPose('sit',this)" title="বসা">🪑 বসা</button>
-          <button data-pose="shrug" class="icon" onclick="setPose('shrug',this)" title="কাঁধ ঝাঁকানো">🤷 কি জানি</button>
-          <button data-pose="bow" class="icon" onclick="setPose('bow',this)" title="নমস্কার">🙏 বিনম্র</button>
-          <button data-pose="kick" class="icon" onclick="setPose('kick',this)" title="কিক / অ্যাকশন">🥋 কিক</button>
-        </div>
-
-        <!-- FACIAL EXPRESSIONS & BURSTS -->
-        <div class="panel-title" style="margin-top:4px">😊 মুখের ভাব ও তাৎক্ষণিক অ্যাকশন</div>
-        <div class="row">
-          <button data-expr="neutral" class="icon" onclick="setExpr('neutral',this)" title="স্বাভাবিক">😐</button>
-          <button data-expr="smile" class="icon" onclick="setExpr('smile',this)" title="হাসি">😊</button>
-          <button data-expr="sad" class="icon" onclick="setExpr('sad',this)" title="গোমড়া">☹️</button>
-          <button data-expr="surprise" class="icon" onclick="setExpr('surprise',this)" title="অবাক">😲</button>
-          <button data-expr="angry" class="icon" onclick="setExpr('angry',this)" title="রাগ">😠</button>
-          <button data-expr="laugh" class="icon" onclick="setExpr('laugh',this)" title="হাসাহাসি">😂</button>
-        </div>
-        <div class="row">
-          <button onclick="playAnim('jump')" class="icon" title="স্মুথ লাফ">🤸 লাফ (Jump)</button>
-          <button onclick="playAnim('cry')" class="icon" title="কান্না">😢 কান্না</button>
-          <button onclick="playAnim('laugh')" class="icon" title="অট্টহাসি">😂 অট্টহাসি</button>
-          <button onclick="playAnim('surprise')" class="icon" title="চমকে ওঠা">😲 চমক</button>
-          <button onclick="playAnim('angry')" class="icon" title="ক্ষোভ">😠 ক্ষোভ</button>
-          <button onclick="openModal('bubblePresetModal')" title="বাবল প্রিসেট">📝 বাবল প্রিসেট</button>
-        </div>
-      </div>
-
-      <!-- CAMERA -->
-      <div class="panel" style="border-left-color:#5f27cd">
-        <div class="panel-title">🎥 ক্যামেরা ও ফ্রেম</div>
-        <div class="row">
-          <button id="ar169Btn" class="active" onclick="setAspect('16:9')">16:9</button>
-          <button id="ar916Btn" onclick="setAspect('9:16')">9:16</button>
-          <button onclick="camPreset('full')">ফুল</button>
-          <button onclick="camPreset('close')">ক্লোজ</button>
-          <button onclick="camPreset('wide')">ওয়াইড</button>
-          <button onclick="resetCamera()" title="রিসেট">🔄</button>
-        </div>
-        <div class="row">
-          <button onclick="zoomCam(-0.2)" title="জুম আউট">−</button>
-          <input type="range" id="zoomSlider" min="0.6" max="3" step="0.05" value="1" oninput="setZoom(this.value)" style="flex:1;min-width:50px">
-          <button onclick="zoomCam(0.2)" title="জুম ইন">+</button>
-        </div>
-        <div class="row" style="justify-content:center">
-          <button onclick="panCam(0,-60)" title="উপরে">⬆️</button>
-          <button onclick="panCam(-80,0)" title="বামে">⬅️</button>
-          <button onclick="panCam(0,60)" title="নিচে">⬇️</button>
-          <button onclick="panCam(80,0)" title="ডানে">➡️</button>
-        </div>
-      </div>
-
-      <!-- AUDIO -->
-      <div class="panel" style="border-left-color:#1dd1a1">
-        <div class="panel-title">🎵 অডিও ও রিয়েলটাইম লিপ-সিং</div>
-        <div class="row">
-          <button id="srcMicBtn" class="active icon" onclick="setAudioSource('mic')" title="মাইক">🎤</button>
-          <button id="srcFileBtn" class="icon" onclick="setAudioSource('file')" title="অডিও ফাইল">🎵</button>
-          <button onclick="document.getElementById('audioFileInput').click()" title="ফাইল আপলোড">📁</button>
-          <button id="audioPlayBtn" onclick="toggleAudioPlay()" title="প্লে/পজ">▶️</button>
-          <button onclick="document.getElementById('bgMusicInput').click()" title="BG মিউজিক">🎶</button>
-          <input type="range" id="bgMusicVol" min="0" max="1" step="0.05" value="0.3" style="flex:1;min-width:40px" oninput="setBGMusicVol(this.value)" title="মিউজিক ভলিউম">
-        </div>
-        <div class="row">
-          <button id="vizBtn" class="off icon" onclick="toggleVisualizer()" title="ভিজুয়ালাইজার">📊</button>
-          <button id="lipSyncBtn" class="on icon" onclick="toggleLipSync()" title="লিপ-সিং">👄 লিপ-সিং (Pro)</button>
-          <button id="voice2emoBtn" class="off icon" onclick="toggleVoiceToEmotion()" title="ভয়েস→ইমোশন">😮 ভয়েস ভাব</button>
-          <button id="asrBtn" class="off icon" onclick="toggleASR()" title="অটো সাবটাইটেল">📝 ASR</button>
-          <label class="mini"><input type="checkbox" id="autoGestureChk" checked> <span>অটো-জেসচার</span></label>
-        </div>
-      </div>
-    </div>
-
-    <!-- COLUMN 2 -->
-    <div class="col">
-
-      <!-- SCENE -->
-      <div class="panel" style="border-left-color:#1dd1a1">
-        <div class="panel-title">🌄 দৃশ্য ও ফিল্টার</div>
-        <div class="row">
-          <button onclick="document.getElementById('bgInput').click()" title="BG আপলোড">📁 BG</button>
-          <button onclick="setBG('default')">ডিফল্ট</button>
-          <button onclick="setBG('green')" title="গ্রিন স্ক্রিন">🟢 গ্রিন</button>
-          <button onclick="setBG('gradient')" title="গ্রেডিয়েন্ট">🌈 গ্রেডিয়েন্ট</button>
-          <input type="color" id="grad1" value="#667eea" oninput="refreshBG()" title="গ্রেডিয়েন্ট ১">
-          <input type="color" id="grad2" value="#764ba2" oninput="refreshBG()" title="গ্রেডিয়েন্ট ২">
-          <button onclick="setBG('dark')" title="ডার্ক">🌑</button>
-        </div>
-        <div class="row">
-          <select id="filterSelect" onchange="setFilter(this.value)" style="flex:1;min-width:0">
-            <option value="none">ফিল্টার নেই</option>
-            <option value="sepia">সেপিয়া</option>
-            <option value="grayscale">B&W</option>
-            <option value="vintage">ভিন্টেজ</option>
-            <option value="vignette">ভিগনেট</option>
-            <option value="blur">ব্লার</option>
-          </select>
-          <button id="gridBtn" class="off icon" onclick="toggleGrid()" title="গ্রিড">⊞ গ্রিড</button>
-          <button id="safeBtn" class="off icon" onclick="toggleSafeArea()" title="সেফ এরিয়া">▭ সেফ এরিয়া</button>
-        </div>
-        <div class="row">
-          <button onclick="spawnProp('❓')" class="icon">❓</button>
-          <button onclick="spawnProp('❗')" class="icon">❗</button>
-          <button onclick="spawnProp('❤️')" class="icon">❤️</button>
-          <button onclick="spawnProp('⭐')" class="icon">⭐</button>
-          <button onclick="spawnProp('💡')" class="icon">💡</button>
-          <button onclick="spawnProp('🔥')" class="icon">🔥</button>
-          <button onclick="spawnProp('💊')" class="icon">💊</button>
-          <button onclick="spawnProp('🎯')" class="icon">🎯</button>
-        </div>
-      </div>
-
-      <!-- RECORD -->
-      <div class="panel" style="border-left-color:#eb4d4b">
-        <div class="panel-title">🔴 রেকর্ডিং ও এক্সপোর্ট</div>
+    <div class="dock">
+      <div class="sec" style="border-left-color:#eb4d4b">
+        <div class="sec-title"><span>🔴 রেকর্ডিং ও এক্সপোর্ট</span><small>R = শুরু/শেষ</small></div>
         <div class="row">
           <button id="recBtn" class="danger big" onclick="toggleRecording()">🔴 রেকর্ড শুরু</button>
-          <button id="pauseBtn" class="icon" onclick="togglePause()" title="পজ">⏸️</button>
+          <button id="pauseBtn" class="icon" onclick="togglePause()" title="পজ (Space)">⏸️</button>
+          <button id="pipBtn" class="off icon" onclick="togglePiP()" title="ওয়েবক্যাম PiP">📷 PiP</button>
         </div>
         <div class="row">
           <label class="mini"><input type="checkbox" id="countdownChk" checked> <span>কাউন্টডাউন</span></label>
-          <input type="number" id="countdownSecs" value="3" min="0" max="10" style="width:34px">
-          <button id="pipBtn" class="off icon" onclick="togglePiP()" title="ওয়েবক্যাম PiP">📷 PiP</button>
+          <input type="number" id="countdownSecs" value="3" min="0" max="10" style="width:36px">
           <select id="qualitySelect" style="flex:1;min-width:0">
             <option value="2">2 Mbps</option>
             <option value="4">4 Mbps</option>
@@ -384,30 +287,162 @@ label.mini span{color:var(--text)}
         </div>
       </div>
 
-      <!-- PROJECT -->
-      <div class="panel" style="border-left-color:#a4b0be">
-        <div class="panel-title">💾 প্রজেক্ট ও কুইক ডায়ালগ</div>
+      <div class="sec" style="border-left-color:#5f27cd">
+        <div class="sec-title"><span>🎞️ পোজ সিকোয়েন্সার</span><small>K=কীফ্রেম · P=প্লে</small></div>
         <div class="row">
-          <button onclick="applyPreset('hello')" class="icon" title="হ্যালো">👋 হ্যালো</button>
-          <button onclick="applyPreset('thanks')" class="icon" title="ধন্যবাদ">🙏 ধন্যবাদ</button>
-          <button onclick="applyPreset('wow')" class="icon" title="বাহ">😲 বাহ</button>
-          <button onclick="applyPreset('sad')" class="icon" title="দুঃখ">😢 দুঃখ</button>
-          <button onclick="applyPreset('think')" class="icon" title="চিন্তা">🤔 চিন্তা</button>
-          <button onclick="applyPreset('bye')" class="icon" title="বিদায়">👋 বিদায়</button>
+          <button onclick="addKeyframe()" title="বর্তমান পোজ কীফ্রেম হিসেবে যোগ">➕ কীফ্রেম</button>
+          <button id="seqPlayBtn" onclick="toggleSeq()">▶️ প্লে</button>
+          <button onclick="clearSeq()" class="danger icon" title="সব কীফ্রেম মুছুন">🗑️</button>
+          <label class="mini"><input type="checkbox" id="seqLoop" checked> <span>লুপ</span></label>
         </div>
-        <div class="row">
-          <input type="text" id="projectName" placeholder="নাম" value="stickman_proj" style="flex:1;min-width:0">
-          <button onclick="saveProject()" title="সেভ">💾 সেভ</button>
-          <button onclick="loadProject()" title="লোড">📂 লোড</button>
-          <button onclick="deleteProject()" class="danger" title="মুছুন">🗑️</button>
+        <div class="rs" style="grid-template-columns:70px 1fr 34px">
+          <label>প্রতি ফ্রেম</label>
+          <input type="range" id="seqHold" min="0.3" max="4" step="0.1" value="1.2" oninput="$('v_seqHold').textContent=parseFloat(this.value).toFixed(1)+'s'">
+          <span class="v" id="v_seqHold">1.2s</span>
         </div>
-        <div class="row">
-          <label class="mini"><input type="checkbox" id="autoSaveChk" checked> <span>অটো-সেভ</span></label>
-          <button onclick="resetAll()" class="danger" style="margin-left:auto" title="সব রিসেট">🔄 সব রিসেট</button>
-        </div>
+        <div class="chips" id="seqList"></div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- ================= RIGHT: পোজ, মুখ, ক্যামেরা, অডিও, দৃশ্য ================= -->
+  <aside class="side right">
+
+    <div class="sec">
+      <div class="sec-title"><span>🚶 পোজ ও মোশন লুপ</span><small>∞ = লুপ · ১-০ কী</small></div>
+      <div class="grid" id="poseGrid"></div>
+      <div class="rs" style="grid-template-columns:78px 1fr 34px">
+        <label>⏱️ গতি</label>
+        <input type="range" id="speedSlider" min="0.25" max="2" step="0.05" value="1" oninput="setOpt('speed',parseFloat(this.value));$('v_speed').textContent=parseFloat(this.value).toFixed(2)+'x'">
+        <span class="v" id="v_speed">1.00x</span>
+      </div>
+      <div class="rs" style="grid-template-columns:78px 1fr 34px">
+        <label>🧈 স্মুথনেস</label>
+        <input type="range" id="stiffSlider" min="60" max="300" step="5" value="130" oninput="setOpt('stiff',parseFloat(this.value));$('v_stiff').textContent=this.value">
+        <span class="v" id="v_stiff">130</span>
+      </div>
+      <div class="row">
+        <button id="travelBtn" class="off" onclick="toggleTravel()" title="হাঁটা/দৌড়ের সময় এগিয়ে যায়">➡️ হাঁটার সাথে এগোন</button>
+        <input type="range" id="travelSpeed" min="40" max="400" step="10" value="130" style="flex:1;min-width:50px" oninput="setOpt('travelSpeed',parseFloat(this.value))" title="চলার গতি">
+      </div>
+    </div>
+
+    <div class="sec" style="border-left-color:#ff6b81">
+      <div class="sec-title"><span>😊 মুখের ভাব ও অ্যাকশন</span></div>
+      <div class="grid sm" id="exprGrid"></div>
+      <div class="row">
+        <button onclick="playAnim('jump')">🤸 লাফ</button>
+        <button onclick="playAnim('cry')">😢 কান্না</button>
+        <button onclick="playAnim('laugh')">😂 অট্টহাসি</button>
+        <button onclick="playAnim('surprise')">😲 চমক</button>
+        <button onclick="playAnim('angry')">😠 ক্ষোভ</button>
+      </div>
+    </div>
+
+    <div class="sec" style="border-left-color:#5f27cd">
+      <div class="sec-title"><span>🎥 ক্যামেরা ও ফ্রেম</span><small>Esc = রিসেট</small></div>
+      <div class="row">
+        <button id="ar169Btn" class="active" onclick="setAspect('16:9')">16:9</button>
+        <button id="ar916Btn" onclick="setAspect('9:16')">9:16</button>
+        <button onclick="camPreset('full')">ফুল</button>
+        <button onclick="camPreset('close')">ক্লোজ</button>
+        <button onclick="camPreset('wide')">ওয়াইড</button>
+        <button onclick="resetCamera()" title="রিসেট">🔄</button>
+      </div>
+      <div class="row">
+        <button onclick="zoomCam(-0.2)">−</button>
+        <input type="range" id="zoomSlider" min="0.6" max="3" step="0.05" value="1" oninput="setZoom(this.value)" style="flex:1;min-width:50px">
+        <button onclick="zoomCam(0.2)">+</button>
+      </div>
+      <div class="row">
+        <button onclick="panCam(-80,0)">⬅️</button>
+        <button onclick="panCam(0,-60)">⬆️</button>
+        <button onclick="panCam(0,60)">⬇️</button>
+        <button onclick="panCam(80,0)">➡️</button>
+        <label class="mini" title="ক্যামেরা সক্রিয় ক্যারেক্টারকে অনুসরণ করে"><input type="checkbox" id="optFollow" onchange="setOpt('follow',this.checked)"> <span>🎯 অনুসরণ</span></label>
+        <button onclick="shakeCam()" title="ক্যামেরা ঝাঁকুনি">📳 শেক</button>
+      </div>
+    </div>
+
+    <div class="sec" style="border-left-color:#1dd1a1">
+      <div class="sec-title"><span>🎵 অডিও ও রিয়েলটাইম লিপ-সিং</span></div>
+      <div class="row">
+        <button id="srcMicBtn" class="active icon" onclick="setAudioSource('mic')" title="মাইক">🎤</button>
+        <button id="srcFileBtn" class="icon" onclick="setAudioSource('file')" title="অডিও ফাইল">🎵</button>
+        <button onclick="document.getElementById('audioFileInput').click()" title="ফাইল আপলোড">📁</button>
+        <button id="audioPlayBtn" onclick="toggleAudioPlay()" title="প্লে/পজ">▶️</button>
+        <button onclick="document.getElementById('bgMusicInput').click()" title="BG মিউজিক">🎶</button>
+        <input type="range" id="bgMusicVol" min="0" max="1" step="0.05" value="0.3" style="flex:1;min-width:40px" oninput="setBGMusicVol(this.value)" title="মিউজিক ভলিউম">
+      </div>
+      <div class="row">
+        <button id="lipSyncBtn" class="on icon" onclick="toggleLipSync()" title="লিপ-সিং (L)">👄 লিপ-সিং</button>
+        <button id="voice2emoBtn" class="off icon" onclick="toggleVoiceToEmotion()" title="ভয়েস→ইমোশন">😮 ভয়েস ভাব</button>
+        <button id="asrBtn" class="off icon" onclick="toggleASR()" title="অটো সাবটাইটেল">📝 ASR</button>
+        <button id="vizBtn" class="off icon" onclick="toggleVisualizer()" title="ভিজুয়ালাইজার">📊</button>
+      </div>
+      <div class="row">
+        <label class="mini" title="কথা বলার সময় হাত নাড়া ও মাথা দোলানো"><input type="checkbox" id="autoGestureChk" checked onchange="state.autoGesture=this.checked"> <span>অটো-জেসচার</span></label>
+      </div>
+      <div class="rs" style="grid-template-columns:78px 1fr 34px">
+        <label>👄 সেনসিটিভিটি</label>
+        <input type="range" id="lsSens" min="0.4" max="3" step="0.1" value="1" oninput="setOpt('lsSens',parseFloat(this.value));$('v_lsSens').textContent=parseFloat(this.value).toFixed(1)">
+        <span class="v" id="v_lsSens">1.0</span>
+      </div>
+      <div class="rs" style="grid-template-columns:78px 1fr 34px">
+        <label>🔇 নয়েজ গেট</label>
+        <input type="range" id="lsGate" min="3" max="40" step="1" value="8" oninput="setOpt('lsGate',parseFloat(this.value));$('v_lsGate').textContent=this.value">
+        <span class="v" id="v_lsGate">8</span>
+      </div>
+    </div>
+
+    <div class="sec" style="border-left-color:#1dd1a1">
+      <div class="sec-title"><span>🌄 দৃশ্য, ফিল্টার ও প্রপস</span></div>
+      <div class="row">
+        <button onclick="document.getElementById('bgInput').click()">📁 BG</button>
+        <button onclick="setBG('default')">ডিফল্ট</button>
+        <button onclick="setBG('green')">🟢 গ্রিন</button>
+        <button onclick="setBG('gradient')">🌈</button>
+        <input type="color" id="grad1" value="#667eea" oninput="refreshBG()">
+        <input type="color" id="grad2" value="#764ba2" oninput="refreshBG()">
+        <button onclick="setBG('dark')">🌑</button>
+      </div>
+      <div class="row">
+        <select id="filterSelect" onchange="setFilter(this.value)" style="flex:1;min-width:0">
+          <option value="none">ফিল্টার নেই</option>
+          <option value="sepia">সেপিয়া</option>
+          <option value="grayscale">B&W</option>
+          <option value="vintage">ভিন্টেজ</option>
+          <option value="vignette">ভিগনেট</option>
+          <option value="blur">ব্লার</option>
+        </select>
+        <button id="gridBtn" class="off icon" onclick="toggleGrid()" title="গ্রিড (G)">⊞ গ্রিড</button>
+        <button id="safeBtn" class="off icon" onclick="toggleSafeArea()" title="সেফ এরিয়া">▭ সেফ</button>
+      </div>
+      <div class="grid sm" id="propGrid"></div>
+    </div>
+
+    <div class="sec" style="border-left-color:#a4b0be">
+      <div class="sec-title"><span>💾 প্রজেক্ট ও কুইক ডায়ালগ</span></div>
+      <div class="row">
+        <button onclick="applyPreset('hello')">👋 হ্যালো</button>
+        <button onclick="applyPreset('thanks')">🙏 ধন্যবাদ</button>
+        <button onclick="applyPreset('wow')">😲 বাহ</button>
+        <button onclick="applyPreset('sad')">😢 দুঃখ</button>
+        <button onclick="applyPreset('think')">🤔 চিন্তা</button>
+        <button onclick="applyPreset('bye')">👋 বিদায়</button>
+      </div>
+      <div class="row">
+        <input type="text" id="projectName" placeholder="নাম" value="stickman_proj" style="flex:1;min-width:0">
+        <button onclick="saveProject()">💾 সেভ</button>
+        <button onclick="loadProject()">📂 লোড</button>
+        <button onclick="deleteProject()" class="danger">🗑️</button>
+      </div>
+      <div class="row">
+        <label class="mini"><input type="checkbox" id="autoSaveChk" checked> <span>অটো-সেভ</span></label>
+        <button onclick="resetAll()" class="danger" style="margin-left:auto">🔄 সব রিসেট</button>
+      </div>
+    </div>
+  </aside>
 </main>
 
 <!-- HIDDEN INPUTS -->
@@ -417,82 +452,24 @@ label.mini span{color:var(--text)}
 <input type="file" id="outroFileInput" accept="video/*" style="display:none">
 <input type="file" id="importInput" accept=".json" style="display:none" onchange="importJSON(event)">
 
-<!-- MODAL: MANUAL JOINT RIGGING -->
-<div class="modal" id="rigManualModal">
-  <div class="modal-box">
-    <h2>🎛️ ম্যানুয়াল জয়েন্ট ও বোন রিগিং</h2>
-    <p style="color:var(--dim)">প্রতিটি জয়েন্টের অবস্থান ইচ্ছামতো অ্যাডজাস্ট করুন:</p>
-
-    <div class="rig-slider-group">
-      <label>মাথা হেলানো:</label>
-      <input type="range" min="-1" max="1" step="0.05" id="r_headTilt" oninput="manualRigUpdate('headTilt',this.value)">
-      <span id="v_headTilt">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>মেরুদণ্ড/ধড়:</label>
-      <input type="range" min="-0.6" max="0.6" step="0.05" id="r_torsoAngle" oninput="manualRigUpdate('torsoAngle',this.value)">
-      <span id="v_torsoAngle">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>বাম কাঁধ:</label>
-      <input type="range" min="-3.14" max="3.14" step="0.05" id="r_lS" oninput="manualRigUpdate('lS',this.value)">
-      <span id="v_lS">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>বাম কনুই:</label>
-      <input type="range" min="-3.14" max="3.14" step="0.05" id="r_lE" oninput="manualRigUpdate('lE',this.value)">
-      <span id="v_lE">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>ডান কাঁধ:</label>
-      <input type="range" min="-3.14" max="3.14" step="0.05" id="r_rS" oninput="manualRigUpdate('rS',this.value)">
-      <span id="v_rS">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>ডান কনুই:</label>
-      <input type="range" min="-3.14" max="3.14" step="0.05" id="r_rE" oninput="manualRigUpdate('rE',this.value)">
-      <span id="v_rE">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>বাম কোমর:</label>
-      <input type="range" min="-1.57" max="1.57" step="0.05" id="r_lH" oninput="manualRigUpdate('lH',this.value)">
-      <span id="v_lH">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>বাম হাঁটু:</label>
-      <input type="range" min="-1.57" max="1.57" step="0.05" id="r_lK" oninput="manualRigUpdate('lK',this.value)">
-      <span id="v_lK">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>ডান কোমর:</label>
-      <input type="range" min="-1.57" max="1.57" step="0.05" id="r_rH" oninput="manualRigUpdate('rH',this.value)">
-      <span id="v_rH">0</span>
-    </div>
-    <div class="rig-slider-group">
-      <label>ডান হাঁটু:</label>
-      <input type="range" min="-1.57" max="1.57" step="0.05" id="r_rK" oninput="manualRigUpdate('rK',this.value)">
-      <span id="v_rK">0</span>
-    </div>
-
-    <div class="actions">
-      <button onclick="setPose('idle');syncRigSliders();">রিসেট পোজ</button>
-      <button onclick="closeModal('rigManualModal')" class="active">সম্পন্ন</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: TUTORIAL -->
 <div class="modal" id="tutorialModal">
   <div class="modal-box">
-    <h2>🎉 স্টিকম্যান স্টুডিও v6.5 প্রো</h2>
+    <h2>🎉 স্টিকম্যান স্টুডিও v7.0 প্রো</h2>
     <ul>
-      <li><strong>👄 ন্যাচারাল লিপ-সিং</strong> — ভলিউম ও সিলেবলের ছন্দে মুখ নড়ে, আর "ha" হয়ে আটকে থাকে না।</li>
-      <li><strong>🏃 হাঁটা ও দৌড় লুপ</strong> — কাউন্টার-ব্যালান্সড পা ও হাত দোলানোসহ স্মুথ মোশন সাইকেল।</li>
-      <li><strong>👔 ১২+ প্রফেশন</strong> — ডাক্তার, পুলিশ, শেফ, শিক্ষক, ইঞ্জিনিয়ার, মহাকাশচারী ইত্যাদি।</li>
-      <li><strong>🦴 ফুল স্কেলিটাল রিগিং</strong> — হাত, পা, কনুই, হাঁটু ও কোমরের সম্পূর্ণ জয়েন্ট মুভমেন্ট।</li>
+      <li><strong>🧈 ফিজিক্স রিগ</strong> — প্রতিটি হাড় স্প্রিং-ড্যাম্পারে চলে: স্বাভাবিক ওভারশুট, ফলো-থ্রু, কনুই ও মাথার ল্যাগ।</li>
+      <li><strong>🦶 গ্রাউন্ড লক</strong> — বসা, উবু, হাঁটা, দৌড়ে পা সবসময় মাটিতে থাকে; ছায়া লাফের উচ্চতা অনুযায়ী ছোট হয়।</li>
+      <li><strong>👄 ভিসেম লিপ-সিং</strong> — গলার স্পেকট্রাম দেখে মুখ "আ / ও / এ / স" আকারে বদলায়।</li>
+      <li><strong>👀 চোখ ও মাথা</strong> — চোখের মণি, সাকেড, ডাবল-ব্লিঙ্ক, কার্সর অনুসরণ, মাথা ঘোরানো।</li>
+      <li><strong>🎞️ সিকোয়েন্সার</strong> — কীফ্রেম যোগ করে পোজ থেকে পোজে স্মুথ অ্যানিমেশন, লুপসহ।</li>
+      <li><strong>📏 প্রপোরশন</strong> — পা, হাত, ধড়, মাথা ও লাইনের পুরুত্ব আলাদাভাবে বদলান।</li>
     </ul>
-    <p><strong>শর্টকাট:</strong> Space=Pause · R=Record · Ctrl+Z=Undo · Esc=Reset Cam</p>
-    <div class="actions"><button onclick="closeModal('tutorialModal')">শুরু করুন</button></div>
+    <p><strong>শর্টকাট:</strong></p>
+    <p><kbd>Space</kbd> পজ · <kbd>R</kbd> রেকর্ড · <kbd>Ctrl+Z/Y</kbd> আনডু/রিডু · <kbd>Esc</kbd> ক্যামেরা রিসেট<br>
+    <kbd>1</kbd>–<kbd>0</kbd> প্রথম ১০টি পোজ · <kbd>←↑↓→</kbd> ক্যারেক্টার সরান (Shift = দ্রুত) · <kbd>+</kbd>/<kbd>-</kbd> সাইজ<br>
+    <kbd>F</kbd> ফ্লিপ · <kbd>B</kbd> বাবল · <kbd>G</kbd> গ্রিড · <kbd>L</kbd> লিপ-সিং · <kbd>M</kbd> মিরর · <kbd>K</kbd> কীফ্রেম · <kbd>P</kbd> সিকোয়েন্স প্লে · <kbd>Tab</kbd> ক্যারেক্টার বদল</p>
+    <p>ক্যানভাসে ক্যারেক্টারে ক্লিক করে ড্র্যাগ করলে সরে যায়। স্ক্রল = জুম, Shift+স্ক্রল = ক্যারেক্টারের সাইজ।</p>
+    <div class="actions"><button onclick="closeModal('tutorialModal')" class="active">শুরু করুন</button></div>
   </div>
 </div>
 
@@ -502,8 +479,8 @@ label.mini span{color:var(--text)}
     <video id="previewVideo" controls></video>
     <div class="mini" id="previewInfo" style="font-size:11px;color:var(--dim)"></div>
     <div class="actions">
-      <button onclick="retakeRecording()" class="warn">🔁 রিটেক</button>
-      <button onclick="downloadRecording()" class="success">⬇️ ডাউনলোড</button>
+      <button onclick="retakeRecording()">🔁 রিটেক</button>
+      <button onclick="downloadRecording()" class="on">⬇️ ডাউনলোড</button>
       <button onclick="closeModal('previewModal');discardRecording()">✖️ বাতিল</button>
     </div>
   </div>
@@ -536,47 +513,84 @@ const viewportBox = $('viewportBox'), statusText = $('statusText');
 const recIndicator = $('recIndicator'), recStatusText = $('recStatusText');
 const recTimer = $('recTimer'), countdownOverlay = $('countdownOverlay');
 const volumeCanvas = $('volumeCanvas'), volumeCtx = volumeCanvas.getContext('2d');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-// ============ ADVANCED RIG & POSES ============
+/*
+  কনভেনশন: ক্যারেক্টার ডানদিকে (+x) মুখ করে আছে (ফ্লিপ করলে বামে)।
+  কাঁধ/উরু: ঋণাত্মক কোণ = সামনে, ধনাত্মক = পেছনে/বামে।  ধড়: ধনাত্মক = সামনে ঝোঁকা।
+*/
+// ============ RIG ============
+const RIG_KEYS = ['headTilt','headYaw','torsoAngle','hipShift','lift','lS','lE','lW','rS','rE','rW','lH','lK','lF','rH','rK','rF'];
 const DEFAULT_RIG = {
-  headTilt: 0,
-  torsoAngle: 0,
-  lS: 0.2, lE: 0.1,
-  rS: -0.2, rE: -0.1,
-  lH: 0.2, lK: 0.0,
-  rH: -0.2, rK: 0.0
+  headTilt:0, headYaw:0, torsoAngle:0, hipShift:0, lift:0,
+  lS:0.2, lE:0.1, lW:0, rS:-0.2, rE:-0.1, rW:0,
+  lH:0.2, lK:0, lF:0, rH:-0.2, rK:0, rF:0
 };
+const RIG_DEFS = [
+  ['মাথা ও ধড়'],
+  ['headTilt','মাথা হেলানো',-1,1],
+  ['headYaw','মাথা ঘোরানো',-1,1],
+  ['torsoAngle','ধড় ঝোঁকা',-0.6,0.6],
+  ['hipShift','কোমর সরানো',-25,25],
+  ['lift','শরীর উঁচু',-60,120],
+  ['বাম হাত'],
+  ['lS','কাঁধ',-3.14,3.14],['lE','কনুই',-3.14,3.14],['lW','কব্জি',-1.5,1.5],
+  ['ডান হাত'],
+  ['rS','কাঁধ',-3.14,3.14],['rE','কনুই',-3.14,3.14],['rW','কব্জি',-1.5,1.5],
+  ['বাম পা'],
+  ['lH','কোমর',-1.7,1.7],['lK','হাঁটু',-0.3,2.6],['lF','পায়ের পাতা',-0.8,0.8],
+  ['ডান পা'],
+  ['rH','কোমর',-1.7,1.7],['rK','হাঁটু',-0.3,2.6],['rF','পায়ের পাতা',-0.8,0.8]
+];
+const DEFAULT_PROP = { legs:1, arms:1, torso:1, head:1, thick:1 };
+const PROP_DEFS = [
+  ['legs','🦵 পায়ের দৈর্ঘ্য',0.7,1.4],['arms','💪 হাতের দৈর্ঘ্য',0.7,1.4],
+  ['torso','🫁 ধড়ের দৈর্ঘ্য',0.7,1.4],['head','🗣️ মাথার সাইজ',0.7,1.6],
+  ['thick','✏️ লাইন পুরুত্ব',0.6,1.8]
+];
 
 const POSE_RIGS = {
-  idle: { headTilt: 0, torsoAngle: 0, lS: 0.2, lE: 0.1, rS: -0.2, rE: -0.1, lH: 0.2, lK: 0, rH: -0.2, rK: 0 },
-  point: { headTilt: -0.05, torsoAngle: -0.05, lS: 0.3, lE: 0.3, rS: -1.5, rE: 0, lH: 0.1, lK: 0, rH: -0.2, rK: 0 },
-  bothUp: { headTilt: 0, torsoAngle: 0, lS: 2.4, lE: 0.8, rS: -2.4, rE: -0.8, lH: 0.3, lK: 0, rH: -0.3, rK: 0 },
-  leftUp: { headTilt: -0.05, torsoAngle: 0.05, lS: 2.4, lE: 0.8, rS: -0.2, rE: -0.1, lH: 0.2, lK: 0, rH: -0.2, rK: 0 },
-  rightUp: { headTilt: 0.05, torsoAngle: -0.05, lS: 0.2, lE: 0.1, rS: -2.4, rE: -0.8, lH: 0.2, lK: 0, rH: -0.2, rK: 0 },
-  think: { headTilt: -0.15, torsoAngle: 0.05, lS: 0.6, lE: 1.2, rS: -1.8, rE: -2.1, lH: 0.2, lK: 0.1, rH: -0.2, rK: 0 },
-  crossArms: { headTilt: 0, torsoAngle: 0, lS: 1.3, lE: -1.6, rS: -1.3, rE: 1.6, lH: 0.2, lK: 0, rH: -0.2, rK: 0 },
-  salute: { headTilt: 0.05, torsoAngle: -0.05, lS: 0.2, lE: 0.1, rS: -2.3, rE: -2.4, lH: 0.1, lK: 0, rH: -0.1, rK: 0 },
-  handsOnHip: { headTilt: 0, torsoAngle: 0, lS: 0.8, lE: -1.8, rS: -0.8, rE: 1.8, lH: 0.3, lK: 0, rH: -0.3, rK: 0 },
-  sit: { headTilt: 0, torsoAngle: -0.05, lS: 0.7, lE: 1.0, rS: -0.7, rE: -1.0, lH: 1.5, lK: -1.5, rH: 1.5, rK: -1.5 },
-  shrug: { headTilt: 0.1, torsoAngle: 0, lS: 1.8, lE: 1.5, rS: -1.8, rE: -1.5, lH: 0.2, lK: 0, rH: -0.2, rK: 0 },
-  bow: { headTilt: 0.3, torsoAngle: 0.45, lS: 0.4, lE: 0.2, rS: -0.4, rE: -0.2, lH: -0.2, lK: 0.2, rH: -0.2, rK: 0.2 },
-  kick: { headTilt: -0.1, torsoAngle: -0.2, lS: 1.2, lE: -0.5, rS: -1.8, rE: -1.2, lH: -0.3, lK: 0.2, rH: 1.45, rK: -0.2 }
+  idle:{ headTilt:0, torsoAngle:0, lS:0.2, lE:0.1, rS:-0.2, rE:-0.1, lH:0.2, lK:0, rH:-0.2, rK:0 },
+  point:{ headTilt:-0.05, torsoAngle:-0.05, lS:0.3, lE:0.3, rS:-1.5, rE:0, lH:0.1, lK:0, rH:-0.2, rK:0 },
+  bothUp:{ headTilt:0, torsoAngle:0, lS:2.4, lE:0.8, rS:-2.4, rE:-0.8, lH:0.3, lK:0, rH:-0.3, rK:0 },
+  leftUp:{ headTilt:-0.05, torsoAngle:0.05, lS:2.4, lE:0.8, rS:-0.2, rE:-0.1, lH:0.2, lK:0, rH:-0.2, rK:0 },
+  rightUp:{ headTilt:0.05, torsoAngle:-0.05, lS:0.2, lE:0.1, rS:-2.4, rE:-0.8, lH:0.2, lK:0, rH:-0.2, rK:0 },
+  think:{ headTilt:-0.15, torsoAngle:0.05, lS:0.6, lE:1.2, rS:-1.8, rE:-2.1, lH:0.2, lK:0.1, rH:-0.2, rK:0 },
+  crossArms:{ headTilt:0, torsoAngle:0, lS:1.3, lE:-1.6, rS:-1.3, rE:1.6, lH:0.2, lK:0, rH:-0.2, rK:0 },
+  salute:{ headTilt:0.05, torsoAngle:-0.05, lS:0.2, lE:0.1, rS:-2.3, rE:-2.4, lH:0.1, lK:0, rH:-0.1, rK:0 },
+  handsOnHip:{ headTilt:0, torsoAngle:0, lS:0.8, lE:-1.8, rS:-0.8, rE:1.8, lH:0.3, lK:0, rH:-0.3, rK:0 },
+  sit:{ headTilt:0, torsoAngle:-0.03, lS:-0.5, lE:-0.8, rS:-0.55, rE:-0.85, lH:-1.5, lK:1.5, rH:-1.45, rK:1.5 },
+  shrug:{ headTilt:0.1, torsoAngle:0, lS:1.8, lE:1.5, rS:-1.8, rE:-1.5, lH:0.2, lK:0, rH:-0.2, rK:0 },
+  bow:{ headTilt:0.3, torsoAngle:0.45, lS:0.4, lE:0.2, rS:-0.4, rE:-0.2, lH:-0.2, lK:0.2, rH:-0.2, rK:0.2 },
+  kick:{ headTilt:-0.08, torsoAngle:-0.2, lS:-1.0, lE:-0.6, rS:1.2, rE:0.3, lH:0.15, lK:0.2, rH:-1.4, rK:0.1 },
+  crouch:{ headTilt:0.1, torsoAngle:0.35, lS:-1.0, lE:-0.3, rS:-1.0, rE:-0.3, lH:-1.0, lK:1.9, rH:-1.1, rK:1.95 },
+  tired:{ headTilt:0.3, torsoAngle:0.2, lS:0.1, lE:0.05, rS:-0.1, rE:-0.05, lH:0.1, lK:0.05, rH:-0.1, rK:0.1 },
+  guard:{ headTilt:0.05, torsoAngle:0.1, lS:-1.2, lE:-1.8, rS:-1.0, rE:-1.9, lH:0.3, lK:0.2, rH:-0.35, rK:0.25 }
 };
+const POSE_LIST = [
+  ['idle','🧍','স্থির'],['walk','🚶','হাঁটা'],['run','🏃','দৌড়'],['wave','👋','হাত নাড়া'],['dance','💃','নাচ'],
+  ['point','👉','ইঙ্গিত'],['bothUp','🙌','উল্লাস'],['think','🤔','চিন্তা'],['crossArms','🤝','হাত ভাঁজ'],['salute','🫡','স্যালুট'],
+  ['leftUp','🙋','বাম হাত'],['rightUp','🙋‍♂️','ডান হাত'],['handsOnHip','🧍‍♀️','কোমর'],['sit','🪑','বসা'],['shrug','🤷','কি জানি'],
+  ['bow','🙏','বিনম্র'],['kick','🥋','কিক'],['crouch','🧎','উবু'],['tired','😮‍💨','ক্লান্ত'],['guard','🥊','গার্ড']
+];
+const LOOPS = ['walk','run','wave','dance'];
+const EXPR_LIST = [['neutral','😐'],['smile','😊'],['sad','☹️'],['surprise','😲'],['angry','😠'],['laugh','😂'],['wink','😉'],['sleepy','😪']];
+const PROP_EMOJI = ['❓','❗','❤️','⭐','💡','🔥','💊','🎯'];
 
 // ============ PROFESSIONS ============
 const PROFESSION_DEFAULTS = {
-  classic:     { colors: { body: '#2c3e50', tie: '#e74c3c', hat: '#1e272e', mouth: '#c0392b' } },
-  doctor:      { colors: { body: '#34495e', tie: '#ecf0f1', hat: '#e74c3c', mouth: '#c0392b' } },
-  police:      { colors: { body: '#1a252f', tie: '#f1c40f', hat: '#2c3e50', mouth: '#c0392b' } },
-  chef:        { colors: { body: '#2d3436', tie: '#d63031', hat: '#ffffff', mouth: '#c0392b' } },
-  teacher:     { colors: { body: '#4a235a', tie: '#8e44ad', hat: '#34495e', mouth: '#c0392b' } },
-  engineer:    { colors: { body: '#2c3e50', tie: '#f39c12', hat: '#f1c40f', mouth: '#c0392b' } },
-  scientist:   { colors: { body: '#130f40', tie: '#22a6b3', hat: '#4834d4', mouth: '#c0392b' } },
-  detective:   { colors: { body: '#535c68', tie: '#95afc0', hat: '#30336b', mouth: '#c0392b' } },
-  astronaut:   { colors: { body: '#f5f6fa', tie: '#00d2d3', hat: '#dfe4ea', mouth: '#c0392b' } },
-  farmer:      { colors: { body: '#574b90', tie: '#e15f41', hat: '#f5cd79', mouth: '#c0392b' } },
-  lawyer:      { colors: { body: '#1e272e', tie: '#ffffff', hat: '#485460', mouth: '#c0392b' } },
-  firefighter: { colors: { body: '#c0392b', tie: '#f1c40f', hat: '#d63031', mouth: '#c0392b' } }
+  classic:     { colors: { body:'#2c3e50', tie:'#e74c3c', hat:'#1e272e', mouth:'#c0392b' } },
+  doctor:      { colors: { body:'#34495e', tie:'#ecf0f1', hat:'#e74c3c', mouth:'#c0392b' } },
+  police:      { colors: { body:'#1a252f', tie:'#f1c40f', hat:'#2c3e50', mouth:'#c0392b' } },
+  chef:        { colors: { body:'#2d3436', tie:'#d63031', hat:'#ffffff', mouth:'#c0392b' } },
+  teacher:     { colors: { body:'#4a235a', tie:'#8e44ad', hat:'#34495e', mouth:'#c0392b' } },
+  engineer:    { colors: { body:'#2c3e50', tie:'#f39c12', hat:'#f1c40f', mouth:'#c0392b' } },
+  scientist:   { colors: { body:'#130f40', tie:'#22a6b3', hat:'#4834d4', mouth:'#c0392b' } },
+  detective:   { colors: { body:'#535c68', tie:'#95afc0', hat:'#30336b', mouth:'#c0392b' } },
+  astronaut:   { colors: { body:'#f5f6fa', tie:'#00d2d3', hat:'#dfe4ea', mouth:'#c0392b' } },
+  farmer:      { colors: { body:'#574b90', tie:'#e15f41', hat:'#f5cd79', mouth:'#c0392b' } },
+  lawyer:      { colors: { body:'#1e272e', tie:'#ffffff', hat:'#485460', mouth:'#c0392b' } },
+  firefighter: { colors: { body:'#c0392b', tie:'#f1c40f', hat:'#d63031', mouth:'#c0392b' } }
 };
 
 function makeChar(opt = {}) {
@@ -587,10 +601,13 @@ function makeChar(opt = {}) {
     profession: prof,
     colors: opt.colors ? { ...opt.colors } : { ...def.colors },
     pose: 'idle', expr: 'neutral', bubble: '', bubbleOn: false,
-    rig: { ...DEFAULT_RIG },
+    rig: { ...DEFAULT_RIG }, vel: {},
     targetRig: { ...DEFAULT_RIG },
-    mouthOpen: 0,
-    mouthWidth: 10
+    prop: { ...DEFAULT_PROP },
+    seq: [], travel: false,
+    mouthOpen: 0, mouthWidth: 10, teeth: 0,
+    lookX: 0, lookY: 0, sacT: 1, sacX: 0, sacY: 0,
+    gT: 0, gDur: 1, gA: null, browLift: 0, _off: 0
   };
 }
 
@@ -606,11 +623,17 @@ const state = {
   visualizer: false, lipSync: true, voiceToEmotion: false, autoGesture: true,
   paused: false, anim: null, particles: [], props: [],
   blink: { on: false, dur: 0, timer: 2.5 },
-  // Phase clocks for procedural loops
   walkPhase: 0, runPhase: 0, wavePhase: 0, dancePhase: 0, talkPhase: 0,
-  micVol: 0
+  micVol: 0, f1: 0, f2: 0, hi: 0,
+  // নতুন অপশন
+  groundLock: true, idleLife: true, eyeFollow: true, showRig: false,
+  speed: 1, stiff: 130, follow: false, travelSpeed: 130,
+  lsSens: 1, lsGate: 8, shake: 0,
+  mouse: { x: 0, y: 0, inside: false }
 };
+const OPT_KEYS = ['groundLock','idleLife','eyeFollow','showRig','speed','stiff','follow','travelSpeed','lsSens','lsGate'];
 const ac = () => state.chars[state.activeChar];
+let seqRT = { playing: false, ci: 0, idx: 0, t: 0 };
 
 // ============ UTILS ============
 function setStatus(msg, color = '#f39c12', resetMs = 0) {
@@ -623,10 +646,7 @@ function setStatus(msg, color = '#f39c12', resetMs = 0) {
 }
 function lerp(a, b, t) { return a + (b - a) * t; }
 function damp(a, b, l, dt) { return lerp(a, b, 1 - Math.exp(-l * dt)); }
-function openModal(id) {
-  if (id === 'rigManualModal') syncRigSliders();
-  $(id).classList.add('show');
-}
+function openModal(id) { $(id).classList.add('show'); }
 function closeModal(id) { $(id).classList.remove('show'); }
 
 // ============ THEME ============
@@ -636,69 +656,128 @@ function toggleTheme() {
   $('themeBtn').textContent = isLight ? '☀️' : '🌙';
   try { localStorage.setItem('sstickman_theme', isLight ? 'light' : 'dark'); } catch (e) {}
 }
-if (localStorage.getItem('sstickman_theme') === 'light') {
-  document.body.classList.add('light'); $('themeBtn').textContent = '☀️';
+try {
+  if (localStorage.getItem('sstickman_theme') === 'light') {
+    document.body.classList.add('light'); $('themeBtn').textContent = '☀️';
+  }
+} catch (e) {}
+
+// ============ UI BUILD (পোজ, ইমোশন, রিগ স্লাইডার ইত্যাদি) ============
+function buildUI() {
+  const pg = $('poseGrid');
+  POSE_LIST.forEach(([k, e, l], i) => {
+    const b = document.createElement('button');
+    b.dataset.pose = k;
+    b.textContent = `${e} ${l}${LOOPS.includes(k) ? ' ∞' : ''}`;
+    b.title = i < 10 ? `শর্টকাট: ${(i + 1) % 10}` : l;
+    b.onclick = () => setPose(k);
+    pg.appendChild(b);
+  });
+  const eg = $('exprGrid');
+  EXPR_LIST.forEach(([k, e]) => {
+    const b = document.createElement('button');
+    b.dataset.expr = k; b.textContent = e; b.className = 'icon'; b.title = k;
+    b.onclick = () => setExpr(k);
+    eg.appendChild(b);
+  });
+  const prg = $('propGrid');
+  PROP_EMOJI.forEach(e => {
+    const b = document.createElement('button');
+    b.textContent = e; b.className = 'icon'; b.onclick = () => spawnProp(e);
+    prg.appendChild(b);
+  });
+  const rs = $('rigSliders');
+  RIG_DEFS.forEach(d => {
+    if (d.length === 1) {
+      const h = document.createElement('div'); h.className = 'sub'; h.textContent = d[0]; rs.appendChild(h); return;
+    }
+    const [k, label, min, max] = d;
+    const row = document.createElement('div'); row.className = 'rs';
+    const l = document.createElement('label'); l.textContent = label;
+    const inp = document.createElement('input');
+    inp.type = 'range'; inp.min = min; inp.max = max; inp.step = (max - min) > 20 ? 1 : 0.01; inp.id = 'r_' + k;
+    inp.addEventListener('input', () => manualRigUpdate(k, inp.value));
+    inp.addEventListener('dblclick', () => { inp.value = DEFAULT_RIG[k]; manualRigUpdate(k, inp.value); });
+    const v = document.createElement('span'); v.className = 'v'; v.id = 'v_' + k; v.textContent = '0';
+    row.append(l, inp, v); rs.appendChild(row);
+  });
+  const ps = $('propSliders');
+  PROP_DEFS.forEach(([k, label, min, max]) => {
+    const row = document.createElement('div'); row.className = 'rs'; row.style.gridTemplateColumns = '96px 1fr 34px';
+    const l = document.createElement('label'); l.textContent = label;
+    const inp = document.createElement('input');
+    inp.type = 'range'; inp.min = min; inp.max = max; inp.step = 0.02; inp.id = 'p_' + k; inp.value = 1;
+    inp.addEventListener('input', () => setProp(k, inp.value));
+    inp.addEventListener('dblclick', () => { inp.value = 1; setProp(k, 1); });
+    const v = document.createElement('span'); v.className = 'v'; v.id = 'pv_' + k; v.textContent = '1.00';
+    row.append(l, inp, v); ps.appendChild(row);
+  });
 }
+buildUI();
+
+function setOpt(k, v) { state[k] = v; pushHistory(); }
 
 // ============ UNDO/REDO ============
-const history = { stack: [], idx: -1, max: 30 };
+const hist = { stack: [], idx: -1, max: 30 };
 let histDebounce;
 function snapState() {
+  const opts = {}; OPT_KEYS.forEach(k => opts[k] = state[k]);
   return {
     aspect: state.aspect, multiChar: state.multiChar, activeChar: state.activeChar,
     chars: state.chars.map(c => ({
       x: c.x, y: c.y, scale: c.scale, flip: c.flip, profession: c.profession,
       pose: c.pose, expr: c.expr, colors: { ...c.colors },
-      bubble: c.bubble, bubbleOn: c.bubbleOn,
-      targetRig: { ...c.targetRig }
+      bubble: c.bubble, bubbleOn: c.bubbleOn, travel: c.travel,
+      targetRig: { ...c.targetRig }, prop: { ...c.prop },
+      seq: c.seq.map(f => ({ pose: f.pose, expr: f.expr, rig: { ...f.rig } }))
     })),
     targetCam: { ...state.targetCam }, bgMode: state.bgMode,
     gradColors: [...state.gradColors], filter: state.filter,
-    grid: state.grid, safeArea: state.safeArea
+    grid: state.grid, safeArea: state.safeArea, opts
   };
 }
 function pushHistory() {
   clearTimeout(histDebounce);
   histDebounce = setTimeout(() => {
     const s = JSON.stringify(snapState());
-    if (history.stack[history.idx] === s) return;
-    history.stack = history.stack.slice(0, history.idx + 1);
-    history.stack.push(s); history.idx = history.stack.length - 1;
-    if (history.stack.length > history.max) { history.stack.shift(); history.idx--; }
+    if (hist.stack[hist.idx] === s) return;
+    hist.stack = hist.stack.slice(0, hist.idx + 1);
+    hist.stack.push(s); hist.idx = hist.stack.length - 1;
+    if (hist.stack.length > hist.max) { hist.stack.shift(); hist.idx--; }
     updateUndoBtns();
   }, 250);
 }
-function undo() {
-  if (history.idx <= 0) return;
-  history.idx--; applySnap(JSON.parse(history.stack[history.idx])); updateUndoBtns();
-}
-function redo() {
-  if (history.idx >= history.stack.length - 1) return;
-  history.idx++; applySnap(JSON.parse(history.stack[history.idx])); updateUndoBtns();
-}
+function undo() { if (hist.idx <= 0) return; hist.idx--; applySnap(JSON.parse(hist.stack[hist.idx])); updateUndoBtns(); }
+function redo() { if (hist.idx >= hist.stack.length - 1) return; hist.idx++; applySnap(JSON.parse(hist.stack[hist.idx])); updateUndoBtns(); }
 function applySnap(s) {
-  state.aspect = s.aspect; state.multiChar = s.multiChar; state.activeChar = s.activeChar;
+  state.aspect = s.aspect; state.multiChar = s.multiChar; state.activeChar = s.activeChar || 0;
   s.chars.forEach((cd, i) => {
     if (!state.chars[i]) state.chars[i] = makeChar({});
-    Object.assign(state.chars[i], cd);
-    if (cd.targetRig) state.chars[i].targetRig = { ...cd.targetRig };
+    const c = state.chars[i];
+    const { targetRig, prop, seq, ...rest } = cd;
+    Object.assign(c, rest);
+    c.targetRig = { ...DEFAULT_RIG, ...(targetRig || {}) };
+    c.prop = { ...DEFAULT_PROP, ...(prop || {}) };
+    c.seq = seq ? seq.map(f => ({ pose: f.pose, expr: f.expr, rig: { ...f.rig } })) : [];
   });
   state.targetCam = { ...s.targetCam };
   state.bgMode = s.bgMode; state.gradColors = [...s.gradColors];
   state.filter = s.filter; state.grid = s.grid; state.safeArea = s.safeArea;
+  if (s.opts) Object.assign(state, s.opts);
   syncUI();
 }
 function updateUndoBtns() {
-  $('undoBtn').disabled = history.idx <= 0;
-  $('redoBtn').disabled = history.idx >= history.stack.length - 1;
+  $('undoBtn').disabled = hist.idx <= 0;
+  $('redoBtn').disabled = hist.idx >= hist.stack.length - 1;
 }
 
 // ============ SYNC UI ============
 function syncUI() {
   $('ar169Btn').classList.toggle('active', state.aspect === '16:9');
   $('ar916Btn').classList.toggle('active', state.aspect === '9:16');
-  canvas.width = state.aspect === '16:9' ? 1280 : 720;
-  canvas.height = state.aspect === '16:9' ? 720 : 1280;
+  const nw = state.aspect === '16:9' ? 1280 : 720, nh = state.aspect === '16:9' ? 720 : 1280;
+  if (canvas.width !== nw) canvas.width = nw;
+  if (canvas.height !== nh) canvas.height = nh;
   $('char1Btn').classList.toggle('active', state.activeChar === 0);
   $('char2Btn').classList.toggle('active', state.activeChar === 1);
   $('char2Btn').disabled = !state.multiChar;
@@ -707,78 +786,95 @@ function syncUI() {
   $('professionSelect').value = c.profession || 'classic';
   $('cBody').value = c.colors.body; $('cTie').value = c.colors.tie;
   $('cHat').value = c.colors.hat; $('cMouth').value = c.colors.mouth;
-  document.querySelectorAll('[data-pose]').forEach(b => b.classList.toggle('active', b.dataset.pose === c.pose));
+  syncPoseButtons();
   document.querySelectorAll('[data-expr]').forEach(b => b.classList.toggle('active', b.dataset.expr === c.expr));
   $('bubbleInput').value = c.bubble;
   $('bubbleToggle').classList.toggle('on', c.bubbleOn);
   $('bubbleToggle').classList.toggle('off', !c.bubbleOn);
-  $('gridBtn').classList.toggle('on', state.grid);
-  $('gridBtn').classList.toggle('off', !state.grid);
-  $('safeBtn').classList.toggle('on', state.safeArea);
-  $('safeBtn').classList.toggle('off', !state.safeArea);
+  $('gridBtn').classList.toggle('on', state.grid); $('gridBtn').classList.toggle('off', !state.grid);
+  $('safeBtn').classList.toggle('on', state.safeArea); $('safeBtn').classList.toggle('off', !state.safeArea);
   $('filterSelect').value = state.filter;
-  $('grad1').value = state.gradColors[0];
-  $('grad2').value = state.gradColors[1];
-  syncRigSliders();
+  $('grad1').value = state.gradColors[0]; $('grad2').value = state.gradColors[1];
+  $('optGround').checked = state.groundLock; $('optIdle').checked = state.idleLife;
+  $('optEye').checked = state.eyeFollow; $('optRig').checked = state.showRig;
+  $('optFollow').checked = state.follow;
+  $('speedSlider').value = state.speed; $('v_speed').textContent = Number(state.speed).toFixed(2) + 'x';
+  $('stiffSlider').value = state.stiff; $('v_stiff').textContent = state.stiff;
+  $('travelSpeed').value = state.travelSpeed;
+  $('lsSens').value = state.lsSens; $('v_lsSens').textContent = Number(state.lsSens).toFixed(1);
+  $('lsGate').value = state.lsGate; $('v_lsGate').textContent = state.lsGate;
+  $('travelBtn').classList.toggle('on', !!c.travel); $('travelBtn').classList.toggle('off', !c.travel);
+  syncRigSliders(); syncPropSliders(); renderSeq();
 }
-
+function syncPoseButtons() {
+  const c = ac();
+  document.querySelectorAll('[data-pose]').forEach(b => b.classList.toggle('active', b.dataset.pose === c.pose));
+}
 function syncRigSliders() {
   const r = ac().targetRig;
-  const list = ['headTilt', 'torsoAngle', 'lS', 'lE', 'rS', 'rE', 'lH', 'lK', 'rH', 'rK'];
-  list.forEach(k => {
+  RIG_KEYS.forEach(k => {
     const el = $('r_' + k), vEl = $('v_' + k);
     if (el) el.value = r[k] ?? 0;
-    if (vEl) vEl.textContent = Number(r[k] ?? 0).toFixed(2);
+    if (vEl) vEl.textContent = Number(r[k] ?? 0).toFixed(k === 'hipShift' || k === 'lift' ? 0 : 2);
   });
 }
-
+function syncPropSliders() {
+  const p = ac().prop;
+  PROP_DEFS.forEach(([k]) => { $('p_' + k).value = p[k]; $('pv_' + k).textContent = Number(p[k]).toFixed(2); });
+}
 function manualRigUpdate(key, val) {
-  const num = parseFloat(val);
-  const c = ac();
+  const num = parseFloat(val), c = ac();
+  if (LOOPS.includes(c.pose)) { RIG_KEYS.forEach(k => c.targetRig[k] = c.rig[k]); }
   c.targetRig[key] = num;
   c.pose = 'custom';
-  document.querySelectorAll('[data-pose]').forEach(b => b.classList.remove('active'));
-  $('v_' + key).textContent = num.toFixed(2);
+  syncPoseButtons();
+  $('v_' + key).textContent = num.toFixed(key === 'hipShift' || key === 'lift' ? 0 : 2);
   pushHistory();
 }
+function setProp(k, v) { ac().prop[k] = parseFloat(v); $('pv_' + k).textContent = parseFloat(v).toFixed(2); pushHistory(); }
+function resetProps() { ac().prop = { ...DEFAULT_PROP }; syncPropSliders(); pushHistory(); }
 
 // ============ CHARACTER & POSES ============
-function setActiveChar(i) {
-  if (i === 1 && !state.multiChar) return;
-  state.activeChar = i; syncUI(); pushHistory();
-}
-function toggleMultiChar() {
-  state.multiChar = !state.multiChar;
-  if (!state.multiChar) state.activeChar = 0;
-  syncUI(); pushHistory();
-}
+function setActiveChar(i) { if (i === 1 && !state.multiChar) return; state.activeChar = i; syncUI(); pushHistory(); }
+function toggleMultiChar() { state.multiChar = !state.multiChar; if (!state.multiChar) state.activeChar = 0; syncUI(); pushHistory(); }
 function setProfession(p) {
-  const c = ac();
-  c.profession = p;
-  const def = PROFESSION_DEFAULTS[p];
-  if (def) c.colors = { ...def.colors };
+  const c = ac(); c.profession = p;
+  const def = PROFESSION_DEFAULTS[p]; if (def) c.colors = { ...def.colors };
   syncUI(); pushHistory();
   setStatus('পেশা: ' + $('professionSelect').selectedOptions[0].text, '#00d2d3', 2000);
 }
 function updateColor(k, v) { ac().colors[k] = v; pushHistory(); }
 function toggleFlip() { ac().flip = !ac().flip; pushHistory(); }
+function toggleTravel() { const c = ac(); c.travel = !c.travel; syncUI(); pushHistory(); }
 
-function setPose(p, btn) {
+function setPose(p) {
   const c = ac();
   c.pose = p;
-  if (POSE_RIGS[p]) {
-    c.targetRig = { ...DEFAULT_RIG, ...POSE_RIGS[p] };
-  }
-  document.querySelectorAll('[data-pose]').forEach(b => b.classList.toggle('active', b.dataset.pose === p));
-  syncRigSliders();
+  if (POSE_RIGS[p]) c.targetRig = { ...DEFAULT_RIG, ...POSE_RIGS[p] };
+  syncPoseButtons(); syncRigSliders();
   if (state.autoGesture) checkAutoGesture(c.bubble);
   pushHistory();
 }
+function mirrorPose() {
+  const c = ac(), t = c.targetRig, n = { ...t };
+  if (LOOPS.includes(c.pose)) RIG_KEYS.forEach(k => t[k] = c.rig[k]);
+  const T = c.targetRig;
+  n.headTilt = -T.headTilt; n.headYaw = -T.headYaw; n.torsoAngle = -T.torsoAngle; n.hipShift = -T.hipShift;
+  n.lS = -T.rS; n.rS = -T.lS; n.lE = -T.rE; n.rE = -T.lE; n.lW = -T.rW; n.rW = -T.lW;
+  n.lH = -T.rH; n.rH = -T.lH; n.lK = T.rK; n.rK = T.lK; n.lF = -T.rF; n.rF = -T.lF;
+  c.targetRig = n; c.pose = 'custom'; syncPoseButtons(); syncRigSliders(); pushHistory();
+}
+function copyPoseToOther() {
+  if (!state.multiChar) { setStatus('আগে "+২য়" চালু করুন', '#f39c12', 2500); return; }
+  const src = ac(), dst = state.chars[state.activeChar === 0 ? 1 : 0];
+  dst.targetRig = { ...src.targetRig }; dst.pose = src.pose === 'walk' || src.pose === 'run' ? src.pose : 'custom';
+  setStatus('পোজ কপি হয়েছে', '#2ed573', 2000); pushHistory();
+}
 
-function setExpr(e, btn) {
+function setExpr(e) {
   ac().expr = e;
   document.querySelectorAll('[data-expr]').forEach(b => b.classList.toggle('active', b.dataset.expr === e));
-  if (['laugh','angry','sad','surprise'].includes(e)) {
+  if (['laugh', 'angry', 'sad', 'surprise'].includes(e)) {
     const c = ac();
     const cx = canvas.width * c.x, cy = canvas.height * c.y - 225 * c.scale;
     const types = { laugh: 'heart', angry: 'anger', sad: 'tear', surprise: 'sparkle' };
@@ -787,12 +883,45 @@ function setExpr(e, btn) {
   pushHistory();
 }
 
-// ============ BUBBLE ============
-function updateBubble(t) {
-  ac().bubble = t;
-  if (state.autoGesture && t) checkAutoGesture(t);
-  pushHistory();
+// ============ SEQUENCER ============
+function addKeyframe() {
+  const c = ac();
+  const rig = LOOPS.includes(c.pose) ? { ...c.rig } : { ...c.targetRig };
+  c.seq.push({ pose: c.pose, expr: c.expr, rig });
+  renderSeq(); pushHistory();
+  setStatus('কীফ্রেম #' + c.seq.length + ' যোগ হয়েছে', '#2ed573', 1800);
 }
+function applyKeyframe(c, f) {
+  if (!f) return;
+  c.pose = f.pose; c.expr = f.expr; c.targetRig = { ...DEFAULT_RIG, ...f.rig };
+  if (c === ac()) { syncPoseButtons(); syncRigSliders(); document.querySelectorAll('[data-expr]').forEach(b => b.classList.toggle('active', b.dataset.expr === c.expr)); }
+}
+function renderSeq() {
+  const box = $('seqList'); box.innerHTML = '';
+  const c = ac();
+  c.seq.forEach((f, i) => {
+    const d = document.createElement('div'); d.className = 'chip' + (seqRT.playing && seqRT.ci === state.activeChar && seqRT.idx === i ? ' cur' : '');
+    const b = document.createElement('button'); b.textContent = (i + 1); b.title = f.pose;
+    b.onclick = () => { applyKeyframe(c, f); };
+    const x = document.createElement('button'); x.textContent = '✕'; x.className = 'danger';
+    x.onclick = () => { c.seq.splice(i, 1); renderSeq(); pushHistory(); };
+    d.append(b, x); box.appendChild(d);
+  });
+  $('seqPlayBtn').textContent = seqRT.playing ? '⏹️ থামান' : '▶️ প্লে';
+  $('seqPlayBtn').classList.toggle('active', seqRT.playing);
+}
+function toggleSeq() { seqRT.playing ? stopSeq() : playSeq(); }
+function playSeq() {
+  const c = ac();
+  if (!c.seq.length) { setStatus('আগে কীফ্রেম যোগ করুন (➕)', '#f39c12', 2500); return; }
+  seqRT = { playing: true, ci: state.activeChar, idx: 0, t: 0 };
+  applyKeyframe(c, c.seq[0]); renderSeq();
+}
+function stopSeq() { seqRT.playing = false; renderSeq(); }
+function clearSeq() { stopSeq(); ac().seq = []; renderSeq(); pushHistory(); }
+
+// ============ BUBBLE ============
+function updateBubble(t) { ac().bubble = t; if (state.autoGesture && t) checkAutoGesture(t); pushHistory(); }
 function toggleBubble() { ac().bubbleOn = !ac().bubbleOn; syncUI(); pushHistory(); }
 function clearBubble() { ac().bubble = ''; ac().bubbleOn = false; syncUI(); pushHistory(); }
 function useBubblePreset(t) {
@@ -803,26 +932,17 @@ function useBubblePreset(t) {
 
 // ============ AUTO-GESTURE ============
 const GESTURE_MAP = {
-  'hello': 'wave', 'হ্যালো': 'wave', 'হাই': 'wave', 'hi': 'wave',
-  'bye': 'wave', 'বাই': 'wave', 'বিদায়': 'wave',
-  'walk': 'walk', 'হাঁটা': 'walk', 'যাই': 'walk',
-  'run': 'run', 'দৌড়': 'run', 'পালাও': 'run',
-  'dance': 'dance', 'নাচ': 'dance', 'গান': 'dance',
-  'yes': 'rightUp', 'হ্যাঁ': 'rightUp',
-  'no': 'point', 'না': 'point',
-  'wow': 'bothUp', 'বাহ': 'bothUp', 'দারুণ': 'bothUp',
-  'কেন': 'think', 'why': 'think',
-  'thanks': 'bothUp', 'ধন্যবাদ': 'bothUp',
-  'স্যালুট': 'salute', 'নমস্কার': 'bow', 'মারো': 'kick'
+  'hello':'wave','হ্যালো':'wave','হাই':'wave','hi':'wave','bye':'wave','বাই':'wave','বিদায়':'wave',
+  'walk':'walk','হাঁটা':'walk','যাই':'walk','run':'run','দৌড়':'run','পালাও':'run',
+  'dance':'dance','নাচ':'dance','গান':'dance','yes':'rightUp','হ্যাঁ':'rightUp','no':'point','না':'point',
+  'wow':'bothUp','বাহ':'bothUp','দারুণ':'bothUp','কেন':'think','why':'think',
+  'thanks':'bothUp','ধন্যবাদ':'bothUp','স্যালুট':'salute','নমস্কার':'bow','মারো':'kick'
 };
 function checkAutoGesture(text) {
   if (!text) return;
   const lower = text.toLowerCase();
   for (const [kw, pose] of Object.entries(GESTURE_MAP)) {
-    if (lower.includes(kw)) {
-      setPose(pose);
-      break;
-    }
+    if (lower.includes(kw)) { setPose(pose); break; }
   }
 }
 
@@ -838,14 +958,14 @@ function spawnProp(symbol) {
   setTimeout(() => { state.props = state.props.filter(p => Date.now() - p.created < 3000); }, 3100);
 }
 function playAnim(name) {
-  state.anim = { name, start: performance.now(), dur: 1800 };
+  state.anim = { name, start: performance.now(), dur: name === 'jump' ? 1500 : 1800 };
   const c = ac();
   const cx = canvas.width * c.x, cy = canvas.height * c.y - 225 * c.scale;
   if (name === 'laugh') for (let i = 0; i < 12; i++) spawnParticle(cx, cy, 'heart');
   else if (name === 'cry') for (let i = 0; i < 10; i++) spawnParticle(cx + 30, cy, 'tear');
   else if (name === 'angry') for (let i = 0; i < 10; i++) spawnParticle(cx + 40, cy - 20, 'anger');
   else if (name === 'surprise') for (let i = 0; i < 10; i++) spawnParticle(cx, cy - 40, 'sparkle');
-  else if (name === 'jump') for (let i = 0; i < 8; i++) spawnParticle(cx, cy + 100, 'sparkle');
+  else if (name === 'jump') for (let i = 0; i < 8; i++) spawnParticle(cx, cy + 200, 'sparkle');
 }
 
 // ============ SCENE ============
@@ -860,10 +980,7 @@ function loadBG(e) {
   };
   r.readAsDataURL(f);
 }
-function refreshBG() {
-  state.gradColors = [$('grad1').value, $('grad2').value];
-  pushHistory();
-}
+function refreshBG() { state.gradColors = [$('grad1').value, $('grad2').value]; pushHistory(); }
 function setFilter(f) { state.filter = f; pushHistory(); }
 function toggleGrid() { state.grid = !state.grid; syncUI(); pushHistory(); }
 function toggleSafeArea() { state.safeArea = !state.safeArea; syncUI(); pushHistory(); }
@@ -880,12 +997,13 @@ function camPreset(t) {
   }
   pushHistory();
 }
-function zoomCam(d) { state.targetCam.zoom = Math.max(0.6, Math.min(3, state.targetCam.zoom + d)); }
+function zoomCam(d) { state.targetCam.zoom = clamp(state.targetCam.zoom + d, 0.6, 3); $('zoomSlider').value = state.targetCam.zoom; }
 function setZoom(v) { state.targetCam.zoom = parseFloat(v); }
 function panCam(dx, dy) { state.targetCam.x += dx; state.targetCam.y += dy; }
-function resetCamera() { state.targetCam = { x: 0, y: 0, zoom: 1 }; }
+function resetCamera() { state.targetCam = { x: 0, y: 0, zoom: 1 }; $('zoomSlider').value = 1; }
+function shakeCam() { state.shake = 0.5; }
 
-// ============ AUDIO & ADVANCED LIP-SYNC ENGINE ============
+// ============ AUDIO & LIP-SYNC ENGINE ============
 let audioCtx = null, analyser = null, dataArr = null, recordDest = null;
 let micStream = null, micSrc = null, micGain = null;
 let audioFileEl = null, audioFileSrc = null, fileGain = null;
@@ -932,7 +1050,6 @@ async function setAudioSource(mode) {
     $('srcFileBtn').classList.toggle('active', mode === 'file');
   } catch (e) { setStatus('অডিও ব্যর্থ: ' + e.message, '#eb4d4b', 3000); }
 }
-
 $('audioFileInput').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   await ensureAudio();
@@ -946,7 +1063,6 @@ function toggleAudioPlay() {
   if (audioFileEl.paused) { audioFileEl.play(); $('audioPlayBtn').textContent = '⏸️'; }
   else { audioFileEl.pause(); $('audioPlayBtn').textContent = '▶️'; }
 }
-
 $('bgMusicInput').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   await ensureAudio();
@@ -957,21 +1073,17 @@ $('bgMusicInput').addEventListener('change', async e => {
   setStatus('মিউজিক চালু', '#2ed573', 2000);
 });
 function setBGMusicVol(v) { if (bgMusicGain) bgMusicGain.gain.value = parseFloat(v); }
-
 function toggleLipSync() {
   state.lipSync = !state.lipSync;
-  $('lipSyncBtn').classList.toggle('on', state.lipSync);
-  $('lipSyncBtn').classList.toggle('off', !state.lipSync);
+  $('lipSyncBtn').classList.toggle('on', state.lipSync); $('lipSyncBtn').classList.toggle('off', !state.lipSync);
 }
 function toggleVisualizer() {
   state.visualizer = !state.visualizer;
-  $('vizBtn').classList.toggle('on', state.visualizer);
-  $('vizBtn').classList.toggle('off', !state.visualizer);
+  $('vizBtn').classList.toggle('on', state.visualizer); $('vizBtn').classList.toggle('off', !state.visualizer);
 }
 function toggleVoiceToEmotion() {
   state.voiceToEmotion = !state.voiceToEmotion;
-  $('voice2emoBtn').classList.toggle('on', state.voiceToEmotion);
-  $('voice2emoBtn').classList.toggle('off', !state.voiceToEmotion);
+  $('voice2emoBtn').classList.toggle('on', state.voiceToEmotion); $('voice2emoBtn').classList.toggle('off', !state.voiceToEmotion);
 }
 
 // ASR
@@ -993,9 +1105,7 @@ function toggleASR() {
     if (state.autoGesture) checkAutoGesture(t);
   };
   asr.onend = () => { if (asrActive) { try { asr.start(); } catch (e) {} } };
-  asr.onerror = ev => {
-    if (ev.error === 'not-allowed') setStatus('মাইক অনুমতি দিন', '#eb4d4b', 3000);
-  };
+  asr.onerror = ev => { if (ev.error === 'not-allowed') setStatus('মাইক অনুমতি দিন', '#eb4d4b', 3000); };
   try {
     asr.start(); asrActive = true;
     $('asrBtn').classList.add('on'); $('asrBtn').classList.remove('off');
@@ -1030,7 +1140,6 @@ function pickMime() {
   for (const t of list) { try { if (MediaRecorder.isTypeSupported(t)) return t; } catch (e) {} }
   return '';
 }
-
 async function startRecording() {
   await ensureAudio();
   if (sourceMode === 'mic' && !micSrc) {
@@ -1054,8 +1163,7 @@ async function startRecording() {
   isRecording = true; recStartTime = Date.now();
   recIndicator.classList.add('show'); recIndicator.classList.remove('paused');
   recStatusText.textContent = 'রেকর্ডিং';
-  $('recBtn').textContent = '⏹️ থামান';
-  $('recBtn').classList.add('active');
+  $('recBtn').textContent = '⏹️ থামান'; $('recBtn').classList.add('active');
   setStatus('🔴 রেকর্ডিং চলছে…', '#ff4d4d', 0);
   recInterval = setInterval(updateRecTimer, 250);
   updateRecTimer();
@@ -1063,7 +1171,7 @@ async function startRecording() {
 function updateRecTimer() {
   if (!isRecording) return;
   const s = Math.floor((Date.now() - recStartTime) / 1000);
-  recTimer.textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  recTimer.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
 async function stopRecording() {
   if (!isRecording) return;
@@ -1096,8 +1204,7 @@ function finalizeRecording() {
   isRecording = false; clearInterval(recInterval);
   recIndicator.classList.remove('show');
   $('recBtn').disabled = false;
-  $('recBtn').textContent = '🔴 রেকর্ড শুরু';
-  $('recBtn').classList.remove('active');
+  $('recBtn').textContent = '🔴 রেকর্ড শুরু'; $('recBtn').classList.remove('active');
   if (micGain) micGain.gain.value = sourceMode === 'mic' ? 1 : 0;
   if (fileGain) fileGain.gain.value = sourceMode === 'file' ? 1 : 0;
   if (bgMusicGain) bgMusicGain.gain.value = parseFloat($('bgMusicVol').value) || 0.3;
@@ -1110,7 +1217,7 @@ function showPreview(blob) {
   if (lastUrl) URL.revokeObjectURL(lastUrl);
   lastBlob = blob; lastUrl = URL.createObjectURL(blob);
   const v = $('previewVideo'); v.src = lastUrl; v.load();
-  $('previewInfo').textContent = `সাইজ: ${(blob.size/1048576).toFixed(2)} MB · ফরম্যাট: ${blob.type}`;
+  $('previewInfo').textContent = `সাইজ: ${(blob.size / 1048576).toFixed(2)} MB · ফরম্যাট: ${blob.type}`;
   openModal('previewModal');
 }
 function downloadRecording() {
@@ -1126,7 +1233,6 @@ function discardRecording() {
   if (lastUrl) URL.revokeObjectURL(lastUrl);
   lastBlob = null; lastUrl = null; $('previewVideo').src = '';
 }
-
 async function toggleRecording() {
   if (isRecording) { stopRecording(); return; }
   const useCD = $('countdownChk').checked;
@@ -1162,43 +1268,37 @@ function togglePause() {
 function takeSnapshot() {
   try {
     const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = `stickman_${Date.now()}.png`;
-    a.click();
+    a.href = canvas.toDataURL('image/png'); a.download = `stickman_${Date.now()}.png`; a.click();
     setStatus('📸 সেভ', '#2ed573', 2000);
   } catch (e) { setStatus('স্ক্রিনশট ব্যর্থ', '#eb4d4b', 3000); }
 }
 function toggleFullscreen() {
   if (document.fullscreenElement) document.exitFullscreen();
-  else viewportBox.requestFullscreen?.().catch(() => {});
+  else canvas.requestFullscreen?.().catch(() => {});
 }
 
 // ============ PROJECT ============
 function saveProject() {
   const name = $('projectName').value.trim() || 'default';
-  try {
-    localStorage.setItem('stickman_proj_' + name, JSON.stringify(snapState()));
-    setStatus('💾 "' + name + '" সেভ', '#2ed573', 2000);
-  } catch (e) { setStatus('সেভ ব্যর্থ', '#eb4d4b', 3000); }
+  try { localStorage.setItem('stickman_proj_' + name, JSON.stringify(snapState())); setStatus('💾 "' + name + '" সেভ', '#2ed573', 2000); }
+  catch (e) { setStatus('সেভ ব্যর্থ', '#eb4d4b', 3000); }
 }
 function loadProject() {
   const name = $('projectName').value.trim() || 'default';
-  const raw = localStorage.getItem('stickman_proj_' + name);
+  let raw = null; try { raw = localStorage.getItem('stickman_proj_' + name); } catch (e) {}
   if (!raw) { setStatus('"' + name + '" নেই', '#f39c12', 2000); return; }
   try { applySnap(JSON.parse(raw)); setStatus('📂 লোড হয়েছে', '#2ed573', 2000); }
   catch (e) { setStatus('লোড ব্যর্থ', '#eb4d4b', 3000); }
 }
 function deleteProject() {
   const name = $('projectName').value.trim() || 'default';
-  localStorage.removeItem('stickman_proj_' + name);
+  try { localStorage.removeItem('stickman_proj_' + name); } catch (e) {}
   setStatus('মুছে ফেলা', '#f39c12', 2000);
 }
 function exportJSON() {
   const blob = new Blob([JSON.stringify(snapState(), null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `stickman_${Date.now()}.json`;
-  a.click();
+  a.href = URL.createObjectURL(blob); a.download = `stickman_${Date.now()}.json`; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 function importJSON(e) {
@@ -1210,12 +1310,11 @@ function importJSON(e) {
   };
   r.readAsText(f); e.target.value = '';
 }
-
 const PRESETS = {
   hello: { pose: 'wave', expr: 'smile', bubble: 'হ্যালো বন্ধুরা!' },
   thanks: { pose: 'bothUp', expr: 'smile', bubble: 'ধন্যবাদ!' },
   wow: { pose: 'bothUp', expr: 'surprise', bubble: 'বাহ! অসাধারণ!' },
-  sad: { pose: 'idle', expr: 'sad', bubble: 'খুবই দুঃখিত…' },
+  sad: { pose: 'tired', expr: 'sad', bubble: 'খুবই দুঃখিত…' },
   think: { pose: 'think', expr: 'neutral', bubble: 'কেন এমন হলো?' },
   bye: { pose: 'wave', expr: 'smile', bubble: 'আজকের মতো বিদায়!' }
 };
@@ -1230,6 +1329,7 @@ function applyPreset(name) {
 }
 function resetAll() {
   if (!confirm('সব রিসেট করবেন?')) return;
+  stopSeq();
   state.chars[0] = makeChar({ x: 0.35, profession: 'classic' });
   state.chars[1] = makeChar({ x: 0.65, scale: 0.9, profession: 'doctor' });
   state.multiChar = false; state.activeChar = 0;
@@ -1249,33 +1349,34 @@ setInterval(() => {
   try { localStorage.setItem('stickman_proj_autosave', JSON.stringify(snapState())); } catch (e) {}
 }, 30000);
 
-// ============ BACKGROUND & CANVAS DRAW ============
+// ============ BACKGROUND & OVERLAYS ============
 function drawBackground() {
+  const cw = canvas.width, ch = canvas.height;
+  const X = -cw, Y = -ch, W3 = cw * 3, H3 = ch * 3;   // ক্যামেরা সরালেও কিনারা দেখা যাবে না
   if (state.bgMode === 'image' && state.bgImage) {
-    const cw = canvas.width, ch = canvas.height;
+    ctx.fillStyle = '#000'; ctx.fillRect(X, Y, W3, H3);
     const ir = state.bgImage.width / state.bgImage.height, cr = cw / ch;
     let w, h, x, y;
     if (ir > cr) { h = ch; w = ch * ir; x = (cw - w) / 2; y = 0; }
     else { w = cw; h = cw / ir; x = 0; y = (ch - h) / 2; }
     ctx.drawImage(state.bgImage, x, y, w, h);
   } else if (state.bgMode === 'green') {
-    ctx.fillStyle = '#00ff00'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff00'; ctx.fillRect(X, Y, W3, H3);
   } else if (state.bgMode === 'gradient') {
-    const g = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    const g = ctx.createLinearGradient(0, 0, cw, ch);
     g.addColorStop(0, state.gradColors[0]); g.addColorStop(1, state.gradColors[1]);
-    ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = g; ctx.fillRect(X, Y, W3, H3);
   } else if (state.bgMode === 'dark') {
-    ctx.fillStyle = '#1e272e'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#1e272e'; ctx.fillRect(X, Y, W3, H3);
   } else {
-    ctx.fillStyle = '#f7f9fa'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#f7f9fa'; ctx.fillRect(X, Y, W3, H3);
     ctx.strokeStyle = '#dcdde1'; ctx.lineWidth = 4; ctx.beginPath();
-    const fy = canvas.height * 0.85;
-    ctx.moveTo(0, fy); ctx.lineTo(canvas.width, fy); ctx.stroke();
+    const fy = ch * 0.85;
+    ctx.moveTo(X, fy); ctx.lineTo(cw * 2, fy); ctx.stroke();
   }
 }
 function drawGrid() {
-  ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.3)';
-  ctx.lineWidth = 1; ctx.setLineDash([8, 8]);
+  ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.lineWidth = 1; ctx.setLineDash([8, 8]);
   for (let i = 1; i < 3; i++) {
     ctx.beginPath();
     ctx.moveTo(canvas.width * i / 3, 0); ctx.lineTo(canvas.width * i / 3, canvas.height);
@@ -1285,92 +1386,102 @@ function drawGrid() {
   ctx.restore();
 }
 function drawSafeArea() {
-  ctx.save(); ctx.strokeStyle = 'rgba(255,80,80,.7)';
-  ctx.lineWidth = 2; ctx.setLineDash([10, 6]);
+  ctx.save(); ctx.strokeStyle = 'rgba(255,80,80,.7)'; ctx.lineWidth = 2; ctx.setLineDash([10, 6]);
   const px = canvas.width * .05, py = canvas.height * .08;
   ctx.strokeRect(px, py, canvas.width - px * 2, canvas.height - py * 2);
   ctx.fillStyle = 'rgba(255,80,80,.15)';
-  ctx.fillRect(0, 0, canvas.width, py);
-  ctx.fillRect(0, canvas.height - py, canvas.width, py);
+  ctx.fillRect(0, 0, canvas.width, py); ctx.fillRect(0, canvas.height - py, canvas.width, py);
   ctx.restore();
 }
 
-// ============ PRO CHARACTER SKELETAL RIG & MOUTH RENDERING ============
-function drawCharacter(c, cx, cy, scale, talkHeadBob = 0) {
+// ============ CHARACTER RENDERER (প্রো স্কেলিটাল রিগ) ============
+function drawCharacter(c, cx, cy, scale, o) {
+  const r = c.rig, V = c.vel || {}, P = c.prop || DEFAULT_PROP;
+  const L = P.legs, A = P.arms, T = P.torso, H = P.head, W = P.thick;
+  const T1 = 48 * L, S1 = 45 * L;
+  const color = c.colors.body, p = c.profession || 'classic';
+  const sec = k => V[k] || 0;
+
   ctx.save();
   ctx.translate(cx, cy);
-  if (c.flip) ctx.scale(-scale, scale); else ctx.scale(scale, scale);
+  ctx.scale(c.flip ? -scale : scale, scale);
 
-  const r = c.rig;
-  const color = c.colors.body;
-  const p = c.profession || 'classic';
+  // গ্রাউন্ড লক: যে পা সবচেয়ে নিচে, সেটি মাটি ছোঁয়
+  let off = 0;
+  if (state.groundLock) {
+    const yl = -90 + T1 * Math.cos(r.lH) + S1 * Math.cos(r.lH + r.lK);
+    const yr = -90 + T1 * Math.cos(r.rH) + S1 * Math.cos(r.rH + r.rK);
+    off = -Math.max(yl, yr);
+  }
+  c._off = off;
 
-  // 1. Shadow
-  ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = '#000';
-  ctx.beginPath(); ctx.ellipse(0, 5, 55, 12, 0, 0, 6.283); ctx.fill(); ctx.restore();
+  const bodyY = o.bodyY / scale;
+  const air = Math.max(0, -bodyY + (r.lift || 0));
+  const sh = 1 / (1 + air / 140);
 
-  // 2. Legs Rigging (Hip -> Knee -> Foot)
-  const drawLeg = (isLeft, hipAngle, kneeAngle) => {
+  // ছায়া (মাটিতে থাকে, লাফে ছোট ও হালকা)
+  ctx.save(); ctx.globalAlpha = 0.06 + 0.17 * sh; ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.ellipse(0, 5, 55 * sh, 12 * sh, 0, 0, 6.283); ctx.fill(); ctx.restore();
+
+  ctx.translate(r.hipShift || 0, off + bodyY - (r.lift || 0));
+
+  const jt = col => {
+    if (!state.showRig) return;
+    ctx.save(); ctx.fillStyle = col || '#00d2d3'; ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, 6.283); ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  const flat = state.groundLock ? 0.92 : 0;
+
+  // ---- পা ----
+  const drawLeg = (isLeft, h, k, f) => {
     ctx.save();
-    const hipX = isLeft ? -15 : 15, hipY = -90;
-    ctx.translate(hipX, hipY);
-    ctx.rotate(hipAngle);
-
-    ctx.strokeStyle = color; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(0, 48); // Thigh
-    ctx.stroke();
-
-    ctx.translate(0, 48);
-    ctx.rotate(kneeAngle);
-    ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(0, 45); // Shin
-    ctx.stroke();
-
-    // Foot / Shoe
+    ctx.translate(isLeft ? -15 : 15, -90);
+    ctx.rotate(h);
+    ctx.strokeStyle = color; ctx.lineWidth = 8 * W; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, T1); ctx.stroke();
+    jt('#ff9f43');
+    ctx.translate(0, T1);
+    ctx.rotate(k);
+    ctx.strokeStyle = color; ctx.lineWidth = 8 * W;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, S1); ctx.stroke();
+    jt('#feca57');
+    ctx.translate(0, S1);
+    ctx.rotate(f - (h + k) * flat);
     ctx.fillStyle = (p === 'astronaut' ? '#dfe4ea' : (p === 'firefighter' ? '#f1c40f' : '#1e272e'));
-    ctx.beginPath();
-    ctx.ellipse(isLeft ? -4 : 4, 46, 12, 5, 0, 0, 6.283);
-    ctx.fill();
-
+    ctx.beginPath(); ctx.ellipse(5, 2.5, 12, 5.5, 0, 0, 6.283); ctx.fill();
+    jt('#ff6b6b');
     ctx.restore();
   };
-  drawLeg(true, r.lH, r.lK);
-  drawLeg(false, r.rH, r.rK);
+  drawLeg(true, r.lH, r.lK, r.lF);
+  drawLeg(false, r.rH, r.rK, r.rF);
 
-  // 3. Torso & Spine Rigging
+  // ---- ধড় ----
   ctx.save();
   ctx.translate(0, -90);
   ctx.rotate(r.torsoAngle);
+  jt('#f1c40f');
 
-  // Torso bone
-  ctx.strokeStyle = color; ctx.lineWidth = 9; ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(0, 0); ctx.lineTo(0, -95);
-  ctx.stroke();
+  ctx.save();
+  ctx.scale(1, T);
+  ctx.strokeStyle = color; ctx.lineWidth = 9 * W; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -95); ctx.stroke();
 
-  // PROFESSION COSTUMES
+  // পেশার পোশাক
   if (p === 'doctor') {
     ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.moveTo(-16, -95); ctx.lineTo(16, -95); ctx.lineTo(18, -10); ctx.lineTo(-18, -10);
+    ctx.beginPath(); ctx.moveTo(-16, -95); ctx.lineTo(16, -95); ctx.lineTo(18, -10); ctx.lineTo(-18, -10);
     ctx.closePath(); ctx.fill();
     ctx.strokeStyle = '#bdc3c7'; ctx.lineWidth = 2; ctx.stroke();
-    // Stethoscope
     ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(0, -75, 12, 0.2 * Math.PI, 0.8 * Math.PI); ctx.stroke();
     ctx.fillStyle = '#e74c3c';
     ctx.fillRect(-12, -70, 7, 2); ctx.fillRect(-9.5, -72.5, 2, 7);
-  }
-  else if (p === 'police') {
+  } else if (p === 'police') {
     ctx.fillStyle = c.colors.tie;
-    ctx.beginPath();
-    ctx.moveTo(-5, -88); ctx.lineTo(5, -88); ctx.lineTo(7, -40); ctx.lineTo(0, -32); ctx.lineTo(-7, -40);
+    ctx.beginPath(); ctx.moveTo(-5, -88); ctx.lineTo(5, -88); ctx.lineTo(7, -40); ctx.lineTo(0, -32); ctx.lineTo(-7, -40);
     ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#f1c40f';
-    ctx.beginPath(); ctx.arc(-8, -75, 5, 0, 6.283); ctx.fill();
-  }
-  else if (p === 'chef') {
+    ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(-8, -75, 5, 0, 6.283); ctx.fill();
+  } else if (p === 'chef') {
     ctx.fillStyle = '#ffffff'; ctx.fillRect(-15, -95, 30, 85);
     ctx.fillStyle = '#d63031';
     ctx.beginPath(); ctx.moveTo(-10, -95); ctx.lineTo(10, -95); ctx.lineTo(0, -80); ctx.closePath(); ctx.fill();
@@ -1379,103 +1490,90 @@ function drawCharacter(c, cx, cy, scale, talkHeadBob = 0) {
       ctx.beginPath(); ctx.arc(-5, -70 + i * 16, 2, 0, 6.283); ctx.fill();
       ctx.beginPath(); ctx.arc(5, -70 + i * 16, 2, 0, 6.283); ctx.fill();
     }
-  }
-  else if (p === 'engineer') {
+  } else if (p === 'engineer') {
     ctx.fillStyle = '#e67e22'; ctx.fillRect(-15, -92, 30, 82);
-    ctx.fillStyle = '#f1c40f';
-    ctx.fillRect(-15, -70, 30, 6); ctx.fillRect(-15, -45, 30, 6);
-  }
-  else if (p === 'scientist') {
+    ctx.fillStyle = '#f1c40f'; ctx.fillRect(-15, -70, 30, 6); ctx.fillRect(-15, -45, 30, 6);
+  } else if (p === 'scientist') {
     ctx.fillStyle = '#ffffff'; ctx.fillRect(-15, -95, 30, 88);
     ctx.strokeStyle = '#22a6b3'; ctx.lineWidth = 2; ctx.strokeRect(-15, -95, 30, 88);
     ctx.fillStyle = '#22a6b3'; ctx.fillRect(-11, -55, 7, 10);
     ctx.fillStyle = '#e74c3c'; ctx.fillRect(-10, -60, 2, 6);
-  }
-  else if (p === 'detective') {
+  } else if (p === 'detective') {
     ctx.fillStyle = '#84817a';
     ctx.beginPath(); ctx.moveTo(-18, -95); ctx.lineTo(18, -95); ctx.lineTo(15, -15); ctx.lineTo(-15, -15);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#2c2c54'; ctx.fillRect(-16, -45, 32, 6);
-  }
-  else if (p === 'farmer') {
+  } else if (p === 'farmer') {
     ctx.fillStyle = '#e15f41';
     ctx.beginPath(); ctx.moveTo(-16, -95); ctx.lineTo(16, -95); ctx.lineTo(10, -70); ctx.lineTo(-10, -70);
     ctx.closePath(); ctx.fill();
-  }
-  else if (p === 'lawyer') {
+  } else if (p === 'lawyer') {
     ctx.fillStyle = '#1e272e';
     ctx.beginPath(); ctx.moveTo(-18, -95); ctx.lineTo(18, -95); ctx.lineTo(20, -5); ctx.lineTo(-20, -5);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#ffffff'; ctx.fillRect(-5, -95, 4, 18); ctx.fillRect(1, -95, 4, 18);
-  }
-  else if (p === 'firefighter') {
+  } else if (p === 'firefighter') {
     ctx.fillStyle = '#b33939'; ctx.fillRect(-16, -94, 32, 85);
     ctx.fillStyle = '#f1c40f'; ctx.fillRect(-16, -65, 32, 8);
-  }
-  else if (p === 'astronaut') {
+  } else if (p === 'astronaut') {
     ctx.fillStyle = '#dfe4ea'; ctx.fillRect(-16, -95, 32, 88);
     ctx.fillStyle = '#00d2d3'; ctx.beginPath(); ctx.arc(-6, -72, 4, 0, 6.283); ctx.fill();
-  }
-  else if (c.colors.tie) {
+  } else if (c.colors.tie) {
     ctx.fillStyle = c.colors.tie;
-    ctx.beginPath();
-    ctx.moveTo(-5, -88); ctx.lineTo(5, -88); ctx.lineTo(8, -45); ctx.lineTo(0, -35); ctx.lineTo(-8, -45);
+    ctx.beginPath(); ctx.moveTo(-5, -88); ctx.lineTo(5, -88); ctx.lineTo(8, -45); ctx.lineTo(0, -35); ctx.lineTo(-8, -45);
     ctx.closePath(); ctx.fill();
   }
+  ctx.restore(); // torso scale
 
-  // 4. Arms Rigging (Shoulder -> Elbow -> Hand + Props)
-  const drawArm = (isLeft, shoulderAngle, elbowAngle) => {
+  // ---- হাত (কাঁধ → কনুই → কব্জি + প্রপ), সেকেন্ডারি মোশন সহ ----
+  const U = 44 * A, F = 40 * A;
+  const drawArm = (isLeft, s, e, w) => {
     ctx.save();
-    const sx = isLeft ? -15 : 15, sy = -90;
-    ctx.translate(sx, sy);
-    ctx.rotate(shoulderAngle);
-
-    ctx.strokeStyle = color; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(0, 44);
-    ctx.stroke();
-
-    ctx.translate(0, 44);
-    ctx.rotate(elbowAngle);
-    ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(0, 40);
-    ctx.stroke();
-
+    ctx.translate(isLeft ? -15 : 15, -90 * T);
+    ctx.rotate(s);
+    ctx.strokeStyle = color; ctx.lineWidth = 8 * W; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, U); ctx.stroke();
+    jt('#54a0ff');
+    ctx.translate(0, U);
+    ctx.rotate(e);
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, F); ctx.stroke();
+    jt('#5f27cd');
+    ctx.translate(0, F);
+    ctx.rotate(w);
     ctx.fillStyle = (p === 'doctor' || p === 'scientist' ? '#ecf0f1' : (p === 'astronaut' ? '#dfe4ea' : color));
-    ctx.beginPath(); ctx.arc(0, 40, 5.5, 0, 6.283); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, 3, 5.5 * Math.min(W, 1.3), 6.5, 0, 0, 6.283); ctx.fill();
+    jt('#ff6b6b');
 
-    // PROPS ATTACHED DYNAMICALLY TO HAND
     if (!isLeft) {
       if (p === 'chef') {
-        ctx.save(); ctx.translate(0, 40); ctx.rotate(0.3);
+        ctx.save(); ctx.translate(0, 2); ctx.rotate(0.3);
         ctx.fillStyle = '#d35400'; ctx.fillRect(-3, -20, 6, 45);
         ctx.beginPath(); ctx.ellipse(0, -22, 9, 13, 0, 0, 6.283); ctx.fill();
         ctx.restore();
       } else if (p === 'teacher') {
-        ctx.save(); ctx.translate(0, 40);
+        ctx.save(); ctx.translate(0, 2);
         ctx.strokeStyle = '#f39c12'; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(15, -45); ctx.stroke();
         ctx.restore();
       } else if (p === 'scientist') {
-        ctx.save(); ctx.translate(0, 40);
+        ctx.save(); ctx.translate(0, 2);
         ctx.fillStyle = 'rgba(46, 213, 115, 0.85)';
         ctx.beginPath(); ctx.moveTo(-4, 0); ctx.lineTo(4, 0); ctx.lineTo(12, 22); ctx.lineTo(-12, 22);
         ctx.closePath(); ctx.fill();
         ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
         ctx.restore();
       } else if (p === 'detective') {
-        ctx.save(); ctx.translate(0, 40);
+        ctx.save(); ctx.translate(0, 2);
         ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.arc(10, -12, 10, 0, 6.283); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(6, -6); ctx.stroke();
         ctx.restore();
       } else if (p === 'lawyer') {
-        ctx.save(); ctx.translate(0, 40); ctx.rotate(-0.4);
-        ctx.fillStyle = '#795548'; ctx.fillRect(-2, -15, 4, 30);
-        ctx.fillRect(-10, -20, 20, 8);
+        ctx.save(); ctx.translate(0, 2); ctx.rotate(-0.4);
+        ctx.fillStyle = '#795548'; ctx.fillRect(-2, -15, 4, 30); ctx.fillRect(-10, -20, 20, 8);
         ctx.restore();
       } else if (p === 'farmer') {
-        ctx.save(); ctx.translate(0, 40);
+        ctx.save(); ctx.translate(0, 2);
         ctx.strokeStyle = '#bdc3c7'; ctx.lineWidth = 4;
         ctx.beginPath(); ctx.arc(10, -8, 12, 1.2 * Math.PI, 1.9 * Math.PI); ctx.stroke();
         ctx.fillStyle = '#795548'; ctx.fillRect(-2, -4, 4, 15);
@@ -1484,165 +1582,175 @@ function drawCharacter(c, cx, cy, scale, talkHeadBob = 0) {
     }
     ctx.restore();
   };
+  // কনুই ল্যাগ: কাঁধ দ্রুত ঘুরলে বাহু একটু পিছিয়ে আসে
+  const lE = r.lE - clamp(sec('lS') * 0.05, -0.6, 0.6);
+  const rE = r.rE - clamp(sec('rS') * 0.05, -0.6, 0.6);
+  drawArm(true, r.lS, lE, r.lW);
+  drawArm(false, r.rS, rE, r.rW);
 
-  drawArm(true, r.lS, r.lE);
-  drawArm(false, r.rS, r.rE);
-
-  // 5. Head Rigging (Head + Speech Head Bob + Hats + Expressions + Natural Flap Lip Sync)
+  // ---- মাথা (ঘাড়ে পিভট) ----
+  const headD = r.headTilt - clamp(sec('torsoAngle') * 0.1, -0.3, 0.3);
+  const yaw = clamp(r.headYaw || 0, -1.2, 1.2);
   ctx.save();
-  ctx.translate(0, -135 + talkHeadBob);
-  ctx.rotate(r.headTilt);
+  ctx.translate(0, -95 * T);
+  ctx.rotate(headD);
+  jt('#00d2d3');
+  ctx.translate(0, -40 * H + o.bob);
+  ctx.scale(H, H);
 
-  // Head Base
+  // মাথা
   ctx.beginPath(); ctx.arc(0, 0, 35, 0, 6.283);
-  ctx.lineWidth = 7; ctx.strokeStyle = color; ctx.stroke();
+  ctx.lineWidth = 7 * Math.min(W, 1.4); ctx.strokeStyle = color; ctx.stroke();
   ctx.fillStyle = '#ffffff'; ctx.fill();
 
-  // HATS & HEADGEAR
+  // টুপি/হেডগিয়ার
+  ctx.save();
+  ctx.translate(yaw * 4, 0);
   if (p === 'doctor') {
     ctx.strokeStyle = '#7f8c8d'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(0, 0, 36, Math.PI, 0); ctx.stroke();
-    ctx.fillStyle = '#bdc3c7';
-    ctx.beginPath(); ctx.arc(20, -26, 8, 0, 6.283); ctx.fill();
-  }
-  else if (p === 'police') {
+    ctx.fillStyle = '#bdc3c7'; ctx.beginPath(); ctx.arc(20, -26, 8, 0, 6.283); ctx.fill();
+  } else if (p === 'police') {
     ctx.fillStyle = c.colors.hat;
     ctx.beginPath(); ctx.moveTo(-40, -25); ctx.lineTo(40, -25); ctx.lineTo(34, -48); ctx.lineTo(-34, -48);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#111'; ctx.beginPath(); ctx.ellipse(0, -22, 38, 7, 0, 0, Math.PI); ctx.fill();
     ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(0, -38, 5, 0, 6.283); ctx.fill();
-  }
-  else if (p === 'chef') {
+  } else if (p === 'chef') {
     ctx.fillStyle = '#ffffff'; ctx.fillRect(-28, -42, 56, 12);
     ctx.beginPath(); ctx.arc(-16, -55, 16, 0, 6.283); ctx.arc(0, -65, 18, 0, 6.283); ctx.arc(16, -55, 16, 0, 6.283);
     ctx.fill(); ctx.strokeStyle = '#dcdde1'; ctx.lineWidth = 2; ctx.stroke();
-  }
-  else if (p === 'teacher') {
-    ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 3;
-    ctx.strokeRect(-22, -12, 14, 11); ctx.strokeRect(8, -12, 14, 11);
-    ctx.beginPath(); ctx.moveTo(-8, -6); ctx.lineTo(8, -6); ctx.stroke();
-  }
-  else if (p === 'engineer') {
+  } else if (p === 'engineer') {
     ctx.fillStyle = '#f1c40f';
     ctx.beginPath(); ctx.arc(0, -25, 38, Math.PI, 0); ctx.lineTo(42, -22); ctx.lineTo(-42, -22);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#d4ac0d'; ctx.fillRect(-5, -45, 10, 20);
-  }
-  else if (p === 'scientist') {
-    ctx.fillStyle = 'rgba(34, 166, 179, 0.4)'; ctx.strokeStyle = '#22a6b3'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.ellipse(-14, -5, 12, 8, 0, 0, 6.283); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(14, -5, 12, 8, 0, 0, 6.283); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(-2, -5); ctx.lineTo(2, -5); ctx.stroke();
-  }
-  else if (p === 'detective') {
+  } else if (p === 'detective') {
     ctx.fillStyle = c.colors.hat;
     ctx.beginPath(); ctx.ellipse(0, -28, 48, 8, 0, 0, 6.283); ctx.fill();
     ctx.fillRect(-26, -58, 52, 30);
     ctx.fillStyle = '#1e272e'; ctx.fillRect(-26, -34, 52, 6);
-  }
-  else if (p === 'farmer') {
+  } else if (p === 'farmer') {
     ctx.fillStyle = '#f5cd79';
     ctx.beginPath(); ctx.moveTo(0, -65); ctx.lineTo(48, -25); ctx.lineTo(-48, -25);
     ctx.closePath(); ctx.fill();
-  }
-  else if (p === 'firefighter') {
+  } else if (p === 'firefighter') {
     ctx.fillStyle = '#c0392b';
     ctx.beginPath(); ctx.arc(0, -24, 38, Math.PI, 0); ctx.lineTo(45, -18); ctx.lineTo(-45, -18);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#f1c40f';
     ctx.beginPath(); ctx.moveTo(-10, -26); ctx.lineTo(10, -26); ctx.lineTo(0, -45); ctx.closePath(); ctx.fill();
-  }
-  else if (p === 'astronaut') {
+  } else if (p === 'astronaut') {
     ctx.fillStyle = 'rgba(0, 210, 211, 0.3)'; ctx.strokeStyle = '#dfe4ea'; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.arc(0, 0, 42, 0, 6.283); ctx.fill(); ctx.stroke();
-  }
-  else if (c.colors.hat && c.colors.hat !== '#ffffff') {
+  } else if (p === 'classic' && c.colors.hat && c.colors.hat !== '#ffffff') {
     ctx.fillStyle = c.colors.hat;
     ctx.fillRect(-40, -35, 80, 8); ctx.fillRect(-25, -58, 50, 25);
   }
+  ctx.restore();
 
-  // Eyes & Blink
-  if (state.blink.on) {
+  // ---- মুখের অংশ (মাথা ঘোরানোয় সরে ও সরু হয়) ----
+  ctx.save();
+  ctx.translate(yaw * 11, 0);
+  ctx.scale(1 - 0.16 * Math.abs(yaw), 1);
+
+  // চোখ: সাদা অংশ + মণি (কার্সর/স্যাকেড অনুসরণ) + ব্লিঙ্ক/উইঙ্ক/ঘুম
+  const surprise = c.expr === 'surprise', sleepy = c.expr === 'sleepy';
+  [-12, 12].forEach((ex, i) => {
+    const closed = state.blink.on || (c.expr === 'wink' && i === 1);
     ctx.strokeStyle = '#1e272e'; ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(-18, -4); ctx.lineTo(-8, -4);
-    ctx.moveTo(8, -4); ctx.lineTo(18, -4); ctx.stroke();
-  } else {
-    ctx.fillStyle = '#1e272e';
-    const es = c.expr === 'surprise' ? 6 : 4;
-    ctx.beginPath(); ctx.arc(-12, -5, es, 0, 6.283);
-    ctx.arc(12, -5, es, 0, 6.283); ctx.fill();
+    if (closed) {
+      ctx.beginPath();
+      if (c.expr === 'wink' && i === 1) ctx.arc(ex, -2, 6, 1.15 * Math.PI, 1.85 * Math.PI);
+      else { ctx.moveTo(ex - 6, -4); ctx.lineTo(ex + 6, -4); }
+      ctx.stroke();
+    } else {
+      const rx = surprise ? 8.5 : 7, ry = (surprise ? 9.5 : 7.5) * (sleepy ? 0.5 : 1);
+      ctx.fillStyle = '#ffffff'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.ellipse(ex, -5, rx, ry, 0, 0, 6.283); ctx.fill(); ctx.stroke();
+      const pr = surprise ? 2.6 : 3.6;
+      ctx.fillStyle = '#1e272e';
+      ctx.beginPath();
+      ctx.arc(ex + clamp(c.lookX, -1, 1) * 3.2, -5 + clamp(c.lookY, -1, 1) * (sleepy ? 1.2 : 2.4), pr, 0, 6.283); ctx.fill();
+      if (sleepy) { ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(ex - rx, -6); ctx.lineTo(ex + rx, -6); ctx.stroke(); }
+    }
+  });
+
+  // শিক্ষক চশমা / বিজ্ঞানী গগলস
+  if (p === 'teacher') {
+    ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 3;
+    ctx.strokeRect(-22, -12, 20, 15); ctx.strokeRect(2, -12, 20, 15);
+    ctx.beginPath(); ctx.moveTo(-2, -6); ctx.lineTo(2, -6); ctx.stroke();
+  } else if (p === 'scientist') {
+    ctx.fillStyle = 'rgba(34, 166, 179, 0.35)'; ctx.strokeStyle = '#22a6b3'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(-12, -5, 12, 9, 0, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(12, -5, 12, 9, 0, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-1, -5); ctx.lineTo(1, -5); ctx.stroke();
   }
 
-  // Eyebrows
+  // ভুরু (কথার জোরে সামান্য উঠে)
+  const bl = c.browLift || 0;
   ctx.lineWidth = 3; ctx.strokeStyle = '#1e272e'; ctx.beginPath();
-  if (c.expr === 'angry') { ctx.moveTo(-18, -14); ctx.lineTo(-8, -10); ctx.moveTo(18, -14); ctx.lineTo(8, -10); }
-  else if (c.expr === 'sad') { ctx.moveTo(-18, -10); ctx.lineTo(-8, -14); ctx.moveTo(18, -10); ctx.lineTo(8, -14); }
-  else if (c.expr === 'surprise') { ctx.moveTo(-18, -16); ctx.lineTo(-8, -16); ctx.moveTo(8, -16); ctx.lineTo(18, -16); }
-  else { ctx.moveTo(-18, -13); ctx.lineTo(-8, -13); ctx.moveTo(8, -13); ctx.lineTo(18, -13); }
+  if (c.expr === 'angry') { ctx.moveTo(-18, -14 - bl); ctx.lineTo(-8, -10); ctx.moveTo(18, -14 - bl); ctx.lineTo(8, -10); }
+  else if (c.expr === 'sad') { ctx.moveTo(-18, -10); ctx.lineTo(-8, -14 - bl); ctx.moveTo(18, -10); ctx.lineTo(8, -14 - bl); }
+  else if (c.expr === 'surprise') { ctx.moveTo(-18, -18 - bl); ctx.lineTo(-8, -18 - bl); ctx.moveTo(8, -18 - bl); ctx.lineTo(18, -18 - bl); }
+  else if (c.expr === 'wink') { ctx.moveTo(-18, -14 - bl); ctx.lineTo(-8, -14 - bl); ctx.moveTo(8, -12); ctx.lineTo(18, -12); }
+  else { ctx.moveTo(-18, -14 - bl); ctx.lineTo(-8, -14 - bl); ctx.moveTo(8, -14 - bl); ctx.lineTo(18, -14 - bl); }
   ctx.stroke();
 
-  // ============ NATURAL LIP-SYNC MOUTH (FIXED: NO MORE FROZEN "HA") ============
-  ctx.save();
+  // মুখ: ভিসেম লিপ-সিং (আ / ও / এ / স)
   const mouthY = 14;
-  if (c.mouthOpen > 2) {
-    // Talking with phonetic flap modulation
+  ctx.save();
+  if (c.mouthOpen > 1.2) {
     const radX = c.mouthWidth || 10;
-    const radY = c.mouthOpen;
-
-    // Outer lips & mouth cavity
-    ctx.fillStyle = '#2c0c0d'; // Inner mouth darkness
-    ctx.strokeStyle = c.colors.mouth || '#c0392b';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.ellipse(0, mouthY, radX, radY, 0, 0, 6.283);
-    ctx.fill(); ctx.stroke();
-
-    // Teeth highlight
-    if (radY > 5) {
+    const radY = Math.max(2.2, c.mouthOpen);
+    ctx.fillStyle = '#2c0c0d'; ctx.strokeStyle = c.colors.mouth || '#c0392b'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(0, mouthY, radX, radY, 0, 0, 6.283); ctx.fill(); ctx.stroke();
+    if (radY > 5 || c.teeth > 0.5) {
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-radX * 0.55, mouthY - radY + 2, radX * 1.1, Math.min(5, radY * 0.5));
+      ctx.fillRect(-radX * 0.65, mouthY - radY + 1.5, radX * 1.3, Math.min(5, Math.max(2.5, radY * 0.5)));
     }
-    // Tongue hint
-    if (radY > 8) {
+    if (radY > 9) {
       ctx.fillStyle = '#e74c3c';
-      ctx.beginPath();
-      ctx.arc(0, mouthY + radY - 2, radX * 0.45, Math.PI, 0);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(0, mouthY + radY - 2, radX * 0.45, Math.PI, 0); ctx.fill();
     }
   } else {
-    // Static expression when silent
-    ctx.strokeStyle = c.colors.mouth || '#c0392b';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = c.colors.mouth || '#c0392b'; ctx.lineWidth = 3;
     ctx.beginPath();
-    if (c.expr === 'smile' || c.expr === 'laugh') {
-      ctx.arc(0, 8, 14, 0.2 * Math.PI, 0.8 * Math.PI);
-    } else if (c.expr === 'sad') {
-      ctx.arc(0, 22, 12, 1.2 * Math.PI, 1.8 * Math.PI);
-    } else if (c.expr === 'surprise') {
-      ctx.arc(0, 14, 6, 0, 6.283);
-    } else if (c.expr === 'angry') {
-      ctx.moveTo(-10, 16); ctx.lineTo(10, 16);
-    } else {
-      ctx.moveTo(-9, 15); ctx.lineTo(9, 15);
-    }
+    if (c.expr === 'smile' || c.expr === 'laugh' || c.expr === 'wink') ctx.arc(0, 8, 14, 0.2 * Math.PI, 0.8 * Math.PI);
+    else if (c.expr === 'sad') ctx.arc(0, 22, 12, 1.2 * Math.PI, 1.8 * Math.PI);
+    else if (c.expr === 'surprise') ctx.arc(0, 14, 6, 0, 6.283);
+    else if (c.expr === 'angry') { ctx.moveTo(-10, 16); ctx.lineTo(10, 16); }
+    else { ctx.moveTo(-9, 15); ctx.lineTo(9, 15); }
     ctx.stroke();
   }
   ctx.restore();
 
-  ctx.restore(); // Head
-  ctx.restore(); // Torso
-  ctx.restore(); // Character
+  ctx.restore(); // face
+  ctx.restore(); // head
+  ctx.restore(); // torso
+  ctx.restore(); // character
 }
+
+function headTopPx(c) { const P = c.prop; return (95 * P.torso + 115 * P.head + 50) * c.scale; }
 
 function drawBubble(text, hx, hy) {
   if (!text) return;
   ctx.save();
   const fs = Math.round(canvas.height * 0.032);
   ctx.font = `bold ${fs}px 'Segoe UI',Tahoma,sans-serif`;
-  const m = ctx.measureText(text);
-  const w = m.width + fs * 1.5, h = fs * 1.9, r = fs * 0.5;
-  const bx = hx - w / 2, by = hy - h - 25;
+  const maxW = canvas.width * 0.42;
+  const words = text.split(/\s+/), lines = []; let cur = '';
+  words.forEach(w => {
+    const t = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  });
+  if (cur) lines.push(cur);
+  const lw = Math.max(...lines.map(l => ctx.measureText(l).width));
+  const w = lw + fs * 1.5, h = fs * 1.4 * lines.length + fs * 0.5, r = fs * 0.5;
+  let bx = hx - w / 2; bx = clamp(bx, 8, canvas.width - w - 8);
+  const by = hy - h - 25;
+  const tx = clamp(hx, bx + r + 14, bx + w - r - 14);
   ctx.fillStyle = 'rgba(255,255,255,.96)'; ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(bx + r, by);
@@ -1652,10 +1760,11 @@ function drawBubble(text, hx, hy) {
   ctx.arcTo(bx, by, bx + w, by, r);
   ctx.closePath(); ctx.fill(); ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(hx - 12, by + h); ctx.lineTo(hx + 12, by + h); ctx.lineTo(hx, by + h + 18);
+  ctx.moveTo(tx - 12, by + h); ctx.lineTo(tx + 12, by + h); ctx.lineTo(tx, by + h + 18);
   ctx.closePath(); ctx.fillStyle = 'rgba(255,255,255,.96)'; ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.98)'; ctx.fillRect(tx - 11, by + h - 2, 22, 4);
   ctx.fillStyle = '#2c3e50'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(text, hx, by + h / 2);
+  lines.forEach((l, i) => ctx.fillText(l, bx + w / 2, by + fs * 0.25 + fs * 0.7 + i * fs * 1.4));
   ctx.restore();
 }
 
@@ -1668,7 +1777,6 @@ function drawParticles() {
     ctx.fillText(sym, 0, 0); ctx.restore();
   });
 }
-
 function drawProps() {
   state.props.forEach(p => {
     const c = state.chars[p.charIdx] || state.chars[0];
@@ -1679,11 +1787,10 @@ function drawProps() {
     ctx.save(); ctx.globalAlpha = Math.max(0, alpha);
     ctx.font = `${canvas.height * 0.07}px sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(p.symbol, canvas.width * c.x, canvas.height * c.y - 280 * c.scale + bob);
+    ctx.fillText(p.symbol, canvas.width * c.x, canvas.height * c.y - headTopPx(c) + 30 + bob);
     ctx.restore();
   });
 }
-
 function drawVisualizer() {
   if (!state.visualizer || !analyser) return;
   analyser.getByteTimeDomainData(dataArr);
@@ -1698,34 +1805,37 @@ function drawVisualizer() {
   }
   ctx.stroke(); ctx.restore();
 }
-
 function drawPiP() {
   if (!pipStream || pipVideo.readyState < 2) return;
   const pw = Math.min(240, canvas.width * 0.2);
   const ph = pw * (pipVideo.videoHeight / pipVideo.videoWidth || 0.75);
-  const px = canvas.width - pw - 15, py = canvas.height - ph - 15;
-  ctx.save();
-  ctx.beginPath();
-  const r = 10;
-  ctx.moveTo(px + r, py);
-  ctx.arcTo(px + pw, py, px + pw, py + ph, r);
-  ctx.arcTo(px + pw, py + ph, px, py + ph, r);
-  ctx.arcTo(px, py + ph, px, py, r);
-  ctx.arcTo(px, py, px + pw, py, r);
-  ctx.closePath(); ctx.clip();
-  ctx.drawImage(pipVideo, px, py, pw, ph);
-  ctx.restore();
-  ctx.save(); ctx.strokeStyle = '#00d2d3'; ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(px + r, py);
-  ctx.arcTo(px + pw, py, px + pw, py + ph, r);
-  ctx.arcTo(px + pw, py + ph, px, py + ph, r);
-  ctx.arcTo(px, py + ph, px, py, r);
-  ctx.arcTo(px, py, px + pw, py, r);
-  ctx.closePath(); ctx.stroke(); ctx.restore();
+  const px = canvas.width - pw - 15, py = canvas.height - ph - 15, r = 10;
+  const path = () => {
+    ctx.beginPath(); ctx.moveTo(px + r, py);
+    ctx.arcTo(px + pw, py, px + pw, py + ph, r); ctx.arcTo(px + pw, py + ph, px, py + ph, r);
+    ctx.arcTo(px, py + ph, px, py, r); ctx.arcTo(px, py, px + pw, py, r); ctx.closePath();
+  };
+  ctx.save(); path(); ctx.clip(); ctx.drawImage(pipVideo, px, py, pw, ph); ctx.restore();
+  ctx.save(); ctx.strokeStyle = '#00d2d3'; ctx.lineWidth = 3; path(); ctx.stroke(); ctx.restore();
 }
 
-// ============ MAIN RENDER & PROCEDURAL ANIMATION LOOP ============
+// ============ ফিজিক্স রিগ: স্প্রিং-ড্যাম্পার ============
+function springRig(c, g, dt, K) {
+  c.vel = c.vel || {};
+  const n = Math.max(1, Math.ceil(dt / 0.006)), h = dt / n;
+  for (const k of RIG_KEYS) {
+    let x = c.rig[k] ?? 0, v = c.vel[k] || 0;
+    const goal = g[k] ?? 0;
+    let kk = K;
+    if (k === 'headTilt' || k === 'headYaw') kk = K * 0.65;
+    else if (k === 'hipShift' || k === 'lift') kk = K * 0.6;
+    const D = 2 * 0.72 * Math.sqrt(kk);
+    for (let i = 0; i < n; i++) { v += (kk * (goal - x) - D * v) * h; x += v * h; }
+    c.rig[k] = x; c.vel[k] = v;
+  }
+}
+
+// ============ মেইন রেন্ডার ও অ্যানিমেশন লুপ ============
 let lastTime = 0;
 function render(now) {
   if (!lastTime) lastTime = now;
@@ -1735,8 +1845,7 @@ function render(now) {
 
   if (outroVideo.readyState >= 2 && !outroVideo.paused && !outroVideo.ended) {
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const vr = outroVideo.videoWidth / outroVideo.videoHeight;
-    const cr = canvas.width / canvas.height;
+    const vr = outroVideo.videoWidth / outroVideo.videoHeight, cr = canvas.width / canvas.height;
     let w, h, x, y;
     if (vr > cr) { h = canvas.height; w = h * vr; x = (canvas.width - w) / 2; y = 0; }
     else { w = canvas.width; h = w / vr; x = 0; y = (canvas.height - h) / 2; }
@@ -1744,13 +1853,15 @@ function render(now) {
     requestAnimationFrame(render); return;
   }
 
-  // 1. Audio Processing
+  // 1. অডিও বিশ্লেষণ (ভলিউম + ফর্ম্যান্ট ব্যান্ড)
   if (analyser && !state.paused) {
     analyser.getByteFrequencyData(dataArr);
-    let sum = 0;
-    for (let i = 2; i <= 24; i++) sum += dataArr[i];
-    const avg = sum / 23;
+    const A = (a, b) => { let s = 0; for (let i = a; i <= b; i++) s += dataArr[i]; return s / (b - a + 1); };
+    const avg = A(2, 24);
     state.micVol = damp(state.micVol, avg > 8 ? avg : 0, 14, dt);
+    state.f1 = damp(state.f1, A(2, 6), 22, dt);
+    state.f2 = damp(state.f2, A(7, 14), 22, dt);
+    state.hi = damp(state.hi, A(22, 50), 22, dt);
     volumeCtx.fillStyle = '#11131c'; volumeCtx.fillRect(0, 0, volumeCanvas.width, volumeCanvas.height);
     const w = Math.min(1, state.micVol / 180) * volumeCanvas.width;
     const g = volumeCtx.createLinearGradient(0, 0, volumeCanvas.width, 0);
@@ -1758,170 +1869,238 @@ function render(now) {
     volumeCtx.fillStyle = g; volumeCtx.fillRect(0, 0, w, volumeCanvas.height);
   }
 
-  // Voice to emotion
   if (state.voiceToEmotion && !state.paused && state.micVol > 0) {
     const c = ac();
     if (state.micVol > 110) c.expr = 'surprise';
     else if (state.micVol > 65) c.expr = 'angry';
   }
 
-  // Animation duration
-  if (state.anim) {
-    const t = (now - state.anim.start) / state.anim.dur;
-    if (t >= 1) state.anim = null;
+  if (state.anim) { const t = (now - state.anim.start) / state.anim.dur; if (t >= 1) state.anim = null; }
+
+  // সিকোয়েন্সার
+  if (seqRT.playing && !state.paused) {
+    const sc = state.chars[seqRT.ci];
+    seqRT.t += dt;
+    const hold = parseFloat($('seqHold').value) || 1.2;
+    if (seqRT.t >= hold && sc && sc.seq.length) {
+      seqRT.t = 0; seqRT.idx++;
+      if (seqRT.idx >= sc.seq.length) { if ($('seqLoop').checked) seqRT.idx = 0; else stopSeq(); }
+      if (seqRT.playing) { applyKeyframe(sc, sc.seq[seqRT.idx]); renderSeq(); }
+    }
   }
 
-  ctx.save();
+  // ক্যামেরা
+  const cw = canvas.width, ch = canvas.height;
   if (!state.paused) {
+    if (state.follow) {
+      const fc = ac();
+      state.targetCam.x = (cw * fc.x - cw / 2) * 0.9;
+      state.targetCam.y = (ch * fc.y - ch * 0.62) * 0.5;
+    }
     state.cam.x = damp(state.cam.x, state.targetCam.x, 8, dt);
     state.cam.y = damp(state.cam.y, state.targetCam.y, 8, dt);
     state.cam.zoom = damp(state.cam.zoom, state.targetCam.zoom, 8, dt);
   }
-  ctx.translate(canvas.width / 2, canvas.height / 2);
+  let shx = 0, shy = 0;
+  if (state.shake > 0) { state.shake -= dt; const k = Math.max(0, state.shake / 0.5) * 14; shx = (Math.random() - 0.5) * k; shy = (Math.random() - 0.5) * k; }
+
+  ctx.imageSmoothingQuality = 'high';
+  ctx.save();
+  ctx.translate(cw / 2 + shx, ch / 2 + shy);
   ctx.scale(state.cam.zoom, state.cam.zoom);
-  ctx.translate(-canvas.width / 2 - state.cam.x, -canvas.height / 2 - state.cam.y);
+  ctx.translate(-cw / 2 - state.cam.x, -ch / 2 - state.cam.y);
 
   if (state.filter !== 'none') {
-    const fmap = {
-      sepia: 'sepia(0.7)', grayscale: 'grayscale(1)',
-      vintage: 'sepia(0.4) contrast(1.2) saturate(0.8)',
-      blur: 'blur(1.5px)', vignette: 'none'
-    };
+    const fmap = { sepia: 'sepia(0.7)', grayscale: 'grayscale(1)', vintage: 'sepia(0.4) contrast(1.2) saturate(0.8)', blur: 'blur(1.5px)', vignette: 'none' };
     ctx.filter = fmap[state.filter] || 'none';
   }
   drawBackground();
   if (state.filter !== 'none') ctx.filter = 'none';
 
-  // 2. Procedural Animation Clock Updates
+  // 2. প্রসিডিউরাল ক্লক
+  const dtS = dt * state.speed;
   if (!state.paused) {
-    state.walkPhase += dt * 5.5;   // ~5.5 rad/s natural walk
-    state.runPhase  += dt * 11.5;  // ~11.5 rad/s energetic run
-    state.wavePhase += dt * 7.0;   // hand waving frequency
-    state.dancePhase+= dt * 6.0;   // dance beat
-    state.talkPhase += dt * (16 + Math.min(18, state.micVol * 0.25)); // speech syllable oscillation
+    state.walkPhase += dtS * 5.2;
+    state.runPhase += dtS * 10.5;
+    state.wavePhase += dtS * 7.0;
+    state.dancePhase += dtS * 6.0;
+    state.talkPhase += dt * (14 + Math.min(14, state.micVol * 0.2));
   }
 
-  // 3. Dynamic Rigging & Looping Animations per Character
+  // 3. প্রতিটি ক্যারেক্টারের রিগ
   const drawList = state.multiChar ? state.chars : [state.chars[0]];
+  const tt = now / 1000;
   drawList.forEach((c, idx) => {
-    let animX = 0, animY = 0, animShake = 0, talkHeadBob = 0;
+    let animX = 0, bodyY = 0, shakeX = 0, talkHeadBob = 0;
+    const g = { ...c.targetRig };
+    const loopy = LOOPS.includes(c.pose);
+    const isActive = c === ac();
+    const hasAnim = state.anim && isActive;
 
-    // Idle breathing bob (সবসময় জীবিত দেখানোর জন্য মৃদু শ্বাস নেওয়া)
-    const breathe = Math.sin(now * 0.0025 + idx) * 2;
-    animY += breathe;
+    // শ্বাস
+    const breath = Math.sin(tt * 2.1 + idx * 1.7);
+    bodyY += breath * 1.2;
+
+    // লিপ-সিং ইনপুট
+    const talking = isActive && state.lipSync && state.micVol > state.lsGate;
 
     if (!state.paused) {
-      // PROCEDURAL LOOPS:
+      // ---- লুপ মোশন ----
       if (c.pose === 'walk') {
-        const wp = state.walkPhase;
-        c.targetRig.lH = Math.sin(wp) * 0.55;
-        c.targetRig.rH = Math.sin(wp + Math.PI) * 0.55;
-        c.targetRig.lK = Math.max(0, -Math.sin(wp)) * 0.8;
-        c.targetRig.rK = Math.max(0, -Math.sin(wp + Math.PI)) * 0.8;
-        // Arms counter-swing to legs
-        c.targetRig.lS = -Math.sin(wp) * 0.6;
-        c.targetRig.rS = Math.sin(wp) * 0.6;
-        c.targetRig.lE = 0.25 + Math.abs(Math.sin(wp)) * 0.35;
-        c.targetRig.rE = 0.25 + Math.abs(Math.sin(wp + Math.PI)) * 0.35;
-        c.targetRig.torsoAngle = 0.08 + Math.sin(wp) * 0.03;
-        c.targetRig.headTilt = -Math.sin(wp) * 0.04;
-        animY -= Math.abs(Math.sin(wp)) * 7; // Walk footstep bounce
-      }
-      else if (c.pose === 'run') {
-        const rp = state.runPhase;
-        c.targetRig.lH = Math.sin(rp) * 1.0;
-        c.targetRig.rH = Math.sin(rp + Math.PI) * 1.0;
-        c.targetRig.lK = Math.max(0, -Math.sin(rp)) * 1.4;
-        c.targetRig.rK = Math.max(0, -Math.sin(rp + Math.PI)) * 1.4;
-        // Pumping 90-degree bent arms
-        c.targetRig.lS = -Math.sin(rp) * 1.25;
-        c.targetRig.rS = Math.sin(rp) * 1.25;
-        c.targetRig.lE = 1.0 + Math.sin(rp) * 0.3;
-        c.targetRig.rE = 1.0 - Math.sin(rp) * 0.3;
-        c.targetRig.torsoAngle = 0.26; // Forward run lean
-        c.targetRig.headTilt = 0.1;
-        animY -= Math.abs(Math.sin(rp)) * 22; // High run hop
-      }
-      else if (c.pose === 'wave') {
+        const wp = state.walkPhase, s = Math.sin(wp), co = Math.cos(wp);
+        g.lH = s * 0.5; g.rH = -s * 0.5;
+        g.lK = Math.max(0, -co) * 0.9 + 0.04; g.rK = Math.max(0, co) * 0.9 + 0.04;
+        g.lF = Math.max(0, s) * 0.4 - Math.max(0, -s) * 0.25;
+        g.rF = Math.max(0, -s) * 0.4 - Math.max(0, s) * 0.25;
+        g.lS = -s * 0.55; g.rS = s * 0.55;
+        g.lE = -(0.25 + 0.3 * Math.max(0, s)); g.rE = -(0.25 + 0.3 * Math.max(0, -s));
+        g.torsoAngle = 0.06 - s * 0.03; g.headTilt = -0.04 + s * 0.02; g.hipShift = co * 2.5;
+        if (!state.groundLock) bodyY -= Math.abs(s) * 6;
+      } else if (c.pose === 'run') {
+        const rp = state.runPhase, s = Math.sin(rp), co = Math.cos(rp);
+        g.lH = s * 1.0; g.rH = -s * 1.0;
+        g.lK = Math.max(0, -co) * 1.5 + 0.12; g.rK = Math.max(0, co) * 1.5 + 0.12;
+        g.lF = Math.max(0, s) * 0.5; g.rF = Math.max(0, -s) * 0.5;
+        g.lS = -s * 1.2; g.rS = s * 1.2;
+        g.lE = -(1.0 + 0.5 * Math.max(0, s)); g.rE = -(1.0 + 0.5 * Math.max(0, -s));
+        g.torsoAngle = 0.24 + s * 0.03; g.headTilt = -0.1; g.hipShift = co * 3;
+        bodyY -= Math.abs(co) * 15;
+      } else if (c.pose === 'wave') {
         const wv = state.wavePhase;
-        c.targetRig.rS = -2.35 + Math.sin(wv) * 0.15;
-        c.targetRig.rE = -1.2 + Math.sin(wv * 1.2) * 0.55;
-        c.targetRig.headTilt = 0.08 + Math.sin(wv * 0.6) * 0.04;
-      }
-      else if (c.pose === 'dance') {
+        g.rS = -2.35 + Math.sin(wv) * 0.12;
+        g.rE = -1.2 + Math.sin(wv * 1.2) * 0.55;
+        g.rW = Math.sin(wv * 1.2 + 1) * 0.3;
+        g.headTilt = 0.08 + Math.sin(wv * 0.6) * 0.04;
+      } else if (c.pose === 'dance') {
         const dp = state.dancePhase;
-        animX += Math.sin(dp) * 22;
-        animY -= Math.abs(Math.sin(dp * 2)) * 14;
-        c.targetRig.torsoAngle = Math.sin(dp) * 0.15;
-        c.targetRig.lS = 1.6 + Math.sin(dp) * 0.8;
-        c.targetRig.rS = -1.6 - Math.sin(dp) * 0.8;
-        c.targetRig.lE = 0.8 + Math.cos(dp) * 0.5;
-        c.targetRig.rE = -0.8 - Math.cos(dp) * 0.5;
-        c.targetRig.lH = Math.sin(dp) * 0.35;
-        c.targetRig.rH = -Math.sin(dp) * 0.35;
+        animX += Math.sin(dp) * 14;
+        bodyY -= Math.abs(Math.sin(dp * 2)) * 10;
+        g.torsoAngle = Math.sin(dp) * 0.15;
+        g.lS = 1.6 + Math.sin(dp) * 0.8; g.rS = -1.6 - Math.sin(dp) * 0.8;
+        g.lE = 0.8 + Math.cos(dp) * 0.5; g.rE = -0.8 - Math.cos(dp) * 0.5;
+        g.lH = Math.sin(dp) * 0.35; g.rH = -Math.sin(dp) * 0.35;
+        g.lK = 0.25 + 0.3 * Math.abs(Math.sin(dp)); g.rK = 0.25 + 0.3 * Math.abs(Math.cos(dp));
+        g.hipShift = Math.sin(dp) * 8; g.headTilt = Math.sin(dp * 2) * 0.1;
       }
 
-      // Smooth bone damping towards target
-      const keys = ['headTilt', 'torsoAngle', 'lS', 'lE', 'rS', 'rE', 'lH', 'lK', 'rH', 'rK'];
-      keys.forEach(k => {
-        c.rig[k] = damp(c.rig[k] ?? 0, c.targetRig[k] ?? 0, 12, dt);
-      });
+      // ---- প্রাণবন্ত আইডল স্তর (ওজন-স্থানান্তর, শ্বাস, বাহু দুলুনি) ----
+      if (state.idleLife && !loopy && !hasAnim) {
+        g.hipShift += Math.sin(tt * 0.7 + idx) * 2.2;
+        g.torsoAngle += Math.sin(tt * 0.7 + idx + 1) * 0.012 + breath * 0.004;
+        g.lS += Math.sin(tt * 0.9 + idx) * 0.03 + breath * 0.02;
+        g.rS += Math.sin(tt * 0.9 + idx + 2) * 0.03 - breath * 0.02;
+        g.headTilt += Math.sin(tt * 0.5 + idx * 2) * 0.015;
+      }
+
+      // ---- কথা বলার সময় বিট-জেসচার ----
+      c.gT -= dt;
+      if (talking && state.autoGesture && (c.pose === 'idle' || c.pose === 'custom') && !hasAnim) {
+        if (c.gT <= 0) {
+          c.gDur = 0.8 + Math.random() * 1.2; c.gT = c.gDur;
+          const both = Math.random() < 0.35;
+          c.gA = {
+            rS: -(0.5 + Math.random() * 0.9), rE: -(0.2 + Math.random() * 0.8), rW: (Math.random() - 0.5) * 0.4,
+            lS: both ? -(0.5 + Math.random() * 0.8) : 0, lE: both ? -(0.2 + Math.random() * 0.7) : 0,
+            tors: (Math.random() - 0.5) * 0.08, nod: Math.random() * 0.1
+          };
+        }
+        if (c.gA && c.gT > c.gDur * 0.4) {
+          g.rS += c.gA.rS; g.rE += c.gA.rE; g.rW += c.gA.rW;
+          g.lS += c.gA.lS; g.lE += c.gA.lE;
+          g.torsoAngle += c.gA.tors; g.headTilt += c.gA.nod;
+        }
+      }
+
+      // ---- চোখ ও মাথা: কার্সর অনুসরণ বা র‍্যান্ডম স্যাকেড ----
+      let lxT = 0, lyT = 0;
+      if (state.eyeFollow && state.mouse.inside) {
+        const hx = cw * c.x, hy = ch * c.y - 220 * c.scale;
+        lxT = clamp((state.mouse.x - hx) / (cw * 0.35), -1, 1);
+        lyT = clamp((state.mouse.y - hy) / (ch * 0.35), -1, 1);
+      } else {
+        c.sacT -= dt;
+        if (c.sacT <= 0) { c.sacT = 1 + Math.random() * 2.5; c.sacX = (Math.random() - 0.5) * 0.7; c.sacY = (Math.random() - 0.5) * 0.4; }
+        lxT = c.sacX; lyT = c.sacY;
+      }
+      c.lookX = damp(c.lookX, lxT, 16, dt); c.lookY = damp(c.lookY, lyT, 16, dt);
+      g.headYaw += c.lookX * 0.45;
+      g.headTilt += c.lookY * 0.05;
+
+      // ---- বার্স্ট অ্যানিমেশন ----
+      if (hasAnim) {
+        const t = (now - state.anim.start) / state.anim.dur, n = state.anim.name;
+        if (n === 'jump') {
+          if (t < 0.2) { Object.assign(g, { lH: -0.9, rH: -1.0, lK: 1.6, rK: 1.7, lS: 0.7, rS: 0.6, lE: 0, rE: 0, torsoAngle: 0.3 }); }
+          else if (t < 0.78) {
+            Object.assign(g, { lH: -0.2, rH: -0.3, lK: 0.5, rK: 0.6, lS: -2.6, rS: -2.6, lE: -0.2, rE: -0.2, torsoAngle: -0.05 });
+            bodyY -= Math.sin(((t - 0.2) / 0.58) * Math.PI) * 110;
+          } else { Object.assign(g, { lH: -0.8, rH: -0.9, lK: 1.4, rK: 1.5, torsoAngle: 0.25, lS: -0.3, rS: -0.3 }); }
+        } else if (n === 'cry') {
+          shakeX = Math.sin(t * Math.PI * 24) * 3;
+          Object.assign(g, { headTilt: 0.25, torsoAngle: 0.12, lS: -1.9, lE: -2.5, rS: -1.9, rE: -2.5 });
+        } else if (n === 'laugh') {
+          bodyY += Math.sin(t * Math.PI * 14) * 5;
+          g.headTilt = -0.2; g.torsoAngle = -0.08 + Math.sin(t * Math.PI * 14) * 0.04;
+          g.lS = 0.9; g.rS = -0.9;
+        } else if (n === 'surprise') {
+          bodyY -= Math.sin(t * Math.PI) * 25;
+          Object.assign(g, { lS: 1.2, rS: -1.2, headTilt: -0.1, torsoAngle: -0.1 });
+        } else if (n === 'angry') {
+          shakeX = Math.sin(t * Math.PI * 32) * 4;
+          Object.assign(g, { lS: 0.6, lE: -0.4, rS: -0.6, rE: 0.4, torsoAngle: 0.1, headTilt: 0.1 });
+        }
+      }
+
+      // ---- ভ্রমণ (হাঁটা/দৌড়ের সাথে এগোনো) ----
+      if (c.travel && (c.pose === 'walk' || c.pose === 'run')) {
+        const sp = (c.pose === 'run' ? 2.0 : 1.0) * state.travelSpeed;
+        c.x += (c.flip ? -1 : 1) * sp * dtS / cw;
+        if (c.x > 0.92) { c.x = 0.92; c.flip = true; }
+        if (c.x < 0.08) { c.x = 0.08; c.flip = false; }
+      }
+
+      // ---- স্প্রিং ----
+      const K = (loopy || hasAnim) ? 550 : state.stiff;
+      springRig(c, g, dt, K);
     }
 
-    // 4. SMART LIP-SYNC ENGINE (Calculates flap & prevents frozen "ha")
-    const isTalking = (c === ac() && state.lipSync && state.micVol > 6);
-    if (isTalking && !state.paused) {
-      // Natural speech syllable rhythm: oscillates smoothly instead of staying open
-      const flap = Math.sin(state.talkPhase);
-      const flapNormalized = 0.25 + 0.75 * Math.max(0, flap);
-      const targetMouthOpen = Math.min(22, (state.micVol * 0.24) * flapNormalized);
-      const targetMouthW = 9 + Math.cos(state.talkPhase * 0.5) * 3.5;
-
-      c.mouthOpen = damp(c.mouthOpen, targetMouthOpen, 18, dt);
-      c.mouthWidth = damp(c.mouthWidth, targetMouthW, 14, dt);
-      talkHeadBob = Math.sin(state.talkPhase) * 1.5; // Natural head nod when speaking
+    // ---- লিপ-সিং (ভিসেম) ----
+    let openT = 0, widthT = 10, teeth = 0;
+    if (talking && !state.paused) {
+      const f1 = state.f1, f2 = state.f2, hi = state.hi;
+      const env = clamp((f1 * state.lsSens) / 110, 0, 1);
+      const flap = 0.82 + 0.18 * Math.sin(state.talkPhase);
+      openT = Math.min(24, env * 26 * flap);
+      const ratio = f2 / (f1 + 1);
+      widthT = lerp(7, 15, clamp((ratio - 0.35) / 0.9, 0, 1));    // ও/উ ↔ এ/ই
+      if (hi > f1 * 0.8 && f1 < 70) { openT = Math.min(openT, 4); widthT = 14; teeth = 1; }  // স / শ
+      talkHeadBob = Math.sin(state.talkPhase) * 1.2 * env;
+      c.browLift = damp(c.browLift, Math.min(4, state.micVol * 0.04), 10, dt);
     } else {
-      c.mouthOpen = damp(c.mouthOpen, 0, 16, dt);
-      c.mouthWidth = damp(c.mouthWidth, 10, 16, dt);
+      c.browLift = damp(c.browLift, 0, 8, dt);
     }
-
-    // 5. Special burst animations
-    if (state.anim && c === ac()) {
-      const t = (now - state.anim.start) / state.anim.dur;
-      if (state.anim.name === 'jump') {
-        // Natural squat -> jump -> cushion landing
-        if (t < 0.2) animY += (t / 0.2) * 15; // squat
-        else if (t < 0.8) animY -= Math.sin(((t - 0.2) / 0.6) * Math.PI) * 110; // launch
-        else animY += Math.sin(((t - 0.8) / 0.2) * Math.PI) * 10; // landing cushion
-      }
-      else if (state.anim.name === 'cry') {
-        animShake = Math.sin(t * Math.PI * 24) * 4;
-        c.rig.headTilt = 0.2;
-      }
-      else if (state.anim.name === 'laugh') {
-        animY += Math.sin(t * Math.PI * 14) * 5;
-        c.rig.headTilt = -0.15;
-      }
-      else if (state.anim.name === 'surprise') {
-        animY -= Math.sin(t * Math.PI) * 25;
-      }
-      else if (state.anim.name === 'angry') {
-        animShake = Math.sin(t * Math.PI * 32) * 5;
-      }
+    if (hasAnim && !state.paused) {
+      const t = (now - state.anim.start) / state.anim.dur, n = state.anim.name;
+      if (n === 'laugh') { openT = 8 + 6 * Math.abs(Math.sin(t * Math.PI * 14)); widthT = 13; teeth = 1; }
+      else if (n === 'surprise') { openT = 14; widthT = 8; }
+      else if (n === 'angry') { openT = 9; widthT = 13; teeth = 1; }
+      else if (n === 'cry') { openT = 6 + 2 * Math.sin(t * Math.PI * 12); widthT = 11; }
     }
+    c.mouthOpen = damp(c.mouthOpen, openT, 22, dt);
+    c.mouthWidth = damp(c.mouthWidth, widthT, 16, dt);
+    c.teeth = teeth;
 
-    // Render Character
-    const cx = canvas.width * c.x + animX + animShake;
-    const cy = canvas.height * c.y + animY;
-    drawCharacter(c, cx, cy, c.scale, talkHeadBob);
+    // রেন্ডার
+    const px = cw * c.x + animX + shakeX;
+    const py = ch * c.y;
+    drawCharacter(c, px, py, c.scale, { bodyY: bodyY * c.scale, bob: talkHeadBob });
 
-    // Render Bubble
     if (c.bubbleOn && c.bubble) {
-      drawBubble(c.bubble, canvas.width * c.x + animX, canvas.height * c.y - 260 * c.scale + animY);
+      drawBubble(c.bubble, cw * c.x + animX, ch * c.y - headTopPx(c) + (c._off + bodyY) * c.scale);
     }
   });
 
-  // Particles & Props
+  // কণা ও প্রপ
   if (!state.paused) {
     state.particles = state.particles.filter(p => {
       p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life -= dt * 0.7; p.rot += p.rotV;
@@ -1937,16 +2116,19 @@ function render(now) {
   drawPiP();
 
   if (state.filter === 'vignette') {
-    const g = ctx.createRadialGradient(canvas.width/2, canvas.height/2, canvas.width*0.3, canvas.width/2, canvas.height/2, canvas.width*0.7);
+    const g = ctx.createRadialGradient(cw / 2, ch / 2, cw * 0.3, cw / 2, ch / 2, cw * 0.7);
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.6)');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
   }
 
-  // Blinking
+  // ব্লিঙ্ক (মাঝে মাঝে ডাবল-ব্লিঙ্ক)
   if (!state.paused) {
     if (!state.blink.on) {
       state.blink.timer -= dt;
-      if (state.blink.timer <= 0) { state.blink.on = true; state.blink.dur = 0.12; state.blink.timer = 2 + Math.random() * 4; }
+      if (state.blink.timer <= 0) {
+        state.blink.on = true; state.blink.dur = 0.12;
+        state.blink.timer = Math.random() < 0.2 ? 0.2 : 2 + Math.random() * 4;
+      }
     } else {
       state.blink.dur -= dt;
       if (state.blink.dur <= 0) state.blink.on = false;
@@ -1956,29 +2138,90 @@ function render(now) {
   requestAnimationFrame(render);
 }
 
+// ============ ক্যানভাসে মাউস: ড্র্যাগ, জুম, কার্সর ট্র্যাকিং ============
+function toWorld(e) {
+  const rect = canvas.getBoundingClientRect();
+  const sx = (e.clientX - rect.left) * canvas.width / rect.width;
+  const sy = (e.clientY - rect.top) * canvas.height / rect.height;
+  return {
+    x: (sx - canvas.width / 2) / state.cam.zoom + canvas.width / 2 + state.cam.x,
+    y: (sy - canvas.height / 2) / state.cam.zoom + canvas.height / 2 + state.cam.y
+  };
+}
+let drag = null;
+canvas.addEventListener('mousedown', e => {
+  const p = toWorld(e);
+  const list = state.multiChar ? [1, 0] : [0];
+  for (const i of list) {
+    const c = state.chars[i];
+    const cx = canvas.width * c.x, cy = canvas.height * c.y;
+    if (Math.abs(p.x - cx) < 80 * c.scale && p.y > cy - headTopPx(c) + 40 && p.y < cy + 15) {
+      if (state.activeChar !== i) setActiveChar(i);
+      drag = { c, dx: cx - p.x, dy: cy - p.y };
+      break;
+    }
+  }
+});
+canvas.addEventListener('mousemove', e => {
+  const p = toWorld(e);
+  state.mouse = { x: p.x, y: p.y, inside: true };
+  if (drag) {
+    drag.c.x = clamp((p.x + drag.dx) / canvas.width, 0.02, 0.98);
+    drag.c.y = clamp((p.y + drag.dy) / canvas.height, 0.3, 1.0);
+  }
+});
+canvas.addEventListener('mouseleave', () => { state.mouse.inside = false; });
+window.addEventListener('mouseup', () => { if (drag) { drag = null; pushHistory(); } });
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.shiftKey) { const c = ac(); c.scale = clamp(c.scale * (e.deltaY < 0 ? 1.05 : 0.95), 0.4, 2.2); pushHistory(); }
+  else zoomCam(e.deltaY < 0 ? 0.1 : -0.1);
+}, { passive: false });
+
 // ============ KEYBOARD ============
 document.addEventListener('keydown', e => {
   const t = e.target.tagName;
-  if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return;
+  if (t === 'INPUT' && e.target.type !== 'range' && e.target.type !== 'checkbox' && e.target.type !== 'color') return;
+  if (t === 'TEXTAREA' || t === 'SELECT') return;
+  const k = e.key;
   if (e.code === 'Space') { e.preventDefault(); togglePause(); }
-  else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); toggleRecording(); }
-  else if (e.key === 'Escape') resetCamera();
-  else if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
-  else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) { e.preventDefault(); redo(); }
+  else if ((e.ctrlKey || e.metaKey) && (k === 'z' || k === 'Z')) { e.preventDefault(); undo(); }
+  else if ((e.ctrlKey || e.metaKey) && (k === 'y' || k === 'Y')) { e.preventDefault(); redo(); }
+  else if (e.ctrlKey || e.metaKey || e.altKey) return;
+  else if (k === 'r' || k === 'R') { e.preventDefault(); toggleRecording(); }
+  else if (k === 'Escape') resetCamera();
+  else if (/^[0-9]$/.test(k)) { const i = (parseInt(k) + 9) % 10; if (POSE_LIST[i]) setPose(POSE_LIST[i][0]); }
+  else if (k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'ArrowDown') {
+    e.preventDefault();
+    const c = ac(), st = e.shiftKey ? 0.05 : 0.01;
+    if (k === 'ArrowLeft') c.x = clamp(c.x - st, 0.02, 0.98);
+    if (k === 'ArrowRight') c.x = clamp(c.x + st, 0.02, 0.98);
+    if (k === 'ArrowUp') c.y = clamp(c.y - st, 0.3, 1);
+    if (k === 'ArrowDown') c.y = clamp(c.y + st, 0.3, 1);
+    pushHistory();
+  }
+  else if (k === '+' || k === '=') { const c = ac(); c.scale = clamp(c.scale * 1.05, 0.4, 2.2); pushHistory(); }
+  else if (k === '-' || k === '_') { const c = ac(); c.scale = clamp(c.scale * 0.95, 0.4, 2.2); pushHistory(); }
+  else if (k === 'f' || k === 'F') toggleFlip();
+  else if (k === 'b' || k === 'B') toggleBubble();
+  else if (k === 'g' || k === 'G') toggleGrid();
+  else if (k === 'l' || k === 'L') toggleLipSync();
+  else if (k === 'm' || k === 'M') mirrorPose();
+  else if (k === 'k' || k === 'K') addKeyframe();
+  else if (k === 'p' || k === 'P') toggleSeq();
+  else if (k === 'Tab' && state.multiChar) { e.preventDefault(); setActiveChar(state.activeChar === 0 ? 1 : 0); }
 });
-window.addEventListener('beforeunload', e => {
-  if (isRecording) { e.preventDefault(); e.returnValue = ''; }
-});
+window.addEventListener('beforeunload', e => { if (isRecording) { e.preventDefault(); e.returnValue = ''; } });
 
 // ============ INIT ============
 document.body.addEventListener('click', async function once() {
   try { await ensureAudio(); if (sourceMode === 'mic') await connectMic(); } catch (e) {}
 }, { once: true });
-if (!localStorage.getItem('sstickman_seen_v65')) {
-  openModal('tutorialModal');
-  localStorage.setItem('sstickman_seen_v65', '1');
-}
 try {
+  if (!localStorage.getItem('sstickman_seen_v7')) {
+    openModal('tutorialModal');
+    localStorage.setItem('sstickman_seen_v7', '1');
+  }
   const auto = localStorage.getItem('stickman_proj_autosave');
   if (auto) applySnap(JSON.parse(auto));
 } catch (e) {}
