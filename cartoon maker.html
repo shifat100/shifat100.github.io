@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>স্টিকম্যান স্টুডিও v7.0 - প্রো রিগিং ও রিয়েলিস্টিক মোশন</title>
+<title>স্টিকম্যান স্টুডিও v8.0 - সীমাহীন ক্যারেক্টার ও রিয়েলিস্টিক ভাব</title>
 <style>
 :root{
   --bg:#0f111a;--panel:#181a24;--card:#202332;--card2:#27293d;
@@ -157,7 +157,7 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
 <body>
 
 <header>
-  <h1>🎭 স্টিকম্যান স্টুডিও <span class="badge">v7.0 PRO RIG</span></h1>
+  <h1>🎭 স্টিকম্যান স্টুডিও <span class="badge">v8.0 PRO</span></h1>
   <div class="header-actions">
     <button id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)">↶</button>
     <button id="redoBtn" onclick="redo()" title="Redo (Ctrl+Y)">↷</button>
@@ -174,13 +174,25 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
   <aside class="side left">
 
     <div class="sec">
-      <div class="sec-title"><span>🎭 ক্যারেক্টার ও পেশা</span><small>১২+ পেশা</small></div>
+      <div class="sec-title"><span>🎭 ক্যারেক্টার ও পেশা</span><small>১৬ পেশা · সংখ্যা সীমাহীন</small></div>
+      <div class="chips" id="charList"></div>
       <div class="row">
-        <button id="char1Btn" class="active icon" onclick="setActiveChar(0)" title="ক্যারেক্টার ১">১</button>
-        <button id="char2Btn" class="icon" onclick="setActiveChar(1)" title="ক্যারেক্টার ২">২</button>
-        <button id="multiCharBtn" class="icon" onclick="toggleMultiChar()" title="দ্বিতীয় ক্যারেক্টার চালু/বন্ধ">+২য়</button>
+        <button onclick="addChar()" title="নতুন ক্যারেক্টার">➕ নতুন</button>
+        <button onclick="dupChar()" title="সক্রিয়টির কপি">⧉ কপি</button>
+        <button onclick="delChar()" class="danger" title="সক্রিয়টি মুছুন">🗑️ মুছুন</button>
         <button onclick="toggleFlip()" title="মুখ ফেরান (F)">🔄 ফ্লিপ</button>
       </div>
+      <div class="sub">🔄 ঘোরান (সামনে · পাশ · পেছন · যেকোনো কোণ)</div>
+      <div class="row">
+        <button onclick="setTurn(0)">সামনে</button><button onclick="setTurn(90)">ডান পাশ</button>
+        <button onclick="setTurn(180)">পেছন</button><button onclick="setTurn(270)">বাম পাশ</button>
+        <button id="spinBtn" class="off" onclick="toggleSpin()" title="টার্নটেবিল">🔁</button>
+      </div>
+      <div class="rs" style="grid-template-columns:50px 1fr 38px"><label>কোণ</label>
+        <input type="range" id="turnSlider" min="0" max="359" step="1" value="0" oninput="setTurn(this.value)">
+        <span class="v" id="v_turn">0°</span></div>
+      <div class="sub">➕ পেশা বেছে ক্যানভাসে যোগ করুন (যত খুশি)</div>
+      <div class="grid" id="profAdd"></div>
       <select id="professionSelect" onchange="setProfession(this.value)" style="width:100%;font-weight:bold;color:var(--primary)">
         <option value="classic">👔 সাধারণ (Classic)</option>
         <option value="doctor">🩺 ডাক্তার (Doctor)</option>
@@ -194,6 +206,10 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
         <option value="farmer">🌾 কৃষক (Farmer)</option>
         <option value="lawyer">⚖️ আইনজীবী (Lawyer / Judge)</option>
         <option value="firefighter">🧑‍🚒 দমকলকর্মী (Firefighter)</option>
+        <option value="nurse">💉 নার্স (Nurse)</option>
+        <option value="pilot">✈️ পাইলট (Pilot)</option>
+        <option value="student">🎒 শিক্ষার্থী (Student)</option>
+        <option value="cricketer">🏏 ক্রিকেটার (Cricketer)</option>
       </select>
       <div class="row">
         <label class="mini" title="শরীর"><input type="color" id="cBody" value="#2c3e50" oninput="updateColor('body',this.value)"></label>
@@ -207,6 +223,26 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
         <button id="bubbleToggle" class="off icon" onclick="toggleBubble()" title="বাবল চালু/বন্ধ (B)">💬</button>
         <button onclick="clearBubble()" class="icon" title="বাবল মুছুন">🗑️</button>
         <button onclick="openModal('bubblePresetModal')" class="icon" title="বাবল প্রিসেট">📝</button>
+      </div>
+    </div>
+
+    <div class="sec" style="border-left-color:#fd79a8">
+      <div class="sec-title"><span>🧑‍🎨 চেহারা কাস্টমাইজ</span><small>প্রতিটি ক্যারেক্টারের আলাদা</small></div>
+      <div class="row">
+        <label class="mini" title="ত্বকের রং"><input type="color" id="lkSkin" value="#ffffff" oninput="setLook('skin',this.value)"><span>ত্বক</span></label>
+        <button style="background:#ffe0bd;color:#000" onclick="setLook('skin','#ffe0bd')">&nbsp;</button>
+        <button style="background:#e8b98a;color:#000" onclick="setLook('skin','#e8b98a')">&nbsp;</button>
+        <button style="background:#c68a5c;color:#000" onclick="setLook('skin','#c68a5c')">&nbsp;</button>
+        <button style="background:#8d5a3b;color:#000" onclick="setLook('skin','#8d5a3b')">&nbsp;</button>
+      </div>
+      <div class="row">
+        <select id="lkHair" onchange="setLook('hair',this.value)" style="flex:1;min-width:0">
+          <option value="none">চুল নেই</option><option value="short">ছোট চুল</option><option value="long">লম্বা চুল</option>
+          <option value="bun">খোঁপা</option><option value="curly">কোঁকড়া</option>
+        </select>
+        <label class="mini" title="চুল/দাড়ির রং"><input type="color" id="lkHairC" value="#2d3436" oninput="setLook('hairColor',this.value)"><span>রং</span></label>
+        <label class="mini"><input type="checkbox" id="lkBeard" onchange="setLook('beard',this.checked)"><span>দাড়ি</span></label>
+        <label class="mini"><input type="checkbox" id="lkGlasses" onchange="setLook('glasses',this.checked)"><span>চশমা</span></label>
       </div>
     </div>
 
@@ -302,6 +338,21 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
         </div>
         <div class="chips" id="seqList"></div>
       </div>
+
+      <div class="sec" style="border-left-color:#ff9f43;grid-column:1/-1">
+        <div class="sec-title"><span>🎬 টাইমলাইন (শট ও দৃশ্য)</span><small id="shotTotal">০ শট</small></div>
+        <div class="row">
+          <button onclick="addShot()" title="সব ক্যারেক্টার, ক্যামেরা ও দৃশ্য সহ বর্তমান অবস্থা শট হিসেবে রাখুন">➕ শট যোগ</button>
+          <input type="number" id="shotDur" value="3" min="0.5" max="60" step="0.5" style="width:46px" title="শটের সময় (সেকেন্ড)">
+          <select id="shotTrans" title="এই শটে ঢোকার ধরন">
+            <option value="move">স্মুথ সরে যাওয়া</option><option value="fade">ফেড</option><option value="cut">কাট</option>
+          </select>
+          <button id="shotPlayBtn" onclick="toggleShots()">▶️ প্লে</button>
+          <button onclick="clearShots()" class="danger icon" title="সব শট মুছুন">🗑️</button>
+          <label class="mini"><input type="checkbox" id="shotLoop"> <span>লুপ</span></label>
+        </div>
+        <div class="chips" id="shotList"></div>
+      </div>
     </div>
   </section>
 
@@ -336,6 +387,9 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
         <button onclick="playAnim('laugh')">😂 অট্টহাসি</button>
         <button onclick="playAnim('surprise')">😲 চমক</button>
         <button onclick="playAnim('angry')">😠 ক্ষোভ</button>
+        <button onclick="playAnim('nod')">👍 হ্যাঁ</button>
+        <button onclick="playAnim('shake')">🙅 না</button>
+        <button onclick="playAnim('clap')">👏 তালি</button>
       </div>
     </div>
 
@@ -407,6 +461,15 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
         <button onclick="setBG('dark')">🌑</button>
       </div>
       <div class="row">
+        <select id="sceneSelect" onchange="setBG(this.value)" style="flex:1;min-width:0">
+          <option value="default">🏳️ সাদা দৃশ্য</option>
+          <option value="sky">☀️ দিনের আকাশ</option>
+          <option value="sunset">🌇 সূর্যাস্ত</option>
+          <option value="night">🌙 রাত</option>
+          <option value="room">🏠 ঘর</option>
+        </select>
+      </div>
+      <div class="row">
         <select id="filterSelect" onchange="setFilter(this.value)" style="flex:1;min-width:0">
           <option value="none">ফিল্টার নেই</option>
           <option value="sepia">সেপিয়া</option>
@@ -424,15 +487,17 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
     <div class="sec" style="border-left-color:#a4b0be">
       <div class="sec-title"><span>💾 প্রজেক্ট ও কুইক ডায়ালগ</span></div>
       <div class="row">
-        <button onclick="applyPreset('hello')">👋 হ্যালো</button>
-        <button onclick="applyPreset('thanks')">🙏 ধন্যবাদ</button>
-        <button onclick="applyPreset('wow')">😲 বাহ</button>
-        <button onclick="applyPreset('sad')">😢 দুঃখ</button>
-        <button onclick="applyPreset('think')">🤔 চিন্তা</button>
-        <button onclick="applyPreset('bye')">👋 বিদায়</button>
+        <button data-preset="hello" onclick="applyPreset('hello')">👋 হ্যালো</button>
+        <button data-preset="thanks" onclick="applyPreset('thanks')">🙏 ধন্যবাদ</button>
+        <button data-preset="wow" onclick="applyPreset('wow')">😲 বাহ</button>
+        <button data-preset="sad" onclick="applyPreset('sad')">😢 দুঃখ</button>
+        <button data-preset="think" onclick="applyPreset('think')">🤔 চিন্তা</button>
+        <button data-preset="bye" onclick="applyPreset('bye')">👋 বিদায়</button>
+        <button class="danger" onclick="stopPreset(true)" title="ডায়ালগ বন্ধ (Esc)">⏹ বন্ধ</button>
       </div>
       <div class="row">
-        <input type="text" id="projectName" placeholder="নাম" value="stickman_proj" style="flex:1;min-width:0">
+        <datalist id="projList"></datalist>
+        <input type="text" id="projectName" list="projList" placeholder="নাম" value="stickman_proj" style="flex:1;min-width:0">
         <button onclick="saveProject()">💾 সেভ</button>
         <button onclick="loadProject()">📂 লোড</button>
         <button onclick="deleteProject()" class="danger">🗑️</button>
@@ -463,11 +528,16 @@ kbd{background:var(--card2);border:1px solid var(--border2);border-radius:3px;pa
       <li><strong>👀 চোখ ও মাথা</strong> — চোখের মণি, সাকেড, ডাবল-ব্লিঙ্ক, কার্সর অনুসরণ, মাথা ঘোরানো।</li>
       <li><strong>🎞️ সিকোয়েন্সার</strong> — কীফ্রেম যোগ করে পোজ থেকে পোজে স্মুথ অ্যানিমেশন, লুপসহ।</li>
       <li><strong>📏 প্রপোরশন</strong> — পা, হাত, ধড়, মাথা ও লাইনের পুরুত্ব আলাদাভাবে বদলান।</li>
+      <li><strong>👥 সীমাহীন ক্যারেক্টার</strong> — পেশা বেছে যত খুশি ক্যারেক্টার যোগ করুন, চিপে ক্লিক বা Tab দিয়ে বদলান।</li>
+      <li><strong>😊 বাস্তবসম্মত ভাব</strong> — ভুরু, চোখের পাতা, গাল ও ঠোঁট নরমভাবে বদলায়; লাফ, কান্না, হাসি, চমক, রাগে শরীরের ভঙ্গি স্বাভাবিক।</li>
+      <li><strong>🎬 টাইমলাইন</strong> — একেকটি দৃশ্য ➕ শট হিসেবে রাখুন; প্লে করলে ক্যারেক্টার, ক্যামেরা ও ব্যাকগ্রাউন্ড একটার পর একটা চলে (স্মুথ / ফেড / কাট)। ↻ দিয়ে শট আপডেট।</li>
+      <li><strong>🧑‍🎨 কাস্টমাইজ</strong> — ত্বকের রং, চুলের স্টাইল, দাড়ি ও চশমা।</li>
+      <li><strong>⏹ কুইক ডায়ালগ</strong> — একই বাটনে আবার ক্লিক, ⏹ বন্ধ বা Esc দিলে আগের অবস্থায় ফেরে।</li>
     </ul>
     <p><strong>শর্টকাট:</strong></p>
     <p><kbd>Space</kbd> পজ · <kbd>R</kbd> রেকর্ড · <kbd>Ctrl+Z/Y</kbd> আনডু/রিডু · <kbd>Esc</kbd> ক্যামেরা রিসেট<br>
     <kbd>1</kbd>–<kbd>0</kbd> প্রথম ১০টি পোজ · <kbd>←↑↓→</kbd> ক্যারেক্টার সরান (Shift = দ্রুত) · <kbd>+</kbd>/<kbd>-</kbd> সাইজ<br>
-    <kbd>F</kbd> ফ্লিপ · <kbd>B</kbd> বাবল · <kbd>G</kbd> গ্রিড · <kbd>L</kbd> লিপ-সিং · <kbd>M</kbd> মিরর · <kbd>K</kbd> কীফ্রেম · <kbd>P</kbd> সিকোয়েন্স প্লে · <kbd>Tab</kbd> ক্যারেক্টার বদল</p>
+    <kbd>,</kbd>/<kbd>.</kbd> ঘোরান ±৪৫° · <kbd>F</kbd> ফ্লিপ · <kbd>B</kbd> বাবল · <kbd>G</kbd> গ্রিড · <kbd>L</kbd> লিপ-সিং · <kbd>M</kbd> মিরর · <kbd>K</kbd> কীফ্রেম · <kbd>P</kbd> সিকোয়েন্স প্লে · <kbd>Tab</kbd> ক্যারেক্টার বদল</p>
     <p>ক্যানভাসে ক্যারেক্টারে ক্লিক করে ড্র্যাগ করলে সরে যায়। স্ক্রল = জুম, Shift+স্ক্রল = ক্যারেক্টারের সাইজ।</p>
     <div class="actions"><button onclick="closeModal('tutorialModal')" class="active">শুরু করুন</button></div>
   </div>
@@ -574,8 +644,22 @@ const POSE_LIST = [
   ['bow','🙏','বিনম্র'],['kick','🥋','কিক'],['crouch','🧎','উবু'],['tired','😮‍💨','ক্লান্ত'],['guard','🥊','গার্ড']
 ];
 const LOOPS = ['walk','run','wave','dance'];
-const EXPR_LIST = [['neutral','😐'],['smile','😊'],['sad','☹️'],['surprise','😲'],['angry','😠'],['laugh','😂'],['wink','😉'],['sleepy','😪']];
-const PROP_EMOJI = ['❓','❗','❤️','⭐','💡','🔥','💊','🎯'];
+const EXPR_LIST = [['neutral','😐'],['smile','😊'],['sad','☹️'],['surprise','😲'],['angry','😠'],['laugh','😂'],['wink','😉'],['sleepy','😪'],['scared','😨'],['smirk','😏']];
+const PROP_EMOJI = ['❓','❗','❤️','⭐','💡','🔥','💊','🎯','💬','💤','🎵','💰'];
+const PROF_EMOJI = {classic:'👔',doctor:'🩺',police:'👮',chef:'👨‍🍳',teacher:'👨‍🏫',engineer:'👷',scientist:'🧪',detective:'🕵️',astronaut:'👨‍🚀',farmer:'🌾',lawyer:'⚖️',firefighter:'🧑‍🚒',nurse:'💉',pilot:'✈️',student:'🎒',cricketer:'🏏'};
+const HAT_EXTRA = {classic:58,doctor:2,police:50,chef:85,engineer:45,detective:60,farmer:66,firefighter:46,astronaut:8,nurse:12,pilot:40,cricketer:36};
+const EXPR = {
+  neutral:{eye:1,browY:0,browA:0,smile:0,mw:8,open:0,blush:0,skew:0},
+  smile:{eye:.92,browY:-1,browA:-.05,smile:1,mw:11,open:0,blush:.5,skew:0},
+  sad:{eye:.82,browY:2,browA:-.6,smile:-1,mw:7,open:0,blush:0,skew:0},
+  surprise:{eye:1.3,browY:-6,browA:-.1,smile:0,mw:6,open:.9,blush:0,skew:0},
+  angry:{eye:.72,browY:1,browA:.7,smile:-.8,mw:10,open:.15,blush:0,skew:0},
+  laugh:{eye:.4,browY:-2,browA:-.1,smile:1.2,mw:13,open:1,blush:1,skew:0},
+  wink:{eye:.95,browY:-1,browA:0,smile:1,mw:11,open:0,blush:.5,skew:.4},
+  sleepy:{eye:.35,browY:2,browA:-.15,smile:.1,mw:6,open:0,blush:0,skew:0},
+  scared:{eye:1.25,browY:-5,browA:-.8,smile:-.6,mw:9,open:.35,blush:0,skew:0},
+  smirk:{eye:.85,browY:-1,browA:.25,smile:.4,mw:10,open:0,blush:0,skew:1}
+};
 
 // ============ PROFESSIONS ============
 const PROFESSION_DEFAULTS = {
@@ -590,7 +674,11 @@ const PROFESSION_DEFAULTS = {
   astronaut:   { colors: { body:'#f5f6fa', tie:'#00d2d3', hat:'#dfe4ea', mouth:'#c0392b' } },
   farmer:      { colors: { body:'#574b90', tie:'#e15f41', hat:'#f5cd79', mouth:'#c0392b' } },
   lawyer:      { colors: { body:'#1e272e', tie:'#ffffff', hat:'#485460', mouth:'#c0392b' } },
-  firefighter: { colors: { body:'#c0392b', tie:'#f1c40f', hat:'#d63031', mouth:'#c0392b' } }
+  firefighter: { colors: { body:'#c0392b', tie:'#f1c40f', hat:'#d63031', mouth:'#c0392b' } },
+  nurse:       { colors: { body:'#2d3436', tie:'#e74c3c', hat:'#ffffff', mouth:'#c0392b' } },
+  pilot:       { colors: { body:'#2f3640', tie:'#f1c40f', hat:'#2f3640', mouth:'#c0392b' } },
+  student:     { colors: { body:'#2d3436', tie:'#0984e3', hat:'#2d3436', mouth:'#c0392b' } },
+  cricketer:   { colors: { body:'#0984e3', tie:'#ffffff', hat:'#0984e3', mouth:'#c0392b' } }
 };
 
 function makeChar(opt = {}) {
@@ -607,16 +695,14 @@ function makeChar(opt = {}) {
     seq: [], travel: false,
     mouthOpen: 0, mouthWidth: 10, teeth: 0,
     lookX: 0, lookY: 0, sacT: 1, sacX: 0, sacY: 0,
-    gT: 0, gDur: 1, gA: null, browLift: 0, _off: 0
+    gT: 0, gDur: 1, gA: null, browLift: 0, _off: 0,
+    face: { ...EXPR.neutral }, _head: null, turn: 0, turnT: 0, spin: false, skin: '#ffffff', hair: 'none', hairColor: '#2d3436', beard: false, glasses: false
   };
 }
 
 const state = {
   aspect: '16:9', multiChar: false, activeChar: 0,
-  chars: [
-    makeChar({ x: 0.35, profession: 'classic' }),
-    makeChar({ x: 0.65, scale: 0.9, profession: 'doctor' })
-  ],
+  chars: [ makeChar({ x: 0.5 }) ], shots: [], activePreset: null, presetPrev: null,
   cam: { x: 0, y: 0, zoom: 1 }, targetCam: { x: 0, y: 0, zoom: 1 },
   bgMode: 'default', bgImage: null, gradColors: ['#667eea', '#764ba2'],
   filter: 'none', grid: false, safeArea: false,
@@ -645,6 +731,8 @@ function setStatus(msg, color = '#f39c12', resetMs = 0) {
   }, resetMs);
 }
 function lerp(a, b, t) { return a + (b - a) * t; }
+const ez = x => x * x * (3 - 2 * x), tri = x => Math.sin(clamp(x, 0, 1) * Math.PI);
+let camM = new DOMMatrix();
 function damp(a, b, l, dt) { return lerp(a, b, 1 - Math.exp(-l * dt)); }
 function openModal(id) { $(id).classList.add('show'); }
 function closeModal(id) { $(id).classList.remove('show'); }
@@ -723,12 +811,12 @@ let histDebounce;
 function snapState() {
   const opts = {}; OPT_KEYS.forEach(k => opts[k] = state[k]);
   return {
-    aspect: state.aspect, multiChar: state.multiChar, activeChar: state.activeChar,
+    v8: 1, shots: state.shots, aspect: state.aspect, activeChar: state.activeChar,
     chars: state.chars.map(c => ({
       x: c.x, y: c.y, scale: c.scale, flip: c.flip, profession: c.profession,
       pose: c.pose, expr: c.expr, colors: { ...c.colors },
       bubble: c.bubble, bubbleOn: c.bubbleOn, travel: c.travel,
-      targetRig: { ...c.targetRig }, prop: { ...c.prop },
+      targetRig: { ...c.targetRig }, prop: { ...c.prop }, turnT: c.turnT, skin: c.skin, hair: c.hair, hairColor: c.hairColor, beard: c.beard, glasses: c.glasses,
       seq: c.seq.map(f => ({ pose: f.pose, expr: f.expr, rig: { ...f.rig } }))
     })),
     targetCam: { ...state.targetCam }, bgMode: state.bgMode,
@@ -750,7 +838,9 @@ function pushHistory() {
 function undo() { if (hist.idx <= 0) return; hist.idx--; applySnap(JSON.parse(hist.stack[hist.idx])); updateUndoBtns(); }
 function redo() { if (hist.idx >= hist.stack.length - 1) return; hist.idx++; applySnap(JSON.parse(hist.stack[hist.idx])); updateUndoBtns(); }
 function applySnap(s) {
-  state.aspect = s.aspect; state.multiChar = s.multiChar; state.activeChar = s.activeChar || 0;
+  if (!s.v8 && s.multiChar === false) s.chars = s.chars.slice(0, 1);
+  state.aspect = s.aspect; state.activeChar = s.activeChar || 0;
+  if (Array.isArray(s.shots)) state.shots = JSON.parse(JSON.stringify(s.shots));
   s.chars.forEach((cd, i) => {
     if (!state.chars[i]) state.chars[i] = makeChar({});
     const c = state.chars[i];
@@ -760,6 +850,8 @@ function applySnap(s) {
     c.prop = { ...DEFAULT_PROP, ...(prop || {}) };
     c.seq = seq ? seq.map(f => ({ pose: f.pose, expr: f.expr, rig: { ...f.rig } })) : [];
   });
+  state.chars.length = Math.min(state.chars.length, s.chars.length);
+  state.activeChar = Math.min(state.activeChar, state.chars.length - 1);
   state.targetCam = { ...s.targetCam };
   state.bgMode = s.bgMode; state.gradColors = [...s.gradColors];
   state.filter = s.filter; state.grid = s.grid; state.safeArea = s.safeArea;
@@ -778,14 +870,13 @@ function syncUI() {
   const nw = state.aspect === '16:9' ? 1280 : 720, nh = state.aspect === '16:9' ? 720 : 1280;
   if (canvas.width !== nw) canvas.width = nw;
   if (canvas.height !== nh) canvas.height = nh;
-  $('char1Btn').classList.toggle('active', state.activeChar === 0);
-  $('char2Btn').classList.toggle('active', state.activeChar === 1);
-  $('char2Btn').disabled = !state.multiChar;
-  $('multiCharBtn').classList.toggle('active', state.multiChar);
+  renderChars();
   const c = ac();
   $('professionSelect').value = c.profession || 'classic';
   $('cBody').value = c.colors.body; $('cTie').value = c.colors.tie;
   $('cHat').value = c.colors.hat; $('cMouth').value = c.colors.mouth;
+  $('lkSkin').value = c.skin || '#ffffff'; $('lkHair').value = c.hair || 'none'; $('lkHairC').value = c.hairColor || '#2d3436';
+  $('lkBeard').checked = !!c.beard; $('lkGlasses').checked = !!c.glasses;
   syncPoseButtons();
   document.querySelectorAll('[data-expr]').forEach(b => b.classList.toggle('active', b.dataset.expr === c.expr));
   $('bubbleInput').value = c.bubble;
@@ -794,6 +885,7 @@ function syncUI() {
   $('gridBtn').classList.toggle('on', state.grid); $('gridBtn').classList.toggle('off', !state.grid);
   $('safeBtn').classList.toggle('on', state.safeArea); $('safeBtn').classList.toggle('off', !state.safeArea);
   $('filterSelect').value = state.filter;
+  $('sceneSelect').value = ['default','sky','sunset','night','room'].includes(state.bgMode) ? state.bgMode : 'default';
   $('grad1').value = state.gradColors[0]; $('grad2').value = state.gradColors[1];
   $('optGround').checked = state.groundLock; $('optIdle').checked = state.idleLife;
   $('optEye').checked = state.eyeFollow; $('optRig').checked = state.showRig;
@@ -804,7 +896,7 @@ function syncUI() {
   $('lsSens').value = state.lsSens; $('v_lsSens').textContent = Number(state.lsSens).toFixed(1);
   $('lsGate').value = state.lsGate; $('v_lsGate').textContent = state.lsGate;
   $('travelBtn').classList.toggle('on', !!c.travel); $('travelBtn').classList.toggle('off', !c.travel);
-  syncRigSliders(); syncPropSliders(); renderSeq();
+  syncRigSliders(); syncPropSliders(); renderSeq(); renderShots();
 }
 function syncPoseButtons() {
   const c = ac();
@@ -835,8 +927,104 @@ function setProp(k, v) { ac().prop[k] = parseFloat(v); $('pv_' + k).textContent 
 function resetProps() { ac().prop = { ...DEFAULT_PROP }; syncPropSliders(); pushHistory(); }
 
 // ============ CHARACTER & POSES ============
-function setActiveChar(i) { if (i === 1 && !state.multiChar) return; state.activeChar = i; syncUI(); pushHistory(); }
-function toggleMultiChar() { state.multiChar = !state.multiChar; if (!state.multiChar) state.activeChar = 0; syncUI(); pushHistory(); }
+function setActiveChar(i) { if (!state.chars[i]) return; state.activeChar = i; syncUI(); pushHistory(); }
+function setTurn(deg) { const c = ac(); c.spin = false; c.turnT = parseFloat(deg) * Math.PI / 180; syncTurn(); pushHistory(); }
+function toggleSpin() { const c = ac(); c.spin = !c.spin; if (c.spin) c.turnT = c.turn; syncTurn(); }
+function syncTurn() {
+  const c = ac(), d = ((Math.round(c.turnT * 180 / Math.PI) % 360) + 360) % 360;
+  $('turnSlider').value = d; $('v_turn').textContent = d + '°';
+  $('spinBtn').classList.toggle('on', !!c.spin); $('spinBtn').classList.toggle('off', !c.spin);
+}
+function setLook(k, v) { ac()[k] = v; syncUI(); pushHistory(); }
+let shotRT = { playing: false, idx: 0, t: 0 }, tween = null, fadeRT = null;
+function captureShot() {
+  return {
+    dur: parseFloat($('shotDur').value) || 3, trans: $('shotTrans').value,
+    bg: state.bgMode, grad: [...state.gradColors], filter: state.filter, cam: { ...state.targetCam },
+    chars: state.chars.map(c => ({
+      x: c.x, y: c.y, scale: c.scale, flip: c.flip, profession: c.profession, colors: { ...c.colors },
+      pose: c.pose, expr: c.expr, bubble: c.bubble, bubbleOn: c.bubbleOn, turnT: c.turnT,
+      rig: { ...(LOOPS.includes(c.pose) ? c.rig : c.targetRig) }, prop: { ...c.prop },
+      skin: c.skin, hair: c.hair, hairColor: c.hairColor, beard: c.beard, glasses: c.glasses
+    }))
+  };
+}
+function applyShot(sh, jump) {
+  const from = state.chars.map(c => ({ x: c.x, y: c.y, scale: c.scale }));
+  while (state.chars.length < sh.chars.length) state.chars.push(makeChar({}));
+  state.chars.length = sh.chars.length;
+  state.activeChar = Math.min(state.activeChar, state.chars.length - 1);
+  sh.chars.forEach((d, i) => {
+    const c = state.chars[i], { x, y, scale, rig, prop, colors, ...rest } = d;
+    Object.assign(c, rest); c.colors = { ...colors }; c.prop = { ...DEFAULT_PROP, ...prop };
+    c.targetRig = { ...DEFAULT_RIG, ...rig }; c.spin = false;
+    if (jump || !from[i]) { c.x = x; c.y = y; c.scale = scale; }
+  });
+  tween = jump ? null : { t: 0, d: 0.8, from, to: sh.chars.map(d => ({ x: d.x, y: d.y, scale: d.scale })) };
+  state.bgMode = sh.bg; state.gradColors = [...sh.grad]; state.filter = sh.filter; state.targetCam = { ...sh.cam };
+  syncUI();
+}
+function gotoShot(i) {
+  const sh = state.shots[i]; if (!sh) return;
+  if (sh.trans === 'fade') fadeRT = { t: 0, sh, done: false }; else applyShot(sh, sh.trans === 'cut');
+  renderShots();
+}
+function addShot() { state.shots.push(captureShot()); renderShots(); pushHistory(); setStatus('শট #' + state.shots.length + ' যোগ হয়েছে', '#2ed573', 1800); }
+function toggleShots() { shotRT.playing ? stopShots() : playShots(); }
+function playShots() {
+  if (!state.shots.length) { setStatus('আগে ➕ শট যোগ করুন', '#f39c12', 2500); return; }
+  stopSeq(); shotRT = { playing: true, idx: 0, t: 0 }; applyShot(state.shots[0], true); renderShots();
+}
+function stopShots() { shotRT.playing = false; fadeRT = null; renderShots(); }
+function clearShots() { stopShots(); state.shots = []; renderShots(); pushHistory(); }
+function renderShots() {
+  const box = $('shotList'); if (!box) return; box.innerHTML = '';
+  let tot = 0;
+  state.shots.forEach((sh, i) => {
+    tot += sh.dur;
+    const d = document.createElement('div'); d.className = 'chip' + (shotRT.playing && shotRT.idx === i ? ' cur' : '');
+    const b = document.createElement('button'); b.textContent = (i + 1) + ' · ' + sh.dur + 's' + (sh.trans === 'fade' ? ' ◐' : sh.trans === 'cut' ? ' ✂' : '');
+    b.title = 'এই শট দেখুন'; b.onclick = () => { stopShots(); applyShot(sh, false); };
+    const u = document.createElement('button'); u.textContent = '↻'; u.title = 'বর্তমান অবস্থা দিয়ে আপডেট';
+    u.onclick = () => { const n = captureShot(); n.dur = sh.dur; n.trans = sh.trans; state.shots[i] = n; pushHistory(); setStatus('শট #' + (i + 1) + ' আপডেট', '#2ed573', 1500); };
+    const x = document.createElement('button'); x.textContent = '✕'; x.className = 'danger';
+    x.onclick = () => { state.shots.splice(i, 1); renderShots(); pushHistory(); };
+    d.append(b, u, x); box.appendChild(d);
+  });
+  $('shotTotal').textContent = state.shots.length + ' শট · ' + tot.toFixed(1) + 's';
+  $('shotPlayBtn').textContent = shotRT.playing ? '⏹️ থামান' : '▶️ প্লে';
+  $('shotPlayBtn').classList.toggle('active', shotRT.playing);
+}
+function renderChars() {
+  syncTurn();
+  const box = $('charList'); if (!box) return; box.innerHTML = '';
+  state.chars.forEach((c, i) => {
+    const b = document.createElement('button'); b.className = 'icon' + (i === state.activeChar ? ' active' : '');
+    b.textContent = (i + 1) + (PROF_EMOJI[c.profession] || '👔'); b.title = 'ক্যারেক্টার ' + (i + 1);
+    b.onclick = () => setActiveChar(i); box.appendChild(b);
+  });
+}
+function freeX() {
+  let best = 0.5, bd = -1;
+  for (let x = 0.08; x <= 0.92; x += 0.04) { const d = Math.min(1, ...state.chars.map(c => Math.abs(c.x - x))); if (d > bd) { bd = d; best = x; } }
+  return best;
+}
+function addChar(prof) {
+  const p = typeof prof === 'string' ? prof : 'classic';
+  const c = makeChar({ x: freeX(), scale: state.chars.length ? 0.9 : 1, profession: p });
+  c.flip = c.x > 0.5; state.chars.push(c); state.activeChar = state.chars.length - 1;
+  syncUI(); pushHistory(); setStatus('ক্যারেক্টার ' + state.chars.length + ' যোগ হয়েছে', '#2ed573', 1800);
+}
+function dupChar() {
+  const a = ac(), c = makeChar({ x: freeX(), scale: a.scale, profession: a.profession, colors: a.colors });
+  c.targetRig = { ...a.targetRig }; c.prop = { ...a.prop }; c.pose = a.pose; c.expr = a.expr; c.flip = a.flip;
+  state.chars.push(c); state.activeChar = state.chars.length - 1; syncUI(); pushHistory();
+}
+function delChar() {
+  if (state.chars.length < 2) { setStatus('অন্তত ১টি ক্যারেক্টার থাকতে হবে', '#f39c12', 2200); return; }
+  stopSeq(); state.chars.splice(state.activeChar, 1); state.props = [];
+  state.activeChar = Math.min(state.activeChar, state.chars.length - 1); syncUI(); pushHistory();
+}
 function setProfession(p) {
   const c = ac(); c.profession = p;
   const def = PROFESSION_DEFAULTS[p]; if (def) c.colors = { ...def.colors };
@@ -849,6 +1037,7 @@ function toggleTravel() { const c = ac(); c.travel = !c.travel; syncUI(); pushHi
 
 function setPose(p) {
   const c = ac();
+  if (state.activePreset) { state.activePreset = null; state.presetPrev = null; markPreset(); }
   c.pose = p;
   if (POSE_RIGS[p]) c.targetRig = { ...DEFAULT_RIG, ...POSE_RIGS[p] };
   syncPoseButtons(); syncRigSliders();
@@ -865,10 +1054,10 @@ function mirrorPose() {
   c.targetRig = n; c.pose = 'custom'; syncPoseButtons(); syncRigSliders(); pushHistory();
 }
 function copyPoseToOther() {
-  if (!state.multiChar) { setStatus('আগে "+২য়" চালু করুন', '#f39c12', 2500); return; }
-  const src = ac(), dst = state.chars[state.activeChar === 0 ? 1 : 0];
-  dst.targetRig = { ...src.targetRig }; dst.pose = src.pose === 'walk' || src.pose === 'run' ? src.pose : 'custom';
-  setStatus('পোজ কপি হয়েছে', '#2ed573', 2000); pushHistory();
+  if (state.chars.length < 2) { setStatus('আগে আরেকটি ক্যারেক্টার যোগ করুন', '#f39c12', 2500); return; }
+  const src = ac(), dst = state.chars[(state.activeChar + 1) % state.chars.length];
+  dst.targetRig = { ...src.targetRig }; dst.pose = (src.pose === 'walk' || src.pose === 'run') ? src.pose : 'custom';
+  setStatus('পোজ পরের ক্যারেক্টারে কপি হয়েছে', '#2ed573', 2000); pushHistory();
 }
 
 function setExpr(e) {
@@ -1170,6 +1359,7 @@ async function startRecording() {
 }
 function updateRecTimer() {
   if (!isRecording) return;
+  if (recPaused) { recStartTime += 250; }
   const s = Math.floor((Date.now() - recStartTime) / 1000);
   recTimer.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
@@ -1186,7 +1376,7 @@ async function stopRecording() {
   if (fileGain) fileGain.gain.value = 0;
   if (bgMusicGain) bgMusicGain.gain.value = 0;
   if (audioFileEl && !audioFileEl.paused) audioFileEl.pause();
-  if (mediaRecorder.state === 'paused') { try { mediaRecorder.resume(); } catch (e) {} }
+  if (mediaRecorder.state === 'paused') { try { mediaRecorder.resume(); } catch (e) {} setRecPaused(false); }
   try {
     await ensureAudio();
     if (!outroSource) { outroSource = audioCtx.createMediaElementSource(outroVideo); outroSource.connect(outroGain); }
@@ -1201,7 +1391,7 @@ async function stopRecording() {
   }
 }
 function finalizeRecording() {
-  isRecording = false; clearInterval(recInterval);
+  isRecording = false; clearInterval(recInterval); setRecPaused(false);
   recIndicator.classList.remove('show');
   $('recBtn').disabled = false;
   $('recBtn').textContent = '🔴 রেকর্ড শুরু'; $('recBtn').classList.remove('active');
@@ -1251,17 +1441,30 @@ function runCountdown(n) {
     }, 1000);
   });
 }
+// পজ শুধু রেকর্ডিং থামায়; অ্যানিমেশন ও বাকি সব ফিচার চলতেই থাকে।
+// রিজিউম করলে ক্যানভাসের বর্তমান অবস্থা থেকেই রেকর্ডিং আবার শুরু হয়।
+let recPaused = false;
+function setRecPaused(v) {
+  recPaused = v;
+  $('pauseBtn').textContent = v ? '▶️' : '⏸️';
+  $('pauseBtn').classList.toggle('on', v);
+  if (v) { recIndicator.classList.add('paused'); recStatusText.textContent = 'রেকর্ডিং পজ'; }
+  else { recIndicator.classList.remove('paused'); recStatusText.textContent = 'রেকর্ডিং'; }
+}
 function togglePause() {
-  state.paused = !state.paused;
-  $('pauseBtn').textContent = state.paused ? '▶️' : '⏸️';
-  $('pauseBtn').classList.toggle('on', state.paused);
-  if (isRecording && mediaRecorder && mediaRecorder.state !== 'inactive') {
-    if (state.paused && mediaRecorder.state === 'recording') {
-      try { mediaRecorder.pause(); recIndicator.classList.add('paused'); recStatusText.textContent = 'পজ'; } catch (e) {}
-    } else if (!state.paused && mediaRecorder.state === 'paused') {
-      try { mediaRecorder.resume(); recIndicator.classList.remove('paused'); recStatusText.textContent = 'রেকর্ডিং'; } catch (e) {}
-    }
+  if (!isRecording || !mediaRecorder || mediaRecorder.state === 'inactive') {
+    setStatus('পজ শুধু রেকর্ডিং চলাকালীন কাজ করে', '#f39c12', 2000);
+    return;
   }
+  try {
+    if (!recPaused && mediaRecorder.state === 'recording') {
+      mediaRecorder.pause(); setRecPaused(true);
+      setStatus('⏸️ রেকর্ডিং পজ — এডিটিং চালিয়ে যান', '#f39c12', 0);
+    } else if (recPaused && mediaRecorder.state === 'paused') {
+      mediaRecorder.resume(); setRecPaused(false);
+      setStatus('🔴 রেকর্ডিং চলছে…', '#ff4d4d', 0);
+    }
+  } catch (e) {}
 }
 
 // ============ SNAPSHOT & FULLSCREEN ============
@@ -1280,7 +1483,7 @@ function toggleFullscreen() {
 // ============ PROJECT ============
 function saveProject() {
   const name = $('projectName').value.trim() || 'default';
-  try { localStorage.setItem('stickman_proj_' + name, JSON.stringify(snapState())); setStatus('💾 "' + name + '" সেভ', '#2ed573', 2000); }
+  try { localStorage.setItem('stickman_proj_' + name, JSON.stringify(snapState())); setStatus('💾 "' + name + '" সেভ', '#2ed573', 2000); refreshProjList(); }
   catch (e) { setStatus('সেভ ব্যর্থ', '#eb4d4b', 3000); }
 }
 function loadProject() {
@@ -1292,8 +1495,9 @@ function loadProject() {
 }
 function deleteProject() {
   const name = $('projectName').value.trim() || 'default';
+  if (!confirm('"' + name + '" মুছে ফেলবেন?')) return;
   try { localStorage.removeItem('stickman_proj_' + name); } catch (e) {}
-  setStatus('মুছে ফেলা', '#f39c12', 2000);
+  setStatus('মুছে ফেলা', '#f39c12', 2000); refreshProjList();
 }
 function exportJSON() {
   const blob = new Blob([JSON.stringify(snapState(), null, 2)], { type: 'application/json' });
@@ -1318,21 +1522,36 @@ const PRESETS = {
   think: { pose: 'think', expr: 'neutral', bubble: 'কেন এমন হলো?' },
   bye: { pose: 'wave', expr: 'smile', bubble: 'আজকের মতো বিদায়!' }
 };
+function markPreset() { document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('active', b.dataset.preset === state.activePreset)); }
 function applyPreset(name) {
   const p = PRESETS[name]; if (!p) return;
+  if (state.activePreset === name) { stopPreset(); return; }
   const c = ac();
+  if (!state.activePreset) state.presetPrev = { ci: state.activeChar, pose: c.pose, expr: c.expr, bubble: c.bubble, bubbleOn: c.bubbleOn, rig: { ...c.targetRig } };
+  state.activePreset = name;
   c.pose = p.pose; c.expr = p.expr; c.bubble = p.bubble; c.bubbleOn = true;
   if (POSE_RIGS[p.pose]) c.targetRig = { ...DEFAULT_RIG, ...POSE_RIGS[p.pose] };
-  syncUI(); pushHistory();
-  if (name === 'wow') playAnim('surprise');
-  else if (name === 'thanks') playAnim('laugh');
+  syncUI(); markPreset(); pushHistory();
+  if (name === 'wow') playAnim('surprise'); else if (name === 'thanks') playAnim('laugh');
+}
+function stopPreset(force) {
+  const pv = state.presetPrev;
+  if (!state.activePreset) {
+    if (force) { const c = ac(); c.bubbleOn = false; if (LOOPS.includes(c.pose)) setPose('idle'); syncUI(); pushHistory(); }
+    return;
+  }
+  const c = state.chars[pv ? pv.ci : state.activeChar];
+  if (c) {
+    if (pv) { c.pose = pv.pose; c.expr = pv.expr; c.bubble = pv.bubble; c.bubbleOn = pv.bubbleOn; c.targetRig = { ...pv.rig }; }
+    else c.bubbleOn = false;
+  }
+  state.anim = null; state.activePreset = null; state.presetPrev = null;
+  syncUI(); markPreset(); pushHistory();
 }
 function resetAll() {
   if (!confirm('সব রিসেট করবেন?')) return;
   stopSeq();
-  state.chars[0] = makeChar({ x: 0.35, profession: 'classic' });
-  state.chars[1] = makeChar({ x: 0.65, scale: 0.9, profession: 'doctor' });
-  state.multiChar = false; state.activeChar = 0;
+  state.chars.length = 0; state.chars.push(makeChar({ x: 0.5 })); state.activeChar = 0; state.activePreset = null; state.shots = []; shotRT.playing = false;
   state.bgImage = null; state.bgMode = 'default'; state.filter = 'none';
   state.grid = false; state.safeArea = false;
   state.targetCam = { x: 0, y: 0, zoom: 1 };
@@ -1366,6 +1585,8 @@ function drawBackground() {
     const g = ctx.createLinearGradient(0, 0, cw, ch);
     g.addColorStop(0, state.gradColors[0]); g.addColorStop(1, state.gradColors[1]);
     ctx.fillStyle = g; ctx.fillRect(X, Y, W3, H3);
+  } else if (SCENES[state.bgMode]) {
+    drawScene(state.bgMode, X, Y, W3, H3, cw, ch);
   } else if (state.bgMode === 'dark') {
     ctx.fillStyle = '#1e272e'; ctx.fillRect(X, Y, W3, H3);
   } else {
@@ -1374,6 +1595,26 @@ function drawBackground() {
     const fy = ch * 0.85;
     ctx.moveTo(X, fy); ctx.lineTo(cw * 2, fy); ctx.stroke();
   }
+}
+const SCENES = { sky: 1, sunset: 1, night: 1, room: 1 };
+function drawScene(m, X, Y, W, H, cw, ch) {
+  const fy = ch * 0.85, cfg = { sky: ['#74b9ff', '#dff9fb', '#55c57a'], sunset: ['#6c5ce7', '#fdcb6e', '#2d3436'], night: ['#0c2461', '#4a69bd', '#1e272e'], room: ['#dfe6e9', '#b2bec3', '#b08968'] }[m];
+  const g = ctx.createLinearGradient(0, Y, 0, fy); g.addColorStop(0, cfg[0]); g.addColorStop(1, cfg[1]);
+  ctx.fillStyle = g; ctx.fillRect(X, Y, W, fy - Y); ctx.fillStyle = cfg[2]; ctx.fillRect(X, fy, W, Y + H - fy);
+  ctx.save();
+  if (m === 'sky') {
+    ctx.fillStyle = 'rgba(255,255,255,.9)';
+    [[.2, .15], [.55, .1], [.8, .22]].forEach(([a, b]) => { [[0, 0, 40], [40, 6, 32], [-38, 8, 28]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(cw * a + dx, ch * b + dy, r, 0, 6.283); ctx.fill(); }); });
+    ctx.fillStyle = '#fdcb6e'; ctx.beginPath(); ctx.arc(cw * .9, ch * .15, 50, 0, 6.283); ctx.fill();
+  } else if (m === 'sunset') { ctx.fillStyle = '#ff7675'; ctx.beginPath(); ctx.arc(cw * .5, fy, 130, Math.PI, 0); ctx.fill();
+  } else if (m === 'night') {
+    ctx.fillStyle = '#fff'; for (let i = 0; i < 60; i++) { ctx.globalAlpha = .4 + .6 * ((i * 37) % 10) / 10; ctx.fillRect((i * 127.3) % cw, (i * 53.7) % (fy - 30), 2, 2); }
+    ctx.globalAlpha = 1; ctx.fillStyle = '#f5f6fa'; ctx.beginPath(); ctx.arc(cw * .85, ch * .18, 42, 0, 6.283); ctx.fill();
+  } else if (m === 'room') {
+    ctx.fillStyle = '#74b9ff'; ctx.fillRect(cw * .65, ch * .12, cw * .2, ch * .3); ctx.strokeStyle = '#fff'; ctx.lineWidth = 8; ctx.strokeRect(cw * .65, ch * .12, cw * .2, ch * .3);
+    ctx.beginPath(); ctx.moveTo(cw * .75, ch * .12); ctx.lineTo(cw * .75, ch * .42); ctx.moveTo(cw * .65, ch * .27); ctx.lineTo(cw * .85, ch * .27); ctx.stroke();
+  }
+  ctx.restore();
 }
 function drawGrid() {
   ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.lineWidth = 1; ctx.setLineDash([8, 8]);
@@ -1401,6 +1642,7 @@ function drawCharacter(c, cx, cy, scale, o) {
   const T1 = 48 * L, S1 = 45 * L;
   const color = c.colors.body, p = c.profession || 'classic';
   const sec = k => V[k] || 0;
+  const th = c.turn || 0, cs = Math.cos(th), sn_ = Math.sin(th);
 
   ctx.save();
   ctx.translate(cx, cy);
@@ -1435,7 +1677,7 @@ function drawCharacter(c, cx, cy, scale, o) {
   // ---- পা ----
   const drawLeg = (isLeft, h, k, f) => {
     ctx.save();
-    ctx.translate(isLeft ? -15 : 15, -90);
+    ctx.translate((isLeft ? -15 : 15) * cs, -90);
     ctx.rotate(h);
     ctx.strokeStyle = color; ctx.lineWidth = 8 * W; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, T1); ctx.stroke();
@@ -1462,12 +1704,13 @@ function drawCharacter(c, cx, cy, scale, o) {
   jt('#f1c40f');
 
   ctx.save();
-  ctx.scale(1, T);
-  ctx.strokeStyle = color; ctx.lineWidth = 9 * W; ctx.lineCap = 'round';
+  const sxT = Math.max(Math.abs(cs), 0.35); ctx.scale(sxT, T);
+  ctx.strokeStyle = color; ctx.lineWidth = 9 * W / sxT; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -95); ctx.stroke();
 
-  // পেশার পোশাক
-  if (p === 'doctor') {
+  // পেশার পোশাক (পেছন থেকে শুধু সাদামাটা পিঠ)
+  if (cs < -0.2) { ctx.fillStyle = color; ctx.fillRect(-14, -95, 28, 86); }
+  else if (p === 'doctor') {
     ctx.fillStyle = '#ffffff';
     ctx.beginPath(); ctx.moveTo(-16, -95); ctx.lineTo(16, -95); ctx.lineTo(18, -10); ctx.lineTo(-18, -10);
     ctx.closePath(); ctx.fill();
@@ -1518,6 +1761,17 @@ function drawCharacter(c, cx, cy, scale, o) {
   } else if (p === 'astronaut') {
     ctx.fillStyle = '#dfe4ea'; ctx.fillRect(-16, -95, 32, 88);
     ctx.fillStyle = '#00d2d3'; ctx.beginPath(); ctx.arc(-6, -72, 4, 0, 6.283); ctx.fill();
+  } else if (p === 'nurse') {
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(-15, -95); ctx.lineTo(15, -95); ctx.lineTo(20, -8); ctx.lineTo(-20, -8); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#dfe4ea'; ctx.lineWidth = 2; ctx.stroke(); ctx.fillStyle = '#e74c3c'; ctx.fillRect(-3, -78, 6, 16); ctx.fillRect(-8, -73, 16, 6);
+  } else if (p === 'pilot') {
+    ctx.fillStyle = '#2f3640'; ctx.fillRect(-16, -95, 32, 86); ctx.fillStyle = '#f1c40f'; ctx.fillRect(-16, -72, 32, 4); ctx.fillRect(-16, -62, 32, 4);
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(-12, -85); ctx.lineTo(-2, -82); ctx.lineTo(-12, -78); ctx.closePath(); ctx.fill();
+  } else if (p === 'student') {
+    ctx.fillStyle = '#fff'; ctx.fillRect(-15, -95, 30, 86); ctx.fillStyle = c.colors.tie; ctx.fillRect(-15, -95, 5, 86); ctx.fillStyle = '#2d3436'; ctx.fillRect(-19, -90, 7, 42);
+  } else if (p === 'cricketer') {
+    ctx.fillStyle = '#0984e3'; ctx.fillRect(-16, -95, 32, 86); ctx.fillStyle = '#fff'; ctx.fillRect(-16, -95, 32, 8);
+    ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('7', 0, -60);
   } else if (c.colors.tie) {
     ctx.fillStyle = c.colors.tie;
     ctx.beginPath(); ctx.moveTo(-5, -88); ctx.lineTo(5, -88); ctx.lineTo(8, -45); ctx.lineTo(0, -35); ctx.lineTo(-8, -45);
@@ -1529,7 +1783,7 @@ function drawCharacter(c, cx, cy, scale, o) {
   const U = 44 * A, F = 40 * A;
   const drawArm = (isLeft, s, e, w) => {
     ctx.save();
-    ctx.translate(isLeft ? -15 : 15, -90 * T);
+    ctx.translate((isLeft ? -15 : 15) * cs, -90 * T);
     ctx.rotate(s);
     ctx.strokeStyle = color; ctx.lineWidth = 8 * W; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, U); ctx.stroke();
@@ -1578,6 +1832,14 @@ function drawCharacter(c, cx, cy, scale, o) {
         ctx.beginPath(); ctx.arc(10, -8, 12, 1.2 * Math.PI, 1.9 * Math.PI); ctx.stroke();
         ctx.fillStyle = '#795548'; ctx.fillRect(-2, -4, 4, 15);
         ctx.restore();
+      } else if (p === 'cricketer') {
+        ctx.save(); ctx.translate(0, 2); ctx.rotate(-0.25);
+        ctx.fillStyle = '#6d4c41'; ctx.fillRect(-2.5, -6, 5, 16); ctx.fillStyle = '#e0a040'; ctx.fillRect(-6.5, 10, 13, 42);
+        ctx.restore();
+      } else if (p === 'student') {
+        ctx.fillStyle = '#e17055'; ctx.fillRect(-8, -4, 16, 22); ctx.fillStyle = '#fff'; ctx.fillRect(-6, -2, 12, 3);
+      } else if (p === 'nurse') {
+        ctx.fillStyle = '#b2bec3'; ctx.fillRect(-9, -4, 18, 24); ctx.fillStyle = '#fff'; ctx.fillRect(-7, -1, 14, 18);
       }
     }
     ctx.restore();
@@ -1597,11 +1859,26 @@ function drawCharacter(c, cx, cy, scale, o) {
   jt('#00d2d3');
   ctx.translate(0, -40 * H + o.bob);
   ctx.scale(H, H);
+  {
+    const rel = camM.inverse().multiply(ctx.getTransform());
+    const ctr = rel.transformPoint(new DOMPoint(0, 0)), tp = rel.transformPoint(new DOMPoint(0, -(35 + (HAT_EXTRA[p] || 0))));
+    c._head = { x: ctr.x, y: ctr.y, topY: ctr.y - Math.hypot(tp.x - ctr.x, tp.y - ctr.y) };
+  }
 
   // মাথা
   ctx.beginPath(); ctx.arc(0, 0, 35, 0, 6.283);
   ctx.lineWidth = 7 * Math.min(W, 1.4); ctx.strokeStyle = color; ctx.stroke();
-  ctx.fillStyle = '#ffffff'; ctx.fill();
+  ctx.fillStyle = c.skin || '#ffffff'; ctx.fill();
+  {
+    const hs = c.hair || 'none';
+    if (hs !== 'none') {
+      ctx.fillStyle = c.hairColor || '#2d3436';
+      ctx.beginPath(); ctx.arc(0, 0, 36, 1.2 * Math.PI, 1.8 * Math.PI); ctx.closePath(); ctx.fill();
+      if (hs === 'long') { ctx.fillRect(-37, -22, 9, 56); ctx.fillRect(28, -22, 9, 56); }
+      else if (hs === 'bun') { ctx.beginPath(); ctx.arc(0, -42, 13, 0, 6.283); ctx.fill(); }
+      else if (hs === 'curly') { for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(-30 + i * 12, -26 - (i % 2) * 4, 9, 0, 6.283); ctx.fill(); } }
+    }
+  }
 
   // টুপি/হেডগিয়ার
   ctx.save();
@@ -1643,6 +1920,14 @@ function drawCharacter(c, cx, cy, scale, o) {
   } else if (p === 'astronaut') {
     ctx.fillStyle = 'rgba(0, 210, 211, 0.3)'; ctx.strokeStyle = '#dfe4ea'; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.arc(0, 0, 42, 0, 6.283); ctx.fill(); ctx.stroke();
+  } else if (p === 'nurse') {
+    ctx.fillStyle = '#fff'; ctx.fillRect(-24, -46, 48, 14); ctx.strokeStyle = '#dfe4ea'; ctx.lineWidth = 2; ctx.strokeRect(-24, -46, 48, 14);
+    ctx.fillStyle = '#e74c3c'; ctx.fillRect(-2, -44, 4, 10); ctx.fillRect(-5, -41, 10, 4);
+  } else if (p === 'pilot') {
+    ctx.fillStyle = '#2f3640'; ctx.beginPath(); ctx.arc(0, -24, 37, Math.PI, 0); ctx.lineTo(40, -22); ctx.lineTo(-40, -22); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(0, -34, 5, 0, 6.283); ctx.fill();
+  } else if (p === 'cricketer') {
+    ctx.fillStyle = '#0984e3'; ctx.beginPath(); ctx.arc(0, -24, 36, Math.PI, 0); ctx.closePath(); ctx.fill(); ctx.fillRect(0, -26, 46, 6);
   } else if (p === 'classic' && c.colors.hat && c.colors.hat !== '#ffffff') {
     ctx.fillStyle = c.colors.hat;
     ctx.fillRect(-40, -35, 80, 8); ctx.fillRect(-25, -58, 50, 25);
@@ -1651,31 +1936,37 @@ function drawCharacter(c, cx, cy, scale, o) {
 
   // ---- মুখের অংশ (মাথা ঘোরানোয় সরে ও সরু হয়) ----
   ctx.save();
-  ctx.translate(yaw * 11, 0);
-  ctx.scale(1 - 0.16 * Math.abs(yaw), 1);
+  if (cs < -0.02) { ctx.save(); ctx.fillStyle = '#2d3436'; ctx.beginPath(); ctx.arc(0, 0, 33, 0, 6.283); ctx.fill(); ctx.restore(); }
+  ctx.globalAlpha = cs > 0.02 ? 1 : 0;
+  ctx.translate(yaw * 11 + sn_ * 21, 0);
+  ctx.scale(Math.max(cs, 0.28) * (1 - 0.16 * Math.abs(yaw)), 1);
 
-  // চোখ: সাদা অংশ + মণি (কার্সর/স্যাকেড অনুসরণ) + ব্লিঙ্ক/উইঙ্ক/ঘুম
-  const surprise = c.expr === 'surprise', sleepy = c.expr === 'sleepy';
+  if (c.beard) { ctx.fillStyle = c.hairColor || '#2d3436'; ctx.beginPath(); ctx.arc(0, 2, 33, 0.1 * Math.PI, 0.9 * Math.PI); ctx.arc(0, -4, 25, 0.9 * Math.PI, 0.1 * Math.PI, true); ctx.closePath(); ctx.fill(); }
+  // চোখ (খোলা-মাত্রা ও ভাব অনুযায়ী) + গাল
+  const fc = c.face;
+  if (fc.blush > 0.05) { ctx.fillStyle = 'rgba(255,99,132,' + (0.3 * fc.blush) + ')'; [-23, 23].forEach(x => { ctx.beginPath(); ctx.ellipse(x, 10, 6, 3.6, 0, 0, 6.283); ctx.fill(); }); }
   [-12, 12].forEach((ex, i) => {
-    const closed = state.blink.on || (c.expr === 'wink' && i === 1);
-    ctx.strokeStyle = '#1e272e'; ctx.lineWidth = 3;
-    if (closed) {
-      ctx.beginPath();
-      if (c.expr === 'wink' && i === 1) ctx.arc(ex, -2, 6, 1.15 * Math.PI, 1.85 * Math.PI);
-      else { ctx.moveTo(ex - 6, -4); ctx.lineTo(ex + 6, -4); }
-      ctx.stroke();
-    } else {
-      const rx = surprise ? 8.5 : 7, ry = (surprise ? 9.5 : 7.5) * (sleepy ? 0.5 : 1);
-      ctx.fillStyle = '#ffffff'; ctx.lineWidth = 2;
+    const wink = c.expr === 'wink' && i === 1, op = state.blink.on ? 0.03 : fc.eye;
+    ctx.strokeStyle = '#1e272e'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+    if (wink || (c.expr === 'laugh' && fc.eye < 0.6)) { ctx.beginPath(); ctx.arc(ex, -1, 6, 1.15 * Math.PI, 1.85 * Math.PI); ctx.stroke(); }
+    else if (op < 0.12) { ctx.beginPath(); ctx.moveTo(ex - 6, -4); ctx.lineTo(ex + 6, -4); ctx.stroke(); }
+    else {
+      const ry = 7.5 * clamp(op, 0.25, 1.35), rx = 7.2;
+      ctx.fillStyle = '#fff'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.ellipse(ex, -5, rx, ry, 0, 0, 6.283); ctx.fill(); ctx.stroke();
-      const pr = surprise ? 2.6 : 3.6;
-      ctx.fillStyle = '#1e272e';
-      ctx.beginPath();
-      ctx.arc(ex + clamp(c.lookX, -1, 1) * 3.2, -5 + clamp(c.lookY, -1, 1) * (sleepy ? 1.2 : 2.4), pr, 0, 6.283); ctx.fill();
-      if (sleepy) { ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(ex - rx, -6); ctx.lineTo(ex + rx, -6); ctx.stroke(); }
+      const pr = (fc.eye > 1.15 ? 2.8 : 3.7) * Math.min(1, ry / 6);
+      const ppx = ex + clamp(c.lookX, -1, 1) * 3.2, ppy = -5 + clamp(c.lookY, -1, 1) * Math.min(2.4, Math.max(0, ry - pr));
+      ctx.fillStyle = '#1e272e'; ctx.beginPath(); ctx.arc(ppx, ppy, pr, 0, 6.283); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ppx - 1.1, ppy - 1.2, 1.1, 0, 6.283); ctx.fill();
+      if (fc.eye < 0.8) { ctx.strokeStyle = '#1e272e'; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(ex - rx - 1, -5 - ry * 0.25); ctx.lineTo(ex + rx + 1, -5 - ry * 0.25); ctx.stroke(); }
     }
   });
 
+  if (c.glasses && p !== 'teacher' && p !== 'scientist') {
+    ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2.5; ctx.beginPath();
+    ctx.ellipse(-12, -5, 10, 8.5, 0, 0, 6.283); ctx.moveTo(22, -5); ctx.ellipse(12, -5, 10, 8.5, 0, 0, 6.283);
+    ctx.moveTo(-2, -5); ctx.lineTo(2, -5); ctx.stroke();
+  }
   // শিক্ষক চশমা / বিজ্ঞানী গগলস
   if (p === 'teacher') {
     ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 3;
@@ -1688,44 +1979,34 @@ function drawCharacter(c, cx, cy, scale, o) {
     ctx.beginPath(); ctx.moveTo(-1, -5); ctx.lineTo(1, -5); ctx.stroke();
   }
 
-  // ভুরু (কথার জোরে সামান্য উঠে)
+  // ভুরু (বাঁকা, ভাব অনুযায়ী ঢাল)
   const bl = c.browLift || 0;
-  ctx.lineWidth = 3; ctx.strokeStyle = '#1e272e'; ctx.beginPath();
-  if (c.expr === 'angry') { ctx.moveTo(-18, -14 - bl); ctx.lineTo(-8, -10); ctx.moveTo(18, -14 - bl); ctx.lineTo(8, -10); }
-  else if (c.expr === 'sad') { ctx.moveTo(-18, -10); ctx.lineTo(-8, -14 - bl); ctx.moveTo(18, -10); ctx.lineTo(8, -14 - bl); }
-  else if (c.expr === 'surprise') { ctx.moveTo(-18, -18 - bl); ctx.lineTo(-8, -18 - bl); ctx.moveTo(8, -18 - bl); ctx.lineTo(18, -18 - bl); }
-  else if (c.expr === 'wink') { ctx.moveTo(-18, -14 - bl); ctx.lineTo(-8, -14 - bl); ctx.moveTo(8, -12); ctx.lineTo(18, -12); }
-  else { ctx.moveTo(-18, -14 - bl); ctx.lineTo(-8, -14 - bl); ctx.moveTo(8, -14 - bl); ctx.lineTo(18, -14 - bl); }
-  ctx.stroke();
+  ctx.lineWidth = 3.2; ctx.strokeStyle = '#1e272e'; ctx.lineCap = 'round';
+  [-1, 1].forEach(sd => {
+    let by = -16 + fc.browY - bl; if (c.expr === 'wink' && sd === 1) by += 3;
+    ctx.beginPath(); ctx.moveTo(sd * 20, by - 2.5 * fc.browA);
+    ctx.quadraticCurveTo(sd * 13, by - 2.2, sd * 6, by + 6 * fc.browA); ctx.stroke();
+  });
 
-  // মুখ: ভিসেম লিপ-সিং (আ / ও / এ / স)
-  const mouthY = 14;
-  ctx.save();
-  if (c.mouthOpen > 1.2) {
-    const radX = c.mouthWidth || 10;
-    const radY = Math.max(2.2, c.mouthOpen);
-    ctx.fillStyle = '#2c0c0d'; ctx.strokeStyle = c.colors.mouth || '#c0392b'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.ellipse(0, mouthY, radX, radY, 0, 0, 6.283); ctx.fill(); ctx.stroke();
-    if (radY > 5 || c.teeth > 0.5) {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-radX * 0.65, mouthY - radY + 1.5, radX * 1.3, Math.min(5, Math.max(2.5, radY * 0.5)));
-    }
-    if (radY > 9) {
-      ctx.fillStyle = '#e74c3c';
-      ctx.beginPath(); ctx.arc(0, mouthY + radY - 2, radX * 0.45, Math.PI, 0); ctx.fill();
-    }
-  } else {
-    ctx.strokeStyle = c.colors.mouth || '#c0392b'; ctx.lineWidth = 3;
+  // মুখ: লিপ-সিং + ভাব-ভিত্তিক ঠোঁটের বাঁক
+  {
+    const w = c.mouthOpen > 1.2 ? c.mouthWidth : fc.mw, o = Math.max(c.mouthOpen, fc.open * 12);
+    const sm = fc.smile, y0 = 15 - sm * 2, lc = y0 + fc.skew * 2, rc = y0 - fc.skew * 3;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = c.colors.mouth || '#c0392b'; ctx.lineWidth = 3;
     ctx.beginPath();
-    if (c.expr === 'smile' || c.expr === 'laugh' || c.expr === 'wink') ctx.arc(0, 8, 14, 0.2 * Math.PI, 0.8 * Math.PI);
-    else if (c.expr === 'sad') ctx.arc(0, 22, 12, 1.2 * Math.PI, 1.8 * Math.PI);
-    else if (c.expr === 'surprise') ctx.arc(0, 14, 6, 0, 6.283);
-    else if (c.expr === 'angry') { ctx.moveTo(-10, 16); ctx.lineTo(10, 16); }
-    else { ctx.moveTo(-9, 15); ctx.lineTo(9, 15); }
-    ctx.stroke();
+    if (o < 1.6) { ctx.moveTo(-w, lc); ctx.quadraticCurveTo(0, 15 + sm * 8, w, rc); ctx.stroke(); }
+    else {
+      const cy = 13 - sm * 1.5;
+      ctx.moveTo(-w, cy); ctx.quadraticCurveTo(0, cy - 2 + sm * 3, w, cy);
+      ctx.bezierCurveTo(w * 0.95, cy + o * 1.6, -w * 0.95, cy + o * 1.6, -w, cy); ctx.closePath();
+      ctx.fillStyle = '#2c0c0d'; ctx.fill();
+      ctx.save(); ctx.clip();
+      ctx.fillStyle = '#e8727a'; ctx.beginPath(); ctx.ellipse(0, cy + o * 1.35, w * 0.6, o * 0.5, 0, 0, 6.283); ctx.fill();
+      if (o > 4 || c.teeth > 0.5 || fc.open > 0.5) { ctx.fillStyle = '#fff'; ctx.fillRect(-w, cy - 1, w * 2, Math.min(5.5, 2 + o * 0.28)); }
+      ctx.restore(); ctx.stroke();
+    }
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(30,39,46,.5)'; ctx.beginPath(); ctx.moveTo(1, 4); ctx.quadraticCurveTo(4, 8, 0, 9); ctx.stroke();
   }
-  ctx.restore();
-
   ctx.restore(); // face
   ctx.restore(); // head
   ctx.restore(); // torso
@@ -1777,19 +2058,29 @@ function drawParticles() {
     ctx.fillText(sym, 0, 0); ctx.restore();
   });
 }
+function propLift(c) {
+  const i = state.chars.indexOf(c), n = Date.now();
+  return state.props.some(p => p.charIdx === i && n - p.created < 3000) ? canvas.height * 0.13 : 0;
+}
 function drawProps() {
-  state.props.forEach(p => {
-    const c = state.chars[p.charIdx] || state.chars[0];
-    const age = (Date.now() - p.created) / 1000;
-    if (age > 3) return;
-    const alpha = age < 2.5 ? 1 : (3 - age) * 2;
-    const bob = Math.sin(age * 4) * 8;
-    ctx.save(); ctx.globalAlpha = Math.max(0, alpha);
-    ctx.font = `${canvas.height * 0.07}px sans-serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(p.symbol, canvas.width * c.x, canvas.height * c.y - headTopPx(c) + 30 + bob);
-    ctx.restore();
-  });
+  const now = Date.now(), size = canvas.height * 0.075, groups = {};
+  state.props.forEach(p => { (groups[p.charIdx] = groups[p.charIdx] || []).push(p); });
+  for (const k in groups) {
+    const c = state.chars[k]; if (!c || !c._head) continue;
+    const arr = groups[k].filter(p => now - p.created < 3000);
+    arr.forEach((p, i) => {
+      const age = (now - p.created) / 1000, pop = Math.min(1, age / 0.3);
+      const sc = pop < 1 ? 0.3 + 0.9 * Math.sin(pop * Math.PI * 0.62) / Math.sin(Math.PI * 0.62) : 1;
+      const alpha = age < 2.5 ? 1 : (3 - age) * 2, bob = Math.sin(age * 4 + i) * 6;
+      const x = c._head.x + (i - (arr.length - 1) / 2) * size * 1.2, y = c._head.topY - size * 0.75 - 10 - bob;
+      ctx.save(); ctx.globalAlpha = Math.max(0, alpha); ctx.translate(x, y); ctx.scale(sc, sc);
+      ctx.shadowColor = 'rgba(0,0,0,.25)'; ctx.shadowBlur = 10; ctx.fillStyle = 'rgba(255,255,255,.92)';
+      ctx.beginPath(); ctx.arc(0, 0, size * 0.62, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.moveTo(-size * 0.12, size * 0.58); ctx.lineTo(size * 0.12, size * 0.58); ctx.lineTo(0, size * 0.8); ctx.fill();
+      ctx.font = size * 0.8 + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(p.symbol, 0, 2); ctx.restore();
+    });
+  }
 }
 function drawVisualizer() {
   if (!state.visualizer || !analyser) return;
@@ -1889,6 +2180,23 @@ function render(now) {
     }
   }
 
+  if (!state.paused) {
+    if (fadeRT) { fadeRT.t += dt; if (!fadeRT.done && fadeRT.t >= 0.3) { applyShot(fadeRT.sh, true); fadeRT.done = true; } if (fadeRT.t >= 0.6) fadeRT = null; }
+    if (shotRT.playing && !fadeRT) {
+      shotRT.t += dt; const cur = state.shots[shotRT.idx];
+      if (!cur) shotRT.playing = false;
+      else if (shotRT.t >= cur.dur) {
+        let n = shotRT.idx + 1;
+        if (n >= state.shots.length) { if ($('shotLoop').checked) n = 0; else { stopShots(); n = -1; } }
+        if (n >= 0) { shotRT.idx = n; shotRT.t = 0; gotoShot(n); }
+      }
+    }
+    if (tween) {
+      tween.t += dt; const u = ez(Math.min(1, tween.t / tween.d));
+      state.chars.forEach((c, i) => { const f = tween.from[i], g2 = tween.to[i]; if (f && g2) { c.x = lerp(f.x, g2.x, u); c.y = lerp(f.y, g2.y, u); c.scale = lerp(f.scale, g2.scale, u); } });
+      if (tween.t >= tween.d) tween = null;
+    }
+  }
   // ক্যামেরা
   const cw = canvas.width, ch = canvas.height;
   if (!state.paused) {
@@ -1909,6 +2217,7 @@ function render(now) {
   ctx.translate(cw / 2 + shx, ch / 2 + shy);
   ctx.scale(state.cam.zoom, state.cam.zoom);
   ctx.translate(-cw / 2 - state.cam.x, -ch / 2 - state.cam.y);
+  camM = ctx.getTransform();
 
   if (state.filter !== 'none') {
     const fmap = { sepia: 'sepia(0.7)', grayscale: 'grayscale(1)', vintage: 'sepia(0.4) contrast(1.2) saturate(0.8)', blur: 'blur(1.5px)', vignette: 'none' };
@@ -1928,9 +2237,10 @@ function render(now) {
   }
 
   // 3. প্রতিটি ক্যারেক্টারের রিগ
-  const drawList = state.multiChar ? state.chars : [state.chars[0]];
+  const drawList = [...state.chars].sort((a, b) => a.y - b.y || a.x - b.x);
   const tt = now / 1000;
-  drawList.forEach((c, idx) => {
+  drawList.forEach(c => {
+    const idx = state.chars.indexOf(c);
     let animX = 0, bodyY = 0, shakeX = 0, talkHeadBob = 0;
     const g = { ...c.targetRig };
     const loopy = LOOPS.includes(c.pose);
@@ -2029,25 +2339,29 @@ function render(now) {
       // ---- বার্স্ট অ্যানিমেশন ----
       if (hasAnim) {
         const t = (now - state.anim.start) / state.anim.dur, n = state.anim.name;
+        const sn = Math.sin;
         if (n === 'jump') {
-          if (t < 0.2) { Object.assign(g, { lH: -0.9, rH: -1.0, lK: 1.6, rK: 1.7, lS: 0.7, rS: 0.6, lE: 0, rE: 0, torsoAngle: 0.3 }); }
-          else if (t < 0.78) {
-            Object.assign(g, { lH: -0.2, rH: -0.3, lK: 0.5, rK: 0.6, lS: -2.6, rS: -2.6, lE: -0.2, rE: -0.2, torsoAngle: -0.05 });
-            bodyY -= Math.sin(((t - 0.2) / 0.58) * Math.PI) * 110;
-          } else { Object.assign(g, { lH: -0.8, rH: -0.9, lK: 1.4, rK: 1.5, torsoAngle: 0.25, lS: -0.3, rS: -0.3 }); }
+          if (t < 0.22) { const u = ez(t / 0.22); Object.assign(g, { lH: -0.9 * u, rH: -1.0 * u, lK: 1.7 * u, rK: 1.8 * u, lS: 0.9 * u, rS: 0.8 * u, lE: -0.2, rE: -0.2, torsoAngle: 0.35 * u, headTilt: -0.12 * u }); }
+          else if (t < 0.8) { const a2 = tri((t - 0.22) / 0.58); Object.assign(g, { lH: -0.6 * a2, rH: -0.35 * a2, lK: a2 + 0.1, rK: 0.7 * a2 + 0.1, lS: -2.5, rS: -2.7, lE: -0.2, rE: -0.15, torsoAngle: -0.1, headTilt: -0.12 }); bodyY -= a2 * 120; }
+          else { const u = (t - 0.8) / 0.2, cr = tri(u); Object.assign(g, { lH: -0.8 * cr, rH: -0.85 * cr, lK: 1.5 * cr, rK: 1.6 * cr, lS: 0.5 * cr - 0.3 * (1 - u), rS: 0.5 * cr - 0.3 * (1 - u), torsoAngle: 0.3 * cr }); }
         } else if (n === 'cry') {
-          shakeX = Math.sin(t * Math.PI * 24) * 3;
-          Object.assign(g, { headTilt: 0.25, torsoAngle: 0.12, lS: -1.9, lE: -2.5, rS: -1.9, rE: -2.5 });
+          const sh = sn(t * Math.PI * 22), e = Math.min(1, t * 5);
+          shakeX = sh * 2; bodyY += Math.abs(sh) * 2;
+          Object.assign(g, { headTilt: 0.32 * e, torsoAngle: 0.16 * e + sh * 0.015, lS: -1.05 * e, lE: -2.35 * e, rS: -1.15 * e, rE: -2.45 * e, lH: 0.1, rH: -0.1, lK: 0.1, rK: 0.1 });
         } else if (n === 'laugh') {
-          bodyY += Math.sin(t * Math.PI * 14) * 5;
-          g.headTilt = -0.2; g.torsoAngle = -0.08 + Math.sin(t * Math.PI * 14) * 0.04;
-          g.lS = 0.9; g.rS = -0.9;
+          const b2 = sn(t * Math.PI * 14);
+          bodyY += b2 * 4; Object.assign(g, { headTilt: -0.28, torsoAngle: -0.1 + b2 * 0.05, lS: -0.55, lE: -1.25, rS: -0.65, rE: -1.2, lK: 0.18, rK: 0.18 });
         } else if (n === 'surprise') {
-          bodyY -= Math.sin(t * Math.PI) * 25;
-          Object.assign(g, { lS: 1.2, rS: -1.2, headTilt: -0.1, torsoAngle: -0.1 });
+          const h = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+          bodyY -= tri(Math.min(1, t * 1.6)) * 18;
+          Object.assign(g, { torsoAngle: -0.2 * h, headTilt: -0.18 * h, lS: -1.25 * h, lE: -2.2 * h, rS: -1.3 * h, rE: -2.3 * h, lH: 0.15, rH: -0.35 * h, lK: 0.1 });
         } else if (n === 'angry') {
-          shakeX = Math.sin(t * Math.PI * 32) * 4;
-          Object.assign(g, { lS: 0.6, lE: -0.4, rS: -0.6, rE: 0.4, torsoAngle: 0.1, headTilt: 0.1 });
+          const st = Math.max(0, sn(t * Math.PI * 6));
+          shakeX = sn(t * Math.PI * 34) * 2.5; bodyY -= st * 4;
+          Object.assign(g, { torsoAngle: 0.16, headTilt: 0.2, lS: 0.35, lE: -0.7, rS: -0.35, rE: -0.7, lH: -0.55 * st, lK: 0.8 * st, rH: -0.2 });
+        } else if (n === 'nod') { g.headTilt += 0.2 + sn(t * Math.PI * 6) * 0.2; g.torsoAngle += 0.03;
+        } else if (n === 'shake') { g.headYaw += sn(t * Math.PI * 7) * 1.0;
+        } else if (n === 'clap') { const c2 = sn(t * Math.PI * 12); Object.assign(g, { lS: -1.2, lE: -1.5 - c2 * 0.18, rS: -1.3, rE: -1.5 + c2 * 0.18 });
         }
       }
 
@@ -2086,6 +2400,11 @@ function render(now) {
       else if (n === 'angry') { openT = 9; widthT = 13; teeth = 1; }
       else if (n === 'cry') { openT = 6 + 2 * Math.sin(t * Math.PI * 12); widthT = 11; }
     }
+    {
+      const fk = hasAnim ? ({ cry: 'sad', laugh: 'laugh', angry: 'angry', surprise: 'surprise' })[state.anim.name] : null;
+      const tg = EXPR[fk || c.expr] || EXPR.neutral;
+      for (const k in tg) c.face[k] = damp(c.face[k] ?? tg[k], tg[k], 11, dt);
+    }
     c.mouthOpen = damp(c.mouthOpen, openT, 22, dt);
     c.mouthWidth = damp(c.mouthWidth, widthT, 16, dt);
     c.teeth = teeth;
@@ -2093,10 +2412,16 @@ function render(now) {
     // রেন্ডার
     const px = cw * c.x + animX + shakeX;
     const py = ch * c.y;
+    if (c.spin) { c.turnT += dt * 1.6; c.turn = c.turnT; if (c === ac() && Math.random() < 0.1) syncTurn(); }
+    else c.turn += Math.atan2(Math.sin(c.turnT - c.turn), Math.cos(c.turnT - c.turn)) * (1 - Math.exp(-10 * dt));
+    if (state.chars.length > 1 && c === ac() && !isRecording) {
+      ctx.save(); ctx.strokeStyle = 'rgba(0,210,211,.85)'; ctx.lineWidth = 3; ctx.setLineDash([8, 6]);
+      ctx.beginPath(); ctx.ellipse(px, py + 6, 70 * c.scale, 15 * c.scale, 0, 0, 6.283); ctx.stroke(); ctx.restore();
+    }
     drawCharacter(c, px, py, c.scale, { bodyY: bodyY * c.scale, bob: talkHeadBob });
 
     if (c.bubbleOn && c.bubble) {
-      drawBubble(c.bubble, cw * c.x + animX, ch * c.y - headTopPx(c) + (c._off + bodyY) * c.scale);
+      drawBubble(c.bubble, c._head ? c._head.x : cw * c.x, (c._head ? c._head.topY : ch * c.y - headTopPx(c)) - propLift(c) + 6);
     }
   });
 
@@ -2110,6 +2435,7 @@ function render(now) {
   drawParticles(); drawProps();
   ctx.restore();
 
+  if (fadeRT) { const a = fadeRT.t < 0.3 ? fadeRT.t / 0.3 : Math.max(0, (0.6 - fadeRT.t) / 0.3); ctx.fillStyle = 'rgba(0,0,0,' + a + ')'; ctx.fillRect(0, 0, cw, ch); }
   if (state.grid) drawGrid();
   if (state.safeArea) drawSafeArea();
   if (state.visualizer) drawVisualizer();
@@ -2151,7 +2477,7 @@ function toWorld(e) {
 let drag = null;
 canvas.addEventListener('mousedown', e => {
   const p = toWorld(e);
-  const list = state.multiChar ? [1, 0] : [0];
+  const list = state.chars.map((_, i) => i).sort((a, b) => state.chars[b].y - state.chars[a].y);
   for (const i of list) {
     const c = state.chars[i];
     const cx = canvas.width * c.x, cy = canvas.height * c.y;
@@ -2189,7 +2515,7 @@ document.addEventListener('keydown', e => {
   else if ((e.ctrlKey || e.metaKey) && (k === 'y' || k === 'Y')) { e.preventDefault(); redo(); }
   else if (e.ctrlKey || e.metaKey || e.altKey) return;
   else if (k === 'r' || k === 'R') { e.preventDefault(); toggleRecording(); }
-  else if (k === 'Escape') resetCamera();
+  else if (k === 'Escape') { const m = document.querySelector('.modal.show'); if (m && m.id !== 'previewModal') m.classList.remove('show'); else if (!m) { stopPreset(); resetCamera(); } }
   else if (/^[0-9]$/.test(k)) { const i = (parseInt(k) + 9) % 10; if (POSE_LIST[i]) setPose(POSE_LIST[i][0]); }
   else if (k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'ArrowDown') {
     e.preventDefault();
@@ -2203,13 +2529,15 @@ document.addEventListener('keydown', e => {
   else if (k === '+' || k === '=') { const c = ac(); c.scale = clamp(c.scale * 1.05, 0.4, 2.2); pushHistory(); }
   else if (k === '-' || k === '_') { const c = ac(); c.scale = clamp(c.scale * 0.95, 0.4, 2.2); pushHistory(); }
   else if (k === 'f' || k === 'F') toggleFlip();
+  else if (k === ',' || k === '<') setTurn(((ac().turnT * 180 / Math.PI) - 45 + 360) % 360)
+  else if (k === '.' || k === '>') setTurn(((ac().turnT * 180 / Math.PI) + 45) % 360)
   else if (k === 'b' || k === 'B') toggleBubble();
   else if (k === 'g' || k === 'G') toggleGrid();
   else if (k === 'l' || k === 'L') toggleLipSync();
   else if (k === 'm' || k === 'M') mirrorPose();
   else if (k === 'k' || k === 'K') addKeyframe();
   else if (k === 'p' || k === 'P') toggleSeq();
-  else if (k === 'Tab' && state.multiChar) { e.preventDefault(); setActiveChar(state.activeChar === 0 ? 1 : 0); }
+  else if (k === 'Tab' && state.chars.length > 1) { e.preventDefault(); setActiveChar((state.activeChar + 1) % state.chars.length); }
 });
 window.addEventListener('beforeunload', e => { if (isRecording) { e.preventDefault(); e.returnValue = ''; } });
 
@@ -2218,13 +2546,25 @@ document.body.addEventListener('click', async function once() {
   try { await ensureAudio(); if (sourceMode === 'mic') await connectMic(); } catch (e) {}
 }, { once: true });
 try {
-  if (!localStorage.getItem('sstickman_seen_v7')) {
+  if (!localStorage.getItem('sstickman_seen_v8')) {
     openModal('tutorialModal');
     localStorage.setItem('sstickman_seen_v7', '1');
   }
   const auto = localStorage.getItem('stickman_proj_autosave');
-  if (auto) applySnap(JSON.parse(auto));
+  if (auto) { applySnap(JSON.parse(auto)); state.chars.forEach(c => { c.bubbleOn = false; }); }
 } catch (e) {}
+function refreshProjList() {
+  try { const dl = $('projList'); dl.innerHTML = ''; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('stickman_proj_')) { const o = document.createElement('option'); o.value = k.slice(14); dl.appendChild(o); } } } catch (e) {}
+}
+(function () {
+  const pa = $('profAdd');
+  [...$('professionSelect').options].forEach(o => {
+    const b = document.createElement('button'); b.textContent = o.textContent.replace(/\s*\(.*\)/, ''); b.title = 'এই পেশার নতুন ক্যারেক্টার যোগ';
+    b.onclick = () => addChar(o.value); pa.appendChild(b);
+  });
+  document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m && m.id !== 'previewModal') m.classList.remove('show'); }));
+})();
+refreshProjList();
 syncUI(); pushHistory();
 requestAnimationFrame(render);
 </script>
