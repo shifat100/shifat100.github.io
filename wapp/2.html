@@ -265,6 +265,8 @@
         <div class="panel-title">
           <span>🕹️ ম্যানুয়াল ক্যামেরা মুভমেন্ট (চেপে ধরে রাখুন — সবসময় স্মুথ)</span>
           <button id="btnCamReset" class="toggle-pill">♻ ফ্রন্টে রিসেট</button>
+          <button id="btnCamSmooth" class="toggle-pill active">🌊 স্মুথ মুভমেন্ট: চালু</button>
+          <button id="btnDroneAuto" class="toggle-pill">🔁 অটো ব্যাক-ফরোয়ার্ড: বন্ধ</button>
         </div>
         <div class="btn-grid-4">
           <button id="hOrbL">↺ বামে অরবিট</button>
@@ -342,6 +344,7 @@
         <div class="btn-grid-3">
           <button id="btnWalkLeft">⬅ বাম প্রান্তে যাও</button>
           <button id="btnWalkCenter">🎯 সেন্টারে এসো</button>
+          <button id="btnResetSpeaker">♻ স্পিকার রিসেট</button>
           <button id="btnWalkRight">ডান প্রান্তে যাও ➡</button>
         </div>
         <div class="btn-grid-2" style="margin-top:7px;">
@@ -1593,6 +1596,7 @@
       slideRL: { label: '◀ স্লাইড ডান→বাম', dur: 13, from: { yaw: 0, pitch: 0.05, dist: 7, ty: 1.45, sx: 5, lens: 36 }, to: { sx: -5 } },
       craneUp: { label: '🏗 ক্রেন: নিচ থেকে উপরে', dur: 12, from: { yaw: 0.2, pitch: -0.15, dist: 5.5, ty: 1.1, lens: 30 }, to: { pitch: 0.75, dist: 12, ty: 1.5, lens: 32 } }
     };
+    SHOTS.autoDolly = { label: '🔁 অটো ব্যাক-ফরোয়ার্ড', dur: 9, from: { yaw: 0.15, pitch: 0.08, dist: 3.2, ty: 1.45, lens: 38 }, to: { dist: 11, lens: 34 } };
     const SHOT_ORDER = ['orbitLR', 'orbitRL', 'pullBack', 'pushIn', 'droneIn', 'reveal', 'slideLR', 'slideRL', 'craneUp'];
 
     function anchorTarget(out) {
@@ -1662,7 +1666,21 @@
       b.addEventListener('click', () => startShot(k));
       $('shotGrid').appendChild(b);
     });
-    $('btnShotStop').addEventListener('click', () => cancelShot(true));
+    $('btnShotStop').addEventListener('click', () => { cancelShot(true); autoDollyOn = false; updateAutoBtn(); });
+    let autoDollyOn = false, smoothOn = true, smoothSaved = 0.55;
+    function updateAutoBtn() { const b = $('btnDroneAuto'); b.classList.toggle('active', autoDollyOn); b.textContent = autoDollyOn ? '🔁 অটো ব্যাক-ফরোয়ার্ড: চালু' : '🔁 অটো ব্যাক-ফরোয়ার্ড: বন্ধ'; }
+    $('btnDroneAuto').addEventListener('click', () => {
+      autoDollyOn = !autoDollyOn;
+      if (autoDollyOn) { $('chkShotLoop').checked = true; startShot('autoDolly'); } else { cancelShot(true); }
+      updateAutoBtn();
+    });
+    $('btnCamSmooth').addEventListener('click', () => {
+      smoothOn = !smoothOn;
+      if (smoothOn) camSmooth = smoothSaved; else { smoothSaved = camSmooth; camSmooth = 0.12; }
+      $('smoothSlider').value = camSmooth; $('smoothVal').textContent = camSmooth.toFixed(2) + 's';
+      $('btnCamSmooth').classList.toggle('active', smoothOn);
+      $('btnCamSmooth').textContent = smoothOn ? '🌊 স্মুথ মুভমেন্ট: চালু' : '⚡ স্মুথ মুভমেন্ট: বন্ধ (ফাস্ট)';
+    });
 
     // Toggles
     function updateShakeBtn() {
@@ -1836,6 +1854,12 @@
     $('btnWalkLeft').addEventListener('click', () => { stopPace(); startWalk(-4.5, 0.7); });
     $('btnWalkRight').addEventListener('click', () => { stopPace(); startWalk(4.5, 0.7); });
     $('btnWalkCenter').addEventListener('click', () => { stopPace(); startWalk(0, 0.4); });
+    $('btnResetSpeaker').addEventListener('click', () => {
+      stopPace(); spk.target = null; spk.x = 0; spk.z = 0.4; spk.vx = 0; spk.vz = 0; spk.yaw = spk.restYaw;
+      Object.keys(mvKeys).forEach(k => { mvKeys[k] = false; });
+      document.querySelectorAll('.gest-btn').forEach(b => { if (b.dataset.gest === 'straight') b.click(); });
+      setMic('mouth');
+    });
     function stopPace() { spk.pace = false; $('btnPace').classList.remove('active'); $('btnPace').textContent = '🚶 পায়চারি (বাম↔ডান): বন্ধ'; }
     $('btnPace').addEventListener('click', () => {
       spk.pace = !spk.pace; spk.paceWait = 0; spk.target = null;
