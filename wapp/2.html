@@ -72,7 +72,7 @@ input[type="file"] { display:none; }
 .hint { font-size:.72rem; color:var(--muted); line-height:1.5; }
 .notice { font-size:.74rem; color:#fde68a; background:rgba(146,64,14,.28); border:1px solid rgba(245,158,11,.4); border-radius:8px; padding:6px 9px; display:none; line-height:1.5; }
 .tabbar { display:flex; gap:6px; flex-wrap:wrap; }
-.tabbar button { flex:1; min-width:78px; padding:9px 6px; }
+.tabbar button { flex:1 1 30%; min-width:90px; padding:8px 6px; }
 .tab-pane { display:none; flex-direction:column; gap:11px; }
 .tab-pane.active { display:flex; }
 .panel-title span:first-child { cursor:pointer; }
@@ -86,7 +86,7 @@ input[type="file"] { display:none; }
 .ctl select { width:100%; }
 .ctl input[type=color] { width:44px; height:26px; padding:0; border:1px solid var(--panel-border); border-radius:6px; background:none; cursor:pointer; }
 .ctl input[type=checkbox] { accent-color:var(--accent); }
-.ctl input[type=text] { background:#0b0f19; border:1px solid var(--panel-border); color:var(--text); border-radius:6px; padding:5px 7px; font-size:.78rem; }
+.ctl input[type=text],.tl-inp { background:#0b0f19; border:1px solid var(--panel-border); color:var(--text); border-radius:6px; padding:5px 7px; font-size:.78rem; }
 .ctl .val { min-width:40px; text-align:right; color:#e2e8f0; }
 .swatches { display:flex; gap:6px; flex-wrap:wrap; margin-top:7px; }
 .swatch { width:24px; height:24px; border-radius:50%; border:2px solid #334155; padding:0; }
@@ -103,6 +103,25 @@ body.nohud .hud-overlay { display:none; }
 .canvas-wrapper:fullscreen { height:100vh; width:auto; aspect-ratio:auto; margin:0 auto; }
 .canvas-wrapper.portrait:fullscreen { aspect-ratio:9/16; }
 body.clean .canvas-wrapper.portrait { height:90vh; }
+
+/* Timeline Styles */
+.btn-cap.active { background:#b91c1c; border-color:#f87171; box-shadow:0 0 12px rgba(239,68,68,.55); animation:pulse 1.4s infinite; }
+.tl-ruler { position:relative; height:22px; background:#090d16; border:1px solid var(--panel-border); border-radius:8px; margin-top:8px; cursor:pointer; overflow:hidden; }
+.tl-ruler-fill { position:absolute; top:0; bottom:0; left:0; width:0%; background:rgba(37,99,235,.28); border-right:2px solid #60a5fa; pointer-events:none; }
+.tl-dot { position:absolute; top:50%; width:8px; height:8px; border-radius:50%; background:#f59e0b; border:1px solid #fff; transform:translate(-50%,-50%); cursor:pointer; z-index:2; }
+.tl-dot.fired { background:#10b981; }
+.tl-dot.off { background:#475569; opacity:.5; }
+.tl-list { display:flex; flex-direction:column; gap:7px; margin-top:9px; max-height:360px; overflow-y:auto; padding-right:2px; }
+.tl-item { background:#0b101b; border:1px solid var(--panel-border); border-radius:9px; padding:7px; display:flex; flex-direction:column; gap:6px; transition:border-color .15s, background .15s; }
+.tl-item.fired { border-color:rgba(16,185,129,.45); background:#0c1718; }
+.tl-item.current { border-color:#f59e0b; box-shadow:0 0 10px rgba(245,158,11,.25); }
+.tl-item.disabled { opacity:.5; }
+.tl-row { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+.tl-row select, .tl-row input { font-size:.74rem; padding:4px 6px; }
+.tl-time-inp { width:68px; text-align:center; font-variant-numeric:tabular-nums; }
+.tl-mini-btn { padding:4px 6px; font-size:.72rem; border-radius:6px; }
+.tl-empty { text-align:center; padding:16px 8px; font-size:.76rem; color:var(--muted); border:1px dashed #232c42; border-radius:8px; }
+.tl-badge { background:#1e293b; color:#cbd5e1; padding:2px 7px; border-radius:99px; font-size:.72rem; }
 </style>
 </head>
 <body>
@@ -111,15 +130,15 @@ body.clean .canvas-wrapper.portrait { height:90vh; }
     <div class="brand-icon">🎥</div>
     <div>
       <h1>রিয়েলিস্টিক স্পিকার স্টেজ স্টুডিও 3D</h1>
-      <span>স্মুথ ফ্রি-ক্যামেরা, কাট/গ্লাইড শট, অডিও লিপ-সিঙ্ক ও পজ-রিজিউম ভিডিও রেকর্ডিং</span>
+      <span>স্মুথ ফ্রি-ক্যামেরা, কাট/গ্লাইড শট, প্রি-কমান্ড টাইমলাইন, অডিও লিপ-সিঙ্ক ও Space রেকর্ডিং</span>
     </div>
   </div>
   <div class="rec-bar">
     <select id="resSel" title="রেকর্ডিং রেজোলিউশন"><option value="1280x720">720p HD</option><option value="1920x1080">1080p Full HD</option></select>
     <button id="btnAspect" title="Aspect ratio 16:9 / 9:16">📱 9:16 পোর্ট্রেট</button>
-    <div class="rec-status" id="recStatus"><span class="rec-dot"></span><span id="recText">প্রস্তুত</span><span id="recTimer">00:00</span></div>
-    <button id="btnRecord" class="btn-rec">⏺ রেকর্ডিং শুরু</button>
-    <button id="btnPauseRec" style="display:none;">⏸ রেকর্ডিং পজ</button>
+    <div class="rec-status" id="recStatus" title="শর্টকাট: Space চাপলে রেকর্ডিং শুরু / পজ / রিজিউম হবে"><span class="rec-dot"></span><span id="recText">প্রস্তুত</span><span id="recTimer">00:00</span></div>
+    <button id="btnRecord" class="btn-rec" title="শর্টকাট: Space চাপুন">⏺ রেকর্ডিং শুরু</button>
+    <button id="btnPauseRec" style="display:none;" title="শর্টকাট: Space চাপুন">⏸ রেকর্ডিং পজ</button>
     <button id="btnStopRec" class="btn-stop" style="display:none;">⏹ স্টপ</button>
     <button id="btnDownload" class="btn-success" style="display:none;">⬇ ভিডিও ডাউনলোড</button>
   </div>
@@ -127,7 +146,7 @@ body.clean .canvas-wrapper.portrait { height:90vh; }
 
 <main class="workspace">
   <section class="stage-column">
-    <div class="canvas-wrapper" id="canvasWrapper" title="ড্র্যাগ = অরবিট · রাইট-ড্র্যাগ/Shift+ড্র্যাগ = স্লাইড · স্ক্রল = জুম/ডলি">
+    <div class="canvas-wrapper" id="canvasWrapper" title="ড্র্যাগ = অরবিট · রাইট-ড্র্যাগ/Shift+ড্র্যাগ = স্লাইড · স্ক্রল = জুম/ডলি · Space = রেকর্ড/পজ">
       <canvas id="stageCanvas" width="1280" height="720"></canvas>
       <div class="canvas-tools" id="canvasTools">
         <button id="btnShot" title="Screenshot (P)">📸</button>
@@ -193,18 +212,20 @@ body.clean .canvas-wrapper.portrait { height:90vh; }
         <button id="hSlL">◀ বামে স্লাইড</button><button id="hDOut">⏪ দূরে (ডলি আউট)</button><button id="hSlR">▶ ডানে স্লাইড</button><button id="hPitDn">⤵ নিচু অ্যাঙ্গেল</button>
         <button id="hPedUp">⬆ পেডেস্টাল উপরে</button><button id="hPedDn">⬇ পেডেস্টাল নিচে</button>
       </div>
-      <p class="hint" style="margin-top:7px;">কিবোর্ড: ← → অরবিট · ↑ ↓ উঁচু/নিচু · A D স্লাইড · W S কাছে/দূরে · Q E উপরে/নিচে · T শেক · Esc শট বন্ধ। মাউস: ড্র্যাগ = অরবিট, রাইট-ড্র্যাগ বা Shift+ড্র্যাগ = স্লাইড, স্ক্রল = ডলি।</p>
+      <p class="hint" style="margin-top:7px;">কিবোর্ড: Space = রেকর্ডিং শুরু/পজ-রিজিউম · ← → অরবিট · ↑ ↓ উঁচু/নিচু · A D স্লাইড · W S কাছে/দূরে · Q E উপরে/নিচে · T শেক · Esc শট বন্ধ।</p>
     </div>
   </section>
 
   <aside class="sidebar">
     <div class="tabbar" id="tabbar">
       <button class="active" data-tab="audio">🎙 Audio</button>
+      <button data-tab="timeline">🎬 Timeline</button>
       <button data-tab="speaker">🚶 Speaker</button>
       <button data-tab="char">🧑 Character</button>
       <button data-tab="stage">🎭 Stage</button>
       <button data-tab="data">💾 Presets</button>
     </div>
+
     <div class="tab-pane active" data-pane="audio">
       <div class="panel">
         <div class="panel-title"><span>🎙️ অডিও স্পিচ ও লিপ-সিঙ্ক</span></div>
@@ -221,6 +242,62 @@ body.clean .canvas-wrapper.portrait { height:90vh; }
           <label class="check-row"><input type="checkbox" id="chkAutoStop" checked /> অডিও শেষ হলে রেকর্ডিং অটো স্টপ (১.৫ সেকেন্ড পর)</label>
           <div class="notice" id="pauseNotice">⏸ রেকর্ডিং পজ আছে। অ্যানিমেশন/ক্যামেরা চলবে, অডিও রেকর্ডিংয়ের পজ-পয়েন্টে থামানো। এখন ▶ প্লে চাপলে অডিও শুধু প্রিভিউ হিসেবে বাজবে (রেকর্ড হবে না)। রিজিউম করলে অডিও পজ-পয়েন্ট থেকেই আবার শুরু হবে।</div>
         </div>
+      </div>
+    </div>
+
+    <div class="tab-pane" data-pane="timeline">
+      <div class="panel">
+        <div class="panel-title">
+          <span>🎬 প্রি-কমান্ড টাইমলাইন প্লেয়ার</span>
+          <span class="tl-badge" id="tlClockBadge">⏱ 0:00.0</span>
+        </div>
+        <div class="btn-grid-3">
+          <button id="btnTlAudioPlay">▶ অডিও</button>
+          <button id="btnTlAudioPause">⏸ পজ</button>
+          <button id="btnTlAudioZero">⏮ ০:০০</button>
+        </div>
+        <div class="slider-row" style="margin-top:6px;">
+          <span id="tlCurLbl">0:00.0</span>
+          <input type="range" id="tlSeek" min="0" max="100" value="0" step="0.1" />
+          <span id="tlDurLbl">0:00.0</span>
+        </div>
+        <div class="btn-grid-2" style="margin-top:8px;">
+          <button id="btnPlayAll" class="btn-success">▶ সব প্লে করুন (অডিও+টাইমলাইন)</button>
+          <button id="btnStopAll" class="btn-stop">⏹ থামাও</button>
+        </div>
+        <div style="margin-top:7px;">
+          <button id="btnLiveCapture" class="btn-cap" style="width:100%;">🔴 লাইভ ক্যাপচার (গান শুনে ক্লিক করলেই সেভ): বন্ধ</button>
+        </div>
+        <label class="check-row"><input type="checkbox" id="chkTlEnabled" checked /> 🎬 অডিও প্লে ও রেকর্ডিংয়ের সময় টাইমলাইন অটো-রান হবে</label>
+        <p class="hint" style="margin-top:5px;">গান শুনে শুনে কমান্ড যোগ/এডিট করুন। এরপর "সব প্লে করুন" বা রেকর্ডিং (Space) চালু করলে সব মুভমেন্ট অটোমেটিক চলবে ও রেকর্ড হবে।</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><span>➕ নতুন প্রি-কমান্ড যোগ করুন</span></div>
+        <div class="tl-row">
+          <label style="font-size:.74rem;color:var(--muted);">সময়:</label>
+          <input type="text" id="tlAddTime" class="tl-inp tl-time-inp" value="0:00.0" title="যেমন: 0:12.5 বা 12.5" />
+          <button id="btnTlNow" class="tl-mini-btn" title="বর্তমান অডিও সময় বসান">⏱ বর্তমান</button>
+          <label class="check-row" style="margin-top:0;margin-left:auto;"><input type="checkbox" id="chkTlFollowTime" checked /> টাইম সিঙ্ক</label>
+        </div>
+        <div class="tl-row" style="margin-top:7px;">
+          <select id="tlAddType" style="flex:1;min-width:0;"></select>
+          <select id="tlAddVal" style="flex:1;min-width:0;"></select>
+        </div>
+        <div class="tl-row" id="tlAddExtra" style="margin-top:6px;display:none;"></div>
+        <button id="btnTlAdd" class="active" style="width:100%;margin-top:8px;">➕ টাইমলাইনে কমান্ড যোগ করুন</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <span>📋 টাইমলাইন তালিকা (<span id="tlCount">0</span>)</span>
+          <div style="display:flex;gap:5px;">
+            <button id="btnTlSort" class="tl-mini-btn" title="সময় অনুযায়ী সাজান">⇅ সর্ট</button>
+            <button id="btnTlClear" class="tl-mini-btn btn-stop" title="সব কমান্ড মুছুন">🗑 সব মুছুন</button>
+          </div>
+        </div>
+        <div class="tl-ruler" id="tlRuler" title="ক্লিক করে অডিও সিক করুন"><div class="tl-ruler-fill" id="tlRulerFill"></div></div>
+        <div class="tl-list" id="tlList"></div>
       </div>
     </div>
 
@@ -297,7 +374,7 @@ body.clean .canvas-wrapper.portrait { height:90vh; }
         </div>
         <input type="file" id="importFile" accept="application/json,.json" />
         <div class="btn-grid-2" style="margin-top:7px;"><button id="btnResetLook">♻ Reset character</button><button id="btnResetStage">♻ Reset stage</button></div>
-        <p class="hint" style="margin-top:7px;">Saves the character look, outfit, stage settings, camera slots and speeds. “Save in browser” is restored automatically next time you open the file.</p>
+        <p class="hint" style="margin-top:7px;">Saves the character look, outfit, stage settings, camera slots, timeline commands and speeds. “Save in browser” is restored automatically next time you open the file.</p>
       </div>
     </div>
   </aside>
@@ -323,6 +400,30 @@ function smoothDamp(current, target, vel, smoothTime, dt) {
   return target + (change + temp) * e;
 }
 function fmtTime(sec) { if (!sec || isNaN(sec)) return '0:00'; const m = Math.floor(sec / 60), s = Math.floor(sec % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; }
+function fmtTimeDec(sec) {
+  const sTot = Math.max(0, Number(sec) || 0);
+  const m = Math.floor(sTot / 60), rem = (sTot % 60).toFixed(1);
+  return `${m}:${Number(rem) < 10 ? '0' : ''}${rem}`;
+}
+function parseTimeStr(str) {
+  const s = String(str || '').trim();
+  if (!s) return NaN;
+  if (s.includes(':')) {
+    const parts = s.split(':');
+    if (parts.length !== 2) return NaN;
+    const m = parseFloat(parts[0]), sec = parseFloat(parts[1]);
+    if (isNaN(m) || isNaN(sec)) return NaN;
+    return Math.max(0, Math.round((m * 60 + sec) * 10) / 10);
+  }
+  const v = parseFloat(s);
+  return isNaN(v) ? NaN : Math.max(0, Math.round(v * 10) / 10);
+}
+
+// Blur buttons after pointer click so Space key never accidentally clicks a focused button
+document.addEventListener('pointerup', e => {
+  const btn = e.target && e.target.closest ? e.target.closest('button') : null;
+  if (btn) setTimeout(() => btn.blur(), 0);
+});
 
 // 1. PROCEDURAL TEXTURES
 function createWoodTexture() {
@@ -1088,15 +1189,48 @@ $('audioFile').addEventListener('change', e => {
   currentAudioURL = URL.createObjectURL(file); audioEl.src = currentAudioURL; $('audioName').textContent = '🎵 ' + file.name;
   if (rec.state === 'idle') audioEl.play().catch(() => {});
 });
-$('btnAudioPlay').addEventListener('click', () => { initAudioContext(); if (audioEl.src) audioEl.play().catch(() => {}); });
-$('btnAudioPause').addEventListener('click', () => audioEl.pause());
-$('btnAudioRestart').addEventListener('click', () => { initAudioContext(); audioEl.currentTime = 0; if (audioEl.src) audioEl.play().catch(() => {}); });
+function playAudioSafe() { initAudioContext(); if (audioEl.src) audioEl.play().catch(() => {}); }
+function pauseAudioSafe() { audioEl.pause(); }
+function restartAudioSafe() { initAudioContext(); audioEl.currentTime = 0; tlResetState(0); if (audioEl.src) audioEl.play().catch(() => {}); }
 
-const audioSeek = $('audioSeek');
-audioEl.addEventListener('timeupdate', () => {
-  if (audioEl.duration) { audioSeek.value = (audioEl.currentTime / audioEl.duration) * 100; $('audioCurTime').textContent = fmtTime(audioEl.currentTime); $('audioDurTime').textContent = fmtTime(audioEl.duration); }
+$('btnAudioPlay').addEventListener('click', playAudioSafe);
+$('btnAudioPause').addEventListener('click', pauseAudioSafe);
+$('btnAudioRestart').addEventListener('click', restartAudioSafe);
+$('btnTlAudioPlay').addEventListener('click', playAudioSafe);
+$('btnTlAudioPause').addEventListener('click', pauseAudioSafe);
+$('btnTlAudioZero').addEventListener('click', () => { audioEl.currentTime = 0; tl.virtualTime = 0; tlResetState(0); updateAudioSeekUI(); });
+
+const audioSeek = $('audioSeek'), tlSeek = $('tlSeek');
+function updateAudioSeekUI() {
+  const curT = audioEl.src ? (audioEl.currentTime || 0) : tl.virtualTime;
+  const dur = audioEl.duration || tlMaxDuration();
+  if (audioEl.duration) {
+    const pct = (audioEl.currentTime / audioEl.duration) * 100;
+    audioSeek.value = pct; tlSeek.value = pct;
+    $('audioCurTime').textContent = fmtTime(audioEl.currentTime);
+    $('audioDurTime').textContent = fmtTime(audioEl.duration);
+  } else {
+    const pct = dur > 0 ? clamp((curT / dur) * 100, 0, 100) : 0;
+    tlSeek.value = pct;
+  }
+  $('tlCurLbl').textContent = fmtTimeDec(curT);
+  $('tlDurLbl').textContent = fmtTimeDec(dur);
+  $('tlClockBadge').textContent = '⏱ ' + fmtTimeDec(curT);
+  if ($('chkTlFollowTime') && $('chkTlFollowTime').checked && document.activeElement !== $('tlAddTime')) {
+    $('tlAddTime').value = fmtTimeDec(curT);
+  }
+  const rulerFill = $('tlRulerFill');
+  if (rulerFill) rulerFill.style.width = (dur > 0 ? clamp((curT / dur) * 100, 0, 100) : 0) + '%';
+}
+audioEl.addEventListener('timeupdate', updateAudioSeekUI);
+audioEl.addEventListener('loadedmetadata', () => { updateAudioSeekUI(); renderTimelineRuler(); });
+audioSeek.addEventListener('input', () => { if (audioEl.duration) { audioEl.currentTime = (audioSeek.value / 100) * audioEl.duration; tlResetState(audioEl.currentTime); updateAudioSeekUI(); } });
+tlSeek.addEventListener('input', () => {
+  const dur = audioEl.duration || tlMaxDuration();
+  if (audioEl.duration) { audioEl.currentTime = (tlSeek.value / 100) * audioEl.duration; tlResetState(audioEl.currentTime); }
+  else if (dur > 0) { tl.virtualTime = (tlSeek.value / 100) * dur; tlResetState(tl.virtualTime); }
+  updateAudioSeekUI();
 });
-audioSeek.addEventListener('input', () => { if (audioEl.duration) audioEl.currentTime = (audioSeek.value / 100) * audioEl.duration; });
 audioEl.addEventListener('ended', () => { if (rec.state === 'recording' && $('chkAutoStop').checked) setTimeout(() => { if (rec.state === 'recording') stopRecording(); }, 1500); });
 
 function stopDemoVoice() { demoActive = false; clearInterval(demoInterval); $('btnDemoVoice').classList.remove('active'); }
@@ -1231,7 +1365,8 @@ function updateSpeaker(dt, t, rawVoice) {
 
   const breathe = Math.sin(t * 1.6) * 0.012;
   spine.rotation.x = pose.lean + breathe + smoothVoice * 0.015; spine.rotation.z = pose.tilt; spine.rotation.y = pose.twist + am * 0.07 * Math.sin(p); pelvis.rotation.y = -am * 0.05 * Math.sin(p);
-  head.rotation.x = pose.hp + smoothVoice * 0.05 * Math.sin(t * 5.5) * 0.6 - spine.rotation.x * 0.6; head.rotation.y = pose.hy + Math.sin(t * 0.4) * 0.03; head.rotation.z = pose.hr;
+
+head.rotation.x = pose.hp + smoothVoice * 0.05 * Math.sin(t * 5.5) * 0.6 - spine.rotation.x * 0.6; head.rotation.y = pose.hy + Math.sin(t * 0.4) * 0.03; head.rotation.z = pose.hr;
   const browUp = 0.116 + pose.brow * 0.008 + smoothVoice * 0.004 + exprCur.brow * 0.008;
   browL.rotation.z = 0.03 + exprCur.rot; browR.rotation.z = -(0.03 + exprCur.rot); browL.position.y = browUp; browR.position.y = browUp;
 }
@@ -1289,14 +1424,18 @@ function applyPreset(key) {
   povOff(); cancelShot(false); activePreset = key; shakeManual = null;
   setDesired(Object.assign({}, BASE, PRESETS[key].p), cutMode); setCamLabel(PRESETS[key].label.replace(/^\S+\s/, ''));
   document.querySelectorAll('#presetGrid button').forEach(b => b.classList.toggle('active', b.dataset.key === key)); updateShakeBtn();
+  tlCapture('preset', key);
 }
 function startShot(key) {
+  povOff();
   const s = SHOTS[key], from = Object.assign({}, BASE, s.from), yawFrom = cutMode ? from.yaw : cur.yaw + wrapAngle(from.yaw - cur.yaw), toFull = Object.assign({}, from, s.to);
   toFull.yaw = yawFrom + ((s.to.yaw !== undefined ? s.to.yaw : s.from.yaw) - s.from.yaw);
   shot = { key, t:0, dur:s.dur, from:Object.assign({}, from, { yaw:yawFrom }), to:toFull, keys:Object.keys(s.to) };
   shakeManual = null; setDesired(from, cutMode, yawFrom); setCamLabel(s.label.replace(/^\S+\s/, ''));
   document.querySelectorAll('#presetGrid button').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('#shotGrid button').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+  updateShakeBtn();
+  tlCapture('shot', key);
 }
 function cancelShot(label = true) {
   if (!shot) return; shot = null; document.querySelectorAll('#shotGrid button').forEach(b => b.classList.remove('active'));
@@ -1306,25 +1445,29 @@ function markFree() { povOff(); if (activePreset !== null) { activePreset = null
 
 PRESET_ORDER.forEach((k, i) => { const b = document.createElement('button'); b.dataset.key = k; b.textContent = `[${(i + 1) % 10}] ${PRESETS[k].label}`; b.addEventListener('click', () => applyPreset(k)); $('presetGrid').appendChild(b); });
 SHOT_ORDER.forEach(k => { const b = document.createElement('button'); b.className = 'btn-shot'; b.dataset.key = k; b.textContent = SHOTS[k].label; b.addEventListener('click', () => startShot(k)); $('shotGrid').appendChild(b); });
-$('btnShotStop').addEventListener('click', () => { cancelShot(true); autoDollyOn = false; updateAutoBtn(); });
+$('btnShotStop').addEventListener('click', () => { cancelShot(true); autoDollyOn = false; updateAutoBtn(); tlCapture('shot', 'stop'); });
 let autoDollyOn = false, smoothOn = true, smoothSaved = 0.55;
 function updateAutoBtn() { const b = $('btnDroneAuto'); b.classList.toggle('active', autoDollyOn); b.textContent = autoDollyOn ? '🔁 অটো ব্যাক-ফরোয়ার্ড: চালু' : '🔁 অটো ব্যাক-ফরোয়ার্ড: বন্ধ'; }
-$('btnDroneAuto').addEventListener('click', () => { autoDollyOn = !autoDollyOn; if (autoDollyOn) { $('chkShotLoop').checked = true; startShot('autoDolly'); } else cancelShot(true); updateAutoBtn(); });
+$('btnDroneAuto').addEventListener('click', () => { autoDollyOn = !autoDollyOn; if (autoDollyOn) { $('chkShotLoop').checked = true; startShot('autoDolly'); } else { cancelShot(true); tlCapture('shot', 'stop'); } updateAutoBtn(); });
 $('btnCamSmooth').addEventListener('click', () => {
   smoothOn = !smoothOn; if (smoothOn) camSmooth = smoothSaved; else { smoothSaved = camSmooth; camSmooth = 0.12; }
   $('smoothSlider').value = camSmooth; $('smoothVal').textContent = camSmooth.toFixed(2) + 's';
   $('btnCamSmooth').classList.toggle('active', smoothOn); $('btnCamSmooth').textContent = smoothOn ? '🌊 স্মুথ মুভমেন্ট: চালু' : '⚡ স্মুথ মুভমেন্ট: বন্ধ (ফাস্ট)';
 });
 function updateShakeBtn() { const on = (shakeManual !== null ? shakeManual : des.shake > 0.5); $('btnShake').classList.toggle('active', on); $('btnShake').textContent = on ? '📳 শেক: চালু' : '📳 শেক: বন্ধ'; }
-function toggleShake() { const on = !(shakeManual !== null ? shakeManual : des.shake > 0.5); shakeManual = on; des.shake = on ? 1 : 0; updateShakeBtn(); }
+function setShakeState(on) { shakeManual = !!on; des.shake = on ? 1 : 0; updateShakeBtn(); tlCapture('camOpt', on ? 'shakeOn' : 'shakeOff'); }
+function toggleShake() { const on = !(shakeManual !== null ? shakeManual : des.shake > 0.5); setShakeState(on); }
 $('btnShake').addEventListener('click', toggleShake);
-$('btnCutMode').addEventListener('click', () => { cutMode = !cutMode; $('btnCutMode').classList.toggle('active', cutMode); $('btnCutMode').textContent = cutMode ? '✂ ট্রানজিশন: কাট (হুট করে)' : '🌊 ট্রানজিশন: গ্লাইড (স্মুথ)'; });
-$('btnAutoFocus').addEventListener('click', () => { autoFocus = !autoFocus; $('btnAutoFocus').classList.toggle('active', autoFocus); $('btnAutoFocus').textContent = autoFocus ? '🎯 অটো ফোকাস: চালু' : '🎯 অটো ফোকাস: বন্ধ'; $('hudFocus').textContent = autoFocus ? '🎯 অটো ফোকাস: স্পিকার লকড' : '🎯 অটো ফোকাস: ম্যানুয়াল (স্টেজ সেন্টার)'; });
+function setCutMode(on) { cutMode = !!on; $('btnCutMode').classList.toggle('active', cutMode); $('btnCutMode').textContent = cutMode ? '✂ ট্রানজিশন: কাট (হুট করে)' : '🌊 ট্রানজিশন: গ্লাইড (স্মুথ)'; tlCapture('camOpt', cutMode ? 'cut' : 'glide'); }
+$('btnCutMode').addEventListener('click', () => setCutMode(!cutMode));
+function setAutoFocus(on) { autoFocus = !!on; $('btnAutoFocus').classList.toggle('active', autoFocus); $('btnAutoFocus').textContent = autoFocus ? '🎯 অটো ফোকাস: চালু' : '🎯 অটো ফোকাস: বন্ধ'; $('hudFocus').textContent = autoFocus ? '🎯 অটো ফোকাস: স্পিকার লকড' : '🎯 অটো ফোকাস: ম্যানুয়াল (স্টেজ সেন্টার)'; tlCapture('camOpt', autoFocus ? 'focusOn' : 'focusOff'); }
+$('btnAutoFocus').addEventListener('click', () => setAutoFocus(!autoFocus));
 $('btnCamReset').addEventListener('click', () => applyPreset('front'));
 function updateLensUI() { const mm = Math.round(des.lens); $('lensVal').textContent = mm + 'mm'; $('hudLens').textContent = '🔍 ' + mm + 'mm'; }
 $('lensZoom').addEventListener('input', () => { des.lens = parseInt($('lensZoom').value, 10); updateLensUI(); });
+$('lensZoom').addEventListener('change', () => tlCapture('camOpt', 'lens', { lens: Math.round(des.lens) }));
 $('smoothSlider').addEventListener('input', () => { camSmooth = parseFloat($('smoothSlider').value); $('smoothVal').textContent = camSmooth.toFixed(2) + 's'; });
-['lensZoom','smoothSlider','lipSens','audioVol','audioSeek'].forEach(id => $(id).addEventListener('pointerup', () => $(id).blur()));
+['lensZoom','smoothSlider','lipSens','audioVol','audioSeek','tlSeek'].forEach(id => $(id).addEventListener('pointerup', () => $(id).blur()));
 
 const holdCam = { orbL:false, orbR:false, pitUp:false, pitDn:false, slL:false, slR:false, dIn:false, dOut:false, pedUp:false, pedDn:false };
 function bindHold(id, obj, key, onPress) {
@@ -1347,7 +1490,24 @@ wrap.addEventListener('wheel', e => { e.preventDefault(); cancelShot(false); mar
 
 const keyMap = { ArrowLeft:'orbL', ArrowRight:'orbR', ArrowUp:'pitUp', ArrowDown:'pitDn', a:'slL', d:'slR', w:'dIn', s:'dOut', q:'pedUp', e:'pedDn' };
 window.addEventListener('keydown', e => {
-  if (e.target && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') return;
+  const el = e.target;
+  const tag = el ? el.tagName : '';
+  const type = el && el.type ? el.type.toLowerCase() : '';
+  const isTextInput = tag === 'TEXTAREA' || tag === 'SELECT' || (el && el.isContentEditable) ||
+    (tag === 'INPUT' && !['checkbox','radio','range','button','submit','file','color'].includes(type));
+  if (isTextInput) return;
+
+  // Fixed Space shortcut: start recording if idle, toggle pause/resume if recording/paused
+  if (e.code === 'Space' || e.key === ' ') {
+    e.preventDefault();
+    if (e.repeat) return;
+    if (tag === 'BUTTON' && el.blur) el.blur();
+    if (rec.state === 'idle') { startRecording(); toast('⏺ রেকর্ডিং শুরু (Space)'); }
+    else if (rec.state === 'recording') { pauseRecording(); toast('⏸ রেকর্ডিং পজ (Space)'); }
+    else if (rec.state === 'paused') { resumeRecording(); toast('⏺ রেকর্ডিং রিজিউম (Space)'); }
+    return;
+  }
+
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (keyMap[k]) { holdCam[keyMap[k]] = true; if (k.startsWith('Arrow')) e.preventDefault(); return; }
   if (k === 't') { toggleShake(); return; } if (k === 'h') { document.body.classList.toggle('clean'); return; }
@@ -1396,24 +1556,46 @@ function updateCamera(dt, t) {
 
 // 9. UI CONTROLS
 ['moveFwd','moveBack','moveLeft','moveRight','moveRotL','moveRotR'].forEach((id, i) => bindHold(id, mvKeys, ['fwd','back','left','right','rotL','rotR'][i], () => { spk.pace = false; $('btnPace').classList.remove('active'); $('btnPace').textContent = '🚶 পায়চারি (বাম↔ডান): বন্ধ'; }));
-$('btnWalkLeft').addEventListener('click', () => { stopPace(); startWalk(-4.5, 0.7); });
-$('btnWalkRight').addEventListener('click', () => { stopPace(); startWalk(4.5, 0.7); });
-$('btnWalkCenter').addEventListener('click', () => { stopPace(); startWalk(0, 0.4); });
-$('btnResetSpeaker').addEventListener('click', () => { stopPace(); spk.target = null; spk.x = 0; spk.z = 0.4; spk.vx = 0; spk.vz = 0; spk.yaw = spk.restYaw; Object.keys(mvKeys).forEach(k => { mvKeys[k] = false; }); document.querySelectorAll('.gest-btn').forEach(b => { if (b.dataset.gest === 'straight') b.click(); }); setMic('mouth'); });
-function stopPace() { spk.pace = false; $('btnPace').classList.remove('active'); $('btnPace').textContent = '🚶 পায়চারি (বাম↔ডান): বন্ধ'; }
-$('btnPace').addEventListener('click', () => { spk.pace = !spk.pace; spk.paceWait = 0; spk.target = null; $('btnPace').classList.toggle('active', spk.pace); $('btnPace').textContent = spk.pace ? '🚶 পায়চারি (বাম↔ডান): চালু' : '🚶 পায়চারি (বাম↔ডান): বন্ধ'; });
-$('btnFaceFront').addEventListener('click', () => { spk.restYaw = 0; });
-function setMic(state) { micState = state; $('btnMicMouth').classList.toggle('active', state === 'mouth'); $('btnMicDown').classList.toggle('active', state === 'down'); }
+function setPace(on) { spk.pace = !!on; spk.paceWait = 0; spk.target = null; $('btnPace').classList.toggle('active', spk.pace); $('btnPace').textContent = spk.pace ? '🚶 পায়চারি (বাম↔ডান): চালু' : '🚶 পায়চারি (বাম↔ডান): বন্ধ'; }
+function stopPace() { setPace(false); }
+$('btnWalkLeft').addEventListener('click', () => { stopPace(); startWalk(-4.5, 0.7); tlCapture('walk', 'left'); });
+$('btnWalkRight').addEventListener('click', () => { stopPace(); startWalk(4.5, 0.7); tlCapture('walk', 'right'); });
+$('btnWalkCenter').addEventListener('click', () => { stopPace(); startWalk(0, 0.4); tlCapture('walk', 'center'); });
+function resetSpeakerPose() {
+  stopPace(); spk.target = null; spk.x = 0; spk.z = 0.4; spk.vx = 0; spk.vz = 0; spk.yaw = spk.restYaw = 0;
+  Object.keys(mvKeys).forEach(k => { mvKeys[k] = false; });
+  setGesture('straight', false); setMic('mouth', false);
+}
+$('btnResetSpeaker').addEventListener('click', () => { resetSpeakerPose(); tlCapture('walk', 'reset'); });
+$('btnPace').addEventListener('click', () => { setPace(!spk.pace); tlCapture('walk', spk.pace ? 'paceOn' : 'paceOff'); });
+$('btnFaceFront').addEventListener('click', () => { spk.restYaw = 0; tlCapture('walk', 'faceFront'); });
+
+function setMic(state, cap = true) {
+  micState = state; $('btnMicMouth').classList.toggle('active', state === 'mouth'); $('btnMicDown').classList.toggle('active', state === 'down');
+  if (cap) tlCapture('mic', state);
+}
 $('btnMicMouth').addEventListener('click', () => setMic('mouth')); $('btnMicDown').addEventListener('click', () => setMic('down'));
-document.querySelectorAll('.gest-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.gest-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentGesture = btn.dataset.gest; refreshSunglasses(); }));
+
+function setGesture(gest, cap = true) {
+  currentGesture = gest;
+  document.querySelectorAll('.gest-btn').forEach(b => b.classList.toggle('active', b.dataset.gest === gest));
+  refreshSunglasses();
+  if (cap) tlCapture('gesture', gest);
+}
+document.querySelectorAll('.gest-btn').forEach(btn => btn.addEventListener('click', () => setGesture(btn.dataset.gest)));
 document.querySelectorAll('.role-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); setRole(btn.dataset.role); }));
-$('btnCrowdCheer').addEventListener('click', () => { crowdCheerTimer = 4.5; });
+$('btnCrowdCheer').addEventListener('click', () => { crowdCheerTimer = 4.5; tlCapture('crowd', 'cheer'); });
+
 let podiumMode = 'side';
-$('btnPodiumMode').addEventListener('click', () => {
-  const b = $('btnPodiumMode');
-  if (podiumMode === 'side') { podiumMode = 'front'; podiumGroup.visible = true; podiumGroup.position.set(0, STAGE_H, 1.55); podiumGroup.rotation.y = 0; b.textContent = 'পোডিয়াম: সামনে'; }
-  else if (podiumMode === 'front') { podiumMode = 'off'; podiumGroup.visible = false; b.classList.remove('active'); b.textContent = 'পোডিয়াম: বন্ধ'; }
+function setPodiumMode(mode, cap = true) {
+  podiumMode = mode; const b = $('btnPodiumMode');
+  if (mode === 'front') { podiumGroup.visible = true; podiumGroup.position.set(0, STAGE_H, 1.55); podiumGroup.rotation.y = 0; b.classList.add('active'); b.textContent = 'পোডিয়াম: সামনে'; }
+  else if (mode === 'off') { podiumGroup.visible = false; b.classList.remove('active'); b.textContent = 'পোডিয়াম: বন্ধ'; }
   else { podiumMode = 'side'; podiumGroup.visible = true; podiumGroup.position.set(2.6, STAGE_H, -0.6); podiumGroup.rotation.y = -0.25; b.classList.add('active'); b.textContent = 'পোডিয়াম: পাশে'; }
+  if (cap) tlCapture('podium', podiumMode);
+}
+$('btnPodiumMode').addEventListener('click', () => {
+  setPodiumMode(podiumMode === 'side' ? 'front' : podiumMode === 'front' ? 'off' : 'side');
 });
 
 // 9b. CUSTOMIZER, STAGE, PRESETS
@@ -1421,7 +1603,7 @@ const toastEl = document.createElement('div'); toastEl.className = 'toast'; docu
 function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 1800); }
 const SKIN_TONES = ['#f0c8a0','#d9a37a','#c68e63','#a86f4a','#8d5a3b','#6f4428','#4a2c1a'];
 const lookGet = k => (ACC_KEYS.includes(k) ? look.acc[k] : look[k]);
-const lookSet = (k, v) => { if (ACC_KEYS.includes(k)) look.acc[k] = v; else look[k] = v; applyLook(); syncCustomUI(); };
+const lookSet = (k, v) => { if (ACC_KEYS.includes(k)) look.acc[k] = v; else look[k] = v; applyLook(); syncCustomUI(); if (k === 'expr') tlCapture('expr', v); };
 
 const CHAR_GROUPS = [
   { title:'🧑 Face & Skin · মুখ ও ত্বক', rows:[
@@ -1496,7 +1678,21 @@ function randomizeLook() {
 
 const slotUIs = [];
 function refreshSlotUI() { slotUIs.forEach((b, i) => b.classList.toggle('active', !!camSlots[i])); }
-function getSettings() { return { v:3, role:currentRole, look:JSON.parse(JSON.stringify(look)), stage:Object.assign({}, stage), slots:camSlots.map(x => x), smooth:camSmooth, lipSens:$('lipSens').value, walk:walkSpeed, shotSpeed }; }
+function goCameraSlot(i, cap = true) {
+  const o = camSlots[i]; if (!o) { toast('Slot ' + (i + 1) + ' is empty'); return; }
+  povOff(); cancelShot(false); activePreset = null;
+  document.querySelectorAll('#presetGrid button').forEach(b => b.classList.remove('active'));
+  setDesired(Object.assign({}, BASE, o), cutMode); setCamLabel('Slot ' + (i + 1));
+  if (cap) tlCapture('slot', String(i));
+}
+
+function getSettings() {
+  return {
+    v:4, role:currentRole, look:JSON.parse(JSON.stringify(look)), stage:Object.assign({}, stage),
+    slots:camSlots.map(x => x), smooth:camSmooth, lipSens:$('lipSens').value, walk:walkSpeed, shotSpeed,
+    timeline: tl.items.map(it => Object.assign({}, it)), tlEnabled: tl.enabled
+  };
+}
 function applySettings(o) {
   if (!o) return; if (o.role && ROLES[o.role]) currentRole = o.role;
   if (o.look) { const acc = Object.assign({}, look.acc, o.look.acc || {}); Object.assign(look, o.look); look.acc = acc; }
@@ -1505,6 +1701,11 @@ function applySettings(o) {
   if (o.lipSens) $('lipSens').value = o.lipSens;
   if (o.walk) { walkSpeed = o.walk; $('walkSpeed').value = walkSpeed; $('walkSpeedVal').textContent = walkSpeed.toFixed(2); }
   if (o.shotSpeed) { shotSpeed = o.shotSpeed; $('shotSpeed').value = shotSpeed; $('shotSpeedVal').textContent = shotSpeed.toFixed(2) + '×'; }
+  if (Array.isArray(o.timeline)) {
+    tl.items = o.timeline.map(it => Object.assign({ id: tl.nextId++, time:0, type:'preset', val:'front', trans:'auto', x:0, z:0.4, lens:38, enabled:true }, it, { id: tl.nextId++ }));
+    tlSortItems(); tlResetState(0); renderTimelineAll();
+  }
+  if (typeof o.tlEnabled === 'boolean') { tl.enabled = o.tlEnabled; if ($('chkTlEnabled')) $('chkTlEnabled').checked = tl.enabled; }
   $('hudRole').textContent = '👤 ' + ROLES[currentRole].label; applyLook(); applyStage(); syncCustomUI(); refreshSlotUI();
 }
 const LS_KEY = 'stageStudio.v3';
@@ -1530,7 +1731,7 @@ function buildCustomUI() {
     const sv = document.createElement('button'); sv.textContent = '💾 Save ' + (i + 1);
     const go = document.createElement('button'); go.textContent = '▶ Go ' + (i + 1);
     sv.addEventListener('click', () => { const o = {}; Object.keys(BASE).forEach(k => { o[k] = des[k]; }); camSlots[i] = o; refreshSlotUI(); toast('Camera slot ' + (i + 1) + ' saved'); });
-    go.addEventListener('click', () => { const o = camSlots[i]; if (!o) { toast('Slot ' + (i + 1) + ' is empty'); return; } cancelShot(false); activePreset = null; document.querySelectorAll('#presetGrid button').forEach(b => b.classList.remove('active')); setDesired(Object.assign({}, BASE, o), cutMode); setCamLabel('Slot ' + (i + 1)); });
+    go.addEventListener('click', () => goCameraSlot(i));
     w.append(sv, go); $('slotGrid').appendChild(w); slotUIs.push(go);
   }
   $('walkSpeed').addEventListener('input', () => { walkSpeed = parseFloat($('walkSpeed').value); $('walkSpeedVal').textContent = walkSpeed.toFixed(2); });
@@ -1541,6 +1742,401 @@ function buildCustomUI() {
   $('btnClean').addEventListener('click', () => document.body.classList.toggle('clean'));
   $('btnFull').addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else $('canvasWrapper').requestFullscreen && $('canvasWrapper').requestFullscreen(); });
   document.querySelectorAll('.panel').forEach(p => { const sp = p.querySelector('.panel-title > span:first-child'); if (sp) sp.addEventListener('click', () => p.classList.toggle('collapsed')); });
+}
+
+// 9c. PRE-COMMAND TIMELINE ENGINE (ALL MOVEMENT TIMELINE)
+const tl = { enabled:true, liveCapture:false, items:[], nextId:1, firedIds:new Set(), lastTime:-1, virtualRunning:false, virtualPaused:false, virtualTime:0, activeId:null };
+let tlExecuting = false;
+
+const TL_TYPES = {
+  preset:  { label:'📷 ক্যামেরা অ্যাঙ্গেল', params:() => PRESET_ORDER.map(k => [k, PRESETS[k].label]), def:'front', hasTrans:true },
+  shot:    { label:'🎬 অটো ক্যামেরা শট', params:() => [...SHOT_ORDER.map(k => [k, SHOTS[k].label]), ['stop','⏹ শট থামাও']], def:'orbitLR', hasTrans:true },
+  slot:    { label:'⭐ ক্যামেরা স্লট', params:() => [['0','▶ Slot 1'],['1','▶ Slot 2'],['2','▶ Slot 3']], def:'0', hasTrans:true },
+  pov:     { label:'🎥 POV ক্যামেরা', params:() => [['on','POV চালু'],['off','POV বন্ধ']], def:'on' },
+  walk:    { label:'🚶 বক্তার হাঁটা/অবস্থান', params:() => [['left','⬅ বাম প্রান্তে যাও'],['center','🎯 সেন্টারে এসো'],['right','ডান প্রান্তে যাও ➡'],['paceOn','🚶 পায়চারি: চালু'],['paceOff','🚶 পায়চারি: বন্ধ'],['faceFront','🧍 অডিয়েন্সের দিকে ঘোরো'],['reset','♻ স্পিকার রিসেট'],['custom','📍 কাস্টম X, Z']], def:'left', hasCustomXZ:true },
+  gesture: { label:'💪 অঙ্গভঙ্গি', params:() => [['straight','🧍 স্ট্রেট ও শান্ত'],['point','☝ আঙুল উঁচিয়ে বলা'],['fist','✊ পাওয়ার ফিস্ট'],['open','🙌 দুই হাত প্রসারিত'],['explain','🤲 বুঝিয়ে বলা'],['attitude','😎 কুল অ্যাটিটিউড']], def:'point' },
+  expr:    { label:'😊 মুখের ভাব', params:() => [['neutral','😐 স্বাভাবিক'],['smile','😊 হাসি'],['serious','😠 গম্ভীর'],['excited','🤩 উচ্ছ্বসিত']], def:'smile' },
+  mic:     { label:'🎤 মাইক পজিশন', params:() => [['mouth','🎤 মুখের কাছে'],['down','⬇ মাইক নামাও']], def:'mouth' },
+  crowd:   { label:'👏 দর্শক রিঅ্যাকশন', params:() => [['cheer','👏 জনতার হাততালি'],['calm','🧘 দর্শক: শান্ত'],['energy','🎉 দর্শক: এনার্জেটিক']], def:'cheer' },
+  theme:   { label:'🎭 স্টেজ থিম', params:() => Object.keys(THEMES).map(k => [k, THEMES[k].n]), def:'summit' },
+  podium:  { label:'🪵 পোডিয়াম', params:() => [['side','পোডিয়াম: পাশে'],['front','পোডিয়াম: সামনে'],['off','পোডিয়াম: বন্ধ']], def:'side' },
+  camOpt:  { label:'⚙ ক্যামেরা সেটিংস', params:() => [['cut','✂ ট্রানজিশন: কাট'],['glide','🌊 ট্রানজিশন: গ্লাইড'],['focusOn','🎯 অটো ফোকাস: চালু'],['focusOff','🎯 অটো ফোকাস: বন্ধ'],['shakeOn','📳 শেক: চালু'],['shakeOff','📳 শেক: বন্ধ'],['lens','🔍 লেন্স জুম (mm)']], def:'glide', hasLens:true }
+};
+
+function tlCurrentClock() { return audioEl.src ? (audioEl.currentTime || 0) : tl.virtualTime; }
+function tlMaxDuration() {
+  if (audioEl.duration && !isNaN(audioEl.duration)) return audioEl.duration;
+  let mx = 10; tl.items.forEach(it => { if (it.time + 3 > mx) mx = it.time + 3; });
+  return mx;
+}
+function tlSortItems() { tl.items.sort((a, b) => a.time - b.time || a.id - b.id); }
+function tlResetState(fromTime = 0) {
+  tl.firedIds.clear();
+  tl.items.forEach(it => { if (it.time < fromTime - 0.001) tl.firedIds.add(it.id); });
+  tl.lastTime = fromTime - 0.0001;
+  tl.activeId = null;
+  refreshTimelineVisualStates();
+}
+
+function tlCapture(type, val, extra = {}) {
+  if (!tl.liveCapture || tlExecuting) return;
+  const t = Math.round(tlCurrentClock() * 10) / 10;
+  const item = Object.assign({ id:tl.nextId++, time:t, type, val:String(val), trans:'auto', x:0, z:0.4, lens:38, enabled:true }, extra);
+  tl.items.push(item);
+  tlSortItems();
+  tl.firedIds.add(item.id);
+  renderTimelineAll();
+  toast(`📌 কমান্ড সেভ (${fmtTimeDec(t)}): ${TL_TYPES[type].label}`);
+}
+
+function runTimelineCue(cue) {
+  if (!cue || !TL_TYPES[cue.type]) return;
+  tlExecuting = true;
+  try {
+    const prevCut = cutMode;
+    const applyTrans = () => {
+      if (cue.trans === 'cut') cutMode = true;
+      else if (cue.trans === 'glide') cutMode = false;
+    };
+    switch (cue.type) {
+      case 'preset':
+        if (PRESETS[cue.val]) { applyTrans(); applyPreset(cue.val); cutMode = prevCut; }
+        break;
+      case 'shot':
+        if (cue.val === 'stop') { cancelShot(true); autoDollyOn = false; updateAutoBtn(); }
+        else if (SHOTS[cue.val]) { applyTrans(); startShot(cue.val); cutMode = prevCut; }
+        break;
+      case 'slot': {
+        const idx = parseInt(cue.val, 10);
+        if (!isNaN(idx) && camSlots[idx]) { applyTrans(); goCameraSlot(idx, false); cutMode = prevCut; }
+        break;
+      }
+      case 'pov':
+        if (cue.val === 'on' && !povOn) togglePOV(false);
+        else if (cue.val === 'off' && povOn) { povOff(); applyPreset('front'); }
+        break;
+      case 'walk':
+        if (cue.val === 'left') { stopPace(); startWalk(-4.5, 0.7); }
+        else if (cue.val === 'center') { stopPace(); startWalk(0, 0.4); }
+        else if (cue.val === 'right') { stopPace(); startWalk(4.5, 0.7); }
+        else if (cue.val === 'paceOn') setPace(true);
+        else if (cue.val === 'paceOff') setPace(false);
+        else if (cue.val === 'faceFront') spk.restYaw = 0;
+        else if (cue.val === 'reset') resetSpeakerPose();
+        else if (cue.val === 'custom') { stopPace(); startWalk(clamp(Number(cue.x)||0, SPK_LIM.xmin, SPK_LIM.xmax), clamp(Number(cue.z)||0.4, SPK_LIM.zmin, SPK_LIM.zmax)); }
+        break;
+      case 'gesture':
+        if (GESTURES[cue.val]) setGesture(cue.val, false);
+        break;
+      case 'expr':
+        if (EXPR[cue.val]) { look.expr = cue.val; applyLook(); syncCustomUI(); }
+        break;
+      case 'mic':
+        setMic(cue.val, false);
+        break;
+      case 'crowd':
+        if (cue.val === 'cheer') crowdCheerTimer = 4.5;
+        else if (cue.val === 'calm' || cue.val === 'energy') setCrowdMood(cue.val, false);
+        break;
+      case 'theme':
+        applyTheme(cue.val, true);
+        break;
+      case 'podium':
+        setPodiumMode(cue.val, false);
+        break;
+      case 'camOpt':
+        if (cue.val === 'cut') setCutMode(true);
+        else if (cue.val === 'glide') setCutMode(false);
+        else if (cue.val === 'focusOn') setAutoFocus(true);
+        else if (cue.val === 'focusOff') setAutoFocus(false);
+        else if (cue.val === 'shakeOn') setShakeState(true);
+        else if (cue.val === 'shakeOff') setShakeState(false);
+        else if (cue.val === 'lens') { des.lens = clamp(Number(cue.lens) || 38, 16, 120); $('lensZoom').value = Math.round(des.lens); updateLensUI(); }
+        break;
+    }
+  } finally {
+    tlExecuting = false;
+  }
+}
+
+function updateTimeline(dt) {
+  if (tl.virtualRunning && !tl.virtualPaused) {
+    tl.virtualTime += dt;
+    const maxD = tlMaxDuration();
+    if (tl.virtualTime >= maxD) {
+      tl.virtualTime = maxD;
+      tl.virtualRunning = false;
+    }
+  }
+  const playing = (audioEl.src && !audioEl.paused) || (tl.virtualRunning && !tl.virtualPaused);
+  if (!tl.enabled || !playing || tl.items.length === 0) return;
+
+  const tNow = tlCurrentClock();
+  if (tNow < tl.lastTime - 0.15) tlResetState(tNow);
+  tl.lastTime = tNow;
+
+  let changed = false;
+  for (let i = 0; i < tl.items.length; i++) {
+    const it = tl.items[i];
+    if (!it.enabled) continue;
+    if (it.time <= tNow + 0.02 && !tl.firedIds.has(it.id)) {
+      tl.firedIds.add(it.id);
+      tl.activeId = it.id;
+      runTimelineCue(it);
+      changed = true;
+    }
+  }
+  if (changed) refreshTimelineVisualStates();
+}
+
+function refreshTimelineVisualStates() {
+  document.querySelectorAll('#tlList .tl-item').forEach(row => {
+    const id = Number(row.dataset.id);
+    row.classList.toggle('fired', tl.firedIds.has(id));
+    row.classList.toggle('current', tl.activeId === id);
+  });
+  document.querySelectorAll('#tlRuler .tl-dot').forEach(dot => {
+    const id = Number(dot.dataset.id);
+    dot.classList.toggle('fired', tl.firedIds.has(id));
+  });
+}
+
+function populateSelect(sel, pairs, currentVal) {
+  sel.innerHTML = '';
+  pairs.forEach(([v, lbl]) => {
+    const op = document.createElement('option');
+    op.value = v; op.textContent = lbl;
+    sel.appendChild(op);
+  });
+  if (currentVal !== undefined && pairs.some(([v]) => v === currentVal)) sel.value = currentVal;
+}
+
+function renderAddExtra() {
+  const box = $('tlAddExtra'), tp = $('tlAddType').value, val = $('tlAddVal').value, cfg = TL_TYPES[tp];
+  box.innerHTML = '';
+  let show = false;
+  if (cfg.hasTrans) {
+    show = true;
+    const lb = document.createElement('span'); lb.style.cssText = 'font-size:.73rem;color:var(--muted);'; lb.textContent = 'ট্রানজিশন:';
+    const sel = document.createElement('select'); sel.id = 'tlAddTrans';
+    [['auto','অটো (বর্তমান মোড)'],['cut','✂ কাট (হুট করে)'],['glide','🌊 গ্লাইড (স্মুথ)']].forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+    box.append(lb, sel);
+  }
+  if (cfg.hasCustomXZ && val === 'custom') {
+    show = true;
+    const lx = document.createElement('span'); lx.style.cssText = 'font-size:.73rem;color:var(--muted);'; lx.textContent = 'X:';
+    const ix = document.createElement('input'); ix.id = 'tlAddX'; ix.type = 'text'; ix.className = 'tl-inp'; ix.style.width = '52px'; ix.value = '0';
+    const lz = document.createElement('span'); lz.style.cssText = 'font-size:.73rem;color:var(--muted);'; lz.textContent = 'Z:';
+    const iz = document.createElement('input'); iz.id = 'tlAddZ'; iz.type = 'text'; iz.className = 'tl-inp'; iz.style.width = '52px'; iz.value = '0.4';
+    box.append(lx, ix, lz, iz);
+  }
+  if (cfg.hasLens && val === 'lens') {
+    show = true;
+    const ll = document.createElement('span'); ll.style.cssText = 'font-size:.73rem;color:var(--muted);'; ll.textContent = 'লেন্স (mm):';
+    const il = document.createElement('input'); il.id = 'tlAddLens'; il.type = 'text'; il.className = 'tl-inp'; il.style.width = '60px'; il.value = '50';
+    box.append(ll, il);
+  }
+  box.style.display = show ? 'flex' : 'none';
+}
+
+function renderTimelineRuler() {
+  const ruler = $('tlRuler'), fill = $('tlRulerFill');
+  [...ruler.querySelectorAll('.tl-dot')].forEach(d => d.remove());
+  const dur = Math.max(1, tlMaxDuration());
+  tl.items.forEach(it => {
+    const dot = document.createElement('div');
+    dot.className = 'tl-dot' + (it.enabled ? '' : ' off') + (tl.firedIds.has(it.id) ? ' fired' : '');
+    dot.dataset.id = it.id;
+    dot.style.left = clamp((it.time / dur) * 100, 1, 99) + '%';
+    dot.title = `${fmtTimeDec(it.time)} — ${TL_TYPES[it.type]?.label || it.type}`;
+    dot.addEventListener('click', e => {
+      e.stopPropagation();
+      const targetT = Math.max(0, it.time - 0.3);
+      if (audioEl.src) audioEl.currentTime = targetT; else tl.virtualTime = targetT;
+      tlResetState(targetT); updateAudioSeekUI();
+      const row = $('tlList').querySelector(`.tl-item[data-id="${it.id}"]`);
+      if (row) row.scrollIntoView({ block:'nearest', behavior:'smooth' });
+    });
+    ruler.appendChild(dot);
+  });
+  fill.style.width = clamp((tlCurrentClock() / dur) * 100, 0, 100) + '%';
+}
+
+function renderTimelineList() {
+  const list = $('tlList');
+  list.innerHTML = '';
+  $('tlCount').textContent = tl.items.length;
+  if (tl.items.length === 0) {
+    list.innerHTML = '<div class="tl-empty">এখনো কোনো প্রি-কমান্ড নেই।<br>গান চালিয়ে <b>🔴 লাইভ ক্যাপচার</b> অন করুন অথবা উপর থেকে ম্যানুয়ালি কমান্ড যোগ করুন।</div>';
+    return;
+  }
+  tl.items.forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'tl-item' + (!it.enabled ? ' disabled' : '') + (tl.firedIds.has(it.id) ? ' fired' : '') + (tl.activeId === it.id ? ' current' : '');
+    row.dataset.id = it.id;
+
+    // Top row: enable, time, snap-now, seek, preview, dup, del
+    const r1 = document.createElement('div'); r1.className = 'tl-row';
+    const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = !!it.enabled; chk.title = 'সক্রিয় / নিষ্ক্রিয়';
+    chk.addEventListener('change', () => { it.enabled = chk.checked; row.classList.toggle('disabled', !it.enabled); renderTimelineRuler(); });
+
+    const tInp = document.createElement('input'); tInp.type = 'text'; tInp.className = 'tl-inp tl-time-inp'; tInp.value = fmtTimeDec(it.time); tInp.title = 'সময় এডিট করুন (যেমন 0:12.5)';
+    tInp.addEventListener('change', () => {
+      const p = parseTimeStr(tInp.value);
+      if (!isNaN(p)) { it.time = p; tlSortItems(); renderTimelineAll(); }
+      else tInp.value = fmtTimeDec(it.time);
+    });
+
+    const bNow = document.createElement('button'); bNow.className = 'tl-mini-btn'; bNow.textContent = '⏱'; bNow.title = 'বর্তমান অডিও সময় বসান';
+    bNow.addEventListener('click', () => { it.time = Math.round(tlCurrentClock() * 10) / 10; tlSortItems(); renderTimelineAll(); });
+
+    const bSeek = document.createElement('button'); bSeek.className = 'tl-mini-btn'; bSeek.textContent = '⏩'; bSeek.title = 'অডিও এই সময়ের ০.৫ সেকেন্ড আগে নিন';
+    bSeek.addEventListener('click', () => {
+      const st = Math.max(0, it.time - 0.5);
+      if (audioEl.src) audioEl.currentTime = st; else tl.virtualTime = st;
+      tlResetState(st); updateAudioSeekUI();
+    });
+
+    const bTest = document.createElement('button'); bTest.className = 'tl-mini-btn'; bTest.textContent = '▶'; bTest.title = 'এই কমান্ডটি এখনই টেস্ট করুন';
+    bTest.addEventListener('click', () => runTimelineCue(it));
+
+    const bDup = document.createElement('button'); bDup.className = 'tl-mini-btn'; bDup.textContent = '⎘'; bDup.title = 'ডুপ্লিকেট (+১ সেকেন্ড)';
+    bDup.addEventListener('click', () => {
+      const copy = Object.assign({}, it, { id:tl.nextId++, time:Math.round((it.time + 1) * 10) / 10 });
+      tl.items.push(copy); tlSortItems(); renderTimelineAll();
+    });
+
+    const bDel = document.createElement('button'); bDel.className = 'tl-mini-btn btn-stop'; bDel.textContent = '✕'; bDel.title = 'মুছুন';
+    bDel.addEventListener('click', () => { tl.items = tl.items.filter(x => x.id !== it.id); renderTimelineAll(); });
+
+    r1.append(chk, tInp, bNow, bSeek, bTest, bDup, bDel);
+
+    // Bottom row: type, value, conditional extra
+    const r2 = document.createElement('div'); r2.className = 'tl-row';
+    const selType = document.createElement('select'); selType.style.flex = '1'; selType.style.minWidth = '0';
+    populateSelect(selType, Object.keys(TL_TYPES).map(k => [k, TL_TYPES[k].label]), it.type);
+    const selVal = document.createElement('select'); selVal.style.flex = '1'; selVal.style.minWidth = '0';
+    populateSelect(selVal, TL_TYPES[it.type].params(), it.val);
+
+    selType.addEventListener('change', () => {
+      it.type = selType.value;
+      it.val = TL_TYPES[it.type].def;
+      renderTimelineAll();
+    });
+    selVal.addEventListener('change', () => {
+      it.val = selVal.value;
+      renderTimelineList();
+      renderTimelineRuler();
+    });
+
+    r2.append(selType, selVal);
+
+    const cfg = TL_TYPES[it.type];
+    if (cfg.hasTrans) {
+      const selTr = document.createElement('select'); selTr.style.width = '78px';
+      populateSelect(selTr, [['auto','অটো'],['cut','✂ কাট'],['glide','🌊 গ্লাইড']], it.trans || 'auto');
+      selTr.addEventListener('change', () => { it.trans = selTr.value; });
+      r2.appendChild(selTr);
+    }
+    if (cfg.hasCustomXZ && it.val === 'custom') {
+      const ix = document.createElement('input'); ix.type = 'text'; ix.className = 'tl-inp'; ix.style.width = '42px'; ix.value = it.x ?? 0; ix.title = 'X (-5.3 to 5.3)';
+      ix.addEventListener('change', () => { it.x = parseFloat(ix.value) || 0; });
+      const iz = document.createElement('input'); iz.type = 'text'; iz.className = 'tl-inp'; iz.style.width = '42px'; iz.value = it.z ?? 0.4; iz.title = 'Z (-1.5 to 2.3)';
+      iz.addEventListener('change', () => { it.z = parseFloat(iz.value) || 0.4; });
+      r2.append(ix, iz);
+    }
+    if (cfg.hasLens && it.val === 'lens') {
+      const il = document.createElement('input'); il.type = 'text'; il.className = 'tl-inp'; il.style.width = '48px'; il.value = it.lens ?? 38; il.title = 'Lens mm (16-120)';
+      il.addEventListener('change', () => { it.lens = clamp(parseInt(il.value, 10) || 38, 16, 120); il.value = it.lens; });
+      r2.appendChild(il);
+    }
+
+    row.append(r1, r2);
+    list.appendChild(row);
+  });
+}
+
+function renderTimelineAll() { renderTimelineList(); renderTimelineRuler(); updateAudioSeekUI(); }
+
+function playAllTimeline() {
+  initAudioContext();
+  tl.enabled = true; $('chkTlEnabled').checked = true;
+  if (audioEl.src) {
+    tl.virtualRunning = false;
+    audioEl.currentTime = 0;
+    tlResetState(0);
+    audioEl.play().catch(() => {});
+    toast('▶ অডিও ও সব প্রি-কমান্ড শুরু হয়েছে');
+  } else {
+    if (tl.items.length === 0) { toast('প্রথমে অডিও দিন বা টাইমলাইনে কমান্ড যোগ করুন'); return; }
+    tl.virtualRunning = true; tl.virtualPaused = false; tl.virtualTime = 0;
+    tlResetState(0);
+    toast('▶ ভার্চুয়াল টাইমলাইনে সব কমান্ড চলছে');
+  }
+}
+function stopAllTimeline() {
+  audioEl.pause(); audioEl.currentTime = 0;
+  tl.virtualRunning = false; tl.virtualPaused = false; tl.virtualTime = 0;
+  tlResetState(0); updateAudioSeekUI();
+}
+
+function initTimelineUI() {
+  populateSelect($('tlAddType'), Object.keys(TL_TYPES).map(k => [k, TL_TYPES[k].label]), 'preset');
+  populateSelect($('tlAddVal'), TL_TYPES.preset.params(), 'front');
+  renderAddExtra();
+
+  $('tlAddType').addEventListener('change', () => {
+    const tp = $('tlAddType').value;
+    populateSelect($('tlAddVal'), TL_TYPES[tp].params(), TL_TYPES[tp].def);
+    renderAddExtra();
+  });
+  $('tlAddVal').addEventListener('change', renderAddExtra);
+
+  $('btnTlNow').addEventListener('click', () => { $('tlAddTime').value = fmtTimeDec(tlCurrentClock()); });
+  $('btnTlAdd').addEventListener('click', () => {
+    const tParsed = parseTimeStr($('tlAddTime').value);
+    const t = isNaN(tParsed) ? Math.round(tlCurrentClock() * 10) / 10 : tParsed;
+    const tp = $('tlAddType').value, val = $('tlAddVal').value;
+    const item = {
+      id: tl.nextId++, time: t, type: tp, val,
+      trans: $('tlAddTrans') ? $('tlAddTrans').value : 'auto',
+      x: $('tlAddX') ? (parseFloat($('tlAddX').value) || 0) : 0,
+      z: $('tlAddZ') ? (parseFloat($('tlAddZ').value) || 0.4) : 0.4,
+      lens: $('tlAddLens') ? clamp(parseInt($('tlAddLens').value, 10) || 38, 16, 120) : 38,
+      enabled: true
+    };
+    tl.items.push(item);
+    tlSortItems();
+    renderTimelineAll();
+    toast(`➕ যোগ হয়েছে (${fmtTimeDec(t)})`);
+  });
+
+  $('btnTlSort').addEventListener('click', () => { tlSortItems(); renderTimelineAll(); toast('সময় অনুযায়ী সাজানো হয়েছে'); });
+  $('btnTlClear').addEventListener('click', () => {
+    if (tl.items.length === 0) return;
+    tl.items = []; tlResetState(0); renderTimelineAll(); toast('সব টাইমলাইন কমান্ড মুছে ফেলা হয়েছে');
+  });
+
+  $('tlRuler').addEventListener('click', e => {
+    const rect = $('tlRuler').getBoundingClientRect();
+    const frac = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+    const targetT = frac * tlMaxDuration();
+    if (audioEl.src) audioEl.currentTime = targetT; else tl.virtualTime = targetT;
+    tlResetState(targetT); updateAudioSeekUI();
+  });
+
+  $('chkTlEnabled').addEventListener('change', e => { tl.enabled = e.target.checked; });
+  $('btnLiveCapture').addEventListener('click', () => {
+    tl.liveCapture = !tl.liveCapture;
+    const b = $('btnLiveCapture');
+    b.classList.toggle('active', tl.liveCapture);
+    b.textContent = tl.liveCapture ? '🔴 লাইভ ক্যাপচার (ক্লিক করলেই সেভ): চালু' : '🔴 লাইভ ক্যাপচার (গান শুনে ক্লিক করলেই সেভ): বন্ধ';
+    toast(tl.liveCapture ? '🔴 লাইভ ক্যাপচার চালু! গান চালিয়ে যেকোনো বাটনে ক্লিক করুন' : 'লাইভ ক্যাপচার বন্ধ');
+  });
+
+  $('btnPlayAll').addEventListener('click', playAllTimeline);
+  $('btnStopAll').addEventListener('click', stopAllTimeline);
+  renderTimelineAll();
 }
 
 // 10. RECORDING
@@ -1554,17 +2150,59 @@ function updateRecUI() {
   const hr = $('hudRec'); hr.style.display = st === 'idle' ? 'none' : ''; hr.className = 'hud-badge ' + (st === 'paused' ? 'hud-pause' : 'hud-rec'); hr.textContent = st === 'paused' ? '⏸ REC পজ' : '⏺ REC';
 }
 function startRecording() {
+  if (rec.state !== 'idle') return;
   initAudioContext(); rec.chunks = []; rec.elapsed = 0; rec.audioPos = 0; $('btnDownload').style.display = 'none';
   const cs = canvas.captureStream(30), stream = new MediaStream([...cs.getVideoTracks(), ...mediaStreamDest.stream.getAudioTracks()]);
   const chosen = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
   rec.mr = new MediaRecorder(stream, chosen ? { mimeType:chosen, videoBitsPerSecond:canvas.width >= 1900 ? 10000000 : 6000000 } : {});
   rec.mr.ondataavailable = e => { if (e.data && e.data.size > 0) rec.chunks.push(e.data); };
   rec.mr.onstop = () => { const blob = new Blob(rec.chunks, { type:'video/webm' }); if (rec.url) URL.revokeObjectURL(rec.url); rec.url = URL.createObjectURL(blob); $('btnDownload').style.display = 'inline-flex'; };
-  rec.mr.start(250); rec.state = 'recording'; if ($('chkAutoPlay').checked && audioEl.src) { audioEl.currentTime = 0; audioEl.play().catch(() => {}); } updateRecUI();
+  rec.mr.start(250); rec.state = 'recording';
+
+  if (audioEl.src) {
+    if ($('chkAutoPlay').checked) {
+      audioEl.currentTime = 0;
+      tlResetState(0);
+      audioEl.play().catch(() => {});
+    } else {
+      tlResetState(audioEl.currentTime || 0);
+    }
+  } else if (tl.enabled && tl.items.length > 0) {
+    tl.virtualRunning = true; tl.virtualPaused = false; tl.virtualTime = 0;
+    tlResetState(0);
+  }
+  updateRecUI();
 }
-function pauseRecording() { if (rec.state !== 'recording') return; rec.audioPos = audioEl.currentTime || 0; audioEl.pause(); if (rec.mr && rec.mr.state === 'recording') rec.mr.pause(); rec.state = 'paused'; updateRecUI(); }
-function resumeRecording() { if (rec.state !== 'paused') return; audioEl.pause(); if (audioEl.src) { audioEl.currentTime = rec.audioPos; if (!audioEl.duration || rec.audioPos < audioEl.duration - 0.05) audioEl.play().catch(() => {}); } if (rec.mr && rec.mr.state === 'paused') rec.mr.resume(); rec.state = 'recording'; updateRecUI(); }
-function stopRecording() { if (rec.state === 'idle') return; if (rec.mr && rec.mr.state !== 'inactive') rec.mr.stop(); audioEl.pause(); rec.state = 'idle'; updateRecUI(); $('recText').textContent = 'সম্পন্ন'; $('btnRecord').textContent = '⏺ আবার রেকর্ড করুন'; }
+function pauseRecording() {
+  if (rec.state !== 'recording') return;
+  rec.audioPos = audioEl.currentTime || 0;
+  audioEl.pause();
+  if (tl.virtualRunning) tl.virtualPaused = true;
+  if (rec.mr && rec.mr.state === 'recording') rec.mr.pause();
+  rec.state = 'paused';
+  updateRecUI();
+}
+function resumeRecording() {
+  if (rec.state !== 'paused') return;
+  audioEl.pause();
+  if (audioEl.src) {
+    audioEl.currentTime = rec.audioPos;
+    tlResetState(rec.audioPos);
+    if (!audioEl.duration || rec.audioPos < audioEl.duration - 0.05) audioEl.play().catch(() => {});
+  } else if (tl.virtualRunning) {
+    tl.virtualPaused = false;
+  }
+  if (rec.mr && rec.mr.state === 'paused') rec.mr.resume();
+  rec.state = 'recording';
+  updateRecUI();
+}
+function stopRecording() {
+  if (rec.state === 'idle') return;
+  if (rec.mr && rec.mr.state !== 'inactive') rec.mr.stop();
+  audioEl.pause();
+  tl.virtualRunning = false; tl.virtualPaused = false;
+  rec.state = 'idle'; updateRecUI(); $('recText').textContent = 'সম্পন্ন'; $('btnRecord').textContent = '⏺ আবার রেকর্ড করুন';
+}
 $('btnRecord').addEventListener('click', () => { if (rec.state === 'idle') startRecording(); else if (rec.state === 'paused') resumeRecording(); });
 $('btnPauseRec').addEventListener('click', pauseRecording); $('btnStopRec').addEventListener('click', stopRecording);
 $('btnDownload').addEventListener('click', () => { if (!rec.url) return; const a = document.createElement('a'); a.href = rec.url; a.download = `speaker-stage-${Date.now()}.webm`; a.click(); });
@@ -1579,7 +2217,13 @@ function applySize() {
   camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 $('resSel').addEventListener('change', applySize); $('btnAspect').addEventListener('click', () => { portrait = !portrait; applySize(); toast(portrait ? '9:16 Portrait' : '16:9 Landscape'); });
-$('btnMood').addEventListener('click', () => { crowdMood = crowdMood === 'calm' ? 'energy' : 'calm'; $('btnMood').classList.toggle('active', crowdMood === 'energy'); $('btnMood').textContent = crowdMood === 'energy' ? '🎉 দর্শক: এনার্জেটিক / হইচই' : '🧘 দর্শক: শান্ত / চুপচাপ'; });
+function setCrowdMood(mood, cap = true) {
+  crowdMood = mood === 'energy' ? 'energy' : 'calm';
+  $('btnMood').classList.toggle('active', crowdMood === 'energy');
+  $('btnMood').textContent = crowdMood === 'energy' ? '🎉 দর্শক: এনার্জেটিক / হইচই' : '🧘 দর্শক: শান্ত / চুপচাপ';
+  if (cap) tlCapture('crowd', crowdMood);
+}
+$('btnMood').addEventListener('click', () => setCrowdMood(crowdMood === 'calm' ? 'energy' : 'calm'));
 const POV_CAMS = [[-4.2,1.62,9,34],[3.8,1.58,8.2,38],[0,1.3,13.5,58],[-7,1.7,11,30],[6.5,1.65,12,44],[1.9,1.55,6.5,28],[-2.6,1.6,15,70]];
 let povOn = false, povIdx = -1, povT = 0, pov = null; const povLook = V3(0, 1.5, 0);
 function povPick() {
@@ -1589,13 +2233,22 @@ function povPick() {
   povT = rand(2.5, 6); povLook.set(spk.x + rand(-0.6, 0.6), STAGE_H + 1.5, spk.z); setCamLabel('POV ক্যামেরা ' + (n + 1));
 }
 function povOff() { if (!povOn) return; povOn = false; $('btnPOV').classList.remove('active'); $('btnPOV').textContent = '🎥 মাল্টি-ক্যাম POV: বন্ধ'; }
-function togglePOV() {
-  if (povOn) { povOff(); applyPreset('front'); return; }
+function togglePOV(cap = true) {
+  if (povOn) { povOff(); if (cap) tlCapture('pov', 'off'); applyPreset('front'); return; }
   cancelShot(false); activePreset = null; document.querySelectorAll('#presetGrid button').forEach(b => b.classList.remove('active'));
   povOn = true; pov = null; $('btnPOV').classList.add('active'); $('btnPOV').textContent = '🎥 মাল্টি-ক্যাম POV: চালু';
+  if (cap) tlCapture('pov', 'on');
 }
-$('btnPOV').addEventListener('click', togglePOV);
-window.addEventListener('keydown', e => { if (e.target && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') return; if (e.key === 'v' || e.key === 'V') togglePOV(); });
+$('btnPOV').addEventListener('click', () => togglePOV(true));
+window.addEventListener('keydown', e => {
+  const el = e.target;
+  const tag = el ? el.tagName : '';
+  const type = el && el.type ? el.type.toLowerCase() : '';
+  const isTextInput = tag === 'TEXTAREA' || tag === 'SELECT' || (el && el.isContentEditable) ||
+    (tag === 'INPUT' && !['checkbox','radio','range','button','submit','file','color'].includes(type));
+  if (isTextInput) return;
+  if (e.key === 'v' || e.key === 'V') togglePOV(true);
+});
 function updatePOV(dt, t) {
   if (!povOn) return; povT -= dt; if (!pov || povT <= 0) povPick();
   const a = pov.amp * (1 + moodK * 0.9), tt = t + pov.ph;
@@ -1647,11 +2300,12 @@ function applyTheme(key, silent) {
   Object.keys(decor).forEach(k => { decor[k].visible = k === T.decor; });
   decorMats.forEach(m => { m.color.set(T.rim); if (m.emissive) m.emissive.set(T.rim); });
   applyStage(); syncCustomUI(); if (!silent) toast(T.n);
+  if (!silent) tlCapture('theme', key);
 }
 Object.keys(THEMES).forEach(k => { const b = document.createElement('button'); b.textContent = THEMES[k].n; b.addEventListener('click', () => applyTheme(k)); $('themeGrid').appendChild(b); });
 $('chkAutoTheme').addEventListener('change', e => { autoTheme = e.target.checked; themeT = 0; });
 function themeTick(dt, t) {
-  if (autoTheme) { themeT += dt; if (themeT > 22) { themeT = 0; const ks = Object.keys(THEMES).filter(k => k !== curTheme); applyTheme(ks[Math.floor(Math.random() * ks.length)]); } }
+  if (autoTheme) { themeT += dt; if (themeT > 22) { themeT = 0; const ks = Object.keys(THEMES).filter(k => k !== curTheme); applyTheme(ks[Math.floor(Math.random() * ks.length)], true); } }
   if (decor.orbs.visible) decor.orbs.children.forEach((o, i) => { if (o.userData.orb) o.position.y = o.userData.y0 + Math.sin(t * 0.8 + i) * 0.12; });
   if (curTheme === 'cyber') decorMats.forEach((m, i) => { m.color.setHSL((t * 0.06 + i * 0.04) % 1, 0.9, 0.6); if (m.emissive) m.emissive.copy(m.color); });
 }
@@ -1674,12 +2328,15 @@ function refineRig(dt, t) {
 }
 
 // 11. MAIN LOOP
-const clock = new THREE.Clock(); let ledAcc = 0;
+const clock = new THREE.Clock(); let ledAcc = 0, tlUiAcc = 0;
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.getElapsedTime();
   if (rec.state === 'recording') rec.elapsed += dt;
   if (rec.state !== 'idle') { const s = Math.floor(rec.elapsed); $('recTimer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  updateTimeline(dt);
+  tlUiAcc += dt;
+  if (tlUiAcc > 0.08 && ((audioEl.src && !audioEl.paused) || tl.virtualRunning)) { tlUiAcc = 0; updateAudioSeekUI(); }
   const rawVoice = getVoiceEnergy(); $('voiceMeter').style.width = `${Math.min(100, Math.max(smoothVoice, rawVoice) * 100)}%`;
   updateSpeaker(dt, t, rawVoice); refineRig(dt, t); updateCrowd(dt, t);
   mainKeyLight.target.position.set(spk.x, STAGE_H + 1, spk.z); backRimLight.target.position.set(spk.x, STAGE_H + 1.5, spk.z);
@@ -1690,9 +2347,10 @@ function animate() {
 }
 
 buildCustomUI();
+initTimelineUI();
 applyStage();
 setRole('speaker');
-setMic('mouth');
+setMic('mouth', false);
 applyPreset('front');
 loadLS(true);
 updateRecUI();
