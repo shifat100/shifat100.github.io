@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sketchy Stickman Conversational Cartoon Studio</title>
+<style>
+:root { --bg:#0b0f17; --panel:#131a26; --border:#253047; --accent:#3b82f6; --danger:#dc2626; --success:#10b981; --warn:#d97706; --text:#f8fafc; --muted:#94a3b8; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+header { background:#0f1522; border-bottom:1px solid var(--border); padding:10px 16px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; }
+.brand { display:flex; align-items:center; gap:10px; }
+.brand-icon { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,#f8fafc,#cbd5e1); color:#0f172a; display:grid; place-items:center; font-size:20px; font-weight:900; }
+.brand h1 { font-size:1.02rem; font-weight:700; }
+.brand span { font-size:.74rem; color:var(--muted); display:block; }
+.rec-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.rec-status { display:flex; align-items:center; gap:7px; background:#192234; padding:6px 12px; border-radius:999px; font-size:.82rem; font-weight:600; border:1px solid var(--border); }
+.rec-dot { width:10px; height:10px; border-radius:50%; background:#64748b; }
+.rec-status.recording .rec-dot { background:#ef4444; box-shadow:0 0 10px #ef4444; animation:pulse 1s infinite; }
+.rec-status.paused .rec-dot { background:#f59e0b; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(1.25);} }
+.workspace { display:grid; grid-template-columns:1fr 420px; gap:14px; padding:14px; flex:1; max-width:1700px; width:100%; margin:0 auto; }
+@media (max-width:1100px) { .workspace { grid-template-columns:1fr; } }
+.stage-col { display:flex; flex-direction:column; gap:10px; min-width:0; }
+.canvas-wrap { position:relative; background:#fff; border-radius:12px; overflow:hidden; border:1px solid var(--border); box-shadow:0 16px 40px rgba(0,0,0,.6); aspect-ratio:16/9; width:100%; }
+.canvas-wrap.portrait { aspect-ratio:9/16; height:min(80vh,840px); width:auto; max-width:100%; margin:0 auto; }
+canvas#stage { width:100%; height:100%; display:block; cursor:grab; }
+canvas#stage:active { cursor:grabbing; }
+.canvas-tools { position:absolute; bottom:10px; right:10px; display:flex; gap:6px; z-index:4; }
+.canvas-tools button { background:rgba(15,23,42,.82); backdrop-filter:blur(6px); padding:6px 10px; }
+.hud { position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; pointer-events:none; gap:8px; flex-wrap:wrap; }
+.badge { background:rgba(15,23,42,.8); color:#f8fafc; font-size:.74rem; padding:4px 9px; border-radius:6px; border:1px solid rgba(255,255,255,.15); }
+.panel { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:11px; }
+.ptitle { font-size:.83rem; font-weight:700; color:#cbd5e1; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.gest-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:6px; }
+.pill-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+button,select,input[type=text],textarea { font-family:inherit; border:1px solid var(--border); background:#1a2234; color:var(--text); border-radius:8px; font-size:.79rem; }
+button { cursor:pointer; padding:7px 9px; font-weight:600; transition:all .12s; display:inline-flex; align-items:center; justify-content:center; gap:5px; user-select:none; }
+button:hover { background:#232f48; border-color:#475569; }
+button.active { background:var(--accent); border-color:#60a5fa; color:#fff; }
+button:disabled { opacity:.45; cursor:not-allowed; }
+button.btn-rec { background:var(--danger); border-color:#f87171; color:#fff; }
+button.btn-success { background:var(--success); border-color:#34d399; color:#022c22; }
+button.sm { padding:4px 8px; font-size:.74rem; border-radius:99px; }
+kbd { font-family:ui-monospace,monospace; font-size:.69rem; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18); padding:1px 5px; border-radius:4px; color:#cbd5e1; }
+select { padding:6px 8px; cursor:pointer; }
+input[type=text],textarea { background:#0b101b; padding:7px 9px; width:100%; resize:vertical; }
+.sidebar { display:flex; flex-direction:column; gap:10px; min-width:0; }
+.tabbar { display:flex; gap:5px; }
+.tabbar button { flex:1; padding:8px 6px; font-size:.79rem; }
+.pane { display:none; flex-direction:column; gap:10px; }
+.pane.active { display:flex; }
+.ctl { display:flex; align-items:center; gap:8px; font-size:.76rem; color:var(--muted); margin-top:7px; }
+.ctl label { flex:0 0 40%; }
+.ctl input[type=range],.ctl select,.ctl input[type=text] { flex:1; min-width:0; accent-color:var(--accent); }
+.ctl .val { min-width:36px; text-align:right; color:#e2e8f0; }
+.chk { display:flex; align-items:center; gap:7px; font-size:.76rem; color:var(--muted); margin-top:7px; cursor:pointer; }
+.chk input { accent-color:var(--accent); }
+.script-list { display:flex; flex-direction:column; gap:7px; max-height:270px; overflow-y:auto; padding-right:2px; }
+.line-card { background:#0d131f; border:1px solid var(--border); border-radius:9px; padding:8px; display:flex; flex-direction:column; gap:5px; }
+.line-card.playing { border-color:#3b82f6; box-shadow:0 0 0 1px #3b82f6; background:#111c33; }
+.line-top { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:.75rem; }
+.line-top .who { font-weight:700; padding:2px 8px; border-radius:99px; background:#1e293b; color:#93c5fd; }
+.line-txt { font-size:.80rem; color:#e2e8f0; line-height:1.35; }
+.line-acts { display:flex; gap:4px; }
+.line-acts button { padding:3px 7px; font-size:.71rem; }
+.meter { height:6px; background:#090d16; border-radius:99px; overflow:hidden; border:1px solid var(--border); margin-top:6px; }
+.meter > div { height:100%; width:0%; background:linear-gradient(90deg,#22c55e,#eab308,#ef4444); transition:width .05s linear; }
+.hint { font-size:.72rem; color:var(--muted); line-height:1.45; margin-top:5px; }
+.upload-lbl { display:flex; align-items:center; justify-content:center; gap:6px; padding:8px; border:1.5px dashed #475569; border-radius:8px; background:#161f30; cursor:pointer; font-size:.78rem; color:#93c5fd; font-weight:600; }
+input[type=file] { display:none; }
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(15px); opacity:0; background:#111827; border:1px solid #475569; color:#fff; padding:8px 16px; border-radius:999px; font-size:.8rem; pointer-events:none; transition:.25s; z-index:60; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.modal-bg { position:fixed; inset:0; background:rgba(3,7,18,.75); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:50; padding:16px; }
+.modal-bg.open { display:flex; }
+.modal { background:var(--panel); border:1px solid var(--border); border-radius:14px; max-width:680px; width:100%; padding:16px; max-height:86vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,.7); }
+.sc-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+@media (max-width:620px) { .sc-grid { grid-template-columns:1fr; } }
+.sc-box { background:#0c111d; border:1px solid var(--border); border-radius:9px; padding:10px; font-size:.78rem; line-height:1.7; }
+.sc-box h3 { font-size:.82rem; color:#93c5fd; margin-bottom:5px; }
+.sc-row { display:flex; justify-content:space-between; gap:8px; border-bottom:1px solid rgba(255,255,255,.05); padding:2px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="brand-icon">✎</div>
+    <div>
+      <h1>Sketchy Stickman Cartoon Studio</h1>
+      <span>Multi-character hand-drawn stickmen, eye-gaze targeting, 14 hand gestures &amp; keyboard shortcuts</span>
+    </div>
+  </div>
+  <div class="rec-bar">
+    <button id="btnKeys" title="Keyboard Shortcuts (?)">⌨ Shortcuts <kbd>?</kbd></button>
+    <select id="resSel"><option value="1280x720">720p HD</option><option value="1920x1080">1080p Full HD</option></select>
+    <button id="btnAspect">📱 9:16 Portrait</button>
+    <div class="rec-status" id="recStatus"><span class="rec-dot"></span><span id="recTxt">Ready</span><span id="recTime">00:00</span></div>
+    <button id="btnRec" class="btn-rec">⏺ Record</button>
+    <button id="btnPauseRec" style="display:none;">⏸ Pause</button>
+    <button id="btnStopRec" style="display:none;">⏹ Stop</button>
+    <button id="btnDl" class="btn-success" style="display:none;">⬇ Download WebM</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <section class="stage-col">
+    <div class="canvas-wrap" id="cWrap">
+      <canvas id="stage" width="1280" height="720"></canvas>
+      <div class="hud">
+        <div class="badge" id="hudCam">📷 Wide All</div>
+        <div class="badge" id="hudStatus">Idle · Press ? for keyboard shortcuts</div>
+      </div>
+      <div class="canvas-tools">
+        <button id="btnShot" title="Save PNG Screenshot (Shift+S)">📸</button>
+        <button id="btnHudToggle" title="Toggle HUD">🏷</button>
+      </div>
+    </div>
+
+    <!-- LIVE GESTURE & EYE GAZE BAR -->
+    <div class="panel">
+      <div class="ptitle">
+        <span>🖐 Live Gesture &amp; 👀 Looking At (<kbd>[</kbd> <kbd>]</kbd> switch character)</span>
+        <div class="pill-row" id="liveCharPills"></div>
+      </div>
+      <div class="pill-row" style="margin-bottom:8px;">
+        <span style="font-size:.75rem;color:var(--muted);">👀 Look At:</span>
+        <div class="pill-row" id="liveLookRow"></div>
+      </div>
+      <div class="gest-grid" id="liveGestGrid"></div>
+    </div>
+
+    <!-- CAMERA & HOLD TO TALK -->
+    <div class="panel">
+      <div class="ptitle">
+        <span>🎬 Camera &amp; Live Talk</span>
+        <div class="pill-row">
+          <button id="btnAutoLook" class="sm active">👀 Auto-Look: ON <kbd>L</kbd></button>
+          <button id="btnAutoCam" class="sm active">🎯 Auto-Focus: ON <kbd>⇧F</kbd></button>
+          <button id="btnCutStyle" class="sm active">✂ Cut Mode <kbd>⇧C</kbd></button>
+          <button id="btnBoil" class="sm active">〰 Boil: ON</button>
+          <button id="btnResetPos" class="sm">♻ Space Evenly</button>
+        </div>
+      </div>
+      <div class="pill-row" id="camBtnRow"></div>
+      <div class="pill-row" id="holdTalkRow" style="margin-top:8px;"></div>
+      <p class="hint">Hold <kbd>1</kbd>–<kbd>6</kbd> to talk · <kbd>Space</kbd> Play/Stop Script · <kbd>⇧R</kbd> Record · <kbd>P</kbd> Pause · <kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>V</kbd><kbd>B</kbd><kbd>N</kbd> Expressions · <kbd>?</kbd> All Shortcuts</p>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="tabbar" id="tabs">
+      <button class="active" data-tab="script">💬 Script</button>
+      <button data-tab="chars">👥 Characters</button>
+      <button data-tab="scene">🎨 Scene/Audio</button>
+    </div>
+
+    <!-- SCRIPT TAB -->
+    <div class="pane active" data-pane="script">
+      <div class="panel">
+        <div class="ptitle">
+          <span>📜 Conversation Timeline</span>
+          <div style="display:flex;gap:5px;">
+            <button id="btnPlayScript" class="btn-success">▶ Play</button>
+            <button id="btnPlayRec" class="btn-rec">🎬 Play &amp; Rec</button>
+            <button id="btnStopScript">⏹</button>
+          </div>
+        </div>
+        <div class="script-list" id="scriptList"></div>
+        <div style="border-top:1px solid var(--border);margin-top:9px;padding-top:9px;">
+          <div class="g2">
+            <select id="inWho"></select>
+            <select id="inCam"><option value="auto">Auto Camera</option><option value="wide">Wide All</option><option value="focus">Close-Up Speaker</option><option value="center">Center</option></select>
+          </div>
+          <div class="g3" style="margin-top:6px;">
+            <select id="inExpr"></select>
+            <select id="inPose"></select>
+            <select id="inLook"></select>
+          </div>
+          <textarea id="inText" rows="2" placeholder="Type dialogue line..." style="margin-top:6px;"></textarea>
+          <div class="g2" style="margin-top:6px;">
+            <button id="btnAddLine" class="active">➕ Add Line</button>
+            <button id="btnClearScript">🗑 Clear All</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="chkBubbles" checked /> Show sketchy comic speech bubbles</label>
+          <label class="chk"><input type="checkbox" id="chkVoiceSynth" checked /> Cartoon syllable voice audio (recorded in video)</label>
+          <label class="chk"><input type="checkbox" id="chkTTS" /> Also speak text via browser TTS (preview only)</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARACTERS TAB -->
+    <div class="pane" data-pane="chars">
+      <div class="panel">
+        <div class="ptitle">
+          <span>👥 Cast &amp; Archetypes</span>
+          <div style="display:flex;gap:5px;">
+            <button id="btnAddChar" class="btn-success sm">➕ Add Character</button>
+            <button id="btnDelChar" class="sm" style="background:#7f1d1d;border-color:#f87171;">🗑 Remove</button>
+          </div>
+        </div>
+        <div class="pill-row" id="editCharPills"></div>
+        <div class="ctl"><label>Quick Preset</label><select id="charPresetSel"></select></div>
+        <div id="charEditorBody"></div>
+      </div>
+    </div>
+
+    <!-- SCENE & AUDIO TAB -->
+    <div class="pane" data-pane="scene">
+      <div class="panel">
+        <div class="ptitle"><span>🎙 Live Mic / Audio File Lip-Sync</span></div>
+        <div class="g2">
+          <button id="btnMic">🎤 Live Mic: OFF <kbd>M</kbd></button>
+          <select id="micTarget"></select>
+        </div>
+        <label class="upload-lbl" for="audioFile" style="margin-top:8px;">📁 Load Voiceover MP3 / WAV</label>
+        <input type="file" id="audioFile" accept="audio/*" />
+        <div class="g3" style="margin-top:6px;">
+          <button id="btnAPlay">▶ Play</button><button id="btnAPause">⏸ Pause</button><button id="btnARestart">⏮ Start</button>
+        </div>
+        <div class="ctl"><label>Lip sensitivity</label><input type="range" id="lipSens" min="0.5" max="3.5" step="0.1" value="1.8" /><span class="val" id="lipVal">1.8</span></div>
+        <div class="meter"><div id="vMeter"></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="ptitle"><span>🎨 Sketch Scene &amp; Style</span></div>
+        <div class="ctl"><label>Background</label>
+          <select id="bgStyle">
+            <option value="white">Clean Sketchbook White (Ref)</option>
+            <option value="paper">Cream Lined Notebook</option>
+            <option value="cafe">Coffee Shop Sketch</option>
+            <option value="office">Office Desk Sketch</option>
+            <option value="park">Park Bench Sketch</option>
+          </select>
+        </div>
+        <div class="ctl"><label>Sketch Roughness</label><input type="range" id="roughness" min="0.2" max="2.2" step="0.1" value="1.0" /><span class="val" id="roughVal">1.0</span></div>
+        <div class="ctl"><label>Voice Pitch Shift</label><input type="range" id="pitchBase" min="0.7" max="1.6" step="0.05" value="1.0" /><span class="val" id="pitchVal">1.0</span></div>
+        <div class="ctl"><label>Script Speed</label><input type="range" id="talkSpeed" min="0.6" max="1.8" step="0.05" value="1.0" /><span class="val" id="spdVal">1.0×</span></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- SHORTCUTS MODAL -->
+<div class="modal-bg" id="scModal">
+  <div class="modal">
+    <div class="ptitle"><span>⌨ Keyboard Shortcuts</span><button id="btnCloseSc" class="sm">✕ Close (Esc)</button></div>
+    <div class="sc-grid">
+      <div class="sc-box">
+        <h3>🖐 Hand Gestures (Selected Char)</h3>
+        <div class="sc-row"><span>Hands on Hips / Explaining</span><span><kbd>Q</kbd> / <kbd>W</kbd></span></div>
+        <div class="sc-row"><span>Point Forward / Finger Up</span><span><kbd>E</kbd> / <kbd>R</kbd></span></div>
+        <div class="sc-row"><span>Both Hands Up / Crossed</span><span><kbd>T</kbd> / <kbd>Y</kbd></span></div>
+        <div class="sc-row"><span>Shrug / Wave / Thumbs Up</span><span><kbd>U</kbd> / <kbd>I</kbd> / <kbd>O</kbd></span></div>
+        <div class="sc-row"><span>Facepalm / Thinking / Stop</span><span><kbd>F</kbd> / <kbd>G</kbd> / <kbd>H</kbd></span></div>
+        <div class="sc-row"><span>Power Fist / Clapping</span><span><kbd>J</kbd> / <kbd>K</kbd></span></div>
+      </div>
+      <div class="sc-box">
+        <h3>😀 Expressions &amp; 👀 Look At</h3>
+        <div class="sc-row"><span>Neutral / Skeptical / Sad</span><span><kbd>Z</kbd> / <kbd>X</kbd> / <kbd>C</kbd></span></div>
+        <div class="sc-row"><span>Happy / Annoyed / Surprised</span><span><kbd>V</kbd> / <kbd>B</kbd> / <kbd>N</kbd></span></div>
+        <div class="sc-row"><span>Look Auto / Camera / Away</span><span><kbd>A</kbd> / <kbd>S</kbd> / <kbd>D</kbd></span></div>
+        <div class="sc-row"><span>Look Up / Look Down</span><span><kbd>↑</kbd> / <kbd>↓</kbd></span></div>
+        <div class="sc-row"><span>Look at Prev / Next Char</span><span><kbd>←</kbd> / <kbd>→</kbd></span></div>
+        <div class="sc-row"><span>Toggle Auto-Look Speaker</span><span><kbd>L</kbd></span></div>
+      </div>
+      <div class="sc-box">
+        <h3>🗣 Characters &amp; Playback</h3>
+        <div class="sc-row"><span>Hold-to-Talk (Char 1–6)</span><span><kbd>1</kbd>–<kbd>6</kbd></span></div>
+        <div class="sc-row"><span>Select Prev / Next Char</span><span><kbd>[</kbd> / <kbd>]</kbd></span></div>
+        <div class="sc-row"><span>Play / Stop Script</span><span><kbd>Space</kbd></span></div>
+        <div class="sc-row"><span>Toggle Live Mic</span><span><kbd>M</kbd></span></div>
+      </div>
+      <div class="sc-box">
+        <h3>🎬 Camera &amp; Recording</h3>
+        <div class="sc-row"><span>Wide All / Tight Center</span><span><kbd>0</kbd> / <kbd>9</kbd></span></div>
+        <div class="sc-row"><span>Focus Selected Char</span><span><kbd>Enter</kbd></span></div>
+        <div class="sc-row"><span>Auto-Focus / Cut Mode</span><span><kbd>⇧F</kbd> / <kbd>⇧C</kbd></span></div>
+        <div class="sc-row"><span>Start / Stop Recording</span><span><kbd>⇧R</kbd></span></div>
+        <div class="sc-row"><span>Pause / Resume Recording</span><span><kbd>P</kbd></span></div>
+        <div class="sc-row"><span>PNG Screenshot</span><span><kbd>⇧S</kbd></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 1800); }
+
+// ------------------------------------------------------------------
+// 1. CATALOGS
+// ------------------------------------------------------------------
+const GESTURES = [
+  ['hips','🙌 Hands on Hips','Q'],['explain','🤲 Explaining','W'],['point','☝ Point Forward','E'],
+  ['pointUp','💡 Finger Up','R'],['raised','🙌 Hands Up','T'],['crossed','😤 Crossed','Y'],
+  ['shrug','🤷 Shrug','U'],['wave','👋 Wave','I'],['thumbsUp','👍 Thumbs Up','O'],
+  ['facepalm','🤦 Facepalm','F'],['thinking','🤔 Thinking','G'],['stop','✋ Stop','H'],
+  ['fist','✊ Fist','J'],['clap','👏 Clap','K']
+];
+const EXPRS = [
+  ['neutral','😐 Neutral','Z'],['skeptical','🤨 Skeptical','X'],['sad','☹ Sad','C'],
+  ['happy','😊 Happy','V'],['angry','😠 Annoyed','B'],['surprised','😮 Surprised','N']
+];
+const ARCHETYPES = {
+  capGuy:    { label:'🎩 Cap Guy (Ref Left)', hat:'cap', outfit:'vest', face:'none', expr:'skeptical', pose:'hips', scale:1.0, pitch:0.95 },
+  tuftGuy:   { label:'〰 Wispy Guy (Ref Right)', hat:'tufts', outfit:'vest', face:'none', expr:'sad', pose:'hips', scale:1.0, pitch:1.15 },
+  detective: { label:'🕵️ Detective', hat:'tophat', outfit:'suit', face:'mustache', expr:'skeptical', pose:'thinking', scale:1.04, pitch:0.85 },
+  scholar:   { label:'👩‍🏫 Teacher / Scholar', hat:'bun', outfit:'vest', face:'glasses', expr:'happy', pose:'pointUp', scale:0.97, pitch:1.25 },
+  doctor:    { label:'🩺 Doctor', hat:'spiky', outfit:'coat', face:'glasses', expr:'neutral', pose:'explain', scale:1.02, pitch:1.0 },
+  cool:      { label:'😎 Cool Shades', hat:'spiky', outfit:'hoodie', face:'shades', expr:'happy', pose:'thumbsUp', scale:1.0, pitch:0.92 },
+  boss:      { label:'👑 Boss / King', hat:'crown', outfit:'suit', face:'beard', expr:'angry', pose:'point', scale:1.08, pitch:0.8 },
+  chill:     { label:'🧢 Beanie Buddy', hat:'beanie', outfit:'hoodie', face:'none', expr:'surprised', pose:'shrug', scale:0.92, pitch:1.2 }
+};
+
+// ------------------------------------------------------------------
+// 2. SKETCHY INK RENDERING HELPERS
+// ------------------------------------------------------------------
+let boilSeed = 1, boilAcc = 0, boilEnabled = true, sketchRough = 1.0, autoLookSpeaker = true;
+function hash(n) { const x = Math.sin(n * 127.1 + boilSeed * 311.7) * 43758.5453; return x - Math.floor(x); }
+function jit(id, amp = 1.5) { return (hash(id) - 0.5) * 2 * amp * sketchRough; }
+
+function sketchLine(ctx, x1, y1, x2, y2, lw = 2.6, passes = 2, seed = 1, col = '#0a0a0a') {
+  ctx.save(); ctx.strokeStyle = col; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const len = Math.hypot(x2 - x1, y2 - y1) || 1, nx = -(y2 - y1) / len, ny = (x2 - x1) / len;
+  for (let p = 0; p < passes; p++) {
+    const s = seed + p * 17;
+    ctx.lineWidth = lw * (p === 0 ? 1 : 0.52); ctx.globalAlpha = p === 0 ? 0.96 : 0.55;
+    ctx.beginPath(); ctx.moveTo(x1 + jit(s + 1, 1.3), y1 + jit(s + 2, 1.3));
+    ctx.quadraticCurveTo((x1 + x2) / 2 + nx * jit(s + 3, Math.min(4, len * 0.04)) + jit(s + 4, 1.2), (y1 + y2) / 2 + ny * jit(s + 5, Math.min(4, len * 0.04)) + jit(s + 6, 1.2), x2 + jit(s + 7, 1.3), y2 + jit(s + 8, 1.3));
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function sketchCircle(ctx, cx, cy, r, lw = 2.8, seed = 10, shadeSide = -1) {
+  ctx.save();
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill();
+  const grad = ctx.createRadialGradient(cx - shadeSide * r * 0.22, cy - r * 0.15, r * 0.35, cx, cy, r * 1.02);
+  grad.addColorStop(0, 'rgba(255,255,255,0)'); grad.addColorStop(0.78, 'rgba(220,224,230,0.22)'); grad.addColorStop(1, 'rgba(130,136,148,0.48)');
+  ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#090909'; ctx.lineCap = 'round';
+  for (let p = 0; p < 3; p++) {
+    ctx.lineWidth = lw * (p === 0 ? 1 : p === 1 ? 0.55 : 0.35); ctx.globalAlpha = p === 0 ? 0.98 : 0.55;
+    ctx.beginPath();
+    for (let i = 0; i <= 29; i++) {
+      const a = (i / 28) * TAU, dr = jit(seed + p * 41 + (i % 28) * 3, 2.2);
+      const px = cx + Math.cos(a) * (r + dr), py = cy + Math.sin(a) * (r + dr * 0.8);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function sketchHatch(ctx, x1, y1, x2, y2, step = 5, lw = 1.6, seed = 50, col = '#111') {
+  ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.globalAlpha = 0.85;
+  ctx.beginPath(); const h = y2 - y1;
+  for (let x = x1; x <= x2; x += step) {
+    ctx.moveTo(x + jit(seed + x, 1.5), y1 + jit(seed + x + 1, 2));
+    ctx.lineTo(x + h * 0.25 + jit(seed + x + 2, 2), y2 + jit(seed + x + 3, 2));
+  }
+  ctx.stroke(); ctx.restore();
+}
+
+// ------------------------------------------------------------------
+// 3. CHARACTERS, EYE-GAZE TARGETING & HAND GESTURES
+// ------------------------------------------------------------------
+let nextCharSeed = 130;
+const chars = [
+  { id:'A', name:'Char A', x:410, y:565, dir:1, effDir:1, lookAt:'auto', gazeX:1, gazeY:0, frontK:0, scale:1.0, hat:'cap', outfit:'vest', face:'none', expr:'skeptical', pose:'hips', mouth:0, blink:1, blinkT:2.3, seed:11, pitch:0.95 },
+  { id:'B', name:'Char B', x:870, y:565, dir:-1, effDir:-1, lookAt:'auto', gazeX:-1, gazeY:0, frontK:0, scale:1.0, hat:'tufts', outfit:'vest', face:'none', expr:'sad', pose:'hips', mouth:0, blink:1, blinkT:3.1, seed:77, pitch:1.15 }
+];
+let selCharIdx = 0;
+
+function nearestOther(idx) {
+  let best = -1, bestD = 1e9;
+  chars.forEach((o, j) => { if (j !== idx) { const d = Math.abs(o.x - chars[idx].x); if (d < bestD) { bestD = d; best = j; } } });
+  return best;
+}
+
+function updateCharacterGaze(dt, activeSpeaker) {
+  const k = 1 - Math.exp(-12 * dt);
+  chars.forEach((C, i) => {
+    let tgtDir = C.dir, gy = 0, front = 0, mode = C.lookAt;
+    if (mode === 'auto') {
+      if (autoLookSpeaker && activeSpeaker >= 0 && activeSpeaker !== i) mode = 'char:' + activeSpeaker;
+      else if (autoLookSpeaker && activeSpeaker === i && chars.length > 1) {
+        const near = nearestOther(i); if (near >= 0) mode = 'char:' + near;
+      }
+    }
+    if (mode === 'camera') front = 1;
+    else if (mode === 'up') gy = -0.85;
+    else if (mode === 'down') gy = 0.85;
+    else if (mode === 'away') {
+      const ref = (activeSpeaker >= 0 && activeSpeaker !== i) ? chars[activeSpeaker] : chars[nearestOther(i)];
+      tgtDir = ref ? (ref.x >= C.x ? -1 : 1) : -C.dir;
+    } else if (mode.startsWith('char:')) {
+      const T = chars[parseInt(mode.split(':')[1], 10)];
+      if (T && T !== C) {
+        if (Math.abs(T.x - C.x) > 12) tgtDir = T.x >= C.x ? 1 : -1;
+        gy = clamp(((T.y - 295 * T.scale) - (C.y - 295 * C.scale)) / 140, -0.75, 0.75);
+      }
+    }
+    C.effDir = tgtDir;
+    C.gazeX = lerp(C.gazeX, front ? 0 : tgtDir, k);
+    C.gazeY = lerp(C.gazeY, gy, k);
+    C.frontK = lerp(C.frontK, front, k);
+  });
+}
+
+function drawHandShape(ctx, hx, hy, ex, ey, shape, d, sd) {
+  const ang = Math.atan2(hy - ey, hx - ex);
+  if (shape === 'splay') { for (let f = -1; f <= 1; f++) { const fa = ang + f * 0.42; sketchLine(ctx, hx, hy, hx + Math.cos(fa) * 12, hy + Math.sin(fa) * 12, 2.0, 1, sd + 10 + f); } }
+  else if (shape === 'point') { sketchLine(ctx, hx, hy, hx + Math.cos(ang) * 17, hy + Math.sin(ang) * 17, 2.3, 2, sd + 10); ctx.fillStyle = '#090909'; ctx.beginPath(); ctx.arc(hx, hy, 4.2, 0, TAU); ctx.fill(); }
+  else if (shape === 'fist') { ctx.fillStyle = '#090909'; ctx.beginPath(); ctx.arc(hx, hy, 7.2, 0, TAU); ctx.fill(); sketchLine(ctx, hx - 5, hy - 2, hx + 5, hy + 2, 1.5, 1, sd + 12, '#fff'); }
+  else if (shape === 'thumb') { ctx.fillStyle = '#090909'; ctx.beginPath(); ctx.arc(hx, hy, 6.2, 0, TAU); ctx.fill(); sketchLine(ctx, hx, hy - 4, hx - d * 2, hy - 18, 3.0, 2, sd + 13); }
+  else if (shape === 'open') { for (let f = -2; f <= 2; f++) { const fa = -Math.PI / 2 + f * 0.25 + d * 0.1; sketchLine(ctx, hx, hy, hx + Math.cos(fa) * 13, hy + Math.sin(fa) * 13, 1.9, 1, sd + 15 + f); } }
+}
+
+function drawStickman(ctx, C, t) {
+  const s = C.scale, d = C.effDir || C.dir, gx = C.gazeX, gy = C.gazeY, fk = C.frontK;
+  ctx.save(); ctx.translate(C.x, C.y); ctx.scale(s, s);
+  const talkBob = C.mouth > 0.08 ? Math.sin(t * 14) * C.mouth * 3.5 : Math.sin(t * 2.2 + C.seed) * 1.4;
+  const hipX = 0, hipY = -125, shX = gx * 2, shY = -222 + talkBob * 0.5, headR = 72, headX = gx * 4, headY = shY - headR - 14 + talkBob * 0.4;
+
+  const drawLeg = (fx, k) => {
+    const mx = lerp(hipX, fx, 0.5) + d * 4 * (1 - fk), my = hipY * 0.5;
+    sketchLine(ctx, hipX + d * 3, hipY, mx, my, 4.6, 2, C.seed + k); sketchLine(ctx, mx, my, fx, 0, 4.2, 2, C.seed + k + 5);
+    sketchLine(ctx, hipX + d * 8, hipY, mx + d * 4, my, 1.8, 1, C.seed + k + 9); sketchLine(ctx, mx + d * 4, my, fx + d * 4, 0, 1.8, 1, C.seed + k + 12);
+  };
+  drawLeg(-26 * d, 1); drawLeg(32 * d, 20);
+
+  if (C.outfit === 'vest' || C.outfit === 'suit' || C.outfit === 'coat') {
+    const isCoat = C.outfit === 'coat', col = isCoat ? '#f1f5f9' : '#0c0c0e';
+    ctx.save(); ctx.fillStyle = col;
+    ctx.beginPath(); ctx.moveTo(shX - 18, shY); ctx.lineTo(shX + 18, shY);
+    const hemY = isCoat ? hipY + 34 : hipY + 4;
+    ctx.quadraticCurveTo(hipX + 26, (shY + hemY) * 0.5, hipX + (isCoat ? 26 : 21), hemY);
+    ctx.lineTo(hipX - (isCoat ? 26 : 21), hemY);
+    ctx.quadraticCurveTo(hipX - 24, (shY + hemY) * 0.5, shX - 18, shY); ctx.closePath(); ctx.fill();
+    if (!isCoat) {
+      ctx.fillStyle = '#ffffff'; ctx.beginPath();
+      ctx.moveTo(shX + gx * 3 - 4 * fk, shY + 6); ctx.lineTo(shX + gx * 12 + 4 * fk, shY + 8);
+      ctx.lineTo(hipX + gx * 13 + 5 * fk, hipY); ctx.lineTo(hipX + gx * 4 - 5 * fk, hipY); ctx.closePath(); ctx.fill();
+    }
+    sketchLine(ctx, shX - 18, shY, hipX - (isCoat ? 25 : 21), hemY, 2.8, 2, C.seed + 30);
+    sketchLine(ctx, shX + 18, shY, hipX + (isCoat ? 25 : 21), hemY, 2.8, 2, C.seed + 33);
+    sketchLine(ctx, hipX - (isCoat ? 24 : 20), hemY, hipX + (isCoat ? 24 : 20), hemY, 2.5, 2, C.seed + 36);
+    if (C.outfit === 'suit') sketchLine(ctx, shX + gx * 8, shY + 8, shX + gx * 9, hipY - 12, 5.2, 2, C.seed + 42, '#b91c1c');
+    else if (C.outfit === 'vest') {
+      for (let b = 0; b < 3; b++) { ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(lerp(shX + gx * 8, hipX + gx * 8.5, 0.28 + b * 0.25), lerp(shY + 12, hipY - 8, b * 0.35), 2.1, 0, TAU); ctx.fill(); }
+      const bx = shX + gx * 7, by = shY + 4; ctx.fillStyle = '#090909'; ctx.beginPath();
+      ctx.moveTo(bx, by); ctx.lineTo(bx - 10, by - 5); ctx.lineTo(bx - 10, by + 5); ctx.closePath();
+      ctx.moveTo(bx, by); ctx.lineTo(bx + 10, by - 5); ctx.lineTo(bx + 10, by + 5); ctx.closePath(); ctx.fill();
+    } else { ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 3.2; ctx.beginPath(); ctx.arc(shX + gx * 4, shY + 18, 15, 0, Math.PI); ctx.stroke(); }
+    ctx.restore();
+  } else if (C.outfit === 'hoodie') {
+    ctx.save(); ctx.fillStyle = '#272c36';
+    ctx.beginPath(); ctx.moveTo(shX - 21, shY); ctx.lineTo(shX + 21, shY); ctx.lineTo(hipX + 24, hipY + 4); ctx.lineTo(hipX - 24, hipY + 4); ctx.closePath(); ctx.fill();
+    sketchLine(ctx, shX - 21, shY, hipX - 24, hipY + 4, 2.8, 2, C.seed + 30); sketchLine(ctx, shX + 21, shY, hipX + 24, hipY + 4, 2.8, 2, C.seed + 33);
+    sketchLine(ctx, shX - 8, shY + 8, shX - 7, shY + 34, 2.0, 1, C.seed + 37, '#e2e8f0'); sketchLine(ctx, shX + 10, shY + 8, shX + 9, shY + 34, 2.0, 1, C.seed + 38, '#e2e8f0');
+    ctx.restore();
+  } else sketchLine(ctx, shX, shY, hipX, hipY, 4.4, 2, C.seed + 30);
+
+  const drawArm = (sx, sy, ex, ey, hx, hy, sd, shape = 'splay') => {
+    sketchLine(ctx, sx, sy, ex, ey, 3.6, 2, sd); sketchLine(ctx, ex, ey, hx, hy, 3.3, 2, sd + 4);
+    if (shape !== 'none') drawHandShape(ctx, hx, hy, ex, ey, shape, d, sd);
+  };
+  const gAnim = C.mouth > 0.08 ? Math.sin(t * 10 + C.seed) * 10 * C.mouth : 0, pose = C.pose;
+  const hipArm = (side, sd) => drawArm(shX + side * 15, shY + 12, shX + side * 46, shY + 54, hipX + side * 16, hipY - 4, sd, 'splay');
+
+  if (pose === 'hips') { hipArm(-1, C.seed + 50); hipArm(1, C.seed + 60); }
+  else if (pose === 'explain') { drawArm(shX - 14, shY + 12, shX - 38, shY + 48, shX - 12 - d * 18, shY + 24 + gAnim, C.seed + 50, 'splay'); drawArm(shX + d * 14, shY + 12, shX + d * 36, shY + 42, shX + d * 68, shY + 14 - gAnim, C.seed + 60, 'splay'); }
+  else if (pose === 'point') { hipArm(-d, C.seed + 50); drawArm(shX + d * 14, shY + 12, shX + d * 48, shY + 8, shX + d * 88, shY - 6 + gAnim * 0.5, C.seed + 60, 'point'); }
+  else if (pose === 'pointUp') { hipArm(-d, C.seed + 50); drawArm(shX + d * 14, shY + 12, shX + d * 42, shY - 12, shX + d * 48, shY - 62 + gAnim * 0.4, C.seed + 60, 'point'); }
+  else if (pose === 'raised') { drawArm(shX - 15, shY + 12, shX - 44, shY - 8, shX - 58, shY - 48 + gAnim * 0.5, C.seed + 50, 'open'); drawArm(shX + 15, shY + 12, shX + 44, shY - 8, shX + 58, shY - 48 - gAnim * 0.5, C.seed + 60, 'open'); }
+  else if (pose === 'crossed') { drawArm(shX - 15, shY + 12, shX - 30, shY + 46, shX + 18, shY + 42, C.seed + 50, 'none'); drawArm(shX + 15, shY + 12, shX + 30, shY + 46, shX - 18, shY + 40, C.seed + 60, 'none'); }
+  else if (pose === 'shrug') { drawArm(shX - 15, shY + 12, shX - 42, shY + 34, shX - 66, shY + 16, C.seed + 50, 'splay'); drawArm(shX + 15, shY + 12, shX + 42, shY + 34, shX + 66, shY + 16, C.seed + 60, 'splay'); }
+  else if (pose === 'wave') { const wv = Math.sin(t * 9 + C.seed) * 16; hipArm(-d, C.seed + 50); drawArm(shX + d * 14, shY + 12, shX + d * 48, shY - 10, shX + d * 64 + wv, shY - 58, C.seed + 60, 'open'); }
+  else if (pose === 'thumbsUp') { hipArm(-d, C.seed + 50); drawArm(shX + d * 14, shY + 12, shX + d * 42, shY + 26, shX + d * 68, shY - 4 + gAnim * 0.3, C.seed + 60, 'thumb'); }
+  else if (pose === 'facepalm') { hipArm(-d, C.seed + 50); drawArm(shX + d * 14, shY + 12, shX + d * 52, shY - 22, headX + gx * 28, headY - 22, C.seed + 60, 'open'); }
+  else if (pose === 'thinking') { drawArm(shX - d * 12, shY + 12, shX - d * 28, shY + 44, shX + d * 18, shY + 40, C.seed + 50, 'none'); drawArm(shX + d * 14, shY + 12, shX + d * 44, shY + 28, headX + gx * 22, headY + 52, C.seed + 60, 'fist'); }
+  else if (pose === 'stop') { hipArm(-d, C.seed + 50); drawArm(shX + d * 14, shY + 12, shX + d * 46, shY + 8, shX + d * 82, shY - 14, C.seed + 60, 'open'); }
+  else if (pose === 'fist') { const pump = Math.sin(t * 11 + C.seed) * 8; hipArm(-d, C.seed + 50); drawArm(shX + d * 14, shY + 12, shX + d * 44, shY + 20, shX + d * 60, shY - 18 + pump, C.seed + 60, 'fist'); }
+  else if (pose === 'clap') { const cl = Math.abs(Math.sin(t * 10 + C.seed)) * 18; drawArm(shX - 14, shY + 12, shX - 36, shY + 40, shX + gx * 24 - cl, shY + 12, C.seed + 50, 'open'); drawArm(shX + 14, shY + 12, shX + 38, shY + 38, shX + gx * 24 + cl, shY + 12, C.seed + 60, 'open'); }
+
+  sketchLine(ctx, shX + gx * 4, shY + 2, headX, headY + headR - 4, 3.2, 2, C.seed + 70);
+  sketchCircle(ctx, headX, headY, headR, 3.2, C.seed + 80, gx || d);
+
+  const fx = headX + gx * 24, fy = headY - 6 + gy * 18, eyeY = fy - 4, eL = fx - 21 - (gx < 0 ? 4 * (1 - fk) : 0), eR = fx + 21 + (gx > 0 ? 4 * (1 - fk) : 0);
+  const rxL = lerp(7.8, 9.5, clamp(0.5 + gx * 0.5, 0, 1)), rxR = lerp(9.5, 7.8, clamp(0.5 + gx * 0.5, 0, 1));
+  const drawEye = (ex, ey, rx, ry) => {
+    ctx.save(); ctx.translate(ex, ey); ctx.rotate(gx * -0.06);
+    if (C.blink < 0.2) sketchLine(ctx, -rx, 0, rx, 0, 2.8, 1, C.seed + 90);
+    else { ctx.fillStyle = '#09090b'; ctx.beginPath(); ctx.ellipse(0, 0, rx, ry * C.blink, 0, 0, TAU); ctx.fill(); if (C.expr === 'happy' || fk > 0.5) { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(gx * 2.2, -ry * 0.32 + gy * 2, 2.2, 0, TAU); ctx.fill(); } }
+    ctx.restore();
+  };
+  drawEye(eL, eyeY, lerp(rxL, 9.2, fk), 13.5); drawEye(eR, eyeY, lerp(rxR, 9.2, fk), 13.5);
+
+  if (C.expr === 'angry') { sketchLine(ctx, eL - 10, eyeY - 22, eL + 10, eyeY - 14, 2.8, 2, C.seed + 95); sketchLine(ctx, eR - 10, eyeY - 14, eR + 10, eyeY - 22, 2.8, 2, C.seed + 98); }
+  else if (C.expr === 'surprised') { sketchLine(ctx, eL - 8, eyeY - 22, eL + 8, eyeY - 24, 2.2, 1, C.seed + 95); sketchLine(ctx, eR - 8, eyeY - 24, eR + 8, eyeY - 22, 2.2, 1, C.seed + 98); }
+
+  const mx = fx - gx * 2, my = fy + 34;
+  if (C.mouth > 0.12) {
+    const openH = clamp(C.mouth * 18, 4, 22), openW = 14 + Math.sin(t * 20 + C.seed) * 3.5;
+    ctx.save(); ctx.fillStyle = '#111114'; ctx.beginPath();
+    if (C.expr === 'happy') { ctx.moveTo(mx - openW, my - 2); ctx.lineTo(mx + openW, my - 2); ctx.quadraticCurveTo(mx, my + openH * 1.4, mx - openW, my - 2); }
+    else ctx.ellipse(mx, my + 2, openW * 0.82, openH * 0.68, 0, 0, TAU);
+    ctx.fill();
+    if (openH > 9) { ctx.fillStyle = '#e11d48'; ctx.beginPath(); ctx.ellipse(mx, my + openH * 0.35, openW * 0.42, openH * 0.25, 0, 0, TAU); ctx.fill(); }
+    ctx.strokeStyle = '#090909'; ctx.lineWidth = 2.6; ctx.stroke(); ctx.restore();
+  } else {
+    ctx.save(); ctx.strokeStyle = '#090909'; ctx.lineWidth = 2.8; ctx.lineCap = 'round'; ctx.beginPath();
+    if (C.expr === 'happy') { ctx.moveTo(mx - 15, my - 3); ctx.quadraticCurveTo(mx, my + 12, mx + 16, my - 3); }
+    else if (C.expr === 'sad' || C.expr === 'angry') { ctx.moveTo(mx - 14, my + 8); ctx.quadraticCurveTo(mx, my - 8, mx + 14, my + 8); }
+    else if (C.expr === 'surprised') ctx.ellipse(mx, my + 2, 6, 8, 0, 0, TAU);
+    else if (C.expr === 'skeptical') { ctx.moveTo(mx - 16, my + 3); ctx.quadraticCurveTo(mx, my - 3, mx + 15, my - 4); }
+    else { ctx.moveTo(mx - 14, my); ctx.lineTo(mx + 14, my); }
+    ctx.stroke(); ctx.restore();
+  }
+
+  if (C.face === 'glasses' || C.face === 'shades') {
+    ctx.save(); ctx.strokeStyle = '#111'; ctx.lineWidth = 2.5;
+    if (C.face === 'shades') {
+      ctx.fillStyle = '#09090b'; ctx.fillRect(eL - 15, eyeY - 12, 30, 22); ctx.fillRect(eR - 15, eyeY - 12, 30, 22);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(eL - 8, eyeY - 6); ctx.lineTo(eL + 2, eyeY + 4); ctx.moveTo(eR - 8, eyeY - 6); ctx.lineTo(eR + 2, eyeY + 4); ctx.stroke();
+    } else { ctx.beginPath(); ctx.arc(eL, eyeY, 15, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.arc(eR, eyeY, 15, 0, TAU); ctx.stroke(); }
+    sketchLine(ctx, eL + 14, eyeY - 2, eR - 14, eyeY - 2, 2.4, 1, C.seed + 101);
+    if (fk < 0.7) sketchLine(ctx, eL - 15, eyeY - 2, headX - d * 55, eyeY - 5, 2.2, 1, C.seed + 102);
+    ctx.restore();
+  } else if (C.face === 'mustache') {
+    ctx.save(); ctx.fillStyle = '#111'; ctx.beginPath();
+    ctx.moveTo(mx, my - 10); ctx.quadraticCurveTo(mx - 18, my - 15, mx - 24, my - 4); ctx.quadraticCurveTo(mx - 10, my - 2, mx, my - 6);
+    ctx.quadraticCurveTo(mx + 10, my - 2, mx + 24, my - 4); ctx.quadraticCurveTo(mx + 18, my - 15, mx, my - 10); ctx.fill(); ctx.restore();
+  } else if (C.face === 'beard') {
+    ctx.save(); ctx.fillStyle = '#18181b'; ctx.beginPath();
+    ctx.moveTo(mx - 24, my + 8); ctx.quadraticCurveTo(mx, my + 44, mx + 24, my + 8); ctx.quadraticCurveTo(mx, my + 20, mx - 24, my + 8); ctx.fill();
+    sketchHatch(ctx, mx - 18, my + 12, mx + 18, my + 32, 4, 1.4, C.seed + 105, '#3f3f46'); ctx.restore();
+  }
+
+  if (C.hat === 'cap') {
+    ctx.save(); ctx.translate(headX - gx * 6, headY - 46 + gy * 6); ctx.rotate(gx * -0.42);
+    ctx.fillStyle = '#18181b'; ctx.beginPath(); ctx.moveTo(-64, 16); ctx.quadraticCurveTo(-54, -36, 0, -34); ctx.quadraticCurveTo(48, -32, 60, 12); ctx.closePath(); ctx.fill();
+    sketchHatch(ctx, -56, -24, 52, 12, 4, 1.5, C.seed + 110, '#3f3f46');
+    const visD = gx >= 0 ? 1 : -1;
+    ctx.beginPath(); ctx.moveTo(visD * 34 * (1 - fk * 0.5), 10); ctx.quadraticCurveTo(visD * 95 * (1 - fk * 0.4), 4, visD * 94 * (1 - fk * 0.4), 14);
+    ctx.quadraticCurveTo(visD * 65 * (1 - fk * 0.4), 22, visD * 24 * (1 - fk * 0.5), 17); ctx.closePath(); ctx.fillStyle = '#0f0f12'; ctx.fill();
+    sketchLine(ctx, -64, 16, 60, 12, 3.0, 2, C.seed + 120); sketchLine(ctx, -64, 16, -25, -32, 2.8, 2, C.seed + 124);
+    sketchLine(ctx, -25, -32, 48, -22, 2.8, 2, C.seed + 128); sketchLine(ctx, visD * 34 * (1 - fk * 0.5), 10, visD * 94 * (1 - fk * 0.4), 14, 2.8, 2, C.seed + 132);
+    ctx.restore();
+  } else if (C.hat === 'tufts') {
+    const ty = headY - headR + 2;
+    sketchLine(ctx, headX - 8, ty, headX - 24, ty - 14, 2.6, 2, C.seed + 140);
+    sketchLine(ctx, headX - 2, ty - 1, headX - 12, ty - 18, 2.4, 2, C.seed + 144);
+    sketchLine(ctx, headX + 8, ty + 1, headX + 4, ty - 11, 2.0, 1, C.seed + 148);
+  } else if (C.hat === 'spiky') {
+    const ty = headY - headR + 4;
+    for (let k = -3; k <= 3; k++) sketchLine(ctx, headX + k * 14, ty + Math.abs(k) * 3, headX + k * 17, ty - 22 + Math.abs(k) * 2, 2.8, 2, C.seed + 150 + k);
+  } else if (C.hat === 'tophat') {
+    ctx.save(); ctx.translate(headX, headY - headR + 10); ctx.rotate(gx * 0.08);
+    ctx.fillStyle = '#111'; ctx.fillRect(-34, -52, 68, 48); ctx.fillRect(-52, -6, 104, 10);
+    ctx.fillStyle = '#e2e8f0'; ctx.fillRect(-34, -14, 68, 6);
+    sketchLine(ctx, -52, 0, 52, 0, 2.8, 2, C.seed + 160); sketchLine(ctx, -34, -52, 34, -52, 2.8, 2, C.seed + 164); ctx.restore();
+  } else if (C.hat === 'bun') {
+    sketchCircle(ctx, headX - gx * 30, headY - headR - 10, 22, 2.8, C.seed + 170, gx || d);
+    sketchHatch(ctx, headX - gx * 30 - 18, headY - headR - 26, headX - gx * 30 + 18, headY - headR + 6, 4, 2.2, C.seed + 175, '#18181b');
+  } else if (C.hat === 'beanie') {
+    ctx.save(); ctx.translate(headX, headY - 46); ctx.fillStyle = '#334155'; ctx.beginPath(); ctx.arc(0, 8, 56, Math.PI, 0); ctx.fill();
+    sketchHatch(ctx, -48, -36, 48, 4, 5, 1.5, C.seed + 180, '#1e293b'); ctx.fillStyle = '#1e293b'; ctx.fillRect(-58, 0, 116, 14);
+    sketchCircle(ctx, 0, -52, 12, 2.2, C.seed + 185, gx || d); ctx.restore();
+  } else if (C.hat === 'crown') {
+    ctx.save(); ctx.translate(headX, headY - headR + 2); ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(-36, -34); ctx.lineTo(-14, -14); ctx.lineTo(0, -40); ctx.lineTo(14, -14); ctx.lineTo(36, -34); ctx.lineTo(30, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.restore();
+  }
+  ctx.restore();
+}
+
+// ------------------------------------------------------------------
+// 4. BACKGROUNDS, GROUND SHADOWS & SPEECH BUBBLES
+// ------------------------------------------------------------------
+function drawGroundAndBg(ctx, W, H, bgStyle) {
+  if (bgStyle === 'paper') {
+    ctx.fillStyle = '#fcf9ef'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(147,197,253,0.45)'; ctx.lineWidth = 1.2;
+    for (let y = 50; y < H; y += 34) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.strokeStyle = 'rgba(248,113,113,0.45)'; ctx.beginPath(); ctx.moveTo(95, 0); ctx.lineTo(95, H); ctx.stroke();
+  } else { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H); }
+  if (bgStyle === 'cafe') {
+    sketchLine(ctx,130,140,320,140,2.5,2,300,'#94a3b8'); sketchLine(ctx,130,140,130,280,2.5,2,302,'#94a3b8'); sketchLine(ctx,320,140,320,280,2.5,2,304,'#94a3b8'); sketchLine(ctx,130,280,320,280,2.5,2,306,'#94a3b8');
+    sketchLine(ctx,560,440,720,440,3.2,2,310,'#475569'); sketchLine(ctx,640,440,640,565,3.2,2,314,'#475569');
+  } else if (bgStyle === 'office') {
+    sketchLine(ctx,480,110,800,110,2.5,2,320,'#94a3b8'); sketchLine(ctx,480,110,480,270,2.5,2,322,'#94a3b8'); sketchLine(ctx,800,110,800,270,2.5,2,324,'#94a3b8'); sketchLine(ctx,480,270,800,270,2.5,2,326,'#94a3b8');
+    sketchLine(ctx,520,170,620,145,2.0,1,328,'#cbd5e1'); sketchLine(ctx,620,145,750,190,2.0,1,330,'#cbd5e1');
+  } else if (bgStyle === 'park') {
+    sketchLine(ctx,1020,180,1020,560,4.5,2,340,'#64748b'); sketchCircle(ctx,1020,150,85,2.4,345,1);
+  }
+}
+
+function drawGroundShadow(ctx) {
+  const gy = 568;
+  for (let i = 0; i < 16; i++) {
+    const yy = gy - 4 + i * 3.5;
+    sketchLine(ctx, 70 + jit(400 + i, 45), yy, 1210 + jit(450 + i, 45), yy + jit(500 + i, 5), i < 4 ? 2.1 : 1.1, 1, 550 + i, i < 5 ? '#18181b' : '#9ca3af');
+  }
+  chars.forEach((C, k) => {
+    for (let j = -4; j <= 4; j++) {
+      const span = 98 * C.scale;
+      sketchLine(ctx, C.x - span + Math.abs(j) * 14, gy + j * 2.2, C.x + span - Math.abs(j) * 14, gy + j * 2.2, 2.4, 1, 600 + k * 25 + j, '#09090b');
+    }
+  });
+}
+
+function drawSpeechBubble(ctx, C, text) {
+  if (!text) return;
+  ctx.save(); ctx.font = 'bold 23px "Segoe UI", system-ui, sans-serif';
+  const words = text.split(/\s+/), lines = []; let cur = '';
+  for (const w of words) { const test = cur ? cur + ' ' + w : w; if (ctx.measureText(test).width > 330 && cur) { lines.push(cur); cur = w; } else cur = test; }
+  if (cur) lines.push(cur);
+  const bw = Math.max(125, ...lines.map(l => ctx.measureText(l).width)) + 42, bh = lines.length * 29 + 26, d = C.effDir || C.dir;
+  const bx = clamp(C.x - bw / 2 + d * 25, 28, 1252 - bw), by = clamp(C.y - 385 * C.scale - bh, 22, 240);
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx, by, bw, bh, 20) : ctx.rect(bx, by, bw, bh); ctx.fill();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 3; ctx.stroke();
+  const tx = clamp(C.x + d * 16, bx + 28, bx + bw - 28), ty = by + bh;
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(tx - 11, ty - 2); ctx.lineTo(C.x + d * 12, ty + 26); ctx.lineTo(tx + 11, ty - 2); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(tx - 11, ty); ctx.lineTo(C.x + d * 12, ty + 26); ctx.lineTo(tx + 11, ty); ctx.stroke();
+  ctx.fillStyle = '#09090b'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  lines.forEach((ln, i) => ctx.fillText(ln, bx + bw / 2, by + 27 + i * 29));
+  ctx.restore();
+}
+
+// ------------------------------------------------------------------
+// 5. CAMERA & AUDIO ENGINE
+// ------------------------------------------------------------------
+const cam = { x:640, y:360, z:1.0, tx:640, ty:360, tz:1.0, mode:'wide' };
+let autoCam = true, cutMode = true;
+function setCam(mode, snap) {
+  cam.mode = mode; let label = 'Wide All';
+  if (mode === 'wide') {
+    const xs = chars.map(c => c.x), minX = Math.min(...xs), maxX = Math.max(...xs), span = Math.max(460, maxX - minX + 260);
+    cam.tx = (minX + maxX) / 2; cam.ty = 360; cam.tz = clamp(1280 / span, 0.85, 1.08);
+  } else if (mode === 'center') { cam.tx = 640; cam.ty = 330; cam.tz = 1.22; label = 'Tight Center'; }
+  else if (mode.startsWith('char:')) {
+    const C = chars[parseInt(mode.split(':')[1], 10)] || chars[0];
+    cam.tx = C.x + (C.effDir || C.dir) * 14; cam.ty = C.y - 275 * C.scale; cam.tz = 1.65; label = 'Close-Up: ' + C.name;
+  }
+  if (snap || cutMode) { cam.x = cam.tx; cam.y = cam.ty; cam.z = cam.tz; }
+  $('hudCam').textContent = '📷 ' + label;
+  document.querySelectorAll('#camBtnRow button').forEach(b => b.classList.toggle('active', b.dataset.cam === mode));
+}
+
+let audioCtx = null, analyser = null, freqData = null, mediaDest = null, audioGain = null;
+const audioEl = new Audio(); audioEl.crossOrigin = 'anonymous';
+let micActive = false, micStream = null, micSrc = null, holdIdx = -1, holdBlip = 0;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser(); analyser.fftSize = 256; analyser.smoothingTimeConstant = 0.6;
+    freqData = new Uint8Array(analyser.frequencyBinCount); audioGain = audioCtx.createGain(); mediaDest = audioCtx.createMediaStreamDestination();
+    const osc = audioCtx.createOscillator(), g = audioCtx.createGain(); g.gain.value = 0; osc.connect(g); g.connect(mediaDest); osc.start();
+    const elSrc = audioCtx.createMediaElementSource(audioEl);
+    elSrc.connect(analyser); analyser.connect(audioGain); audioGain.connect(audioCtx.destination); audioGain.connect(mediaDest);
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playSyllableBlip(pitch = 1.0) {
+  if (!audioCtx || !$('chkVoiceSynth').checked) return;
+  const now = audioCtx.currentTime, osc = audioCtx.createOscillator(), filt = audioCtx.createBiquadFilter(), g = audioCtx.createGain();
+  osc.type = 'triangle'; const f0 = 155 * pitch * parseFloat($('pitchBase').value) * (0.85 + Math.random() * 0.35);
+  osc.frequency.setValueAtTime(f0, now); osc.frequency.exponentialRampToValueAtTime(f0 * (0.88 + Math.random() * 0.25), now + 0.09);
+  filt.type = 'bandpass'; filt.frequency.value = 650 + Math.random() * 500; filt.Q.value = 2.2;
+  g.gain.setValueAtTime(0.001, now); g.gain.linearRampToValueAtTime(0.22, now + 0.015); g.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+  osc.connect(filt); filt.connect(g); g.connect(analyser); osc.start(now); osc.stop(now + 0.12);
+}
+function getVoiceLevel() {
+  if (!analyser || !freqData) return 0; analyser.getByteFrequencyData(freqData);
+  let sum = 0; for (let i = 1; i < 36; i++) sum += freqData[i];
+  return clamp(((sum / 35) / 135) * parseFloat($('lipSens').value), 0, 1);
+}
+
+// ------------------------------------------------------------------
+// 6. CONVERSATION SCRIPT TIMELINE
+// ------------------------------------------------------------------
+const script = [
+  { who:0, expr:'skeptical', pose:'hips', look:'auto', cam:'auto', text:"Wait... did you really delete the whole presentation right before the meeting?" },
+  { who:1, expr:'sad', pose:'facepalm', look:'auto', cam:'auto', text:"I thought 'Ctrl + A' then 'Backspace' would save a backup..." },
+  { who:0, expr:'angry', pose:'point', look:'auto', cam:'auto', text:"That is literally the opposite of saving a backup!" },
+  { who:1, expr:'happy', pose:'shrug', look:'camera', cam:'auto', text:"Look on the bright side: now we can improvise!" },
+  { who:0, expr:'surprised', pose:'raised', look:'camera', cam:'wide', text:"We are doomed." }
+];
+let playState = { active:false, idx:-1, rem:0, dur:0, blipT:0, activeText:'', recAfter:false };
+
+function lookLabel(lk) {
+  if (!lk || lk === 'auto') return 'Auto';
+  if (lk === 'camera') return '📷 Camera';
+  if (lk === 'up') return '⬆ Up'; if (lk === 'down') return '⬇ Down'; if (lk === 'away') return '😒 Away';
+  if (lk.startsWith('char:')) return '👀 ' + (chars[parseInt(lk.split(':')[1], 10)]?.name || 'Char');
+  return lk;
+}
+
+function renderScriptList() {
+  const el = $('scriptList'); el.innerHTML = '';
+  script.forEach((ln, i) => {
+    const C = chars[ln.who] || chars[0];
+    const d = document.createElement('div'); d.className = 'line-card' + (playState.active && playState.idx === i ? ' playing' : '');
+    d.innerHTML = `<div class="line-top"><span class="who">${C.name} · ${ln.expr} · ${ln.pose} · ${lookLabel(ln.look)}</span><div class="line-acts"><button data-act="up">↑</button><button data-act="dn">↓</button><button data-act="del">✕</button></div></div><div class="line-txt">${ln.text}</div>`;
+    d.querySelector('[data-act=up]').onclick = () => { if (i > 0) { [script[i - 1], script[i]] = [script[i], script[i - 1]]; renderScriptList(); } };
+    d.querySelector('[data-act=dn]').onclick = () => { if (i < script.length - 1) { [script[i + 1], script[i]] = [script[i], script[i + 1]]; renderScriptList(); } };
+    d.querySelector('[data-act=del]').onclick = () => { script.splice(i, 1); renderScriptList(); };
+    el.appendChild(d);
+  });
+}
+
+function advanceScript(idx) {
+  if (idx >= script.length) {
+    stopScript();
+    if (playState.recAfter && rec.state === 'recording') setTimeout(() => { if (rec.state === 'recording') stopRecording(); }, 600);
+    return;
+  }
+  const ln = script[idx], wIdx = clamp(ln.who, 0, chars.length - 1), C = chars[wIdx];
+  playState.idx = idx; playState.activeText = ln.text; playState.blipT = 0;
+  const spd = parseFloat($('talkSpeed').value);
+  playState.dur = playState.rem = Math.max(1.5, (ln.text.length * 0.068 + 0.7) / spd);
+  C.expr = ln.expr; C.pose = ln.pose; C.lookAt = ln.look || 'auto';
+  if (ln.cam === 'wide' || ln.cam === 'center') setCam(ln.cam);
+  else if (ln.cam === 'focus' || (ln.cam === 'auto' && autoCam)) setCam('char:' + wIdx);
+  if ($('chkTTS').checked && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(ln.text); u.pitch = C.pitch; u.rate = spd; window.speechSynthesis.speak(u);
+  }
+  syncAllUI(); renderScriptList();
+  $('hudStatus').textContent = `▶ Line ${idx + 1}/${script.length} · ${C.name} speaking`;
+}
+function startScript(withRec = false) {
+  if (!script.length) { toast('Add at least 1 dialogue line'); return; }
+  initAudio(); playState.active = true; playState.recAfter = withRec;
+  if (withRec && rec.state === 'idle') startRecording(); advanceScript(0);
+}
+function stopScript() {
+  playState.active = false; playState.idx = -1; playState.activeText = '';
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  renderScriptList(); $('hudStatus').textContent = 'Idle · Press ? for keyboard shortcuts';
+}
+
+// ------------------------------------------------------------------
+// 7. UI BUILDERS & LIVE CONTROLS
+// ------------------------------------------------------------------
+function fillSelect(sel, items) { sel.innerHTML = items.map(([v, l]) => `<option value="${v}">${l}</option>`).join(''); }
+fillSelect($('inExpr'), EXPRS); fillSelect($('inPose'), GESTURES);
+fillSelect($('charPresetSel'), Object.entries(ARCHETYPES).map(([k, v]) => [k, v.label]));
+
+GESTURES.forEach(([k, label, key]) => {
+  const b = document.createElement('button'); b.dataset.gest = k;
+  b.innerHTML = `${label} <kbd>${key}</kbd>`;
+  b.onclick = () => { chars[selCharIdx].pose = k; syncAllUI(); };
+  $('liveGestGrid').appendChild(b);
+});
+
+function getLookOptions(forIdx) {
+  const arr = [['auto','🎯 Auto (A)'],['camera','📷 Camera (S)'],['up','⬆ Up (↑)'],['down','⬇ Down (↓)'],['away','😒 Away (D)']];
+  chars.forEach((o, j) => { if (j !== forIdx) arr.push(['char:' + j, '👀 ' + o.name]); });
+  return arr;
+}
+
+function spaceCharacters() {
+  const n = chars.length, pad = n <= 2 ? 410 : 190, span = 1280 - pad * 2;
+  chars.forEach((C, i) => { C.x = n === 1 ? 640 : pad + (i / (n - 1)) * span; C.dir = i < n / 2 ? 1 : -1; });
+  setCam('wide', true);
+}
+
+function buildCharEditor() {
+  const C = chars[selCharIdx], el = $('charEditorBody');
+  el.innerHTML = `
+    <div class="ctl"><label>Name</label><input type="text" data-k="name" value="${C.name}" /></div>
+    <div class="ctl"><label>👀 Looking At</label><select data-k="lookAt"></select></div>
+    <div class="ctl"><label>Hair / Hat</label><select data-k="hat"><option value="cap">Newsboy Cap</option><option value="tufts">Wispy Tufts</option><option value="spiky">Spiky Hair</option><option value="tophat">Top Hat</option><option value="bun">Bun</option><option value="beanie">Beanie</option><option value="crown">Crown</option><option value="none">Bald</option></select></div>
+    <div class="ctl"><label>Face Extra</label><select data-k="face"><option value="none">None</option><option value="glasses">Glasses</option><option value="shades">Sunglasses</option><option value="mustache">Mustache</option><option value="beard">Beard</option></select></div>
+    <div class="ctl"><label>Outfit</label><select data-k="outfit"><option value="vest">Vest &amp; Bowtie</option><option value="suit">Suit &amp; Long Tie</option><option value="coat">Doctor Lab Coat</option><option value="hoodie">Hoodie</option><option value="stick">Classic Stick</option></select></div>
+    <div class="ctl"><label>Expression</label><select data-k="expr"></select></div>
+    <div class="ctl"><label>Hand Gesture</label><select data-k="pose"></select></div>
+    <div class="ctl"><label>Default Facing</label><select data-k="dir"><option value="1">Right →</option><option value="-1">← Left</option></select></div>
+    <div class="ctl"><label>Size Scale</label><input type="range" data-k="scale" min="0.7" max="1.35" step="0.05" value="${C.scale}" /><span class="val" data-v="scale">${C.scale.toFixed(2)}</span></div>
+    <div class="ctl"><label>Voice Pitch</label><input type="range" data-k="pitch" min="0.7" max="1.5" step="0.05" value="${C.pitch}" /><span class="val" data-v="pitch">${C.pitch.toFixed(2)}</span></div>`;
+  fillSelect(el.querySelector('[data-k=lookAt]'), getLookOptions(selCharIdx));
+  fillSelect(el.querySelector('[data-k=expr]'), EXPRS); fillSelect(el.querySelector('[data-k=pose]'), GESTURES);
+  el.querySelectorAll('select,input').forEach(inp => {
+    const k = inp.dataset.k; inp.value = C[k];
+    inp.addEventListener('input', () => {
+      C[k] = (k === 'dir' || k === 'scale' || k === 'pitch') ? parseFloat(inp.value) : inp.value;
+      const v = el.querySelector(`[data-v="${k}"]`); if (v) v.textContent = C[k].toFixed(2);
+      if (k === 'name') syncAllUI(); if (k === 'pose' || k === 'lookAt') syncGestureAndLookBar();
+    });
+    if (inp.tagName === 'SELECT') inp.addEventListener('change', () => inp.blur());
+  });
+}
+
+function syncGestureAndLookBar() {
+  const C = chars[selCharIdx];
+  document.querySelectorAll('#liveGestGrid button').forEach(b => b.classList.toggle('active', b.dataset.gest === C.pose));
+  document.querySelectorAll('#liveCharPills button').forEach((b, i) => b.classList.toggle('active', i === selCharIdx));
+  const lr = $('liveLookRow'); lr.innerHTML = '';
+  getLookOptions(selCharIdx).forEach(([val, label]) => {
+    const b = document.createElement('button'); b.className = 'sm' + (C.lookAt === val ? ' active' : '');
+    b.textContent = label; b.onclick = () => { C.lookAt = val; syncAllUI(); }; lr.appendChild(b);
+  });
+}
+
+function syncAllUI() {
+  selCharIdx = clamp(selCharIdx, 0, chars.length - 1);
+  const liveP = $('liveCharPills'), editP = $('editCharPills'), camR = $('camBtnRow'), holdR = $('holdTalkRow');
+  liveP.innerHTML = ''; editP.innerHTML = ''; camR.innerHTML = ''; holdR.innerHTML = '';
+
+  const addCamBtn = (mode, label) => {
+    const b = document.createElement('button'); b.className = 'sm' + (cam.mode === mode ? ' active' : '');
+    b.dataset.cam = mode; b.innerHTML = label; b.onclick = () => setCam(mode); camR.appendChild(b);
+  };
+  addCamBtn('wide', '👥 Wide All <kbd>0</kbd>'); addCamBtn('center', '🎭 Center <kbd>9</kbd>');
+
+  chars.forEach((C, i) => {
+    const pb = document.createElement('button'); pb.className = 'sm' + (i === selCharIdx ? ' active' : ''); pb.textContent = C.name;
+    pb.onclick = () => { selCharIdx = i; buildCharEditor(); syncGestureAndLookBar(); }; liveP.appendChild(pb);
+
+    const eb = document.createElement('button'); eb.className = 'sm' + (i === selCharIdx ? ' active' : ''); eb.textContent = C.name;
+    eb.onclick = () => { selCharIdx = i; syncAllUI(); }; editP.appendChild(eb);
+
+    addCamBtn('char:' + i, '🔍 ' + C.name);
+
+    const hb = document.createElement('button'); hb.className = 'sm' + (holdIdx === i ? ' active' : '');
+    hb.innerHTML = `🗣 Talk: ${C.name} <kbd>${i + 1}</kbd>`;
+    const start = e => { e.preventDefault(); initAudio(); holdIdx = i; hb.classList.add('active'); if (autoCam) setCam('char:' + i); };
+    const stop = () => { if (holdIdx === i) holdIdx = -1; hb.classList.remove('active'); };
+    hb.addEventListener('pointerdown', start); hb.addEventListener('pointerup', stop); hb.addEventListener('pointercancel', stop);
+    holdR.appendChild(hb);
+  });
+
+  const opts = chars.map((C, i) => `<option value="${i}">${C.name}</option>`).join('');
+  const prevWho = $('inWho').value, prevMic = $('micTarget').value, prevInLook = $('inLook').value;
+  $('inWho').innerHTML = opts; $('micTarget').innerHTML = opts.replace(/>([^<]+)</g, '>Mic: $1<');
+  if (prevWho && chars[prevWho]) $('inWho').value = prevWho;
+  if (prevMic && chars[prevMic]) $('micTarget').value = prevMic;
+  const lookOpts = [['auto','👀 Auto Look'],['camera','📷 Look Camera'],['up','⬆ Look Up'],['down','⬇ Look Down'],['away','😒 Look Away'], ...chars.map((C,i) => ['char:'+i, '👀 '+C.name])];
+  fillSelect($('inLook'), lookOpts);
+  if (prevInLook && [...$('inLook').options].some(o => o.value === prevInLook)) $('inLook').value = prevInLook;
+
+  $('btnDelChar').disabled = chars.length <= 1; $('btnAddChar').disabled = chars.length >= 6;
+  buildCharEditor(); syncGestureAndLookBar(); renderScriptList();
+}
+
+$('btnAddChar').onclick = () => {
+  if (chars.length >= 6) return;
+  const letter = String.fromCharCode(65 + chars.length), archKeys = Object.keys(ARCHETYPES), arch = ARCHETYPES[archKeys[chars.length % archKeys.length]];
+  chars.push({ id:letter, name:'Char ' + letter, x:640, y:565, dir:-1, effDir:-1, lookAt:'auto', gazeX:-1, gazeY:0, frontK:0, scale:arch.scale, hat:arch.hat, outfit:arch.outfit, face:arch.face, expr:arch.expr, pose:arch.pose, mouth:0, blink:1, blinkT:2 + Math.random() * 2, seed:nextCharSeed += 43, pitch:arch.pitch });
+  selCharIdx = chars.length - 1; spaceCharacters(); syncAllUI(); toast(`Added ${chars[selCharIdx].name}`);
+};
+$('btnDelChar').onclick = () => {
+  if (chars.length <= 1) return;
+  const removed = chars.splice(selCharIdx, 1)[0];
+  script.forEach(ln => { if (ln.who >= chars.length) ln.who = chars.length - 1; });
+  chars.forEach(C => { if (C.lookAt.startsWith('char:') && parseInt(C.lookAt.split(':')[1], 10) >= chars.length) C.lookAt = 'auto'; });
+  selCharIdx = Math.max(0, selCharIdx - 1); spaceCharacters(); syncAllUI(); toast(`Removed ${removed.name}`);
+};
+$('charPresetSel').onchange = e => {
+  const arch = ARCHETYPES[e.target.value]; if (!arch) return;
+  Object.assign(chars[selCharIdx], { hat:arch.hat, outfit:arch.outfit, face:arch.face, expr:arch.expr, pose:arch.pose, scale:arch.scale, pitch:arch.pitch });
+  syncAllUI(); toast(arch.label);
+};
+
+// ------------------------------------------------------------------
+// 8. CANVAS DRAG, RECORDING & SHORTCUTS
+// ------------------------------------------------------------------
+const stageCanvas = $('stage'), ctx = stageCanvas.getContext('2d');
+let dragChar = null;
+function canvasXY(e) { const r = stageCanvas.getBoundingClientRect(); return { x:(e.clientX - r.left) / r.width * stageCanvas.width, y:(e.clientY - r.top) / r.height * stageCanvas.height }; }
+stageCanvas.addEventListener('pointerdown', e => {
+  const p = canvasXY(e), baseScale = Math.min(stageCanvas.width / 1280, stageCanvas.height / 720) * (portrait ? 1.35 : 1.0);
+  const wx = (p.x - stageCanvas.width / 2) / (cam.z * baseScale) + cam.x;
+  let best = null, bestD = 105;
+  chars.forEach((C, i) => { const d = Math.abs(wx - C.x); if (d < bestD) { bestD = d; best = i; } });
+  if (best !== null) { dragChar = chars[best]; selCharIdx = best; syncAllUI(); stageCanvas.setPointerCapture(e.pointerId); }
+});
+stageCanvas.addEventListener('pointermove', e => {
+  if (!dragChar) return;
+  const p = canvasXY(e), baseScale = Math.min(stageCanvas.width / 1280, stageCanvas.height / 720) * (portrait ? 1.35 : 1.0);
+  dragChar.x = clamp((p.x - stageCanvas.width / 2) / (cam.z * baseScale) + cam.x, 90, 1190);
+});
+stageCanvas.addEventListener('pointerup', () => { dragChar = null; });
+
+const rec = { state:'idle', mr:null, chunks:[], elapsed:0, url:null };
+function updateRecUI() {
+  const st = rec.state; $('recStatus').classList.toggle('recording', st === 'recording'); $('recStatus').classList.toggle('paused', st === 'paused');
+  $('btnRec').style.display = (st === 'idle' || st === 'paused') ? '' : 'none'; $('btnRec').textContent = st === 'paused' ? '⏺ Resume' : '⏺ Record';
+  $('btnPauseRec').style.display = st === 'recording' ? '' : 'none'; $('btnStopRec').style.display = (st === 'recording' || st === 'paused') ? '' : 'none';
+  $('resSel').disabled = $('btnAspect').disabled = st !== 'idle'; $('recTxt').textContent = st === 'recording' ? 'Recording...' : st === 'paused' ? 'Paused' : 'Ready';
+}
+function startRecording() {
+  initAudio(); rec.chunks = []; rec.elapsed = 0; $('btnDl').style.display = 'none';
+  const cs = stageCanvas.captureStream(30), stream = new MediaStream([...cs.getVideoTracks(), ...mediaDest.stream.getAudioTracks()]);
+  const mime = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+  rec.mr = new MediaRecorder(stream, mime ? { mimeType:mime, videoBitsPerSecond:6000000 } : {});
+  rec.mr.ondataavailable = e => { if (e.data && e.data.size > 0) rec.chunks.push(e.data); };
+  rec.mr.onstop = () => { if (rec.url) URL.revokeObjectURL(rec.url); rec.url = URL.createObjectURL(new Blob(rec.chunks, { type:'video/webm' })); $('btnDl').style.display = ''; };
+  rec.mr.start(250); rec.state = 'recording'; updateRecUI(); toast('⏺ Recording started');
+}
+function stopRecording() { if (rec.state === 'idle') return; if (rec.mr && rec.mr.state !== 'inactive') rec.mr.stop(); rec.state = 'idle'; updateRecUI(); $('recTxt').textContent = 'Done'; toast('⏹ Recording stopped'); }
+function togglePauseRec() {
+  if (rec.state === 'recording') { rec.mr.pause(); rec.state = 'paused'; updateRecUI(); toast('⏸ Recording paused'); }
+  else if (rec.state === 'paused') { rec.mr.resume(); rec.state = 'recording'; updateRecUI(); toast('⏺ Recording resumed'); }
+}
+$('btnRec').onclick = () => rec.state === 'idle' ? startRecording() : togglePauseRec();
+$('btnPauseRec').onclick = togglePauseRec;
+$('btnStopRec').onclick = stopRecording;
+$('btnDl').onclick = () => { const a = document.createElement('a'); a.href = rec.url; a.download = `stickman-cartoon-${Date.now()}.webm`; a.click(); };
+
+let portrait = false;
+function applySize() {
+  let [w, h] = $('resSel').value.split('x').map(Number); if (portrait) [w, h] = [h, w];
+  stageCanvas.width = w; stageCanvas.height = h; $('cWrap').classList.toggle('portrait', portrait);
+  $('btnAspect').textContent = portrait ? '🖥 16:9 Wide' : '📱 9:16 Portrait'; $('btnAspect').classList.toggle('active', portrait);
+}
+$('resSel').onchange = applySize; $('btnAspect').onclick = () => { portrait = !portrait; applySize(); };
+function takePngShot() { stageCanvas.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `stickman-${Date.now()}.png`; a.click(); toast('PNG saved 📸'); }); }
+$('btnShot').onclick = takePngShot;
+$('btnHudToggle').onclick = () => { const h = document.querySelector('.hud'); h.style.display = h.style.display === 'none' ? 'flex' : 'none'; };
+
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('active', x === b));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.dataset.pane === b.dataset.tab));
+});
+$('btnAutoLook').onclick = () => { autoLookSpeaker = !autoLookSpeaker; $('btnAutoLook').classList.toggle('active', autoLookSpeaker); $('btnAutoLook').innerHTML = `👀 Auto-Look: ${autoLookSpeaker ? 'ON' : 'OFF'} <kbd>L</kbd>`; };
+$('btnAutoCam').onclick = () => { autoCam = !autoCam; $('btnAutoCam').classList.toggle('active', autoCam); $('btnAutoCam').innerHTML = `🎯 Auto-Focus: ${autoCam ? 'ON' : 'OFF'} <kbd>⇧F</kbd>`; };
+$('btnCutStyle').onclick = () => { cutMode = !cutMode; $('btnCutStyle').classList.toggle('active', cutMode); $('btnCutStyle').innerHTML = `${cutMode ? '✂ Cut Mode' : '🌊 Smooth Glide'} <kbd>⇧C</kbd>`; };
+$('btnBoil').onclick = () => { boilEnabled = !boilEnabled; $('btnBoil').classList.toggle('active', boilEnabled); $('btnBoil').textContent = `〰 Boil: ${boilEnabled ? 'ON' : 'OFF'}`; };
+$('btnResetPos').onclick = spaceCharacters;
+
+$('btnKeys').onclick = () => $('scModal').classList.toggle('open');
+$('btnCloseSc').onclick = () => $('scModal').classList.remove('open');
+$('scModal').onclick = e => { if (e.target === $('scModal')) $('scModal').classList.remove('open'); };
+document.querySelectorAll('select').forEach(s => s.addEventListener('change', () => s.blur()));
+
+// Global Keyboard Shortcuts Engine
+const GEST_KEY_MAP = Object.fromEntries(GESTURES.map(([id, , k]) => [k.toLowerCase(), id]));
+const EXPR_KEY_MAP = Object.fromEntries(EXPRS.map(([id, , k]) => [k.toLowerCase(), id]));
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if ($('scModal').classList.contains('open')) { $('scModal').classList.remove('open'); return; }
+    if (document.activeElement && document.activeElement !== document.body) { document.activeElement.blur(); return; }
+    stopScript(); return;
+  }
+  const tag = e.target && e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  const k = e.key.toLowerCase(), C = chars[selCharIdx];
+  if (e.key === '?' || e.key === '/') { e.preventDefault(); $('scModal').classList.toggle('open'); return; }
+
+  // Shift combos (Camera / Recording / Screenshot)
+  if (e.shiftKey) {
+    if (k === 'r') { e.preventDefault(); rec.state === 'idle' ? startRecording() : stopRecording(); return; }
+    if (k === 's') { e.preventDefault(); takePngShot(); return; }
+    if (k === 'c') { e.preventDefault(); $('btnCutStyle').click(); return; }
+    if (k === 'f') { e.preventDefault(); $('btnAutoCam').click(); return; }
+    return;
+  }
+
+  // Number keys: 1-6 Hold-to-Talk, 0 Wide All, 9 Center
+  if (/^[1-6]$/.test(k)) {
+    const idx = parseInt(k, 10) - 1;
+    if (chars[idx] && holdIdx !== idx) { initAudio(); holdIdx = idx; if (autoCam) setCam('char:' + idx); syncAllUI(); }
+    return;
+  }
+  if (k === '0') { setCam('wide'); return; }
+  if (k === '9') { setCam('center'); return; }
+  if (e.key === 'Enter') { e.preventDefault(); setCam('char:' + selCharIdx); return; }
+
+  // Playback & Mic & Pause
+  if (e.code === 'Space') { e.preventDefault(); playState.active ? stopScript() : startScript(false); return; }
+  if (k === 'p') { togglePauseRec(); return; }
+  if (k === 'm') { $('btnMic').click(); return; }
+  if (k === 'l') { $('btnAutoLook').click(); return; }
+
+  // Switch selected character
+  if (e.key === '[') { selCharIdx = (selCharIdx - 1 + chars.length) % chars.length; syncAllUI(); toast(`Selected: ${chars[selCharIdx].name}`); return; }
+  if (e.key === ']') { selCharIdx = (selCharIdx + 1) % chars.length; syncAllUI(); toast(`Selected: ${chars[selCharIdx].name}`); return; }
+
+  // Hand Gestures (Q W E R T Y U I O F G H J K)
+  if (GEST_KEY_MAP[k] && C) { C.pose = GEST_KEY_MAP[k]; syncAllUI(); return; }
+
+  // Expressions (Z X C V B N)
+  if (EXPR_KEY_MAP[k] && C) { C.expr = EXPR_KEY_MAP[k]; syncAllUI(); return; }
+
+  // Look-At / Eye Gaze (A=Auto, S=Camera, D=Away, Arrows=Up/Down/Target Char)
+  if (C) {
+    if (k === 'a') { C.lookAt = 'auto'; syncAllUI(); return; }
+    if (k === 's') { C.lookAt = 'camera'; syncAllUI(); return; }
+    if (k === 'd') { C.lookAt = 'away'; syncAllUI(); return; }
+    if (e.key === 'ArrowUp') { e.preventDefault(); C.lookAt = 'up'; syncAllUI(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); C.lookAt = 'down'; syncAllUI(); return; }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const others = chars.map((_, j) => j).filter(j => j !== selCharIdx);
+      if (others.length) {
+        const curT = C.lookAt.startsWith('char:') ? parseInt(C.lookAt.split(':')[1], 10) : -1;
+        const pos = others.indexOf(curT);
+        const next = others[(pos + (e.key === 'ArrowRight' ? 1 : others.length - 1)) % others.length];
+        C.lookAt = 'char:' + next; syncAllUI();
+      }
+    }
+  }
+});
+
+window.addEventListener('keyup', e => {
+  if (/^[1-6]$/.test(e.key) && holdIdx === parseInt(e.key, 10) - 1) { holdIdx = -1; syncAllUI(); }
+});
+window.addEventListener('blur', () => { if (holdIdx >= 0) { holdIdx = -1; syncAllUI(); } });
+
+$('btnAddLine').onclick = () => {
+  const txt = $('inText').value.trim(); if (!txt) return;
+  script.push({ who:parseInt($('inWho').value, 10) || 0, cam:$('inCam').value, expr:$('inExpr').value, pose:$('inPose').value, look:$('inLook').value, text:txt });
+  $('inText').value = ''; renderScriptList();
+};
+$('btnClearScript').onclick = () => { script.length = 0; stopScript(); renderScriptList(); };
+$('btnPlayScript').onclick = () => startScript(false);
+$('btnPlayRec').onclick = () => startScript(true);
+$('btnStopScript').onclick = stopScript;
+
+$('btnMic').onclick = async () => {
+  initAudio();
+  if (micActive) { micActive = false; micStream.getTracks().forEach(t => t.stop()); micSrc.disconnect(); $('btnMic').innerHTML = '🎤 Live Mic: OFF <kbd>M</kbd>'; $('btnMic').classList.remove('active'); return; }
+  try { micStream = await navigator.mediaDevices.getUserMedia({ audio:true }); micSrc = audioCtx.createMediaStreamSource(micStream); micSrc.connect(analyser); micSrc.connect(mediaDest); micActive = true; $('btnMic').innerHTML = '🎤 Live Mic: ON <kbd>M</kbd>'; $('btnMic').classList.add('active'); }
+  catch { toast('Mic permission denied'); }
+};
+$('audioFile').onchange = e => { const f = e.target.files[0]; if (!f) return; initAudio(); audioEl.src = URL.createObjectURL(f); audioEl.play().catch(() => {}); };
+$('btnAPlay').onclick = () => { initAudio(); if (audioEl.src) audioEl.play(); };
+$('btnAPause').onclick = () => audioEl.pause();
+$('btnARestart').onclick = () => { initAudio(); audioEl.currentTime = 0; if (audioEl.src) audioEl.play(); };
+$('lipSens').oninput = e => $('lipVal').textContent = parseFloat(e.target.value).toFixed(1);
+$('roughness').oninput = e => { sketchRough = parseFloat(e.target.value); $('roughVal').textContent = sketchRough.toFixed(1); };
+$('pitchBase').oninput = e => $('pitchVal').textContent = parseFloat(e.target.value).toFixed(2);
+$('talkSpeed').oninput = e => $('spdVal').textContent = parseFloat(e.target.value).toFixed(2) + '×';
+
+// ------------------------------------------------------------------
+// 9. ANIMATION LOOP
+// ------------------------------------------------------------------
+let lastT = performance.now();
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min((now - lastT) / 1000, 0.05), t = now / 1000; lastT = now;
+
+  if (rec.state === 'recording') { rec.elapsed += dt; const s = Math.floor(rec.elapsed); $('recTime').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  if (boilEnabled) { boilAcc += dt; if (boilAcc > 0.14) { boilAcc = 0; boilSeed = (boilSeed % 97) + 1; } }
+
+  if (playState.active) {
+    playState.rem -= dt; playState.blipT -= dt;
+    const ln = script[playState.idx], wIdx = clamp(ln.who, 0, chars.length - 1);
+    if (playState.blipT <= 0 && playState.rem > 0.28) {
+      playState.blipT = (0.14 + Math.random() * 0.08) / parseFloat($('talkSpeed').value);
+      playSyllableBlip(chars[wIdx].pitch);
+    }
+    if (playState.rem <= 0) advanceScript(playState.idx + 1);
+  }
+  if (holdIdx >= 0 && chars[holdIdx]) {
+    holdBlip -= dt;
+    if (holdBlip <= 0) { holdBlip = 0.15; if (!micActive && audioEl.paused) playSyllableBlip(chars[holdIdx].pitch); }
+  }
+
+  const vLvl = getVoiceLevel(); $('vMeter').style.width = (vLvl * 100) + '%';
+  const activeSpeaker = playState.active ? clamp(script[playState.idx].who, 0, chars.length - 1)
+    : (holdIdx >= 0 ? holdIdx : ((micActive || !audioEl.paused) ? parseInt($('micTarget').value, 10) : -1));
+
+  updateCharacterGaze(dt, activeSpeaker);
+
+  chars.forEach((C, i) => {
+    const tgt = (activeSpeaker === i) ? Math.max(vLvl, (playState.active || holdIdx === i) ? 0.25 + 0.5 * Math.abs(Math.sin(t * 11 + C.seed)) : 0) : 0;
+    C.mouth = lerp(C.mouth, tgt, 1 - Math.exp(-22 * dt));
+    C.blinkT -= dt; if (C.blinkT <= 0) { C.blink = 0.05; if (C.blinkT < -0.14) { C.blink = 1; C.blinkT = 2 + Math.random() * 3.2; } } else C.blink = 1;
+  });
+
+  const ck = 1 - Math.exp(-7 * dt);
+  cam.x = lerp(cam.x, cam.tx, ck); cam.y = lerp(cam.y, cam.ty, ck); cam.z = lerp(cam.z, cam.tz, ck);
+
+  const W = stageCanvas.width, H = stageCanvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  const baseScale = Math.min(W / 1280, H / 720) * (portrait ? 1.35 : 1.0);
+  ctx.translate(W / 2, H / 2); ctx.scale(cam.z * baseScale, cam.z * baseScale); ctx.translate(-cam.x, -cam.y);
+
+  drawGroundAndBg(ctx, 1280, 720, $('bgStyle').value);
+  drawGroundShadow(ctx);
+  chars.forEach(C => drawStickman(ctx, C, t));
+  if ($('chkBubbles').checked && playState.active && playState.activeText) {
+    drawSpeechBubble(ctx, chars[clamp(script[playState.idx].who, 0, chars.length - 1)], playState.activeText);
+  }
+  ctx.restore();
+}
+
+syncAllUI();
+setCam('wide', true);
+updateRecUI();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
